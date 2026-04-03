@@ -122,7 +122,10 @@ const inferredEnvironment =
     : "prod";
 
 const defaultAppBaseUrl =
-  (env.VITE_APP_BASE_URL as string | undefined) ?? "https://app.trypackai.com";
+  (env.VITE_APP_BASE_URL as string | undefined) ?? "https://www.trypackai.com";
+const defaultOauthResourceServerIdentifier =
+  (env.VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER as string | undefined)?.trim() ||
+  "api.itsdoneai.com";
 
 // Public OAuth client IDs are not secrets. Keep a stable production fallback
 // so deploys cannot silently ship an invalid hosted-auth configuration.
@@ -133,17 +136,17 @@ const baseScopes = [
   "email",
   "profile",
   "aws.cognito.signin.user.admin",
-  `api.trypackai.com/${inferredEnvironment}/travel.plan`,
-  `api.trypackai.com/${inferredEnvironment}/travel.search`,
-  `api.trypackai.com/${inferredEnvironment}/travel.book`,
-  `api.trypackai.com/${inferredEnvironment}/jobs.read`,
-  `api.trypackai.com/${inferredEnvironment}/jobs.manage`,
-  `api.trypackai.com/${inferredEnvironment}/user.accounts`,
-  `api.trypackai.com/${inferredEnvironment}/user.preferences`,
-  `api.trypackai.com/${inferredEnvironment}/user.information`,
-  `api.trypackai.com/${inferredEnvironment}/user.trips`,
-  `api.trypackai.com/${inferredEnvironment}/user.queries`,
-  `api.trypackai.com/${inferredEnvironment}/user.delete`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/travel.plan`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/travel.search`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/travel.book`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/jobs.read`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/jobs.manage`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/user.accounts`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/user.preferences`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/user.information`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/user.trips`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/user.queries`,
+  `${defaultOauthResourceServerIdentifier}/${inferredEnvironment}/user.delete`,
 ];
 
 const rawScopeEnv = (env.VITE_OAUTH_SCOPES as string | undefined)?.trim();

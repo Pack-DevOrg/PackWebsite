@@ -268,7 +268,7 @@ const isAppOriginHost = (hostname: string): boolean => {
   try {
     return new URL(appConfig.appBaseUrl).hostname === hostname;
   } catch {
-    return hostname === "app.trypackai.com";
+    return hostname === "www.trypackai.com";
   }
 };
 

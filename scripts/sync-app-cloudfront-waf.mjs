@@ -6,7 +6,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 const DISTRIBUTION_ALIAS =
-  process.env.DONEAI_APP_DISTRIBUTION_ALIAS?.trim() || "app.trypackai.com";
+  process.env.DONEAI_APP_DISTRIBUTION_ALIAS?.trim() || "www.trypackai.com";
 const WEB_ACL_NAME =
   process.env.DONEAI_WEB_ACL_NAME?.trim() ||
   `${DISTRIBUTION_ALIAS.replace(/\./g, "-")}-waf`;

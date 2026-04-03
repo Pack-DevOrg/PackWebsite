@@ -17,6 +17,7 @@ import { useMountEffect } from "./hooks/useMountEffect";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { localizePath, stripLocaleFromPath } from "./i18n/config";
 import { createQueryClient } from "./queryClient";
+import { appConfig } from "./config/appConfig";
 import { env } from "./utils/env";
 import HomePage from "./routes/HomePage";
 
@@ -47,7 +48,7 @@ const HomeRouteSwitch: React.FC = () => {
   const hasLocalePrefix = normalizedPath !== location.pathname;
   const isAppHost =
     typeof window !== "undefined" &&
-    /^app\.itsdoneai\.com$/i.test(window.location.hostname);
+    new URL(appConfig.appBaseUrl).hostname === window.location.hostname;
   const isHomePath = normalizedPath === "/" || normalizedPath === "/verify";
 
   if (hasLocalePrefix) {

@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && vite build --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
-    "build:app-origin": "VITE_APP_BASE_URL=https://app.trypackai.com VITE_POST_LOGOUT_REDIRECT_URI=https://app.trypackai.com vite build && VITE_APP_BASE_URL=https://app.trypackai.com VITE_POST_LOGOUT_REDIRECT_URI=https://app.trypackai.com vite build --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "build:app-origin": "VITE_APP_BASE_URL=https://www.trypackai.com VITE_COGNITO_REDIRECT_URI=https://www.trypackai.com/auth/callback VITE_POST_LOGOUT_REDIRECT_URI=https://www.trypackai.com VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER=api.itsdoneai.com vite build && VITE_APP_BASE_URL=https://www.trypackai.com VITE_COGNITO_REDIRECT_URI=https://www.trypackai.com/auth/callback VITE_POST_LOGOUT_REDIRECT_URI=https://www.trypackai.com VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER=api.itsdoneai.com vite build --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
     "legal:check": "node scripts/check-legal-lock.mjs",
     "legal:check-staged": "node scripts/check-legal-lock.mjs --staged",
     "legal:refresh-lock": "node scripts/refresh-legal-lock.mjs",

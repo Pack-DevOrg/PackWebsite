@@ -6,7 +6,7 @@ const distDir = resolve("dist");
 const appAlias =
   process.env.DONEAI_APP_DISTRIBUTION_ALIAS?.trim() ||
   process.env.DONEAI_APP_DOMAIN?.trim() ||
-  "app.trypackai.com";
+  "www.trypackai.com";
 const appBucket = process.env.DONEAI_APP_BUCKET?.trim() || `s3://${appAlias}`;
 const allowSharedDistribution =
   process.env.DONEAI_ALLOW_SHARED_APP_DISTRIBUTION === "1";

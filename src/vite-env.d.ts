@@ -17,6 +17,7 @@ interface ImportMetaEnv {
   readonly VITE_COGNITO_REDIRECT_URI: string
   readonly VITE_POST_LOGOUT_REDIRECT_URI: string
   readonly VITE_APP_BASE_URL: string
+  readonly VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER: string
   readonly VITE_DONEAI_API_KEY: string
   readonly VITE_OAUTH_SCOPES: string
   readonly VITE_DEV_MODE: string

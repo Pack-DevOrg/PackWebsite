@@ -224,89 +224,16 @@ const brandAssets: BrandAsset[] = [
   },
 ];
 
-const ogConcepts: OgConcept[] = [
-  {
-    slug: "cinematic-trip-thread",
-    title: "Cinematic Trip Thread",
-    description:
-      "Strongest semantic hit so far. It lands the before-to-after idea of scattered travel context resolving into one clean trip object, though the model still snuck text into the card.",
-    src: "/images/og-concepts/cinematic-trip-thread.png",
-    verdict: "promising",
-    prompt:
-      "Open Graph hero image for Pack, a premium AI travel planner. Cinematic widescreen composition, dark obsidian background, warm amber and coral light accents, elegant editorial feel. A flowing thread of travel context moves left to right: subtle email confirmation fragments, calendar timing markers, route arcs, hotel and flight cues, all resolving into one clean luminous trip card in the center. Feels like chaos becoming clarity. Minimal, luxurious, intelligent. No words.",
-  },
-  {
-    slug: "agentic-concierge-desk",
-    title: "Agentic Concierge Desk",
-    description:
-      "Best tactile-material direction. The desk, passport, and boarding-pass language feel premium, but it also produced fake interface copy that needs to be suppressed or painted over in a second pass.",
-    src: "/images/og-concepts/agentic-concierge-desk.png",
-    verdict: "mixed",
-    prompt:
-      "Premium social card for Pack, an AI travel assistant. Surreal but grounded travel-concierge scene at night: polished black desk, glowing route lines, boarding-pass textures, hotel keycard materials, passport-edge details, and a single composed itinerary object illuminated like the answer. Sophisticated luxury editorial photography, high contrast, warm gold-to-coral palette, black negative space. No humans, no visible logos, no text.",
-  },
-  {
-    slug: "prompt-in-trip-out",
-    title: "Prompt In, Trip Out",
-    description:
-      "Readable concept architecture for conversation turning into itinerary structure. It proves the story, but the model leaned too hard into synthetic labels and explainer graphics.",
-    src: "/images/og-concepts/prompt-in-trip-out.png",
-    verdict: "mixed",
-    prompt:
-      "Widescreen conceptual artwork for Pack, an AI travel planner. Left side begins as soft abstract conversational energy and fragmented planning signals; center transforms into structured travel geometry; right side resolves into a beautiful organized trip composition with route, stay, timing, and movement all harmonized. Futuristic but elegant, cinematic depth, black background, saffron amber coral glow, premium brand image. No text.",
-  },
-  {
-    slug: "luxury-motion-poster",
-    title: "Luxury Motion Poster",
-    description:
-      "Most poster-ready silhouette and probably the cleanest route for a second-pass hero. The form language is right, but the model still dropped literal Pack text into the lower-right.",
-    src: "/images/og-concepts/luxury-motion-poster.png",
-    verdict: "promising",
-    prompt:
-      "High-end brand poster for Pack travel AI, designed as an Open Graph image. Minimal dark luxury poster with strong composition, oversized abstract orb and route curve, subtle references to flights, hotels, and timing embedded in the shapes, bold but restrained use of amber, honey, and coral gradients. Feels like the future of travel, decisive, sharp, fashionable, not corporate SaaS, no words.",
-  },
-  {
-    slug: "journey-without-tab-chaos",
-    title: "Journey Without Tab Chaos",
-    description:
-      "Interesting density study for fragmented inputs collapsing into one travel ribbon. The abstraction works, but it still reads more like a data stream than a finished brand card.",
-    src: "/images/og-concepts/journey-without-tab-chaos.png",
-    verdict: "mixed",
-    prompt:
-      "Brand image for Pack, AI travel planner that replaces many tabs with one clear plan. Visually represent many fragmented travel inputs dissolving into one elegant journey ribbon across a wide frame. Fragments feel like booking tabs, confirmations, dates, and maps, but abstracted and beautiful, not literal browser windows. Premium cinematic graphic design, black field, warm gold and coral highlights, contemporary editorial advertising style, highly composed, no text, no obvious UI.",
-  },
-];
-
 const refinedOgConcepts: OgConcept[] = [
   {
-    slug: "minimal-eclipse-center",
-    title: "Minimal Eclipse Center",
+    slug: "quiet-ember-breathing-room",
+    title: "Approved Homepage OG Card",
     description:
-      "Closest to the brief. The real Pack mark sits directly inside the eclipse form, keeping the card minimal while still feeling like a branded motion poster instead of a generic space render.",
-    src: "/images/og-refined/final/minimal-eclipse-center.png",
+      "Approved direction. The Pack mark stays small, the glow language stays at the edges, and the card keeps enough negative space to feel calm instead of illustrative.",
+    src: "/images/og-refined/final/quiet-ember-breathing-room.png",
     verdict: "closest",
     prompt:
-      "Composite treatment: use the real Pack logo over the cleanest generated eclipse plate. Keep the frame almost empty, preserve the orb, avoid all extra interface language, and let the logo do the branding work.",
-  },
-  {
-    slug: "minimal-eclipse-offset",
-    title: "Minimal Eclipse Offset",
-    description:
-      "Same reduced system, but with a little more tension. The offset mark feels slightly more editorial and less symmetrical while still staying restrained.",
-    src: "/images/og-refined/final/minimal-eclipse-offset.png",
-    verdict: "promising",
-    prompt:
-      "Composite treatment: keep the same dark eclipse poster base, but offset the Pack mark so the planet reads more clearly behind it. No additional graphic elements beyond what already earns its place.",
-  },
-  {
-    slug: "minimal-horizon-center",
-    title: "Minimal Horizon Center",
-    description:
-      "A softer option with the glowing planet on the horizon instead of the eclipse silhouette. It is still minimal, but a touch warmer and less severe than the eclipse versions.",
-    src: "/images/og-refined/final/minimal-horizon-center.png",
-    verdict: "promising",
-    prompt:
-      "Composite treatment: use the real Pack logo with a low glowing planet background, preserving the poster-like emptiness and avoiding any extra UI cues, text, or decorative clutter.",
+      "Final treatment: use the real Pack logo over a near-black field with gentle ember glows around the perimeter, preserving negative space and avoiding literal travel objects or centered spectacle.",
   },
 ];
 
@@ -740,14 +667,10 @@ const labsContent = {
       description:
         "Use this page to inspect the live Pack mark across the website and app: logos, favicons, share cards, app icons, splash art, and Android adaptive assets.",
       assets: brandAssets,
-      refinedConceptTitle: "Refined minimal OG variants.",
+      refinedConceptTitle: "Approved homepage OG card.",
       refinedConceptDescription:
-        "These are the cleaner second-pass comps. They use the real Pack logo over stripped-back Imagen background plates so the review is about composition, restraint, and whether the orb treatment is actually worth keeping.",
+        "This is the approved homepage social card direction now promoted into the live website OG asset.",
       refinedConcepts: refinedOgConcepts,
-      conceptTitle: "Generated OG concept variants.",
-      conceptDescription:
-        "These are first-pass Imagen renders generated through the same SSM-backed Vertex credential flow used in PackAds. The goal here is direction-finding, not final polish. Two are worth refining, and the rest are useful for learning what to suppress.",
-      concepts: ogConcepts,
     },
     crumbs: {
       labs: "Labs",
@@ -855,14 +778,10 @@ const labsContent = {
       description:
         "Usa esta página para inspeccionar la marca Pack en la web y la app: logos, favicons, tarjetas de compartir, iconos de app, splash art y assets adaptativos de Android.",
       assets: brandAssets,
-      refinedConceptTitle: "Variantes OG refinadas y minimalistas.",
+      refinedConceptTitle: "OG card aprobada para la homepage.",
       refinedConceptDescription:
-        "Estas son las composiciones limpias de la segunda pasada. Usan el logo real de Pack sobre fondos de Imagen mucho más reducidos para juzgar composición, contención y si vale la pena mantener la idea del planeta.",
+        "Esta es la dirección aprobada para la tarjeta social de la homepage y ya fue promovida al asset OG activo del sitio.",
       refinedConcepts: refinedOgConcepts,
-      conceptTitle: "Variantes generadas para la OG card.",
-      conceptDescription:
-        "Estos son renders iniciales de Imagen generados con el mismo flujo de credenciales Vertex respaldado por SSM que usa PackAds. Sirven para elegir dirección, no como arte final. Dos merecen una segunda pasada y el resto ayudan a ver qué conviene suprimir.",
-      concepts: ogConcepts,
     },
     crumbs: {
       labs: "Labs",
@@ -1088,25 +1007,6 @@ export const LabsBrandAssetsPage: React.FC = () => {
                     ? "Promising"
                     : "Mixed result"}
               </Kicker>
-              <CardTitle>{concept.title}</CardTitle>
-              <CardBody>{concept.description}</CardBody>
-              <PathLabel>{concept.prompt}</PathLabel>
-            </Meta>
-          </ConceptCard>
-        ))}
-      </Grid>
-      <SectionHeading>
-        <SectionTitle>{localizedContent.brandAssets.conceptTitle}</SectionTitle>
-        <SectionDescription>{localizedContent.brandAssets.conceptDescription}</SectionDescription>
-      </SectionHeading>
-      <Grid>
-        {localizedContent.brandAssets.concepts.map((concept) => (
-          <ConceptCard key={concept.slug}>
-            <AssetPreview>
-              <AssetImage src={concept.src} alt={concept.title} loading="lazy" />
-            </AssetPreview>
-            <Meta>
-              <Kicker>{concept.verdict === "promising" ? "Promising" : "Mixed result"}</Kicker>
               <CardTitle>{concept.title}</CardTitle>
               <CardBody>{concept.description}</CardBody>
               <PathLabel>{concept.prompt}</PathLabel>

@@ -36,7 +36,7 @@ const labVideos: LabVideo[] = [
       "First-person dachshund booking concept with a real Pack booking visual and a readable Book Cabo query.",
     tags: ["Cabo", "POV", "Dachshund", "Real app base"],
     localPath:
-      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/DoneAll/RouteAds/demo_project/exports/reels_15s_book_cabo_dachshund_v1/ad_001.mp4",
+      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/PackAll/RouteAds/demo_project/exports/reels_15s_book_cabo_dachshund_v1/ad_001.mp4",
   },
   {
     slug: "book-japan-pov-chaos",
@@ -45,7 +45,7 @@ const labVideos: LabVideo[] = [
       "Earlier POV proof built through the same template pipeline, centered on Book Japan with a cute-hand chaos setup.",
     tags: ["Japan", "POV", "Cute hand", "Chaos"],
     localPath:
-      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/DoneAll/RouteAds/demo_project/exports/reels_15s_book_japan_pov_chaos_v1/ad_001.mp4",
+      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/PackAll/RouteAds/demo_project/exports/reels_15s_book_japan_pov_chaos_v1/ad_001.mp4",
   },
   {
     slug: "dog-book-japan-poc",
@@ -54,7 +54,7 @@ const labVideos: LabVideo[] = [
       "Initial proof-of-concept export used to validate the ad render path before the reusable labs pipeline was added.",
     tags: ["POC", "Japan", "Dog paw"],
     localPath:
-      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/DoneAll/RouteAds/demo_project/exports/poc_dog_book_japan.mp4",
+      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/PackAll/RouteAds/demo_project/exports/poc_dog_book_japan.mp4",
   },
 ];
 

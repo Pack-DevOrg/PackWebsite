@@ -1,0 +1,383 @@
+# DoneAI Non-Policy Legal Review Packet
+
+Prepared: March 30, 2026
+
+This packet contains the non-policy legal copy currently used on the DoneAI website. It excludes the full Terms of Service and Privacy Policy. Each section includes the live location, source file, and a screenshot reference captured from the local site.
+
+## 1. Cookie Consent Disclosure
+
+Location:
+- Website-wide consent banner at the bottom of the page
+- Cookie preferences modal opened from the consent banner or the footer privacy-choices control
+
+Primary source:
+- `src/legal/legalUiCopy.json` (`consent-banner`, locale `en`)
+
+Screenshot:
+- `./screenshots/consent-banner-focused.png`
+
+![Cookie consent banner](./screenshots/consent-banner-focused.png)
+
+Text under review:
+
+### Banner title
+
+> We Value Your Privacy
+
+### Banner disclosure
+
+> We use cookies and similar technologies to enhance your experience, analyze site usage, and personalize content. By clicking "Accept All", you consent to analytics and marketing cookies. You can customize your preferences or learn more in our Terms of Service and Privacy Policy.
+
+### Cookie preferences modal title
+
+> Cookie Preferences
+
+### Cookie category names and descriptions
+
+**Functional Cookies**
+
+> Essential for the website to function properly. These cookies remember your preferences and help provide core functionality.
+
+**Analytics Cookies**
+
+> Help us understand how visitors interact with our website by collecting and reporting information anonymously through Google Analytics.
+
+**Marketing Cookies**
+
+> Used to track visitors across websites and show relevant advertisements. Includes Facebook Pixel for ad optimization and retargeting.
+
+### Additional notice used when GPC applies
+
+> Global Privacy Control is enabled in your browser. We’ve automatically limited analytics and marketing cookies to honour this preference.
+
+> Global Privacy Control is active. Analytics and marketing cookies remain disabled while this signal is present.
+
+## 2. Short-Form Acceptance Notice
+
+Locations:
+- Homepage waitlist form
+- TSA wait-times modal
+- Footer privacy-choices reference
+
+Primary source:
+- `src/legal/legalUiCopy.json` (`acceptance-notice`, locale `en`)
+
+Screenshots:
+- `./screenshots/waitlist-acceptance-notice-focused.png`
+- `./screenshots/tsa-modal-acceptance-notice-focused.png`
+
+![Homepage waitlist acceptance notice](./screenshots/waitlist-acceptance-notice-focused.png)
+
+![TSA modal acceptance notice](./screenshots/tsa-modal-acceptance-notice-focused.png)
+
+Text under review:
+
+> By continuing, you agree to our Terms of Service and acknowledge our Privacy Policy. See Your Privacy Choices.
+
+## 3. Do Not Sell or Share My Personal Information Page
+
+Live route:
+- `/do-not-sell`
+
+Primary source:
+- `public/DoNotSell.md`
+
+Screenshot:
+- `./screenshots/do-not-sell-content-focused.png`
+
+![Do Not Sell or Share page](./screenshots/do-not-sell-content-focused.png)
+
+Text under review:
+
+```md
+# Do Not Sell or Share My Personal Information
+
+**Effective Date:** March 26, 2026
+
+## DoneAI Does Not Sell Personal Information for Money
+
+DoneAI, Inc. ("DoneAI", "we", "us" or "our") does not sell your personal information for money.
+
+If you opt into marketing cookies or similar marketing technologies, we may share limited identifiers or signals with analytics, attribution, advertising, audience, affiliate, remarketing, or conversion-measurement partners. Depending on the law and context, that activity may be treated as "sharing" for cross-context behavioral advertising.
+
+This page is provided to comply with the California Consumer Privacy Act and California Privacy Rights Act (CCPA/CPRA) requirement that businesses provide a "Do Not Sell or Share My Personal Information" link.
+
+## How to Opt Out
+
+You can opt out of any sale or sharing covered by California law by using any of the following methods:
+
+1. **Submit an opt-out request:** [Privacy Request Portal](/privacy-request)
+2. **Use available consent controls:** decline or disable non-essential marketing cookies where we present those controls
+3. **Use browser-based opt-out signals:** we honor Global Privacy Control where required by applicable law
+4. **Contact us directly:** support@itsdoneai.com
+
+## What This Means
+
+- **No Data Sales for Money**: We do not sell, rent, or trade your personal information for monetary or other valuable consideration
+- **Advertising & Measurement (Consent-Based)**: If you opt into marketing cookies, we may share limited information with selected advertising, analytics, attribution, audience, affiliate, remarketing, or conversion-measurement partners to measure campaigns and improve ad performance. This can be considered “sharing” for cross-context behavioral advertising under some privacy laws. If you do not opt in, we do not enable these marketing trackers.
+- **Service Providers**: We also share personal information with service providers who help us operate DoneAI (like cloud hosting, AI processing, and customer support), and they are contractually required to protect your data
+
+## Your Rights Under CCPA
+
+Even if we do not sell personal information for money, California residents may still have important rights under California law:
+
+- **Right to Know**: What personal information we collect and how we use it
+- **Right to Delete**: Request deletion of your personal information
+- **Right to Correct**: Request correction of inaccurate personal information
+- **Right to Opt Out**: Request that we stop any sale or sharing covered by California law
+- **Right to Non-Discrimination**: We won't discriminate against you for exercising your rights
+
+## How to Exercise Your Rights
+
+To exercise any of your California privacy rights:
+
+1. **Email us**: support@itsdoneai.com
+2. **Use our Privacy Request Portal**: [Submit a Privacy Request](/privacy-request) and choose the opt-out request type if applicable
+3. **Include**: Your full name, email address, and specific right you wish to exercise
+
+We will respond within 45 days (with possible 45-day extension if needed).
+
+## Verification Process
+
+To protect your privacy, we will verify your identity before processing requests:
+
+- **Account holders**: Sign in to your account to make requests
+- **Non-account holders**: We may request additional identifying information
+- **Authorized agents**: Must provide proof of authorization and identity verification
+
+## Questions?
+
+If you have questions about our data practices or this notice:
+
+- **Email**: support@itsdoneai.com
+- **Privacy Policy**: [Read our full Privacy Policy](/privacy)
+- **Opt-Out Request**: [Submit a Do Not Sell or Share request](/privacy-request)
+
+## Updates
+
+We will update this page if our practices change. Check the "Effective Date" above for the latest version.
+
+---
+
+*DoneAI is committed to protecting your privacy and being transparent about our data practices.*
+```
+
+## 4. Authorized Agent Process Page
+
+Live asset:
+- `/AuthorizedAgent.md`
+
+Primary source:
+- `public/AuthorizedAgent.md`
+
+Screenshot:
+- `./screenshots/authorized-agent-content-focused.png`
+
+![Authorized agent process page](./screenshots/authorized-agent-content-focused.png)
+
+Text under review:
+
+```md
+# Authorized Agent Process - CCPA
+
+**Effective Date:** August 26, 2025
+
+## Making CCPA Requests Through an Authorized Agent
+
+Under the California Consumer Privacy Act (CCPA), California residents can designate an authorized agent to make privacy requests on their behalf. This page explains the process and requirements.
+
+## What is an Authorized Agent?
+
+An authorized agent is a natural person or business entity registered with the California Secretary of State that a consumer has authorized to act on their behalf to submit requests regarding their personal information.
+
+## Types of Authorized Agents
+
+### **1. Business Entity Agents**
+- Must be registered with the California Secretary of State
+- Must be authorized by the consumer in writing
+- Must verify their registration and authorization
+
+### **2. Natural Person Agents**
+- Can be any individual (family member, friend, attorney, etc.)
+- Must have written permission from the consumer
+- Must verify their identity and authorization
+
+### **3. Power of Attorney Agents**
+- Individuals acting under a valid power of attorney
+- Must provide proof of the power of attorney document
+
+## Required Documentation
+
+When submitting a request as an authorized agent, you must provide:
+
+### **For Business Entity Agents:**
+1. **Proof of registration** with California Secretary of State
+2. **Written authorization** from the consumer (signed document)
+3. **Consumer's identity verification** information
+4. **Agent's contact information** and business details
+
+### **For Natural Person Agents:**
+1. **Written authorization** from the consumer (signed and dated)
+2. **Your identity verification** (government-issued ID)
+3. **Consumer's identity verification** information
+4. **Your relationship** to the consumer (optional but helpful)
+
+### **For Power of Attorney:**
+1. **Valid power of attorney document**
+2. **Your identity verification**
+3. **Consumer's identity verification** information
+
+## Submission Process
+
+### **Step 1: Gather Documentation**
+- Collect all required documents listed above
+- Ensure written authorization is signed and dated
+- Have consumer's identifying information ready
+
+### **Step 2: Submit Request**
+Choose one of these methods:
+
+**Email Method:**
+- Send to: support@itsdoneai.com
+- Subject: "CCPA Authorized Agent Request"
+- Include all documentation as attachments
+- Clearly state the type of request (know, delete, correct, etc.)
+
+**Online Form:**
+- Use our [CCPA Request Form](/ccpa-request.html)
+- Check "I am submitting this request as an authorized agent"
+- Follow up with required documentation via email
+
+### **Step 3: Verification Process**
+We will:
+1. **Acknowledge your request** within 10 business days
+2. **Review your documentation** for completeness
+3. **Contact you** if additional verification is needed
+4. **May contact the consumer directly** to confirm authorization
+5. **Process the request** once verification is complete
+
+## Timeline
+
+- **Acknowledgment**: Within 10 business days
+- **Verification**: Additional 10-15 business days for document review
+- **Response**: Within 45 days of initial request (possible 45-day extension)
+
+## Consumer Confirmation
+
+**Important**: We may need to contact the consumer directly to:
+- Confirm they authorized you to act on their behalf
+- Verify their identity independently
+- Clarify specific aspects of their request
+
+This is a standard security measure to protect consumer privacy.
+
+## Rejected Requests
+
+We may reject an authorized agent request if:
+- Documentation is incomplete or invalid
+- We cannot verify the agent's authority
+- We cannot verify the consumer's identity
+- The authorization appears fraudulent
+- Required signatures are missing or unclear
+
+If rejected, we will explain what additional documentation is needed.
+
+## Fees
+
+**No fees** are charged for authorized agent requests, except in cases where:
+- Requests are excessive or repetitive
+- Extensive manual search is required
+- We will notify you of any potential fees before processing
+
+## Privacy Protection
+
+All documentation you provide will be:
+- Used only for verification purposes
+- Stored securely and confidentially
+- Deleted after verification unless required for legal compliance
+- Protected under our Privacy Policy terms
+
+## Questions?
+
+If you have questions about the authorized agent process:
+
+- **Email**: support@itsdoneai.com (include "Authorized Agent Question" in subject)
+- **Privacy Policy**: [Read our full Privacy Policy](/PrivacyPolicy.md)
+- **CCPA Request Form**: [Submit a request](/ccpa-request.html)
+
+## Legal Rights
+
+Both agents and consumers retain all rights under CCPA, including:
+- Right to appeal request denials
+- Right to file complaints with California Attorney General
+- Right to non-discrimination for exercising privacy rights
+
+---
+
+*This process is designed to protect consumer privacy while enabling legitimate authorized agents to assist with CCPA requests.*
+```
+
+## 5. CCPA Consumer Rights Request Form
+
+Live asset:
+- `/ccpa-request.html`
+
+Primary source:
+- `public/ccpa-request.html`
+
+Screenshot:
+- `./screenshots/ccpa-request-content-focused.png`
+
+![CCPA request form](./screenshots/ccpa-request-content-focused.png)
+
+Text under review:
+
+```text
+Title:
+CCPA Consumer Rights Request Form
+
+Top rights disclosure:
+Your Privacy Rights: Under the California Consumer Privacy Act (CCPA), you have the right to know what personal information we collect, request deletion of your information, correct inaccurate data, and exercise these rights without discrimination.
+
+Form labels and options:
+- Full Name *
+- Email Address *
+- Type of Request *
+- Select a request type...
+- Right to Know - What personal information you have about me
+- Right to Delete - Delete my personal information
+- Right to Correct - Correct inaccurate information
+- Opt-Out of Sale - Do not sell my personal information
+- Other - Please specify in description
+- Do you have a DoneAI account?
+- Select...
+- Yes, I have a DoneAI account
+- No, I don't have an account
+- I'm not sure
+- Request Description
+- Please provide any additional details about your request, including specific information you want to know about, delete, or correct.
+- I am submitting this request as an authorized agent on behalf of another person
+- I understand that DoneAI will need to verify my identity before processing this request, and I consent to provide additional verification information if needed.
+- Submit CCPA Request
+
+Post-form disclosure:
+What Happens Next?
+- We will acknowledge your request within 10 business days
+- We may contact you for identity verification
+- We will respond to your request within 45 days (with possible 45-day extension)
+- There is no fee for most requests
+
+Alternative Contact Methods:
+- Email: support@itsdoneai.com
+- Include "CCPA Request" in your email subject line
+
+Footer links:
+- Read our full Privacy Policy
+- Do Not Sell or Share My Personal Information
+```
+
+## Notes
+
+- This packet intentionally excludes the full Terms of Service and Privacy Policy.
+- The short-form acceptance notice is duplicated across multiple surfaces but is a single approved legal chunk.
+- This packet reflects the English legal copy currently in use on the live website surfaces under review.

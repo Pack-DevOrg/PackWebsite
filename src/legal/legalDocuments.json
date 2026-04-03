@@ -1,0 +1,93 @@
+{
+  "defaultLocale": "en",
+  "overrideEnvVar": "DONEAI_LEGAL_OVERRIDE",
+  "documents": [
+    {
+      "id": "privacy-policy",
+      "locale": "en",
+      "title": "Privacy Policy",
+      "translationNamespace": "legal.privacyPolicy",
+      "publicPath": "/PrivacyPolicy.md",
+      "sourceFile": "public/PrivacyPolicy.md",
+      "fallbackExportName": "PRIVACY_POLICY_FALLBACK",
+      "lock": {
+        "mode": "hard",
+        "reviewed": true,
+        "reviewedAt": "2026-04-03",
+        "reviewedSha256": "56e2eb50930ecce71d192f5d7f1ee1d64b3f0086637a90477c05e613f680643d"
+      }
+    },
+    {
+      "id": "terms-of-service",
+      "locale": "en",
+      "title": "Terms of Service",
+      "translationNamespace": "legal.termsOfService",
+      "publicPath": "/TermsOfService.md",
+      "sourceFile": "public/TermsOfService.md",
+      "fallbackExportName": "TERMS_OF_SERVICE_FALLBACK",
+      "lock": {
+        "mode": "hard",
+        "reviewed": true,
+        "reviewedAt": "2026-04-03",
+        "reviewedSha256": "528433b05b259f83c24ca13dbf61e1c81918d4434e76921b8f43c2fb4544a92b"
+      }
+    },
+    {
+      "id": "do-not-sell",
+      "locale": "en",
+      "title": "Do Not Sell or Share My Personal Information",
+      "translationNamespace": "legal.doNotSell",
+      "publicPath": "/DoNotSell.md",
+      "sourceFile": "public/DoNotSell.md",
+      "fallbackExportName": "DO_NOT_SELL_FALLBACK",
+      "lock": {
+        "mode": "hard",
+        "reviewed": true,
+        "reviewedAt": "2026-04-03",
+        "reviewedSha256": "d5d9ecba63ca92139168ef2ac5fd3b8987fbd7510ba97c63d7474d675f6f50c4"
+      }
+    }
+  ],
+  "auxiliaryFiles": [
+    {
+      "id": "legal-fallbacks",
+      "sourceFile": "src/content/legalFallbacks.ts",
+      "lock": {
+        "mode": "hard",
+        "reviewed": true,
+        "reviewedAt": "2026-04-03",
+        "reviewedSha256": "d0cc2019ff67329b935adb38bb629825170510c219d6d7455a8c1dbac56277cb"
+      }
+    },
+    {
+      "id": "legal-ui-copy",
+      "sourceFile": "src/legal/legalUiCopy.json",
+      "lock": {
+        "mode": "hard",
+        "reviewed": true,
+        "reviewedAt": "2026-04-03",
+        "reviewedSha256": "ebff6273cd9ff98212983290afb586f71f7ef07613dfe387c25c27178d2280fb"
+      }
+    },
+    {
+      "id": "authorized-agent-process",
+      "sourceFile": "public/AuthorizedAgent.md",
+      "lock": {
+        "mode": "hard",
+        "reviewed": true,
+        "reviewedAt": "2026-04-03",
+        "reviewedSha256": "3527aae0fa38f09a22fc4c1f796514c4fd9a7e950c482222971635c100cc9b82"
+      }
+    },
+    {
+      "id": "ccpa-request-page",
+      "sourceFile": "public/ccpa-request.html",
+      "lock": {
+        "mode": "hard",
+        "reviewed": true,
+        "reviewedAt": "2026-04-03",
+        "reviewedSha256": "01fec0444ac589694da1638a6faece0a097c88d26aafe5802d3aaa15e83a98a7"
+      }
+    }
+  ]
+}

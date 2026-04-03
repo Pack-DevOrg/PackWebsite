@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+allow_gh_pages_push="${DONEAI_ALLOW_GH_PAGES_PUSH:-0}"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "${remote_ref}" = "refs/heads/gh-pages" ] && [ "${allow_gh_pages_push}" != "1" ]; then
+    echo "[pre-push] Direct pushes to gh-pages are blocked in this checkout."
+    echo "[pre-push] Use npm run deploy from master after legal:check passes."
+    exit 1
+  fi
+done
+
+exit 0

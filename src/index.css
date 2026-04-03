@@ -1,0 +1,46 @@
+/* Global CSS Variables */
+
+:root {
+  --color-bg-primary: #0f0d0b;
+  --color-bg-secondary: #171310;
+  --color-text-primary: #f7f0e3;
+  --color-text-secondary: rgba(247, 240, 227, 0.72);
+  --color-accent: #f3d27a;
+  --color-secondary-accent: #c46c4d;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  
+  /* Typography */
+  --font-size-small: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  
+  /* Other */
+  --max-width: 1200px;
+  --border-radius: 1.25rem;
+  --transition-default: 0.3s ease;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: 'Inter Variable', 'Inter', 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

@@ -1,0 +1,61 @@
+{
+  "defaultLocale": "en",
+  "entries": [
+    {
+      "id": "consent-banner",
+      "locale": "en",
+      "title": "We Value Your Privacy",
+      "gpcNotice": "Global Privacy Control is enabled in your browser. We’ve automatically limited analytics and marketing cookies to honour this preference.",
+      "bannerPart1": "We use cookies and similar technologies to enhance your experience, analyze site usage, and personalize content. By clicking \"Accept All\", you consent to analytics and marketing cookies. You can customize your preferences or learn more in our",
+      "bannerPart2": "and",
+      "settingsTitle": "Cookie Preferences",
+      "settingsGpcNotice": "Global Privacy Control is active. Analytics and marketing cookies remain disabled while this signal is present.",
+      "functionalName": "Functional Cookies",
+      "functionalDescription": "Essential for the website to function properly. These cookies remember your preferences and help provide core functionality.",
+      "analyticsName": "Analytics Cookies",
+      "analyticsDescription": "Help us understand how visitors interact with our website by collecting and reporting information anonymously through Google Analytics.",
+      "marketingName": "Marketing Cookies",
+      "marketingDescription": "Used to track visitors across websites and show relevant advertisements. Includes Facebook Pixel for ad optimization and retargeting.",
+      "cancel": "Cancel",
+      "savePreferences": "Save Preferences"
+    },
+    {
+      "id": "consent-banner",
+      "locale": "es",
+      "title": "Valoramos tu privacidad",
+      "gpcNotice": "Global Privacy Control está activado en tu navegador. Limitamos automáticamente las cookies de analítica y marketing para respetar esta preferencia.",
+      "bannerPart1": "Usamos cookies y tecnologías similares para mejorar tu experiencia, analizar el uso del sitio y personalizar el contenido. Al hacer clic en \"Aceptar todo\", consientes el uso de cookies de analítica y marketing. Puedes personalizar tus preferencias o leer más en nuestros",
+      "bannerPart2": "y nuestra",
+      "settingsTitle": "Preferencias de cookies",
+      "settingsGpcNotice": "Global Privacy Control está activo. Las cookies de analítica y marketing permanecen desactivadas mientras esta señal esté presente.",
+      "functionalName": "Cookies funcionales",
+      "functionalDescription": "Esenciales para que el sitio funcione correctamente. Estas cookies recuerdan tus preferencias y ayudan a ofrecer la funcionalidad principal.",
+      "analyticsName": "Cookies de analítica",
+      "analyticsDescription": "Nos ayudan a entender cómo interactúan los visitantes con nuestro sitio al recopilar y reportar información de forma anónima mediante Google Analytics.",
+      "marketingName": "Cookies de marketing",
+      "marketingDescription": "Se usan para rastrear visitantes entre sitios web y mostrar anuncios relevantes. Incluyen Facebook Pixel para optimización publicitaria y retargeting.",
+      "cancel": "Cancelar",
+      "savePreferences": "Guardar preferencias"
+    },
+    {
+      "id": "acceptance-notice",
+      "locale": "en",
+      "prefix": "By continuing, you agree to our",
+      "termsLabel": "Terms of Service",
+      "middle": "and acknowledge our",
+      "privacyLabel": "Privacy Policy",
+      "suffix": "See",
+      "privacyChoicesLabel": "Your Privacy Choices"
+    },
+    {
+      "id": "acceptance-notice",
+      "locale": "es",
+      "prefix": "Al continuar, aceptas nuestros",
+      "termsLabel": "Términos del servicio",
+      "middle": "y reconoces nuestra",
+      "privacyLabel": "Política de privacidad",
+      "suffix": "Consulta",
+      "privacyChoicesLabel": "Tus opciones de privacidad"
+    }
+  ]
+}

@@ -150,11 +150,11 @@ const Footer = () => {
 
           <Meta>
             <SocialLinks>
-              <SocialLink href="https://x.com/itsdoneai" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <SocialLink href="https://x.com/trypackai" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
                 {React.createElement(Twitter, { size: 18 })}
               </SocialLink>
               <SocialLink
-                href="https://www.instagram.com/itsdoneai/"
+                href="https://www.instagram.com/trypackai/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"

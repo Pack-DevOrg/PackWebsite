@@ -1091,7 +1091,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
             </SuccessCopy>
             <ShareContainer>
               <a
-                href="https://twitter.com/intent/tweet?text=I%20just%20joined%20the%20waitlist%20for%20Route%2C%20the%20future%20of%20travel%20planning!%20Check%20it%20out%20at%20https://trypackai.com%20%40itsdoneai"
+                href="https://twitter.com/intent/tweet?text=I%20just%20joined%20the%20waitlist%20for%20Route%2C%20the%20future%20of%20travel%20planning!%20Check%20it%20out%20at%20https://trypackai.com%20%40trypackai"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

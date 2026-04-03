@@ -37,6 +37,15 @@ type BrandAsset = {
   pathLabel: string;
 };
 
+type OgConcept = {
+  slug: string;
+  title: string;
+  description: string;
+  src: string;
+  prompt: string;
+  verdict: "promising" | "mixed";
+};
+
 const labVideos: LabVideo[] = [
   {
     slug: "book-cabo-dachshund",
@@ -215,6 +224,59 @@ const brandAssets: BrandAsset[] = [
   },
 ];
 
+const ogConcepts: OgConcept[] = [
+  {
+    slug: "cinematic-trip-thread",
+    title: "Cinematic Trip Thread",
+    description:
+      "Strongest semantic hit so far. It lands the before-to-after idea of scattered travel context resolving into one clean trip object, though the model still snuck text into the card.",
+    src: "/images/og-concepts/cinematic-trip-thread.png",
+    verdict: "promising",
+    prompt:
+      "Open Graph hero image for Pack, a premium AI travel planner. Cinematic widescreen composition, dark obsidian background, warm amber and coral light accents, elegant editorial feel. A flowing thread of travel context moves left to right: subtle email confirmation fragments, calendar timing markers, route arcs, hotel and flight cues, all resolving into one clean luminous trip card in the center. Feels like chaos becoming clarity. Minimal, luxurious, intelligent. No words.",
+  },
+  {
+    slug: "agentic-concierge-desk",
+    title: "Agentic Concierge Desk",
+    description:
+      "Best tactile-material direction. The desk, passport, and boarding-pass language feel premium, but it also produced fake interface copy that needs to be suppressed or painted over in a second pass.",
+    src: "/images/og-concepts/agentic-concierge-desk.png",
+    verdict: "mixed",
+    prompt:
+      "Premium social card for Pack, an AI travel assistant. Surreal but grounded travel-concierge scene at night: polished black desk, glowing route lines, boarding-pass textures, hotel keycard materials, passport-edge details, and a single composed itinerary object illuminated like the answer. Sophisticated luxury editorial photography, high contrast, warm gold-to-coral palette, black negative space. No humans, no visible logos, no text.",
+  },
+  {
+    slug: "prompt-in-trip-out",
+    title: "Prompt In, Trip Out",
+    description:
+      "Readable concept architecture for conversation turning into itinerary structure. It proves the story, but the model leaned too hard into synthetic labels and explainer graphics.",
+    src: "/images/og-concepts/prompt-in-trip-out.png",
+    verdict: "mixed",
+    prompt:
+      "Widescreen conceptual artwork for Pack, an AI travel planner. Left side begins as soft abstract conversational energy and fragmented planning signals; center transforms into structured travel geometry; right side resolves into a beautiful organized trip composition with route, stay, timing, and movement all harmonized. Futuristic but elegant, cinematic depth, black background, saffron amber coral glow, premium brand image. No text.",
+  },
+  {
+    slug: "luxury-motion-poster",
+    title: "Luxury Motion Poster",
+    description:
+      "Most poster-ready silhouette and probably the cleanest route for a second-pass hero. The form language is right, but the model still dropped literal Pack text into the lower-right.",
+    src: "/images/og-concepts/luxury-motion-poster.png",
+    verdict: "promising",
+    prompt:
+      "High-end brand poster for Pack travel AI, designed as an Open Graph image. Minimal dark luxury poster with strong composition, oversized abstract orb and route curve, subtle references to flights, hotels, and timing embedded in the shapes, bold but restrained use of amber, honey, and coral gradients. Feels like the future of travel, decisive, sharp, fashionable, not corporate SaaS, no words.",
+  },
+  {
+    slug: "journey-without-tab-chaos",
+    title: "Journey Without Tab Chaos",
+    description:
+      "Interesting density study for fragmented inputs collapsing into one travel ribbon. The abstraction works, but it still reads more like a data stream than a finished brand card.",
+    src: "/images/og-concepts/journey-without-tab-chaos.png",
+    verdict: "mixed",
+    prompt:
+      "Brand image for Pack, AI travel planner that replaces many tabs with one clear plan. Visually represent many fragmented travel inputs dissolving into one elegant journey ribbon across a wide frame. Fragments feel like booking tabs, confirmations, dates, and maps, but abstracted and beautiful, not literal browser windows. Premium cinematic graphic design, black field, warm gold and coral highlights, contemporary editorial advertising style, highly composed, no text, no obvious UI.",
+  },
+];
+
 const Page = styled.section`
   min-height: 100vh;
   padding: clamp(1.25rem, 3vw, 2.5rem) 0 clamp(3rem, 6vw, 5rem);
@@ -356,6 +418,24 @@ const AssetCard = styled.article`
 
   @media (max-width: 900px) {
     grid-column: span 1;
+  }
+`;
+
+const ConceptCard = styled.article`
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 1rem;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 24px;
+  padding: 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -538,6 +618,28 @@ const PathLabel = styled.code`
   line-height: 1.5;
 `;
 
+const SectionHeading = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+`;
+
+const SectionTitle = styled.h2`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+  letter-spacing: -0.04em;
+`;
+
+const SectionDescription = styled.p`
+  margin: 0;
+  max-width: 62rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.96rem;
+  line-height: 1.7;
+`;
+
 const buildVideoTitle = (title: string) => `Pack Labs | ${title}`;
 
 const labsContent = {
@@ -549,11 +651,6 @@ const labsContent = {
     openLocalFile: "Open local file",
     openPreview: "Open preview",
     downloadLocalCopy: "Download local copy",
-    crumbs: {
-      labs: "Labs",
-      videos: "Videos",
-      comparisons: "Comparisons",
-    },
     home: {
       title: "A directory for live activities, videos, and comparisons.",
       description:
@@ -610,6 +707,10 @@ const labsContent = {
       description:
         "Use this page to inspect the live Pack mark across the website and app: logos, favicons, share cards, app icons, splash art, and Android adaptive assets.",
       assets: brandAssets,
+      conceptTitle: "Generated OG concept variants.",
+      conceptDescription:
+        "These are first-pass Imagen renders generated through the same SSM-backed Vertex credential flow used in PackAds. The goal here is direction-finding, not final polish. Two are worth refining, and the rest are useful for learning what to suppress.",
+      concepts: ogConcepts,
     },
     crumbs: {
       labs: "Labs",
@@ -626,11 +727,6 @@ const labsContent = {
     openLocalFile: "Abrir archivo local",
     openPreview: "Abrir vista previa",
     downloadLocalCopy: "Descargar copia local",
-    crumbs: {
-      labs: "Labs",
-      videos: "Videos",
-      comparisons: "Comparaciones",
-    },
     home: {
       title: "Un directorio para live activities, videos y comparaciones.",
       description:
@@ -722,6 +818,10 @@ const labsContent = {
       description:
         "Usa esta página para inspeccionar la marca Pack en la web y la app: logos, favicons, tarjetas de compartir, iconos de app, splash art y assets adaptativos de Android.",
       assets: brandAssets,
+      conceptTitle: "Variantes generadas para la OG card.",
+      conceptDescription:
+        "Estos son renders iniciales de Imagen generados con el mismo flujo de credenciales Vertex respaldado por SSM que usa PackAds. Sirven para elegir dirección, no como arte final. Dos merecen una segunda pasada y el resto ayudan a ver qué conviene suprimir.",
+      concepts: ogConcepts,
     },
     crumbs: {
       labs: "Labs",
@@ -925,6 +1025,25 @@ export const LabsBrandAssetsPage: React.FC = () => {
               <PathLabel>{asset.pathLabel}</PathLabel>
             </Meta>
           </AssetCard>
+        ))}
+      </Grid>
+      <SectionHeading>
+        <SectionTitle>{localizedContent.brandAssets.conceptTitle}</SectionTitle>
+        <SectionDescription>{localizedContent.brandAssets.conceptDescription}</SectionDescription>
+      </SectionHeading>
+      <Grid>
+        {localizedContent.brandAssets.concepts.map((concept) => (
+          <ConceptCard key={concept.slug}>
+            <AssetPreview>
+              <AssetImage src={concept.src} alt={concept.title} loading="lazy" />
+            </AssetPreview>
+            <Meta>
+              <Kicker>{concept.verdict === "promising" ? "Promising" : "Mixed result"}</Kicker>
+              <CardTitle>{concept.title}</CardTitle>
+              <CardBody>{concept.description}</CardBody>
+              <PathLabel>{concept.prompt}</PathLabel>
+            </Meta>
+          </ConceptCard>
         ))}
       </Grid>
     </LabsShell>

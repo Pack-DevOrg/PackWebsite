@@ -1,6 +1,6 @@
 {
-  "name": "DoneAI - Your Travel AI",
-  "short_name": "DoneAI",
+  "name": "Pack - Your Travel AI",
+  "short_name": "Pack",
   "description": "Stop losing travel confirmations & making booking mistakes. AI-powered travel organization and stress-free planning.",
   "start_url": "/",
   "display": "standalone",
@@ -39,7 +39,7 @@
   "categories": ["travel", "productivity", "lifestyle"],
   "lang": "en-US",
   "scope": "/",
-  "id": "doneai-travel-app",
+  "id": "pack-travel-app",
   "prefer_related_applications": false,
   "screenshots": [
     {
@@ -47,14 +47,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "DoneAI Home Screen"
+      "label": "Pack Home Screen"
     }
   ],
   "shortcuts": [
     {
       "name": "Travel planning? Done",
       "short_name": "Waitlist",
-      "description": "Join the DoneAI waitlist",
+      "description": "Join the Pack waitlist",
       "url": "/#/",
       "icons": [
         {

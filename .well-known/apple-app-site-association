@@ -1,0 +1,25 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["GW8YNJQZCK.com.doneai.app"],
+        "components": [
+          {
+            "/": "/share/*",
+            "comment": "Handle all shared travel plan links"
+          },
+          {
+            "/": "/trip/*",
+            "comment": "Handle linked trip invite links"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["GW8YNJQZCK.com.doneai.app"]
+  },
+  "appclips": {
+    "apps": []
+  }
+}

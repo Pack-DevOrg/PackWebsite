@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack - Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 500px;
+            padding: 2rem;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f92f60;
+            margin-bottom: 2rem;
+        }
+        
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #f92f60;
+        }
+        
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(135deg, #f92f60 0%, #e91e63 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 1rem;
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249, 47, 96, 0.4);
+        }
+        
+        .home-btn {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid #444444;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .home-btn:hover {
+            border-color: #f92f60;
+            color: #f92f60;
+        }
+        
+        .status {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        .online { background: rgba(76, 175, 80, 0.2); }
+        .offline { background: rgba(244, 67, 54, 0.2); }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">DoneAI</div>
+        
+        <div class="offline-icon pulse">📡</div>
+        
+        <h1>You're Offline</h1>
+        
+        <p>
+            Don't worry! We've cached some content for you to browse offline. 
+            Check your connection and try again when you're back online.
+        </p>
+        
+        <div>
+            <button class="retry-btn" onclick="retryConnection()">
+                Try Again
+            </button>
+            <a href="/" class="home-btn">
+                Go Home
+            </a>
+        </div>
+        
+        <div id="connectionStatus" class="status offline">
+            Connection Status: Offline
+        </div>
+    </div>
+
+    <script>
+        // Monitor connection status
+        function updateConnectionStatus() {
+            const status = document.getElementById('connectionStatus');
+            const icon = document.querySelector('.offline-icon');
+            
+            if (navigator.onLine) {
+                status.textContent = 'Connection Status: Online';
+                status.className = 'status online';
+                icon.textContent = '✅';
+                icon.classList.remove('pulse');
+            } else {
+                status.textContent = 'Connection Status: Offline';
+                status.className = 'status offline';
+                icon.textContent = '📡';
+                icon.classList.add('pulse');
+            }
+        }
+        
+        function retryConnection() {
+            if (navigator.onLine) {
+                // Try to navigate back to the original page
+                if (document.referrer) {
+                    window.location.href = document.referrer;
+                } else {
+                    window.location.href = '/';
+                }
+            } else {
+                // Show user they're still offline
+                const btn = document.querySelector('.retry-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Still Offline...';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        // Listen for connection changes
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        
+        // Initial status check
+        updateConnectionStatus();
+        
+        // Auto-retry when connection is restored
+        window.addEventListener('online', () => {
+            setTimeout(() => {
+                if (navigator.onLine) {
+                    retryConnection();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

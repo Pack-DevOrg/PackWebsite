@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- Minimal Open Graph tags so crawlers see a preview image on /share/* -->
+    <title>Pack - Shared Travel Plan</title>
+    <meta name="description" content="View this shared travel plan on Pack — your AI travel assistant." />
+    <meta name="theme-color" content="#2a2a2a" />
+    <link rel="canonical" href="https://trypackai.com/share" />
+
+    <!-- Favicons / app icons (absolute paths so they work for deep links like /share/:id) -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="1024x1024" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pack - Shared Travel Plan" />
+    <meta property="og:description" content="View this shared travel plan on Pack — your AI travel assistant." />
+    <meta property="og:url" content="https://trypackai.com/share" />
+    <meta property="og:image" content="https://trypackai.com/images/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:secure_url" content="https://trypackai.com/images/og-image.png" />
+    <meta property="og:site_name" content="Pack" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pack - Shared Travel Plan" />
+    <meta name="twitter:description" content="View this shared travel plan on Pack — your AI travel assistant." />
+    <meta name="twitter:url" content="https://trypackai.com/share" />
+    <meta name="twitter:image" content="https://trypackai.com/images/og-image.png" />
+
+    <script type="text/javascript">
+      // Route app paths to the app origin before falling back to the SPA redirect.
+      (function () {
+        var l = window.location;
+        if (/^\/app(\/|$)/.test(l.pathname)) {
+          var appUrl = l.protocol + '//' + 'app.trypackai.com' + l.pathname + l.search + l.hash;
+          window.location.replace(appUrl);
+          return;
+        }
+        var redirectedPath = (l.pathname + l.search)
+          .replace(/^\//, '')
+          .replace(/&/g, '~and~');
+        var newUrl = l.protocol + '//' + l.host + '/?/' + redirectedPath + l.hash;
+        window.location.replace(newUrl);
+      })();
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=/?/" />
+    </noscript>
+  </head>
+  <body></body>
+</html>

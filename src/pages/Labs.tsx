@@ -54,7 +54,7 @@ const labVideos: LabVideo[] = [
       "First-person dachshund booking concept with a real Pack booking visual and a readable Book Cabo query.",
     tags: ["Cabo", "POV", "Dachshund", "Real app base"],
     localPath:
-      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/PackAll/RouteAds/demo_project/exports/reels_15s_book_cabo_dachshund_v1/ad_001.mp4",
+      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/reels_15s_book_cabo_dachshund_v1/ad_001.mp4",
   },
   {
     slug: "book-japan-pov-chaos",
@@ -63,7 +63,7 @@ const labVideos: LabVideo[] = [
       "Earlier POV proof built through the same template pipeline, centered on Book Japan with a cute-hand chaos setup.",
     tags: ["Japan", "POV", "Cute hand", "Chaos"],
     localPath:
-      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/PackAll/RouteAds/demo_project/exports/reels_15s_book_japan_pov_chaos_v1/ad_001.mp4",
+      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/reels_15s_book_japan_pov_chaos_v1/ad_001.mp4",
   },
   {
     slug: "dog-book-japan-poc",
@@ -72,7 +72,25 @@ const labVideos: LabVideo[] = [
       "Initial proof-of-concept export used to validate the ad render path before the reusable labs pipeline was added.",
     tags: ["POC", "Japan", "Dog paw"],
     localPath:
-      "/Users/noahmitsuhashi/Desktop/Projects/windsurf/PackAll/RouteAds/demo_project/exports/poc_dog_book_japan.mp4",
+      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc_dog_book_japan.mp4",
+  },
+  {
+    slug: "overlay-dynamic-screen-poc",
+    title: "Overlay Dynamic Screen POC",
+    description:
+      "Perspective-warp proof showing a generated app flow composited onto the existing POV phone plate.",
+    tags: ["POC", "Overlay", "Dynamic screen", "Phone plate"],
+    localPath:
+      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/poc_overlay_dynamic_screen.mp4",
+  },
+  {
+    slug: "overlay-real-packdev-splash-poc",
+    title: "Overlay Real PackDev Splash POC",
+    description:
+      "Perspective-warp proof using a real PackDev simulator capture composited into the phone plate.",
+    tags: ["POC", "Overlay", "Real app asset", "PackDev"],
+    localPath:
+      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/poc_overlay_real_packdev_splash.mp4",
   },
 ];
 

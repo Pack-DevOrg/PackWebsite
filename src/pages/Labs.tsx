@@ -28,6 +28,15 @@ type LabSection = {
   kicker: string;
 };
 
+type BrandAsset = {
+  slug: string;
+  title: string;
+  description: string;
+  src: string;
+  kicker: string;
+  pathLabel: string;
+};
+
 const labVideos: LabVideo[] = [
   {
     slug: "book-cabo-dachshund",
@@ -79,6 +88,14 @@ const comparisonPairs: ComparisonPair[] = [
 
 const labSections: LabSection[] = [
   {
+    slug: "brand-assets",
+    title: "Brand Assets",
+    description:
+      "Review the current logos, icons, splash art, and share cards in one place.",
+    href: "/labs/brand-assets",
+    kicker: "Identity system",
+  },
+  {
     slug: "live-activities",
     title: "Live Activities",
     description:
@@ -111,6 +128,92 @@ const toFileUrl = (absolutePath: string): string =>
 
 const toViteFsUrl = (absolutePath: string): string =>
   `/@fs${encodeURI(absolutePath)}`;
+
+const packAppAssetRoot = "/Users/noahmitsuhashi/Code/PackAll/PackApp/src/assets/images";
+
+const brandAssets: BrandAsset[] = [
+  {
+    slug: "website-logo",
+    title: "Website Logo",
+    description:
+      "Used in the website shell, auth callback view, live-activity lab, and other Pack web chrome where the standalone mark appears on dark backgrounds.",
+    src: "/logo.png",
+    kicker: "Website",
+    pathLabel: "/public/logo.png",
+  },
+  {
+    slug: "website-favicon",
+    title: "Website Favicon",
+    description:
+      "Used for browser tabs, bookmark bars, and the small site icon surfaces that rely on the transparent favicon stack.",
+    src: "/favicon-32.png",
+    kicker: "Website",
+    pathLabel: "/public/favicon-32.png",
+  },
+  {
+    slug: "share-card",
+    title: "Shared Link Card",
+    description:
+      "Used by shared-trip and trip-invite previews in Messages, iMessage cards, and other social link previews that read Open Graph metadata.",
+    src: "/images/share-card.png",
+    kicker: "Website",
+    pathLabel: "/public/images/share-card.png",
+  },
+  {
+    slug: "website-og",
+    title: "Generic OG Card",
+    description:
+      "Used as the broader website social card for homepage-style previews and fallback web sharing outside the dedicated shared-trip flow.",
+    src: "/images/og-image.png",
+    kicker: "Website",
+    pathLabel: "/public/images/og-image.png",
+  },
+  {
+    slug: "app-logo",
+    title: "App Logo",
+    description:
+      "Used inside the mobile app UI and in live-activity/logo surfaces where a transparent Pack mark is needed instead of a full app icon.",
+    src: toViteFsUrl(`${packAppAssetRoot}/logo.png`),
+    kicker: "PackApp",
+    pathLabel: `${packAppAssetRoot}/logo.png`,
+  },
+  {
+    slug: "app-icon",
+    title: "App Icon",
+    description:
+      "Used for the production app icon pipeline: Expo config, iOS marketing icon generation, and the primary icon users see on their home screen.",
+    src: toViteFsUrl(`${packAppAssetRoot}/app-icon-1024.png`),
+    kicker: "PackApp",
+    pathLabel: `${packAppAssetRoot}/app-icon-1024.png`,
+  },
+  {
+    slug: "app-icon-dev",
+    title: "Dev App Icon",
+    description:
+      "Used for internal dev builds and the native PackDev target so test installs stay visually distinct from the production app.",
+    src: toViteFsUrl(`${packAppAssetRoot}/app-icon-1024-dev.png`),
+    kicker: "PackApp",
+    pathLabel: `${packAppAssetRoot}/app-icon-1024-dev.png`,
+  },
+  {
+    slug: "splash",
+    title: "Splash Art",
+    description:
+      "Used for the mobile launch splash screen and as the composition reference for the current shared-link card treatment.",
+    src: toViteFsUrl(`${packAppAssetRoot}/splash-new.png`),
+    kicker: "PackApp",
+    pathLabel: `${packAppAssetRoot}/splash-new.png`,
+  },
+  {
+    slug: "adaptive-icon",
+    title: "Android Adaptive Icon",
+    description:
+      "Used for Android launcher rendering on devices that support adaptive icons, where the icon is masked and composited by the OS.",
+    src: toViteFsUrl(`${packAppAssetRoot}/icon-android-adaptive.png`),
+    kicker: "PackApp",
+    pathLabel: `${packAppAssetRoot}/icon-android-adaptive.png`,
+  },
+];
 
 const Page = styled.section`
   min-height: 100vh;
@@ -236,6 +339,47 @@ const ComparisonCard = styled.article`
     linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
     rgba(15, 13, 11, 0.72);
   box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const AssetCard = styled.article`
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 24px;
+  padding: 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+
+  @media (max-width: 900px) {
+    grid-column: span 1;
+  }
+`;
+
+const AssetPreview = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 17rem;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background:
+    radial-gradient(circle at top, rgba(243, 210, 122, 0.12), transparent 26%),
+    linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(9, 7, 6, 1));
+  padding: 1.1rem;
+`;
+
+const AssetImage = styled.img`
+  display: block;
+  max-width: 100%;
+  max-height: 24rem;
+  object-fit: contain;
+  border-radius: 18px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
 `;
 
 const ComparisonGrid = styled.div`
@@ -416,6 +560,14 @@ const labsContent = {
         "Use labs as the internal review surface for creative output. Each section is separated so you can inspect surfaces, review exports, and compare variants without mixing contexts.",
       sections: [
         {
+          slug: "brand-assets",
+          title: "Brand Assets",
+          description:
+            "Review the current logos, icons, splash art, and share cards in one place.",
+          href: "/labs/brand-assets",
+          kicker: "Identity system",
+        },
+        {
           slug: "live-activities",
           title: "Live Activities",
           description:
@@ -453,6 +605,18 @@ const labsContent = {
         "Keep comparisons explicit. This section is for judging hooks, realism, motion, framing, and which version is closer to a scalable ad system.",
       pairs: comparisonPairs,
     },
+    brandAssets: {
+      title: "Brand assets in one review surface.",
+      description:
+        "Use this page to inspect the live Pack mark across the website and app: logos, favicons, share cards, app icons, splash art, and Android adaptive assets.",
+      assets: brandAssets,
+    },
+    crumbs: {
+      labs: "Labs",
+      videos: "Videos",
+      comparisons: "Comparisons",
+      brandAssets: "Brand assets",
+    },
   },
   es: {
     eyebrow: "Labs de Pack",
@@ -472,6 +636,14 @@ const labsContent = {
       description:
         "Usa labs como la superficie interna de revisión para el trabajo creativo. Cada sección está separada para que puedas inspeccionar superficies, revisar exports y comparar variantes sin mezclar contextos.",
       sections: [
+        {
+          slug: "brand-assets",
+          title: "Brand Assets",
+          description:
+            "Revisa en un solo lugar los logos, iconos, splash art y tarjetas de compartir actuales.",
+          href: "/labs/brand-assets",
+          kicker: "Sistema de identidad",
+        },
         {
           slug: "live-activities",
           title: "Live Activities",
@@ -544,6 +716,18 @@ const labsContent = {
             "Observa el salto entre la primera prueba de concepto y el render posterior impulsado por pipeline.",
         },
       ],
+    },
+    brandAssets: {
+      title: "Brand assets en una sola superficie de revisión.",
+      description:
+        "Usa esta página para inspeccionar la marca Pack en la web y la app: logos, favicons, tarjetas de compartir, iconos de app, splash art y assets adaptativos de Android.",
+      assets: brandAssets,
+    },
+    crumbs: {
+      labs: "Labs",
+      videos: "Videos",
+      comparisons: "Comparaciones",
+      brandAssets: "Brand assets",
     },
   },
 } as const;
@@ -708,6 +892,40 @@ export const LabsComparisonsPage: React.FC = () => {
             </ComparisonCard>
           );
         })}
+      </Grid>
+    </LabsShell>
+  );
+};
+
+export const LabsBrandAssetsPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+
+  return (
+    <LabsShell
+      title={localizedContent.brandAssets.title}
+      description={localizedContent.brandAssets.description}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
+        <BreadcrumbLink to={pathFor("/labs/brand-assets")}>
+          {localizedContent.crumbs.brandAssets}
+        </BreadcrumbLink>
+      </BreadcrumbRow>
+      <Grid>
+        {localizedContent.brandAssets.assets.map((asset) => (
+          <AssetCard key={asset.slug}>
+            <AssetPreview>
+              <AssetImage src={asset.src} alt={asset.title} loading="lazy" />
+            </AssetPreview>
+            <Meta>
+              <Kicker>{asset.kicker}</Kicker>
+              <CardTitle>{asset.title}</CardTitle>
+              <CardBody>{asset.description}</CardBody>
+              <PathLabel>{asset.pathLabel}</PathLabel>
+            </Meta>
+          </AssetCard>
+        ))}
       </Grid>
     </LabsShell>
   );

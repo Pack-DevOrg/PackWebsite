@@ -73,7 +73,7 @@ const EnhancedTripsPage = lazyImportWithRetry(async () => {
   return { default: module.EnhancedTripsPage };
 }, "enhanced-trips-page");
 
-const labsEnabled = __DEV__;
+const labsEnabled = import.meta.env.DEV || __DEV__;
 const LabsPage = labsEnabled
   ? React.lazy(() => import("../pages/Labs"))
   : null;
@@ -87,6 +87,12 @@ const LabsComparisonsPage = labsEnabled
   ? React.lazy(async () => {
       const module = await import("../pages/Labs");
       return { default: module.LabsComparisonsPage };
+    })
+  : null;
+const LabsBrandAssetsPage = labsEnabled
+  ? React.lazy(async () => {
+      const module = await import("../pages/Labs");
+      return { default: module.LabsBrandAssetsPage };
     })
   : null;
 const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
@@ -533,6 +539,18 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
         ) : null}
+        {LabsBrandAssetsPage ? (
+          <Route
+            path="/labs/brand-assets"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <LabsBrandAssetsPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ) : null}
         {LabsPage ? (
           <Route
             path="/labs/live-activities"
@@ -763,6 +781,9 @@ const NonHomeRoutes: React.FC = () => {
           ) : null}
           {LabsComparisonsPage ? (
             <Route path="labs/comparisons" element={<Layout><Suspense fallback={null}><LabsComparisonsPage /></Suspense></Layout>} />
+          ) : null}
+          {LabsBrandAssetsPage ? (
+            <Route path="labs/brand-assets" element={<Layout><Suspense fallback={null}><LabsBrandAssetsPage /></Suspense></Layout>} />
           ) : null}
           {LabsPage ? (
             <Route path="labs/live-activities" element={<Layout><Suspense fallback={null}><LiveActivityLab /></Suspense></Layout>} />

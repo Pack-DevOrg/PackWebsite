@@ -89,7 +89,7 @@ Third-Party Services and Links
 The Service may display, include, or contain links to or integrations with third-party websites, services, content, or data, including airport pages, airlines, hotels, identity providers, analytics providers, advertising providers, security services, payment processors, or travel suppliers (“Third Party Materials”). You acknowledge and agree that DoneAI is not responsible for examining or evaluating the content, accuracy, completeness, availability, timeliness, validity, copyright compliance, legality, decency, quality or any other aspect of such Third Party Materials or websites. We do not warrant or endorse and do not assume and will not have any liability or responsibility to you or any other person for any third-party services, Third Party Materials or third-party websites, or for any other materials, products, or services of third parties. Third Party Materials and links to other websites are provided solely as a convenience to you.
 
 Privacy
-Our Privacy Policy explains how we collect, use, and disclose personal information in connection with the Service. For an explanation of our privacy practices, please visit our Privacy Policy located at https://trypackai.com/privacy.
+Our Privacy Policy explains how we collect, use, and disclose personal information in connection with the Service. For an explanation of our privacy practices, please visit our Privacy Policy located at https://itsdoneai.com/privacy.
 
 AI Outputs Disclaimer
 The Service may generate summaries, recommendations, reminders, or other AI-assisted content. AI outputs may be incomplete, inaccurate, outdated, biased, or inappropriate, and may not be unique to you. You are responsible for reviewing and independently verifying important information before relying on it, especially for travel timing, bookings, legal, medical, immigration, financial, or other high-stakes matters. DoneAI does not provide professional advice and does not guarantee any specific result from the Service or its outputs.
@@ -140,3 +140,4 @@ Contact
 If you have questions about these Terms, contact us at:
 Email: support@itsdoneai.com
 Mailing Address: DoneAI, 584 Castro St, Suite #4036, San Francisco, CA 94114
+

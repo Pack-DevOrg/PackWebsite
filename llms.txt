@@ -1,10 +1,10 @@
-# Pack
+# DoneAI
 
-> Your new favorite Travel AI. Pack is an intelligent travel planning assistant that automatically finds and organizes your travel confirmations from email, creates smart trip itineraries, and enables easy booking of flights and hotels with one tap. Built with React Native mobile app and serverless backend infrastructure for seamless travel management.
+> Your new favorite Travel AI. DoneAI is an intelligent travel planning assistant that automatically finds and organizes your travel confirmations from email, creates smart trip itineraries, and enables easy booking of flights and hotels with one tap. Built with React Native mobile app and serverless backend infrastructure for seamless travel management.
 
 ## Market Position & Value Proposition
 
-Pack addresses the global travel industry's core pain point: fragmented booking management and inefficient trip planning. Unlike traditional travel apps that require manual input, Pack uses advanced email parsing AI to automatically discover and organize your existing travel confirmations, then layers intelligent planning and one-tap booking capabilities on top.
+DoneAI addresses the global travel industry's core pain point: fragmented booking management and inefficient trip planning. Unlike traditional travel apps that require manual input, DoneAI uses advanced email parsing AI to automatically discover and organize your existing travel confirmations, then layers intelligent planning and one-tap booking capabilities on top.
 
 **Key Differentiators:**
 - **Zero Manual Entry**: Automatically finds travel confirmations in email
@@ -16,19 +16,19 @@ Pack addresses the global travel industry's core pain point: fragmented booking 
 
 ### Business Travelers (Primary Market)
 - **Current Time Burden**: Spend 2-4 hours planning each business trip + 2.6 hours daily managing emails ([McKinsey research](https://missiveapp.com/blog/time-spent-on-email))
-- **Pack Solution**: Automatically finds and organizes travel confirmations from email in under 47 seconds
+- **DoneAI Solution**: Automatically finds and organizes travel confirmations from email in under 47 seconds
 - **Time Savings**: Reduces 2-4 hours of trip planning to minutes of review and confirmation
 - **Daily Benefit**: Eliminates 30+ minutes daily searching through emails for travel details
 
 ### Leisure Travelers (Secondary Market)  
 - **Current Time Burden**: Complex multi-destination planning takes 3-5 hours for international trips
-- **Pack Solution**: AI analyzes calendar conflicts, suggests optimal routes, provides real-time pricing alerts
+- **DoneAI Solution**: AI analyzes calendar conflicts, suggests optimal routes, provides real-time pricing alerts
 - **Time Savings**: Reduces vacation planning from hours of research to automated suggestions
 - **Convenience Benefit**: Never lose track of booking confirmations or miss important travel details
 
 ### Travel Managers (Enterprise Market)
 - **Current Time Burden**: Administrative assistants spend 3-4 hours organizing each business trip
-- **Pack Solution**: Automated trip discovery, policy compliance checking, expense integration
+- **DoneAI Solution**: Automated trip discovery, policy compliance checking, expense integration
 - **Efficiency Gain**: 80% reduction in travel coordination time (proven in case studies)
 - **Scale Benefit**: Manages multiple travelers simultaneously without proportional staff increase
 
@@ -92,11 +92,11 @@ Pack addresses the global travel industry's core pain point: fragmented booking 
 ## Core Documentation & Resources
 
 ### User Documentation
-- [Privacy Policy](https://trypackai.com/#/privacy): GDPR/CCPA compliant privacy practices with granular consent controls
-- [Terms of Service](https://trypackai.com/#/terms): Legal framework including liability, dispute resolution, and service availability
-- [FAQ](https://trypackai.com/#/faq): Common questions covering account setup, troubleshooting, and feature usage
-- [Features Overview](https://trypackai.com/#/features): Complete capability matrix with usage scenarios and limitations
-- [How It Works](https://trypackai.com/#/how-it-works): Step-by-step user journey from onboarding to trip completion
+- [Privacy Policy](https://itsdoneai.com/#/privacy): GDPR/CCPA compliant privacy practices with granular consent controls
+- [Terms of Service](https://itsdoneai.com/#/terms): Legal framework including liability, dispute resolution, and service availability
+- [FAQ](https://itsdoneai.com/#/faq): Common questions covering account setup, troubleshooting, and feature usage
+- [Features Overview](https://itsdoneai.com/#/features): Complete capability matrix with usage scenarios and limitations
+- [How It Works](https://itsdoneai.com/#/how-it-works): Step-by-step user journey from onboarding to trip completion
 
 ## Technology Stack & Architecture
 
@@ -177,7 +177,7 @@ DoneAI is in active development with proven time-saving capabilities:
 - **Approach**: Privacy-first, mobile-native travel intelligence platform
 
 ### Contact Information
-- **Website**: https://trypackai.com
+- **Website**: https://itsdoneai.com
 - **Waitlist**: Available through main website for early access
 
 ### Development Philosophy

@@ -8,7 +8,7 @@
   
   <!-- Main homepage -->
   <url>
-    <loc>https://trypackai.com/</loc>
+    <loc>https://itsdoneai.com/</loc>
     <lastmod>2025-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -16,7 +16,7 @@
   
   <!-- Features page -->
   <url>
-    <loc>https://trypackai.com/#/features</loc>
+    <loc>https://itsdoneai.com/#/features</loc>
     <lastmod>2025-08-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -24,7 +24,7 @@
   
   <!-- FAQ page - high priority for traveler pain point content -->
   <url>
-    <loc>https://trypackai.com/#/faq</loc>
+    <loc>https://itsdoneai.com/#/faq</loc>
     <lastmod>2025-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -32,7 +32,7 @@
   
   <!-- How It Works page -->
   <url>
-    <loc>https://trypackai.com/#/how-it-works</loc>
+    <loc>https://itsdoneai.com/#/how-it-works</loc>
     <lastmod>2025-08-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -40,7 +40,7 @@
   
   <!-- Privacy Policy -->
   <url>
-    <loc>https://trypackai.com/#/privacy</loc>
+    <loc>https://itsdoneai.com/#/privacy</loc>
     <lastmod>2025-08-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
@@ -48,7 +48,7 @@
   
   <!-- Terms of Service -->
   <url>
-    <loc>https://trypackai.com/#/terms</loc>
+    <loc>https://itsdoneai.com/#/terms</loc>
     <lastmod>2025-08-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
@@ -56,7 +56,7 @@
 
   <!-- Support page -->
   <url>
-    <loc>https://trypackai.com/support/</loc>
+    <loc>https://itsdoneai.com/support/</loc>
     <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

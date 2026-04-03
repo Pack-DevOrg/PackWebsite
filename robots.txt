@@ -1,5 +1,5 @@
 # Robots.txt for DoneAI - AI Travel Assistant
-# Website: https://trypackai.com
+# Website: https://itsdoneai.com
 # Updated: June 2025
 
 # Allow all search engines and AI crawlers
@@ -41,7 +41,7 @@ Allow: /
 # Disallow: /private/
 
 # Sitemap location
-Sitemap: https://trypackai.com/sitemap.xml
+Sitemap: https://itsdoneai.com/sitemap.xml
 
 # Crawl delay (optional, helps prevent overloading)
 Crawl-delay: 1

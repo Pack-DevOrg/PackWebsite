@@ -272,7 +272,7 @@ const emailForwardingContent = {
     gmailStep4Note: "Next you’ll import this file in Gmail.",
     gmailStep5Title: "Import into Gmail",
     gmailStep5Body:
-      "In Gmail: Settings → Filters and Blocked Addresses → Import filters → select doneai-gmail-filters.xml.",
+      "In Gmail: Settings → Filters and Blocked Addresses → Import filters → select pack-gmail-filters.xml.",
     openGmailFilters: "Open Gmail filters",
     gmailStep5NotePrefix: "After import, click Edit on the Pack filter and confirm it forwards to ",
     outlookStep2Title: "Create a rule (Outlook)",
@@ -370,7 +370,7 @@ const emailForwardingContent = {
     gmailStep4Note: "Luego importarás este archivo en Gmail.",
     gmailStep5Title: "Importa en Gmail",
     gmailStep5Body:
-      "En Gmail: Settings → Filters and Blocked Addresses → Import filters → selecciona doneai-gmail-filters.xml.",
+      "En Gmail: Settings → Filters and Blocked Addresses → Import filters → selecciona pack-gmail-filters.xml.",
     openGmailFilters: "Abrir filtros de Gmail",
     gmailStep5NotePrefix: "Después de importar, haz clic en Edit en el filtro de Pack y confirma que reenvía a ",
     outlookStep2Title: "Crea una regla (Outlook)",
@@ -604,7 +604,7 @@ export default function EmailForwardingSetup(): React.JSX.Element {
     });
 
     downloadTextFile({
-      filename: "doneai-gmail-filters.xml",
+      filename: "pack-gmail-filters.xml",
       mimeType: "application/xml",
       content: xml,
     });

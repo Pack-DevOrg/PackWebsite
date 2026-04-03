@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "CloudFormation template for DoneAI app website with CloudFront and WAF"
+Description: "CloudFormation template for the Pack app website with CloudFront and WAF"
 
 Parameters:
   DomainName:

@@ -21,8 +21,29 @@ const stripKnownEndpointSuffix = (value: string): string => {
 const normalizeAbsoluteUrl = (value: string): string =>
   normalizeUrl(ensureProtocol(value));
 
+const normalizeHostname = (value: string): string =>
+  value.trim().toLowerCase().replace(/\.+$/, "");
+
 const isLocalhostUrl = (url: string): boolean =>
   /^https?:\/\/(localhost|127\.0\.0\.1)(?::\d+)?(\/|$)/i.test(url);
+
+export const isLocalhostHostname = (hostname: string): boolean => {
+  const normalized = normalizeHostname(hostname);
+  return normalized === "localhost" || normalized === "127.0.0.1";
+};
+
+export const isTryPackHostname = (hostname: string): boolean => {
+  const normalized = normalizeHostname(hostname);
+  return normalized === "trypackai.com" || normalized.endsWith(".trypackai.com");
+};
+
+export const isItsDoneAiHostname = (hostname: string): boolean => {
+  const normalized = normalizeHostname(hostname);
+  return normalized === "itsdoneai.com" || normalized.endsWith(".itsdoneai.com");
+};
+
+export const shouldExposeTsaForHostname = (hostname: string): boolean =>
+  isLocalhostHostname(hostname) || isTryPackHostname(hostname);
 
 const alignLocalhostOrigin = (url: string, fallbackUrl?: string): string => {
   if (typeof window === "undefined") {
@@ -112,17 +133,17 @@ const baseScopes = [
   "email",
   "profile",
   "aws.cognito.signin.user.admin",
-  `api.itsdoneai.com/${inferredEnvironment}/travel.plan`,
-  `api.itsdoneai.com/${inferredEnvironment}/travel.search`,
-  `api.itsdoneai.com/${inferredEnvironment}/travel.book`,
-  `api.itsdoneai.com/${inferredEnvironment}/jobs.read`,
-  `api.itsdoneai.com/${inferredEnvironment}/jobs.manage`,
-  `api.itsdoneai.com/${inferredEnvironment}/user.accounts`,
-  `api.itsdoneai.com/${inferredEnvironment}/user.preferences`,
-  `api.itsdoneai.com/${inferredEnvironment}/user.information`,
-  `api.itsdoneai.com/${inferredEnvironment}/user.trips`,
-  `api.itsdoneai.com/${inferredEnvironment}/user.queries`,
-  `api.itsdoneai.com/${inferredEnvironment}/user.delete`,
+  `api.trypackai.com/${inferredEnvironment}/travel.plan`,
+  `api.trypackai.com/${inferredEnvironment}/travel.search`,
+  `api.trypackai.com/${inferredEnvironment}/travel.book`,
+  `api.trypackai.com/${inferredEnvironment}/jobs.read`,
+  `api.trypackai.com/${inferredEnvironment}/jobs.manage`,
+  `api.trypackai.com/${inferredEnvironment}/user.accounts`,
+  `api.trypackai.com/${inferredEnvironment}/user.preferences`,
+  `api.trypackai.com/${inferredEnvironment}/user.information`,
+  `api.trypackai.com/${inferredEnvironment}/user.trips`,
+  `api.trypackai.com/${inferredEnvironment}/user.queries`,
+  `api.trypackai.com/${inferredEnvironment}/user.delete`,
 ];
 
 const rawScopeEnv = (env.VITE_OAUTH_SCOPES as string | undefined)?.trim();
@@ -211,6 +232,18 @@ export const publicContactConfig = {
   supportEmail: appConfig.supportEmail,
   forwardingEmail: appConfig.forwardingEmail,
   friendsEmail: appConfig.friendsEmail,
+};
+
+export const shouldExposeTsaForCurrentHost = (): boolean => {
+  if (typeof window !== "undefined") {
+    return shouldExposeTsaForHostname(window.location.hostname);
+  }
+
+  try {
+    return shouldExposeTsaForHostname(new URL(resolvedConfig.publicSiteUrl).hostname);
+  } catch {
+    return false;
+  }
 };
 
 const resolvedWaitlistEndpoint = (() => {

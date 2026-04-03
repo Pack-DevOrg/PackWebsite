@@ -10,6 +10,10 @@ const repoRoot = path.resolve(__dirname, '..');
 const distPath = path.join(repoRoot, 'dist');
 const cnamePath = path.join(distPath, 'CNAME');
 const noJekyllPath = path.join(distPath, '.nojekyll');
+const pagesDomain =
+  process.env.DONEAI_GITHUB_PAGES_DOMAIN?.trim() ||
+  process.env.VITE_WEBSITE_URL?.trim()?.replace(/^https?:\/\//i, '').replace(/\/.*$/, '') ||
+  'trypackai.com';
 
 function runCommand(command, args, options = {}) {
   return execFileSync(command, args, {
@@ -58,7 +62,7 @@ function preparePagesOutput() {
     throw new Error(`Build output missing at ${distPath}`);
   }
 
-  fs.writeFileSync(cnamePath, 'itsdoneai.com\n', 'utf8');
+  fs.writeFileSync(cnamePath, `${pagesDomain}\n`, 'utf8');
   fs.closeSync(fs.openSync(noJekyllPath, 'w'));
 }
 
@@ -88,7 +92,7 @@ function main() {
   if (dryRun) {
     console.log('[deploy] Dry run completed. No gh-pages changes were pushed.');
   } else {
-    console.log('[deploy] GitHub Pages publish completed from master.');
+    console.log(`[deploy] GitHub Pages publish completed from master for ${pagesDomain}.`);
   }
 }
 

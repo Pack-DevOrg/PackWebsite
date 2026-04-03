@@ -321,7 +321,7 @@ const buildIcs = (
         : chunk.location;
 
     lines.push('BEGIN:VEVENT');
-    lines.push(`UID:${shareId || 'shared-trip'}-${index}@itsdoneai.com`);
+    lines.push(`UID:${shareId || 'shared-trip'}-${index}@trypackai.com`);
     lines.push(`DTSTAMP:${formatDateForIcs(new Date().toISOString())}`);
     lines.push(`SUMMARY:${summary}`);
     lines.push(`DTSTART;VALUE=DATE:${formattedStart}`);
@@ -378,7 +378,9 @@ export const SharedTravelPlan: React.FC = () => {
   const ogTitle = rawTitle.length > 90 ? `${rawTitle.substring(0, 87)}...` : rawTitle;
   const ogDescription = rawDescription.length > 160 ? `${rawDescription.substring(0, 157)}...` : rawDescription;
 
-  const ogImage = travelPlan?.thumbnailUrl || `${WEBSITE_URL}/images/og-image.png`;
+  const ogImage =
+    travelPlan?.thumbnailUrl ||
+    `${WEBSITE_URL}/images/share-card.png?v=20260402b`;
   const ogImageAlt = travelPlan?.title ? `${travelPlan.title} - Pack` : 'Shared travel plan on Pack';
   const encodedShareId = hasShareId ? encodeURIComponent(shareId) : '';
   const ogUrl = `${WEBSITE_URL}${encodedShareId ? `/share/${encodedShareId}` : '/share'}`;

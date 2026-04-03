@@ -348,9 +348,9 @@ export const AppShell: React.FC = () => {
       <Header>
         <HeaderLead>
           <Brand>
-            <img src={logoImage} alt="DoneAI" />
+            <img src={logoImage} alt="Pack" />
             <div>
-              <strong>DoneAI</strong>
+              <strong>Pack</strong>
               <span>Travel planner</span>
             </div>
           </Brand>

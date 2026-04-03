@@ -150,7 +150,7 @@ export function GmailBackfillScriptIllustration(): React.JSX.Element {
             Paste the Pack script…
           </text>
           <text x="54" y="164" fontSize="12" fill="rgba(255,255,255,0.68)" fontFamily="system-ui">
-            Run: doneaiBackfillTravelEmails()
+            Run: packBackfillTravelEmails()
           </text>
           <text x="54" y="188" fontSize="12" fill="rgba(255,255,255,0.68)" fontFamily="system-ui">
             It forwards travel emails (known travel domains)

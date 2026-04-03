@@ -234,7 +234,7 @@ export const LinkedTripInviteLanding: React.FC = () => {
           property="og:description"
           content={localizedContent.shareDescription}
         />
-        <meta property="og:image" content={`${WEBSITE_URL}/images/og-image.png`} />
+        <meta property="og:image" content={`${WEBSITE_URL}/images/share-card.png?v=20260402b`} />
         <meta property="og:site_name" content="Pack" />
         <meta property="og:locale" content={localizedContent.ogLocale} />
         <meta name="twitter:card" content="summary_large_image" />
@@ -244,7 +244,7 @@ export const LinkedTripInviteLanding: React.FC = () => {
           name="twitter:description"
           content={localizedContent.shareDescription}
         />
-        <meta name="twitter:image" content={`${WEBSITE_URL}/images/og-image.png`} />
+        <meta name="twitter:image" content={`${WEBSITE_URL}/images/share-card.png?v=20260402b`} />
         {APPLE_APP_ID && (
           <meta
             name="apple-itunes-app"

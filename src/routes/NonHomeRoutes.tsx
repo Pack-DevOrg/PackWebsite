@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 import Layout from "@/components/Layout";
-import { appConfig } from "@/config/appConfig";
+import { appConfig, shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
 import { isSupportedLocale, localizePath } from "@/i18n/config";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
@@ -74,7 +74,6 @@ const EnhancedTripsPage = lazyImportWithRetry(async () => {
 }, "enhanced-trips-page");
 
 const labsEnabled = __DEV__;
-const tsaEnabled = true;
 const LabsPage = labsEnabled
   ? React.lazy(() => import("../pages/Labs"))
   : null;
@@ -90,9 +89,7 @@ const LabsComparisonsPage = labsEnabled
       return { default: module.LabsComparisonsPage };
     })
   : null;
-const TsaWaitTimesPage = tsaEnabled
-  ? React.lazy(() => import("../pages/TsaWaitTimesPage"))
-  : null;
+const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
 
 const LoadingScreenContainer = styled.div`
   min-height: 60vh;
@@ -140,12 +137,23 @@ const LegalShellWrap = styled.div`
     radial-gradient(circle at top, rgba(196, 108, 77, 0.16), transparent 24%),
     #090706;
   color: var(--color-text-primary);
+  padding: 1.25rem 0 3rem;
 `;
 
 const LegalShellInner = styled.div`
   width: min(100%, 980px);
   margin: 0 auto;
-  padding: 1rem 1rem 3rem;
+  padding: 1.1rem 1rem 2.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1.8rem;
+  background: rgba(16, 13, 10, 0.72);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-soft);
+
+  @media (max-width: 768px) {
+    border-radius: 1.3rem;
+    padding: 0.95rem 0.85rem 2rem;
+  }
 `;
 
 const LegalShellNav = styled.nav`
@@ -285,6 +293,7 @@ const LocalizedOutlet: React.FC = () => (
 
 const NonHomeRoutes: React.FC = () => {
   const {pathFor} = useI18n();
+  const tsaEnabled = shouldExposeTsaForCurrentHost();
 
   return (
     <>
@@ -540,12 +549,12 @@ const NonHomeRoutes: React.FC = () => {
           <Route
             path="/tsa"
             element={
-              <Layout>
-                <Suspense fallback={null}>
-                  {TsaWaitTimesPage ? <TsaWaitTimesPage /> : null}
-                </Suspense>
-                <Suspense fallback={null}>
-                  <Footer />
+                <Layout>
+                  <Suspense fallback={null}>
+                    <TsaWaitTimesPage />
+                  </Suspense>
+                  <Suspense fallback={null}>
+                    <Footer />
                   <ScrollToTop />
                 </Suspense>
               </Layout>
@@ -764,7 +773,7 @@ const NonHomeRoutes: React.FC = () => {
               element={
                 <Layout>
                   <Suspense fallback={null}>
-                    {TsaWaitTimesPage ? <TsaWaitTimesPage /> : null}
+                    <TsaWaitTimesPage />
                   </Suspense>
                   <Suspense fallback={null}>
                     <Footer />

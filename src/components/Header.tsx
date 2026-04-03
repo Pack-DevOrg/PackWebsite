@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const StyledHeader = styled.header`
@@ -119,38 +120,22 @@ const baseNavItems = [
 const Header: React.FC = () => {
   const location = useLocation();
   const { pathFor, t } = useI18n();
-  const navItems =
-    __DEV__
-      ? ([{ href: "/tsa", label: t("nav.tsaWaits") }, ...baseNavItems.map((item) => ({
-          ...item,
-          label:
-            item.href === "/features"
-              ? t("nav.features")
-              : item.href === "/how-it-works"
-              ? t("nav.howItWorks")
-              : item.href === "/faq"
-              ? t("nav.faq")
-              : item.href === "/terms"
-              ? t("nav.terms")
-              : t("nav.privacy"),
-        }))] as const)
-      : baseNavItems;
-  const localizedNavItems =
-    __DEV__
-      ? navItems
-      : baseNavItems.map((item) => ({
-          ...item,
-          label:
-            item.href === "/features"
-              ? t("nav.features")
-              : item.href === "/how-it-works"
-              ? t("nav.howItWorks")
-              : item.href === "/faq"
-              ? t("nav.faq")
-              : item.href === "/terms"
-              ? t("nav.terms")
-              : t("nav.privacy"),
-        }));
+  const localizedBaseNavItems = baseNavItems.map((item) => ({
+    ...item,
+    label:
+      item.href === "/features"
+        ? t("nav.features")
+        : item.href === "/how-it-works"
+        ? t("nav.howItWorks")
+        : item.href === "/faq"
+        ? t("nav.faq")
+        : item.href === "/terms"
+        ? t("nav.terms")
+        : t("nav.privacy"),
+  }));
+  const localizedNavItems = shouldExposeTsaForCurrentHost()
+    ? [{ href: "/tsa", label: t("nav.tsaWaits") }, ...localizedBaseNavItems]
+    : localizedBaseNavItems;
 
   return (
     <StyledHeader>

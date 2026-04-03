@@ -5,10 +5,15 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
-const DISTRIBUTION_ALIAS = "app.itsdoneai.com";
-const WEB_ACL_NAME = "app-itsdoneai-com-waf";
-const WEB_ACL_ARN =
-  "arn:aws:wafv2:us-east-1:582686901537:global/webacl/app-itsdoneai-com-waf/6b91ea8d-b2f0-42a2-860d-065676eaaf8a";
+const DISTRIBUTION_ALIAS =
+  process.env.DONEAI_APP_DISTRIBUTION_ALIAS?.trim() || "app.trypackai.com";
+const WEB_ACL_NAME =
+  process.env.DONEAI_WEB_ACL_NAME?.trim() ||
+  `${DISTRIBUTION_ALIAS.replace(/\./g, "-")}-waf`;
+const WEB_ACL_METRIC_NAME =
+  process.env.DONEAI_WEB_ACL_METRIC_NAME?.trim() || WEB_ACL_NAME;
+const ALLOW_SHARED_DISTRIBUTION =
+  process.env.DONEAI_ALLOW_SHARED_APP_DISTRIBUTION === "1";
 const DRY_RUN = process.argv.includes("--dry-run");
 
 const desiredRules = [
@@ -25,7 +30,7 @@ const desiredRules = [
     VisibilityConfig: {
       SampledRequestsEnabled: true,
       CloudWatchMetricsEnabled: true,
-      MetricName: "app-rate-limit",
+      MetricName: `${WEB_ACL_METRIC_NAME}-rate-limit`,
     },
   },
   {
@@ -41,7 +46,7 @@ const desiredRules = [
     VisibilityConfig: {
       SampledRequestsEnabled: true,
       CloudWatchMetricsEnabled: true,
-      MetricName: "app-ip-reputation",
+      MetricName: `${WEB_ACL_METRIC_NAME}-ip-reputation`,
     },
   },
   {
@@ -57,7 +62,7 @@ const desiredRules = [
     VisibilityConfig: {
       SampledRequestsEnabled: true,
       CloudWatchMetricsEnabled: true,
-      MetricName: "app-known-bad-inputs",
+      MetricName: `${WEB_ACL_METRIC_NAME}-known-bad-inputs`,
     },
   },
 ];
@@ -100,6 +105,21 @@ function findDistributionByAlias(alias) {
   );
 }
 
+function ensureDistributionIsSafe(distribution) {
+  const aliases = distribution.Aliases?.Items || [];
+  const sharesLegacyAlias = aliases.some(
+    (alias) => alias !== DISTRIBUTION_ALIAS && alias.endsWith(".itsdoneai.com"),
+  );
+
+  if (sharesLegacyAlias && !ALLOW_SHARED_DISTRIBUTION) {
+    throw new Error(
+      `Distribution ${distribution.Id} for ${DISTRIBUTION_ALIAS} still shares legacy aliases (${aliases.join(
+        ", ",
+      )}). Duplicate CloudFront first, then rerun sync-app-cloudfront-waf against the trypack-only distribution.`,
+    );
+  }
+}
+
 function ensureWebAcl(tmpDir) {
   const webAcls = runAwsJson([
     "wafv2",
@@ -116,7 +136,7 @@ function ensureWebAcl(tmpDir) {
   if (!existing) {
     if (DRY_RUN) {
       console.log(`[dry-run] would create WebACL ${WEB_ACL_NAME}`);
-      return { arn: WEB_ACL_ARN };
+      return { arn: `arn:aws:wafv2:us-east-1:dry-run:global/webacl/${WEB_ACL_NAME}` };
     }
 
     const rulesPath = writeTempJson(tmpDir, "rules.json", desiredRules);
@@ -132,7 +152,7 @@ function ensureWebAcl(tmpDir) {
       "--default-action",
       "Allow={}",
       "--visibility-config",
-      "SampledRequestsEnabled=true,CloudWatchMetricsEnabled=true,MetricName=app-itsdoneai-com-waf",
+      `SampledRequestsEnabled=true,CloudWatchMetricsEnabled=true,MetricName=${WEB_ACL_METRIC_NAME}`,
       "--rules",
       `file://${rulesPath}`,
       "--query",
@@ -159,7 +179,7 @@ function ensureWebAcl(tmpDir) {
   const webAcl = details.WebACL;
   const needsUpdate =
     JSON.stringify(webAcl.Rules) !== JSON.stringify(desiredRules) ||
-    webAcl.VisibilityConfig?.MetricName !== "app-itsdoneai-com-waf";
+    webAcl.VisibilityConfig?.MetricName !== WEB_ACL_METRIC_NAME;
 
   if (needsUpdate) {
     if (DRY_RUN) {
@@ -173,7 +193,7 @@ function ensureWebAcl(tmpDir) {
         VisibilityConfig: {
           SampledRequestsEnabled: true,
           CloudWatchMetricsEnabled: true,
-          MetricName: "app-itsdoneai-com-waf",
+          MetricName: WEB_ACL_METRIC_NAME,
         },
         Rules: desiredRules,
         LockToken: details.LockToken,
@@ -235,6 +255,7 @@ function main() {
   if (!distribution) {
     throw new Error(`No CloudFront distribution found for alias ${DISTRIBUTION_ALIAS}`);
   }
+  ensureDistributionIsSafe(distribution);
 
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "doneai-app-waf-"));
   try {

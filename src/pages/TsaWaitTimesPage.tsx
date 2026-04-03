@@ -882,7 +882,7 @@ const buildAirportSupportMailtoHref = (params: {
   const { airportCode, airportName, boardGeneratedAt, pageUrl, snapshot } = params;
   const subject = `TSA wait board issue: ${airportCode}`;
   const bodyLines = [
-    `Hi DoneAI,`,
+    `Hi Pack,`,
     ``,
     `Something looks wrong with the TSA wait board entry for ${airportCode} (${airportName}).`,
     ``,

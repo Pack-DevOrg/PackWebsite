@@ -43,7 +43,7 @@ type OgConcept = {
   description: string;
   src: string;
   prompt: string;
-  verdict: "promising" | "mixed";
+  verdict: "closest" | "promising" | "mixed";
 };
 
 const labVideos: LabVideo[] = [
@@ -274,6 +274,39 @@ const ogConcepts: OgConcept[] = [
     verdict: "mixed",
     prompt:
       "Brand image for Pack, AI travel planner that replaces many tabs with one clear plan. Visually represent many fragmented travel inputs dissolving into one elegant journey ribbon across a wide frame. Fragments feel like booking tabs, confirmations, dates, and maps, but abstracted and beautiful, not literal browser windows. Premium cinematic graphic design, black field, warm gold and coral highlights, contemporary editorial advertising style, highly composed, no text, no obvious UI.",
+  },
+];
+
+const refinedOgConcepts: OgConcept[] = [
+  {
+    slug: "minimal-eclipse-center",
+    title: "Minimal Eclipse Center",
+    description:
+      "Closest to the brief. The real Pack mark sits directly inside the eclipse form, keeping the card minimal while still feeling like a branded motion poster instead of a generic space render.",
+    src: "/images/og-refined/final/minimal-eclipse-center.png",
+    verdict: "closest",
+    prompt:
+      "Composite treatment: use the real Pack logo over the cleanest generated eclipse plate. Keep the frame almost empty, preserve the orb, avoid all extra interface language, and let the logo do the branding work.",
+  },
+  {
+    slug: "minimal-eclipse-offset",
+    title: "Minimal Eclipse Offset",
+    description:
+      "Same reduced system, but with a little more tension. The offset mark feels slightly more editorial and less symmetrical while still staying restrained.",
+    src: "/images/og-refined/final/minimal-eclipse-offset.png",
+    verdict: "promising",
+    prompt:
+      "Composite treatment: keep the same dark eclipse poster base, but offset the Pack mark so the planet reads more clearly behind it. No additional graphic elements beyond what already earns its place.",
+  },
+  {
+    slug: "minimal-horizon-center",
+    title: "Minimal Horizon Center",
+    description:
+      "A softer option with the glowing planet on the horizon instead of the eclipse silhouette. It is still minimal, but a touch warmer and less severe than the eclipse versions.",
+    src: "/images/og-refined/final/minimal-horizon-center.png",
+    verdict: "promising",
+    prompt:
+      "Composite treatment: use the real Pack logo with a low glowing planet background, preserving the poster-like emptiness and avoiding any extra UI cues, text, or decorative clutter.",
   },
 ];
 
@@ -707,6 +740,10 @@ const labsContent = {
       description:
         "Use this page to inspect the live Pack mark across the website and app: logos, favicons, share cards, app icons, splash art, and Android adaptive assets.",
       assets: brandAssets,
+      refinedConceptTitle: "Refined minimal OG variants.",
+      refinedConceptDescription:
+        "These are the cleaner second-pass comps. They use the real Pack logo over stripped-back Imagen background plates so the review is about composition, restraint, and whether the orb treatment is actually worth keeping.",
+      refinedConcepts: refinedOgConcepts,
       conceptTitle: "Generated OG concept variants.",
       conceptDescription:
         "These are first-pass Imagen renders generated through the same SSM-backed Vertex credential flow used in PackAds. The goal here is direction-finding, not final polish. Two are worth refining, and the rest are useful for learning what to suppress.",
@@ -818,6 +855,10 @@ const labsContent = {
       description:
         "Usa esta página para inspeccionar la marca Pack en la web y la app: logos, favicons, tarjetas de compartir, iconos de app, splash art y assets adaptativos de Android.",
       assets: brandAssets,
+      refinedConceptTitle: "Variantes OG refinadas y minimalistas.",
+      refinedConceptDescription:
+        "Estas son las composiciones limpias de la segunda pasada. Usan el logo real de Pack sobre fondos de Imagen mucho más reducidos para juzgar composición, contención y si vale la pena mantener la idea del planeta.",
+      refinedConcepts: refinedOgConcepts,
       conceptTitle: "Variantes generadas para la OG card.",
       conceptDescription:
         "Estos son renders iniciales de Imagen generados con el mismo flujo de credenciales Vertex respaldado por SSM que usa PackAds. Sirven para elegir dirección, no como arte final. Dos merecen una segunda pasada y el resto ayudan a ver qué conviene suprimir.",
@@ -1025,6 +1066,33 @@ export const LabsBrandAssetsPage: React.FC = () => {
               <PathLabel>{asset.pathLabel}</PathLabel>
             </Meta>
           </AssetCard>
+        ))}
+      </Grid>
+      <SectionHeading>
+        <SectionTitle>{localizedContent.brandAssets.refinedConceptTitle}</SectionTitle>
+        <SectionDescription>
+          {localizedContent.brandAssets.refinedConceptDescription}
+        </SectionDescription>
+      </SectionHeading>
+      <Grid>
+        {localizedContent.brandAssets.refinedConcepts.map((concept) => (
+          <ConceptCard key={concept.slug}>
+            <AssetPreview>
+              <AssetImage src={concept.src} alt={concept.title} loading="lazy" />
+            </AssetPreview>
+            <Meta>
+              <Kicker>
+                {concept.verdict === "closest"
+                  ? "Closest"
+                  : concept.verdict === "promising"
+                    ? "Promising"
+                    : "Mixed result"}
+              </Kicker>
+              <CardTitle>{concept.title}</CardTitle>
+              <CardBody>{concept.description}</CardBody>
+              <PathLabel>{concept.prompt}</PathLabel>
+            </Meta>
+          </ConceptCard>
         ))}
       </Grid>
       <SectionHeading>

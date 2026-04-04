@@ -10,7 +10,7 @@ import {fileURLToPath} from 'node:url';
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
 const repoRootDir = path.join(rootDir, '..');
-const doneAiSchemasDir = path.join(rootDir, 'src/schemas');
+const packSchemasDir = path.join(rootDir, 'src/schemas');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
 const localNodeModules = path.join(rootDir, 'node_modules');
 const resolveModuleDir = (moduleName: string): string => {
@@ -33,7 +33,7 @@ const reactJsxRuntimeEntry = path.join(reactModuleDir, 'jsx-runtime.js');
 const reactJsxDevRuntimeEntry = path.join(reactModuleDir, 'jsx-dev-runtime.js');
 const zodModuleDir = resolveModuleDir('zod');
 const AWS_REGION = 'us-east-1';
-const DONEAI_SERVER_STACK_PREFIX = 'doneaiserver-';
+const LEGACY_SERVER_STACK_PREFIX = 'doneaiserver-';
 const TSA_BOARD_STACK_OUTPUT_KEY = 'AirportWaitTimePublicBoardUrl';
 
 const getLocalDevBypassAction = (requestPath: string): string | null => {
@@ -50,7 +50,7 @@ const getLocalDevBypassAction = (requestPath: string): string | null => {
   return null;
 };
 
-function inferDoneAiEnvironment(
+function inferServerEnvironment(
   viteEnv: Record<string, string>,
   mode: string,
 ): 'dev' | 'prod' | null {
@@ -94,13 +94,13 @@ function resolvePublicTsaBoardUrlFromStack(
     return explicitUrl;
   }
 
-  const environment = inferDoneAiEnvironment(viteEnv, mode);
+  const environment = inferServerEnvironment(viteEnv, mode);
   if (!environment) {
     return '';
   }
 
   try {
-    const stackName = `${DONEAI_SERVER_STACK_PREFIX}${environment}`;
+    const stackName = `${LEGACY_SERVER_STACK_PREFIX}${environment}`;
     const output = execFileSync(
       'aws',
       [
@@ -321,7 +321,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
       dedupe: ['react', 'react-dom', 'styled-components'],
       alias: {
         '@': normalizePath(srcDir),
-        '@doneai/schemas': normalizePath(doneAiSchemasDir),
+        '@doneai/schemas': normalizePath(packSchemasDir),
         react: normalizePath(reactModuleDir),
         'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
         'react/jsx-dev-runtime': normalizePath(reactJsxDevRuntimeEntry),

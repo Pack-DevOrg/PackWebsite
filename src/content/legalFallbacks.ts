@@ -146,11 +146,9 @@ Contact
 If you have questions about these Terms, contact us at:
 Email: support@itsdoneai.com
 Mailing Address: DoneAI, 584 Castro St, Suite #4036, San Francisco, CA 94114
-
 `;
 
-export const PRIVACY_POLICY_FALLBACK = String.raw`
-# Privacy Policy
+export const PRIVACY_POLICY_FALLBACK = String.raw`# Privacy Policy
 
 **Effective Date:** April 2, 2026
 
@@ -332,8 +330,7 @@ If you have questions about this Privacy Policy or want to exercise a privacy ri
 **Mailing Address:** DoneAI, 584 Castro St, Suite #4036, San Francisco, CA 94114
 `;
 
-export const DO_NOT_SELL_FALLBACK = String.raw`
-# Do Not Sell or Share My Personal Information
+export const DO_NOT_SELL_FALLBACK = String.raw`# Do Not Sell or Share My Personal Information
 
 **Effective Date:** March 26, 2026
 

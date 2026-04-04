@@ -67,7 +67,7 @@ interface LayoutProps {
 
 /**
  * @component Layout
- * @description Provides a consistent page layout for the DoneAI website.
+ * @description Provides a consistent page layout for the Pack website.
  * This component wraps the main content of the application, including the global styles,
  * header, breadcrumbs, and a main content area with a fade-in animation.
  *

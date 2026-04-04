@@ -1,5 +1,5 @@
 /**
- * TrackingProvider - Comprehensive tracking implementation for DoneAI website
+ * TrackingProvider - Comprehensive tracking implementation for the Pack website
  * 
  * Features:
  * - Facebook Pixel (Meta Pixel) integration with consent management

@@ -2,7 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 
 /**
  * @component GlobalStyles
- * @description Defines global CSS styles for the DoneAI website using `styled-components`.
+ * @description Defines global CSS styles for the Pack website using `styled-components`.
  * This component sets up CSS variables for colors, spacing, typography, and layout,
  * and applies a global reset for consistent styling across browsers.
  *

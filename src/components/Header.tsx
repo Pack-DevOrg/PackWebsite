@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
+import PrefetchLink from "./PrefetchLink";
 
 const StyledHeader = styled.header`
   display: flex;
@@ -38,7 +39,7 @@ const HeaderContainer = styled.div`
   }
 `;
 
-const LogoLink = styled.a`
+const LogoLink = styled(PrefetchLink)`
   display: inline-flex;
   align-items: center;
   justify-self: start;
@@ -85,7 +86,7 @@ const Navigation = styled.nav`
   }
 `;
 
-const NavLink = styled.a<{ $isActive?: boolean }>`
+const NavLink = styled(PrefetchLink)<{ $isActive?: boolean }>`
   color: ${({ $isActive }) =>
     $isActive ? "var(--color-text-primary)" : "var(--color-text-secondary)"};
   text-decoration: none;
@@ -141,7 +142,7 @@ const Header: React.FC = () => {
     <StyledHeader>
       <div className="container">
         <HeaderContainer>
-          <LogoLink href={pathFor("/")} aria-label={t("common.goToHome")}>
+          <LogoLink to={pathFor("/")} aria-label={t("common.goToHome")}>
             <LogoWordmark>Pack.</LogoWordmark>
           </LogoLink>
 
@@ -149,7 +150,9 @@ const Header: React.FC = () => {
             {localizedNavItems.map((item) => (
               <NavLink
                 key={item.href}
-                href={pathFor(item.href)}
+                to={pathFor(item.href)}
+                prefetchOnHover
+                prefetchOnViewport
                 $isActive={location.pathname === pathFor(item.href)}
                 aria-current={location.pathname === pathFor(item.href) ? "page" : undefined}
               >

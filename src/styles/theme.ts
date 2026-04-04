@@ -1,13 +1,13 @@
 /**
  * @file theme.ts
- * @description Global theme configuration for the DoneAI website.
+ * @description Global theme configuration for the Pack website.
  * This file centralizes all design tokens, including colors, spacing, typography, and other design-related variables,
  * to ensure consistent styling across the application and simplify site-wide styling changes.
  */
 
 /**
  * @constant colors
- * @description Defines the color palette for the DoneAI website.
+ * @description Defines the color palette for the Pack website.
  * Includes primary, secondary, success, error, background, text, and border colors,
  * as well as shadow and gradient definitions.
  */

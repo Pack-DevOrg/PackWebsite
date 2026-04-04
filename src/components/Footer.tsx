@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Instagram, Linkedin, Twitter } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useTracking } from "./TrackingProvider";
+import PrefetchLink from "./PrefetchLink";
 
 const FooterContainer = styled.footer`
   width: 100%;
@@ -92,7 +93,7 @@ const FooterLinks = styled.div`
   align-items: center;
 `;
 
-const FooterLink = styled.a`
+const FooterLink = styled(PrefetchLink)`
   color: var(--color-text-muted);
   font-size: 0.77rem;
   letter-spacing: 0.06em;
@@ -175,14 +176,14 @@ const Footer = () => {
 
         <BottomRow>
           <FooterLinks>
-            <FooterLink href={pathFor("/terms")}>{t("nav.terms")}</FooterLink>
-            <FooterLink href={pathFor("/privacy")}>{t("nav.privacy")}</FooterLink>
-            <FooterLink href={pathFor("/accessibility")}>{t("nav.accessibility")}</FooterLink>
-            <FooterLink href={pathFor("/support")}>{t("nav.support")}</FooterLink>
+            <FooterLink to={pathFor("/terms")}>{t("nav.terms")}</FooterLink>
+            <FooterLink to={pathFor("/privacy")}>{t("nav.privacy")}</FooterLink>
+            <FooterLink to={pathFor("/accessibility")}>{t("nav.accessibility")}</FooterLink>
+            <FooterLink to={pathFor("/support")}>{t("nav.support")}</FooterLink>
             <FooterButton type="button" onClick={openPrivacyPreferences}>
               {t("footer.privacyChoices")}
             </FooterButton>
-            <FooterLink href={pathFor("/privacy-request")}>{t("nav.privacyRequest")}</FooterLink>
+            <FooterLink to={pathFor("/privacy-request")}>{t("nav.privacyRequest")}</FooterLink>
           </FooterLinks>
 
           <Copyright>{t("footer.copyright", { year: currentYear })}</Copyright>

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 import Layout from "@/components/Layout";
+import PrefetchLink from "@/components/PrefetchLink";
 import { appConfig, shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
 import { isSupportedLocale, localizePath } from "@/i18n/config";
@@ -139,9 +140,6 @@ const LocalizedLoadingPage: React.FC = () => {
 
 const LegalShellWrap = styled.div`
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(196, 108, 77, 0.16), transparent 24%),
-    #090706;
   color: var(--color-text-primary);
   padding: 1.25rem 0 3rem;
 `;
@@ -169,7 +167,7 @@ const LegalShellNav = styled.nav`
   margin-bottom: 1.5rem;
 `;
 
-const LegalShellLink = styled.a`
+const LegalShellLink = styled(PrefetchLink)`
   color: var(--color-text-secondary);
   text-decoration: none;
   border: 1px solid rgba(243, 210, 122, 0.12);
@@ -197,9 +195,9 @@ const LegalShell: React.FC<{ readonly children: React.ReactNode }> = ({
       <LegalShellWrap>
         <LegalShellInner>
           <LegalShellNav aria-label={t("nav.legalNavigation")}>
-            <LegalShellLink href={pathFor("/")}>{t("common.home")}</LegalShellLink>
-            <LegalShellLink href={pathFor("/terms")}>{t("legal.termsShort")}</LegalShellLink>
-            <LegalShellLink href={pathFor("/privacy")}>{t("legal.privacyShort")}</LegalShellLink>
+            <LegalShellLink to={pathFor("/")}>{t("common.home")}</LegalShellLink>
+            <LegalShellLink to={pathFor("/terms")}>{t("legal.termsShort")}</LegalShellLink>
+            <LegalShellLink to={pathFor("/privacy")}>{t("legal.privacyShort")}</LegalShellLink>
           </LegalShellNav>
           {children}
         </LegalShellInner>

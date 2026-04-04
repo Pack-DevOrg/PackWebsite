@@ -28,11 +28,16 @@ test.describe("App auth wiring", () => {
     expect(["/auth/callback", "/oauth/callback"]).toContain(
       parsedRedirectUri.pathname
     );
-    expect([
-      "https://itsdoneai.com",
-      "http://localhost:5173",
-      "http://localhost:4173",
-    ]).toContain(parsedRedirectUri.origin);
+    expect(
+      [
+        "https://www.trypackai.com",
+        "https://trypackai.com",
+        "https://itsdoneai.com",
+        "http://localhost:5173",
+        "http://localhost:4173",
+      ].includes(parsedRedirectUri.origin),
+      `unexpected redirect origin: ${parsedRedirectUri.origin}`,
+    ).toBe(true);
 
     expect(currentUrl.searchParams.get("code_challenge")).toBeTruthy();
     expect(currentUrl.searchParams.get("code_challenge_method")).toBe("S256");

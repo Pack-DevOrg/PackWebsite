@@ -164,7 +164,7 @@ describe('WaitlistForm marketing payload', () => {
     expect(emailInput).toHaveValue('user@example.com');
     await user.click(marketingEmailCheckbox);
 
-    const submitButton = screen.getByRole('button', { name: /done/i });
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
     await user.click(submitButton);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
@@ -231,7 +231,7 @@ describe('WaitlistForm marketing payload', () => {
 
     fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
 
-    const submitButton = screen.getByRole('button', { name: /done/i });
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
     await user.click(submitButton);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
@@ -263,7 +263,7 @@ describe('WaitlistForm marketing payload', () => {
     fireEvent.change(emailInput, { target: { value: 'user@example.com' } });
     await user.click(marketingEmailCheckbox);
 
-    const submitButton = screen.getByRole('button', { name: /done/i });
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
     await user.click(submitButton);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());

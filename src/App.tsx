@@ -1,4 +1,4 @@
-import React, { Suspense, startTransition, useMemo, useRef, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
   BrowserRouter,
@@ -15,9 +15,8 @@ import ServiceWorkerProvider from "./components/ServiceWorkerProvider";
 import PerformanceProvider from "./components/PerformanceProvider";
 import { useMountEffect } from "./hooks/useMountEffect";
 import { I18nProvider } from "./i18n/I18nProvider";
-import { localizePath, stripLocaleFromPath } from "./i18n/config";
+import { stripLocaleFromPath } from "./i18n/config";
 import { createQueryClient } from "./queryClient";
-import { appConfig } from "./config/appConfig";
 import { env } from "./utils/env";
 import HomePage from "./routes/HomePage";
 
@@ -46,9 +45,6 @@ const HomeRouteSwitch: React.FC = () => {
   const location = useLocation();
   const normalizedPath = stripLocaleFromPath(location.pathname);
   const hasLocalePrefix = normalizedPath !== location.pathname;
-  const isAppHost =
-    typeof window !== "undefined" &&
-    new URL(appConfig.appBaseUrl).hostname === window.location.hostname;
   const isHomePath = normalizedPath === "/" || normalizedPath === "/verify";
 
   if (hasLocalePrefix) {
@@ -58,10 +54,6 @@ const HomeRouteSwitch: React.FC = () => {
         replace
       />
     );
-  }
-
-  if (isAppHost && isHomePath) {
-    return <Navigate to={localizePath("/app", location.pathname.split("/")[1])} replace />;
   }
 
   if (isHomePath) {

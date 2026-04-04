@@ -2,7 +2,7 @@ import React, { Suspense, startTransition, useMemo, useRef, useState } from "rea
 import styled from "styled-components";
 import Layout from "@/components/Layout";
 import HeroAboveFold from "@/components/HeroAboveFold";
-import LazyWaitlistForm from "@/components/LazyWaitlistForm";
+import WaitlistForm from "@/components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
 import { env } from "@/utils/env";
 import { apiEndpoints } from "@/config/appConfig";
@@ -408,7 +408,7 @@ const HomePage: React.FC = () => {
             <VerificationNotification status={verificationStatus} locale={locale} />
           )
         )}
-        <LazyWaitlistForm variant="hero" height={420} />
+        <WaitlistForm variant="hero" />
       </div>
     ),
     [isVerifying, locale, verificationStatus]
@@ -473,7 +473,7 @@ const HomePage: React.FC = () => {
       <DeferredContent minHeight={360} rootMargin="960px 0px">
         <SectionWrapper id="waitlist-bottom">
           <WaitlistSectionInner>
-            <LazyWaitlistForm height={360} />
+            <WaitlistForm />
           </WaitlistSectionInner>
         </SectionWrapper>
       </DeferredContent>

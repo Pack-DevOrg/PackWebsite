@@ -49,7 +49,10 @@ async function prerender() {
   for (const route of routesToPrerender) {
     const { html, head } = await render(route);
     const finalHtml = template
-      .replace('<div id="root"></div>', `<div id="root">${html}</div>`)
+      .replace(
+        '<div id="root"></div>',
+        `<div id="root" data-prerendered-path="${route}">${html}</div>`
+      )
       .replace("</head>", `${head}</head>`);
 
     const outputPath =

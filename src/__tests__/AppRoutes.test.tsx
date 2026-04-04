@@ -4,6 +4,8 @@ import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
 import { AppRoutes } from "@/App";
 
+const mockTrackPageView = jest.fn();
+
 jest.mock("@/routes/HomePage", () => ({
   __esModule: true,
   default: () => <div>marketing-home</div>,
@@ -19,7 +21,19 @@ jest.mock("@/components/ConsentBanner", () => ({
   default: () => null,
 }));
 
+jest.mock("@/components/TrackingProvider", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useTracking: () => ({
+    trackPageView: mockTrackPageView,
+  }),
+}));
+
 describe("AppRoutes", () => {
+  beforeEach(() => {
+    mockTrackPageView.mockClear();
+  });
+
   it("renders the marketing homepage at the root path", () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
@@ -31,5 +45,6 @@ describe("AppRoutes", () => {
 
     expect(screen.getByText("marketing-home")).toBeInTheDocument();
     expect(screen.queryByText("non-home-routes")).not.toBeInTheDocument();
+    expect(mockTrackPageView).toHaveBeenCalledWith("/");
   });
 });

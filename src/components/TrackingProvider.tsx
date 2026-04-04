@@ -222,7 +222,11 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
   const [hasMarketingConsent, setHasMarketingConsent] = useState(false);
   const [gpcApplies, setGpcApplies] = useState(false);
   const [consentId, setConsentId] = useState<string | undefined>(undefined);
+  const [currentPagePath, setCurrentPagePath] = useState<string | null>(null);
+  const lastDataLayerPagePathRef = useRef<string | null>(null);
+  const lastGa4PagePathRef = useRef<string | null>(null);
   const lastMetaPageViewPathRef = useRef<string | null>(null);
+  const lastTikTokPagePathRef = useRef<string | null>(null);
 
   const isTestEnv =
     (typeof globalThis !== 'undefined' && Boolean((globalThis as {__TEST_ENV__?: unknown}).__TEST_ENV__)) ||
@@ -683,61 +687,89 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
     [hasAnalyticsConsent, hasMarketingConsent, isMetaPixelLoaded, isTikTokPixelLoaded],
   );
 
-  /**
-   * Track page views across all platforms
-   */
-  const trackPageView = useCallback((page: string) => {
-    if (hasAnalyticsConsent || hasMarketingConsent) {
+  const dispatchPageView = useCallback((page: string) => {
+    if (!page) {
+      return;
+    }
+
+    const pageTitle = typeof document !== 'undefined' ? document.title : undefined;
+    const pageLocation = typeof window !== 'undefined' ? window.location.href : undefined;
+    const pageReferrer = typeof document !== 'undefined' ? document.referrer || undefined : undefined;
+
+    if (
+      (hasAnalyticsConsent || hasMarketingConsent) &&
+      lastDataLayerPagePathRef.current !== page
+    ) {
       pushDataLayerEvent('page_view', {
         page_path: page,
-        page_title: typeof document !== 'undefined' ? document.title : undefined,
+        page_title: pageTitle,
+        page_location: pageLocation,
+        page_referrer: pageReferrer,
       });
+      lastDataLayerPagePathRef.current = page;
     }
 
-    // Track in GA4
-    if (hasAnalyticsConsent && isGA4Loaded && typeof window !== 'undefined' && typeof window.gtag === 'function' && ga4MeasurementId) {
-      window.gtag('config', ga4MeasurementId, {
+    if (
+      hasAnalyticsConsent &&
+      isGA4Loaded &&
+      typeof window !== 'undefined' &&
+      typeof window.gtag === 'function' &&
+      ga4MeasurementId &&
+      lastGa4PagePathRef.current !== page
+    ) {
+      window.gtag('event', 'page_view', {
         page_path: page,
+        page_title: pageTitle,
+        page_location: pageLocation,
+        page_referrer: pageReferrer,
       });
+      lastGa4PagePathRef.current = page;
     }
 
-    // Track in Meta Pixel
-    if (hasMarketingConsent && isMetaPixelLoaded && typeof window !== 'undefined' && typeof window.fbq === 'function') {
-      const currentPagePath =
-        `${window.location.pathname}${window.location.search}${window.location.hash}` || page;
-      if (lastMetaPageViewPathRef.current !== currentPagePath) {
+    if (
+      hasMarketingConsent &&
+      isMetaPixelLoaded &&
+      typeof window !== 'undefined' &&
+      typeof window.fbq === 'function' &&
+      lastMetaPageViewPathRef.current !== page
+    ) {
         window.fbq('track', 'PageView');
-        lastMetaPageViewPathRef.current = currentPagePath;
-      }
+        lastMetaPageViewPathRef.current = page;
     }
 
-    if (hasMarketingConsent && isTikTokPixelLoaded && typeof window !== 'undefined' && typeof window.ttq?.page === 'function') {
+    if (
+      hasMarketingConsent &&
+      isTikTokPixelLoaded &&
+      typeof window !== 'undefined' &&
+      typeof window.ttq?.page === 'function' &&
+      lastTikTokPagePathRef.current !== page
+    ) {
       window.ttq.page();
+      lastTikTokPagePathRef.current = page;
     }
 
-    // Log for debugging
     if (env.DEV) {
       const summary = summarizePathForLogs(page);
       console.log(`Tracking page view: ${summary.path}`, {hasQuery: summary.hasQuery});
     }
   }, [ga4MeasurementId, hasAnalyticsConsent, hasMarketingConsent, isGA4Loaded, isMetaPixelLoaded, isTikTokPixelLoaded]);
 
+  /**
+   * Track page views across all platforms.
+   * Persist the latest route so late-loading consented runtimes still receive it.
+   */
+  const trackPageView = useCallback((page: string) => {
+    setCurrentPagePath(page);
+    dispatchPageView(page);
+  }, [dispatchPageView]);
+
   useEffect(() => {
-    if (!hasMarketingConsent || !isMetaPixelLoaded || typeof window === 'undefined') {
+    if (!currentPagePath) {
       return;
     }
 
-    const currentPagePath =
-      `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    if (lastMetaPageViewPathRef.current === currentPagePath) {
-      return;
-    }
-
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'PageView');
-      lastMetaPageViewPathRef.current = currentPagePath;
-    }
-  }, [hasMarketingConsent, isMetaPixelLoaded]);
+    dispatchPageView(currentPagePath);
+  }, [currentPagePath, dispatchPageView]);
 
   const contextValue: TrackingContextType = {
     isGtmLoaded,

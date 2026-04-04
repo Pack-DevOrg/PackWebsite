@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
   BrowserRouter,
@@ -10,7 +10,7 @@ import { ThemeProvider } from "./styles/ThemeProvider";
 
 import { AuthProvider } from "./auth/AuthContext";
 import ConsentBanner from "./components/ConsentBanner";
-import TrackingProvider from "./components/TrackingProvider";
+import TrackingProvider, { useTracking } from "./components/TrackingProvider";
 import ServiceWorkerProvider from "./components/ServiceWorkerProvider";
 import PerformanceProvider from "./components/PerformanceProvider";
 import { useMountEffect } from "./hooks/useMountEffect";
@@ -23,6 +23,7 @@ import HomePage from "./routes/HomePage";
 export const AppRoutes: React.FC = () => (
   <I18nProvider>
     <>
+      <RouteTrackingCoordinator />
       <HomeRouteSwitch />
       <ConsentBanner />
     </>
@@ -65,6 +66,18 @@ const HomeRouteSwitch: React.FC = () => {
       <NonHomeRoutes />
     </Suspense>
   );
+};
+
+const RouteTrackingCoordinator: React.FC = () => {
+  const location = useLocation();
+  const { trackPageView } = useTracking();
+
+  useEffect(() => {
+    const pagePath = `${location.pathname}${location.search}${location.hash}` || "/";
+    trackPageView(pagePath);
+  }, [location.hash, location.pathname, location.search, trackPageView]);
+
+  return null;
 };
 
 interface AppProvidersProps {

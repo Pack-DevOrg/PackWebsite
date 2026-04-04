@@ -83,6 +83,16 @@ const TrackMarketingEventHarness: React.FC<{eventName: string}> = ({eventName}) 
   return <div>marketing-tracked</div>;
 };
 
+const TrackPageViewHarness: React.FC<{page: string}> = ({page}) => {
+  const {trackPageView} = useTracking();
+
+  React.useEffect(() => {
+    trackPageView(page);
+  }, [page, trackPageView]);
+
+  return <div>page-view-tracked</div>;
+};
+
 describe('TrackingProvider consent gating', () => {
   const localStorageMock = {
     getItem: jest.fn(),
@@ -103,6 +113,7 @@ describe('TrackingProvider consent gating', () => {
     document.cookie = 'tracking-consent=; max-age=0; path=/';
     document.cookie = 'tracking-consent-timestamp=; max-age=0; path=/';
     window.dataLayer = [];
+    window.gtag = jest.fn();
     window.fbq = jest.fn() as unknown as Window['fbq'];
   });
 
@@ -244,6 +255,62 @@ describe('TrackingProvider consent gating', () => {
       }),
     );
     expect(matchingEvent?.email_hash).toBeUndefined();
+  });
+
+  it('does not emit GA4 page views without analytics consent', async () => {
+    localStorageMock.getItem.mockImplementation((key: string) => {
+      if (key === 'tracking-consent') return 'partial';
+      if (key === 'tracking-consent-timestamp') return Date.now().toString();
+      if (key === 'tracking-preferences') {
+        return JSON.stringify({analytics: false, marketing: true, functional: true});
+      }
+      return null;
+    });
+
+    render(
+      <TestWrapper>
+        <TrackPageViewHarness page="/pricing" />
+      </TestWrapper>,
+    );
+
+    await flushIdle();
+
+    expect(window.gtag).not.toHaveBeenCalledWith(
+      'event',
+      'page_view',
+      expect.objectContaining({page_path: '/pricing'}),
+    );
+  });
+
+  it('emits a GA4 page view once analytics consented runtime is ready', async () => {
+    runtimeMock.loadGA4Runtime.mockImplementation(async ({onLoaded}: {onLoaded: () => void}) => {
+      onLoaded();
+    });
+
+    localStorageMock.getItem.mockImplementation((key: string) => {
+      if (key === 'tracking-consent') return 'partial';
+      if (key === 'tracking-consent-timestamp') return Date.now().toString();
+      if (key === 'tracking-preferences') {
+        return JSON.stringify({analytics: true, marketing: false, functional: true});
+      }
+      return null;
+    });
+
+    render(
+      <TestWrapper>
+        <TrackPageViewHarness page="/pricing?utm_source=ad" />
+      </TestWrapper>,
+    );
+
+    await flushIdle();
+
+    expect(window.gtag).toHaveBeenCalledWith(
+      'event',
+      'page_view',
+      expect.objectContaining({
+        page_path: '/pricing?utm_source=ad',
+      }),
+    );
   });
 
   it('maps waitlist leads to the standard Meta Lead event', async () => {

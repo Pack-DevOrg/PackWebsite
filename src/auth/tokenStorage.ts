@@ -2,13 +2,13 @@ import type { AuthSession, AuthTokens, PendingPkceSession } from "./types";
 import { createEncryptedStorage } from "@/utils/encryptedBrowserStorage";
 import { deleteCookie, getCookie, setCookie } from "@/utils/cookies";
 
-const SESSION_STORAGE_KEY = "doneai.auth.session.v1";
-const LEGACY_LOCAL_STORAGE_KEY = "doneai.auth.session.v1";
-const PKCE_STORAGE_KEY = "doneai.auth.pkce.v1";
-const PKCE_COOKIE_KEY = "doneai.auth.pkce.shared.v1";
-const LOGOUT_INTENT_KEY = "doneai.auth.logout.intent.v1";
-const AUTH_RETRY_BLOCK_KEY = "doneai.auth.retry.block.v1";
-const AUTH_HINT_COOKIE_KEY = "doneai.auth.hint.v1";
+const SESSION_STORAGE_KEY = "pack.auth.session.v1";
+const LEGACY_LOCAL_STORAGE_KEY = "pack.auth.session.v1";
+const PKCE_STORAGE_KEY = "pack.auth.pkce.v1";
+const PKCE_COOKIE_KEY = "pack.auth.pkce.shared.v1";
+const LOGOUT_INTENT_KEY = "pack.auth.logout.intent.v1";
+const AUTH_RETRY_BLOCK_KEY = "pack.auth.retry.block.v1";
+const AUTH_HINT_COOKIE_KEY = "pack.auth.hint.v1";
 const PKCE_MAX_AGE_MS = 10 * 60 * 1000;
 
 const isBrowser = typeof window !== "undefined";

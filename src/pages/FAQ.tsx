@@ -199,7 +199,7 @@ const faqContent = {
         icon: <Smartphone />,
         items: [
           {
-            id: "what-is-doneai",
+            id: "what-is-pack",
             question: "What is Pack?",
             answer:
               "Pack is a travel planning app that turns conversation, confirmations, and calendar context into organized trip drafts. Instead of juggling tabs, emails, and booking sites, you get one clearer view of the trip before checkout.",
@@ -224,7 +224,7 @@ const faqContent = {
         icon: <PlaneTakeoff />,
         items: [
           {
-            id: "what-can-doneai-book",
+            id: "what-can-pack-book",
             question: "What can Pack help me book?",
             answer:
               "Pack helps coordinate flights and hotels, then sends you into the airline or hotel checkout flow to complete the booking. The reservation and payment stay with the provider.",
@@ -488,7 +488,7 @@ const faqContent = {
         icon: <Smartphone />,
         items: [
           {
-            id: "what-is-doneai",
+            id: "what-is-pack",
             question: "¿Qué es Pack?",
             answer:
               "Pack es una app de planificación de viajes que convierte conversaciones, confirmaciones y contexto del calendario en borradores de viaje organizados. En lugar de saltar entre pestañas, correos y sitios de reserva, obtienes una vista más clara del viaje antes del checkout.",
@@ -513,7 +513,7 @@ const faqContent = {
         icon: <PlaneTakeoff />,
         items: [
           {
-            id: "what-can-doneai-book",
+            id: "what-can-pack-book",
             question: "¿Qué puede ayudarme a reservar Pack?",
             answer:
               "Pack ayuda a coordinar vuelos y hoteles, y luego te envía al flujo de checkout de la aerolínea o del hotel para completar la reserva. La reservación y el pago permanecen con el proveedor.",

@@ -2,7 +2,7 @@
  * Common Schema Definitions
  *
  * This module provides standardized Zod schemas for common data types
- * used throughout the DoneAIServer application. These are basic, reusable
+ * used throughout the Pack server application. These are basic, reusable
  * schemas that can be composed into more complex schemas.
  *
  * @module shared/schemas/common
@@ -18,7 +18,7 @@ export enum TokenProvider {
   Microsoft = "Microsoft",
   Apple = "SignInWithApple",
   Plaid = "Plaid",
-  DoneAIDemo = "DoneAIDemo",
+  PackDemo = "PackDemo",
 }
 
 /**

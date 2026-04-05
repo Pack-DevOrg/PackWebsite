@@ -48,8 +48,18 @@ describe("PrivacyRequestPage", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Submit a request to access, delete, correct, or manage certain privacy choices related to Pack/i,
+        /Submit a request to access, delete, correct, or manage your privacy rights related to Pack/i,
       ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", {
+        name: "Do Not Sell or Share My Personal Information",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", {
+        name: "Limit the Use of My Sensitive Personal Information",
+      }),
     ).toBeInTheDocument();
   });
 

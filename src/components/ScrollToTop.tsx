@@ -91,9 +91,9 @@ const ArrowWrap = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  animation: doneaiArrowBounce 2s ease-in-out infinite;
+  animation: packArrowBounce 2s ease-in-out infinite;
 
-  @keyframes doneaiArrowBounce {
+  @keyframes packArrowBounce {
     0%,
     100% {
       transform: translateY(0);

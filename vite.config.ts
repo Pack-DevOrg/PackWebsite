@@ -218,13 +218,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
           return 'travel-map-vendor';
         }
 
-        if (
-          id.includes('/src/components/app/') &&
-          !id.includes('/src/components/app/AppShell.tsx')
-        ) {
-          return 'app-trips-ui';
-        }
-
         return undefined;
       };
 

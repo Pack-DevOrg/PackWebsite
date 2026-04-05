@@ -88,7 +88,7 @@ declare global {
 }
 
 const TrackingContext = createContext<TrackingContextType | undefined>(undefined);
-export const OPEN_PRIVACY_PREFERENCES_EVENT = 'doneai:open-privacy-preferences';
+export const OPEN_PRIVACY_PREFERENCES_EVENT = 'pack:open-privacy-preferences';
 
 const CONSENT_ID_COOKIE_KEY = 'tracking-consent-id';
 const CONSENT_VERSION = 'website-consent-2025-10-09';

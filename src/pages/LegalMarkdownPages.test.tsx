@@ -10,7 +10,6 @@ import {getLegalOverrideEnvVarName} from '../legal/legalDocuments';
 
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from './TermsOfService';
-import DoNotSell from './DoNotSell';
 
 jest.mock('../services/consentLogger', () => ({
   logConsentEvent: jest.fn().mockResolvedValue(undefined),
@@ -141,25 +140,5 @@ describe('Legal markdown pages', () => {
       expect(screen.getByText('Hello')).toBeInTheDocument();
     });
     expect(document).not.toHaveTextContent(/Showing a cached copy due to a network issue/i);
-  });
-
-  test('DoNotSell fetches markdown from site root', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        status: 200,
-        statusText: 'OK',
-        text: () =>
-          Promise.resolve(
-            '# Do Not Sell My Personal Information\n\n## Scope\n\nHello',
-          ),
-      }),
-    ) as jest.Mock;
-
-    renderWithProviders(<DoNotSell />);
-
-    expect(await screen.findByText(/Scope/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Hello/i)).toBeInTheDocument();
-    expect(global.fetch).toHaveBeenCalledWith('/DoNotSell.md', expect.any(Object));
   });
 });

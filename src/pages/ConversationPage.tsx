@@ -51,7 +51,7 @@ type PlannerState = {
 };
 
 const conversationStorage = createEncryptedStorage({
-  namespace: "doneai-web-conversation",
+  namespace: "pack-web-conversation",
   area: "local",
 });
 

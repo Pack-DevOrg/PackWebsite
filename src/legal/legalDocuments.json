@@ -31,21 +31,6 @@
         "reviewedAt": "2026-04-04",
         "reviewedSha256": "528433b05b259f83c24ca13dbf61e1c81918d4434e76921b8f43c2fb4544a92b"
       }
-    },
-    {
-      "id": "do-not-sell",
-      "locale": "en",
-      "title": "Do Not Sell or Share My Personal Information",
-      "translationNamespace": "legal.doNotSell",
-      "publicPath": "/DoNotSell.md",
-      "sourceFile": "public/DoNotSell.md",
-      "fallbackExportName": "DO_NOT_SELL_FALLBACK",
-      "lock": {
-        "mode": "hard",
-        "reviewed": true,
-        "reviewedAt": "2026-04-04",
-        "reviewedSha256": "d5d9ecba63ca92139168ef2ac5fd3b8987fbd7510ba97c63d7474d675f6f50c4"
-      }
     }
   ],
   "auxiliaryFiles": [

@@ -2,7 +2,7 @@
  * Travel Preferences Schema Definitions
  * 
  * This module provides standardized Zod schemas for travel preferences
- * used throughout the DoneAIServer application. Updated to match the
+ * used throughout the Pack server application. Updated to match the
  * clustered structure used in the service layer.
  * 
  * @module shared/schemas/travel-preferences

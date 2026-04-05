@@ -47,7 +47,7 @@ interface UseLegalMarkdownResult {
 }
 
 function getStorageKey(url: string): string {
-  return `doneai:legal-markdown:${LEGAL_MARKDOWN_CACHE_VERSION}:${url}`;
+  return `pack:legal-markdown:${LEGAL_MARKDOWN_CACHE_VERSION}:${url}`;
 }
 
 async function sleep(ms: number): Promise<void> {

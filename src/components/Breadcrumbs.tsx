@@ -126,7 +126,6 @@ const BreadcrumbsInstance: React.FC<BreadcrumbsProps> = ({ className }) => {
     '/how-it-works': t('breadcrumb.howItWorks'),
     '/terms': t('breadcrumb.terms'),
     '/privacy': t('breadcrumb.privacy'),
-    '/do-not-sell': t('breadcrumb.doNotSell'),
     '/privacy-request': t('breadcrumb.privacyRequest'),
     '/privacy-request/verify': t('breadcrumb.privacyRequestVerify'),
     '/accessibility': t('breadcrumb.accessibility'),

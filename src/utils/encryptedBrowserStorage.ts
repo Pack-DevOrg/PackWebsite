@@ -11,7 +11,7 @@ interface EncryptedPayload {
   readonly data: string;
 }
 
-const KEY_DB_NAME = "doneai-secure-storage";
+const KEY_DB_NAME = "pack-secure-storage";
 const KEY_STORE_NAME = "crypto-keys";
 const KEY_DB_VERSION = 1;
 

@@ -327,7 +327,7 @@ const NonHomeRoutes: React.FC = () => {
           path="/do-not-sell"
           element={
             <LocalizedRouteGuard>
-              <Navigate to={pathFor("/privacy-request")} replace />
+              <Navigate to={pathFor("/privacy-request/opt-out")} replace />
             </LocalizedRouteGuard>
           }
         />
@@ -644,7 +644,7 @@ const NonHomeRoutes: React.FC = () => {
           <Route
             path="do-not-sell"
             element={
-              <Navigate to={pathFor("/privacy-request")} replace />
+              <Navigate to={pathFor("/privacy-request/opt-out")} replace />
             }
           />
           <Route

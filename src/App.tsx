@@ -8,7 +8,6 @@ import {
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "./styles/ThemeProvider";
 
-import { AuthProvider } from "./auth/AuthContext";
 import ConsentBanner from "./components/ConsentBanner";
 import TrackingProvider, { useTracking } from "./components/TrackingProvider";
 import ServiceWorkerProvider from "./components/ServiceWorkerProvider";
@@ -17,7 +16,6 @@ import { useMountEffect } from "./hooks/useMountEffect";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { stripLocaleFromPath } from "./i18n/config";
 import { createQueryClient } from "./queryClient";
-import { env } from "./utils/env";
 import HomePage from "./routes/HomePage";
 
 export const AppRoutes: React.FC = () => (
@@ -30,17 +28,7 @@ export const AppRoutes: React.FC = () => (
   </I18nProvider>
 );
 
-const ReactQueryDevtools =
-  env.DEV === true
-    ? React.lazy(async () => {
-        const module = await import("@tanstack/react-query-devtools");
-        return {
-          default: module.ReactQueryDevtools as unknown as React.ComponentType<any>,
-        };
-      })
-    : null;
-
-const NonHomeRoutes = React.lazy(() => import("./routes/NonHomeRoutes"));
+const NonHomeApp = React.lazy(() => import("./routes/NonHomeApp"));
 
 const HomeRouteSwitch: React.FC = () => {
   const location = useLocation();
@@ -63,7 +51,7 @@ const HomeRouteSwitch: React.FC = () => {
 
   return (
     <Suspense fallback={null}>
-      <NonHomeRoutes />
+      <NonHomeApp />
     </Suspense>
   );
 };
@@ -90,37 +78,21 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
   helmetContext,
 }) => {
   const [queryClient] = useState(() => createQueryClient());
-  const devtools =
-    ReactQueryDevtools !== null ? (
-      <Suspense fallback={null}>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </Suspense>
-    ) : null;
   const providerTree =
     typeof window === "undefined" ? (
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <TrackingProvider>
-              {children}
-              {devtools}
-            </TrackingProvider>
-          </AuthProvider>
+          <TrackingProvider>{children}</TrackingProvider>
         </QueryClientProvider>
       </ThemeProvider>
     ) : (
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <PerformanceProvider>
-              <ServiceWorkerProvider>
-                <TrackingProvider>
-                  {children}
-                  {devtools}
-                </TrackingProvider>
-              </ServiceWorkerProvider>
-            </PerformanceProvider>
-          </AuthProvider>
+          <PerformanceProvider>
+            <ServiceWorkerProvider>
+              <TrackingProvider>{children}</TrackingProvider>
+            </ServiceWorkerProvider>
+          </PerformanceProvider>
         </QueryClientProvider>
       </ThemeProvider>
     );
@@ -139,7 +111,7 @@ const App: React.FC = () => (
   </>
 );
 
-const DYNAMIC_IMPORT_RELOAD_KEY = "doneai_dynamic_import_reload_attempted";
+const DYNAMIC_IMPORT_RELOAD_KEY = "pack_dynamic_import_reload_attempted";
 
 const isDynamicImportFailure = (message: string): boolean =>
   /Failed to fetch dynamically imported module|Importing a module script failed|ChunkLoadError/i.test(

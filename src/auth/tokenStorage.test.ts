@@ -10,8 +10,8 @@ import {
 } from './tokenStorage';
 import type { AuthSession } from './types';
 
-const SESSION_STORAGE_KEY = 'doneai.auth.session.v1';
-const PKCE_STORAGE_KEY = 'doneai.auth.pkce.v1';
+const SESSION_STORAGE_KEY = 'pack.auth.session.v1';
+const PKCE_STORAGE_KEY = 'pack.auth.pkce.v1';
 
 const buildSession = (): AuthSession => ({
   tokens: {
@@ -102,7 +102,7 @@ describe('tokenStorage', () => {
 
     expect(window.sessionStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
     expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
-    expect(document.cookie).toContain('doneai.auth.pkce.shared.v1=');
+    expect(document.cookie).toContain('pack.auth.pkce.shared.v1=');
   });
 
   it('loads pending pkce from localStorage fallback and restores sessionStorage copy', () => {
@@ -129,7 +129,7 @@ describe('tokenStorage', () => {
       redirectUri: 'https://itsdoneai.com/auth/callback',
     };
 
-    document.cookie = `doneai.auth.pkce.shared.v1=${encodeURIComponent(JSON.stringify(pending))}; path=/`;
+    document.cookie = `pack.auth.pkce.shared.v1=${encodeURIComponent(JSON.stringify(pending))}; path=/`;
 
     expect(getPendingPkce()).toEqual(pending);
     expect(window.sessionStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
@@ -152,6 +152,6 @@ describe('tokenStorage', () => {
 
     expect(window.sessionStorage.getItem(PKCE_STORAGE_KEY)).toBeNull();
     expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeNull();
-    expect(document.cookie).not.toContain('doneai.auth.pkce.shared.v1=');
+    expect(document.cookie).not.toContain('pack.auth.pkce.shared.v1=');
   });
 });

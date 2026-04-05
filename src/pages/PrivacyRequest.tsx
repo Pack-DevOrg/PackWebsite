@@ -335,9 +335,15 @@ const PrivacyRequestPage: React.FC = () => {
           requestTypeOptions: [
             { value: "access" as const, label: "Access my personal data" },
             { value: "delete" as const, label: "Delete my Pack account" },
-            { value: "opt_out" as const, label: "Opt out of data sharing" },
+            {
+              value: "opt_out" as const,
+              label: "Do Not Sell or Share My Personal Information",
+            },
             { value: "correction" as const, label: "Correct inaccurate data" },
-            { value: "limit_processing" as const, label: "Limit sensitive data processing" },
+            {
+              value: "limit_processing" as const,
+              label: "Limit the Use of My Sensitive Personal Information",
+            },
           ],
           recaptchaMissing: "reCAPTCHA is not configured. Please contact support.",
           recaptchaInitFailed: "Security verification unavailable. Please refresh the page.",
@@ -354,7 +360,7 @@ const PrivacyRequestPage: React.FC = () => {
           genericFailure: "We were unable to submit your request. Please try again.",
           title: "Your Privacy Choices",
           description:
-            "Submit a request to access, delete, correct, or manage certain privacy choices related to Pack (including to limit our use of certain sensitive data). We’ll follow up by email to confirm your identity and provide an update within the legally required timeframe.",
+            "Submit a request to access, delete, correct, or manage your privacy rights related to Pack, including the right to opt out of the sale or sharing of personal information and to limit our use of certain sensitive personal information. We’ll follow up by email to confirm your identity and provide an update within the legally required timeframe.",
           accountDeletionTitle: "Deleting a Pack account",
           accountDeletionLead:
             "To avoid fraudulent deletion requests, Pack accounts must be deleted from an authenticated in-app session.",

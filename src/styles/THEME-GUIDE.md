@@ -1,4 +1,4 @@
-# DoneAI Website Theme Guide
+# Pack Website Theme Guide
 
 This guide explains how to use the global theme system to maintain consistent colors, typography, and branding across the website.
 

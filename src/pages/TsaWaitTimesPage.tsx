@@ -763,12 +763,14 @@ const Overlay = styled.div`
 `;
 
 const Modal = styled.div`
-  width: min(calc(100vw - 1rem), 840px);
+  width: min(calc(100vw - 1rem), 1040px);
   position: relative;
   max-height: calc(100dvh - 1rem);
   overflow-y: scroll;
   overflow-x: hidden;
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(243, 210, 122, 0.55) rgba(255, 248, 236, 0.08);
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   border-radius: 1.35rem;
@@ -784,6 +786,90 @@ const Modal = styled.div`
     border-radius: 1.6rem;
     padding: 1.2rem;
   }
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 248, 236, 0.08);
+    border-left: 1px solid rgba(243, 210, 122, 0.08);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      rgba(243, 210, 122, 0.75),
+      rgba(231, 35, 64, 0.68)
+    );
+    border: 2px solid rgba(18, 14, 10, 0.92);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      rgba(243, 210, 122, 0.9),
+      rgba(231, 35, 64, 0.82)
+    );
+  }
+`;
+
+const ModalBody = styled.div`
+  display: grid;
+  gap: 1rem;
+`;
+
+const SignupChoiceGrid = styled.div`
+  display: grid;
+  gap: 0.9rem;
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+`;
+
+const SignupChoiceCard = styled.div`
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+  align-content: start;
+  padding: 1rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(243, 210, 122, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.05), rgba(255, 248, 236, 0.02)),
+    rgba(12, 9, 7, 0.46);
+
+  @media (min-width: 960px) {
+    min-height: 100%;
+    padding: 1.05rem 1.1rem;
+  }
+`;
+
+const SignupChoiceEyebrow = styled.p`
+  margin: 0;
+  color: rgba(243, 210, 122, 0.82);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+`;
+
+const SignupChoiceTitle = styled.h3`
+  margin: 0;
+  color: #fff7e7;
+  font-size: 1.05rem;
+  line-height: 1.2;
+`;
+
+const SignupChoiceText = styled.p`
+  margin: 0;
+  color: rgba(247, 240, 227, 0.66);
+  font-size: 0.92rem;
+  line-height: 1.5;
 `;
 
 const ModalHeader = styled.div`
@@ -826,7 +912,7 @@ const ModalText = styled.p`
 const ModalActions = styled.div`
   display: grid;
   gap: 0.65rem;
-  padding: 0.45rem 0 0.05rem;
+  padding: 0.15rem 0 0.05rem;
   justify-items: center;
 `;
 
@@ -851,27 +937,6 @@ const GoogleBridgeErrorText = styled.p`
   font-size: 0.88rem;
   line-height: 1.45;
   text-align: center;
-`;
-
-const ModalDivider = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  width: 100%;
-  gap: 0.9rem;
-  margin: 0.45rem 0 0.35rem;
-  color: rgba(247, 240, 227, 0.4);
-  font-size: 0.76rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-
-  &::before,
-  &::after {
-    content: "";
-    height: 1px;
-    background: rgba(247, 240, 227, 0.16);
-  }
 `;
 
 const GoogleLoginButton = styled.button`
@@ -2405,71 +2470,88 @@ const TsaWaitTimesPage: React.FC = () => {
       {isModalOpen ? (
         <Overlay role="dialog" aria-modal="true" aria-labelledby="tsa-email-title">
           <Modal>
-            <ModalHeader>
-              <ModalTitle id="tsa-email-title">
-                Get early access to <BrandWord>Pack</BrandWord> and TSA times
-              </ModalTitle>
-              <ModalText>
-                <BrandWord>Pack</BrandWord> takes your inbox, calendar,
-                preferences, and booking options and turns &quot;Book my meetings
-                next month&quot; into the hotels, flights, and rental cars you
-                would book yourself.
-              </ModalText>
-            </ModalHeader>
-            <ModalActions>
-              {hasGoogleGisConfigured ? (
-                <>
-                  <GoogleButtonMount ref={googleButtonRef} />
-                  {!isGoogleGisReady ? (
-                    <GoogleButtonStatus>
-                      Loading Google sign-in…
-                    </GoogleButtonStatus>
-                  ) : null}
-                </>
-              ) : null}
-              {googleBridgeError ? (
-                <GoogleBridgeErrorText>{googleBridgeError}</GoogleBridgeErrorText>
-              ) : null}
-              {isGoogleBridgeLoading ? (
-                <GoogleButtonStatus>
-                  Finishing Google sign-in…
-                </GoogleButtonStatus>
-              ) : null}
-              {shouldShowGoogleRedirectFallback ? (
-                <GoogleLoginButton
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  disabled={status === "loading" || isGoogleBridgeLoading}
-                >
-                  <GoogleLogoWrap>
-                    <GoogleMark />
-                  </GoogleLogoWrap>
-                  Continue with Google
-                </GoogleLoginButton>
-              ) : null}
-              <ModalDivider>Or</ModalDivider>
-            </ModalActions>
-            <WaitlistForm
-              variant="embedded"
-              showTitle={false}
-              onSuccess={handleWaitlistSuccess}
-              showLegalNotice={false}
-            />
-            <ModalFooter>
-              <ModalDismissButton type="button" onClick={closeModal}>
-                I'm already on the waitlist
-              </ModalDismissButton>
-              <ModalLegalNote>
-                {acceptanceNotice.prefix}{" "}
-                <a href={pathFor("/terms")}>{acceptanceNotice.termsLabel}</a>{" "}
-                {acceptanceNotice.middle}{" "}
-                <a href={pathFor("/privacy")}>{acceptanceNotice.privacyLabel}</a>.{" "}
-                {acceptanceNotice.suffix}{" "}
-                <a href={pathFor("/privacy-request")}>
-                  {acceptanceNotice.privacyChoicesLabel}
-                </a>.
-              </ModalLegalNote>
-            </ModalFooter>
+            <ModalBody>
+              <ModalHeader>
+                <ModalTitle id="tsa-email-title">
+                  Get early access to <BrandWord>Pack</BrandWord> and TSA times
+                </ModalTitle>
+                <ModalText>
+                  <BrandWord>Pack</BrandWord> takes your inbox, calendar,
+                  preferences, and booking options and turns &quot;Book my meetings
+                  next month&quot; into the hotels, flights, and rental cars you
+                  would book yourself.
+                </ModalText>
+              </ModalHeader>
+              <SignupChoiceGrid>
+                <SignupChoiceCard>
+                  <SignupChoiceEyebrow>Fastest</SignupChoiceEyebrow>
+                  <SignupChoiceTitle>Continue with Google</SignupChoiceTitle>
+                  <SignupChoiceText>
+                    Use your Google account to skip the form and keep moving.
+                  </SignupChoiceText>
+                  <ModalActions>
+                    {hasGoogleGisConfigured ? (
+                      <>
+                        <GoogleButtonMount ref={googleButtonRef} />
+                        {!isGoogleGisReady ? (
+                          <GoogleButtonStatus>
+                            Loading Google sign-in…
+                          </GoogleButtonStatus>
+                        ) : null}
+                      </>
+                    ) : null}
+                    {googleBridgeError ? (
+                      <GoogleBridgeErrorText>{googleBridgeError}</GoogleBridgeErrorText>
+                    ) : null}
+                    {isGoogleBridgeLoading ? (
+                      <GoogleButtonStatus>
+                        Finishing Google sign-in…
+                      </GoogleButtonStatus>
+                    ) : null}
+                    {shouldShowGoogleRedirectFallback ? (
+                      <GoogleLoginButton
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={status === "loading" || isGoogleBridgeLoading}
+                      >
+                        <GoogleLogoWrap>
+                          <GoogleMark />
+                        </GoogleLogoWrap>
+                        Continue with Google
+                      </GoogleLoginButton>
+                    ) : null}
+                  </ModalActions>
+                </SignupChoiceCard>
+                <SignupChoiceCard>
+                  <SignupChoiceEyebrow>Fallback</SignupChoiceEyebrow>
+                  <SignupChoiceTitle>Join by email</SignupChoiceTitle>
+                  <SignupChoiceText>
+                    Prefer not to use Google? Drop your email and we’ll keep you updated.
+                  </SignupChoiceText>
+                  <WaitlistForm
+                    variant="embedded"
+                    showTitle={false}
+                    onSuccess={handleWaitlistSuccess}
+                    showLegalNotice={false}
+                  />
+                </SignupChoiceCard>
+              </SignupChoiceGrid>
+              <ModalFooter>
+                <ModalDismissButton type="button" onClick={closeModal}>
+                  I'm already on the waitlist
+                </ModalDismissButton>
+                <ModalLegalNote>
+                  {acceptanceNotice.prefix}{" "}
+                  <a href={pathFor("/terms")}>{acceptanceNotice.termsLabel}</a>{" "}
+                  {acceptanceNotice.middle}{" "}
+                  <a href={pathFor("/privacy")}>{acceptanceNotice.privacyLabel}</a>.{" "}
+                  {acceptanceNotice.suffix}{" "}
+                  <a href={pathFor("/privacy-request")}>
+                    {acceptanceNotice.privacyChoicesLabel}
+                  </a>.
+                </ModalLegalNote>
+              </ModalFooter>
+            </ModalBody>
           </Modal>
         </Overlay>
       ) : null}

@@ -35,6 +35,7 @@ const AIRPORT_SEARCH_ALIAS_RANK: Record<string, number> = {
 };
 
 const WAITLIST_MODAL_FORCE_QUERY_KEY = "forceModal";
+const MOBILE_GOOGLE_BUTTON_BREAKPOINT = 640;
 
 const normalizeAirportSearchText = (value: string | undefined): string =>
   (value ?? "").trim().toLowerCase();
@@ -753,7 +754,7 @@ const Overlay = styled.div`
   align-items: center;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0.5rem;
+  padding: 0.35rem;
   background: rgba(7, 5, 4, 0.74);
   backdrop-filter: blur(12px);
 
@@ -763,9 +764,9 @@ const Overlay = styled.div`
 `;
 
 const Modal = styled.div`
-  width: min(calc(100vw - 1rem), 1040px);
+  width: min(calc(100vw - 0.7rem), 1040px);
   position: relative;
-  max-height: calc(100dvh - 1rem);
+  max-height: calc(100dvh - 0.7rem);
   overflow-y: scroll;
   overflow-x: hidden;
   scrollbar-gutter: stable;
@@ -773,13 +774,13 @@ const Modal = styled.div`
   scrollbar-color: rgba(243, 210, 122, 0.55) rgba(255, 248, 236, 0.08);
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-  border-radius: 1.35rem;
+  border-radius: 1.1rem;
   border: 1px solid rgba(243, 210, 122, 0.16);
   background:
     radial-gradient(circle at top left, rgba(231, 35, 64, 0.14), transparent 26%),
     linear-gradient(180deg, rgba(18, 14, 10, 0.98), rgba(12, 9, 7, 0.98));
   box-shadow: 0 32px 100px rgba(0, 0, 0, 0.42);
-  padding: 0.9rem;
+  padding: 0.95rem 0.9rem;
 
   @media (min-width: 640px) {
     max-height: calc(100dvh - clamp(1.1rem, 4vw, 4rem));
@@ -838,7 +839,8 @@ const SignupChoiceCard = styled.div`
   display: grid;
   gap: 0.55rem;
   min-width: 0;
-  width: min(100%, 34rem);
+  width: 100%;
+  box-sizing: border-box;
   align-content: center;
   justify-items: center;
   padding: 0.9rem;
@@ -847,6 +849,10 @@ const SignupChoiceCard = styled.div`
   background:
     linear-gradient(180deg, rgba(255, 248, 236, 0.05), rgba(255, 248, 236, 0.02)),
     rgba(12, 9, 7, 0.46);
+
+  @media (max-width: 639px) {
+    max-width: 34rem;
+  }
 
   @media (min-width: 960px) {
     width: 100%;
@@ -892,10 +898,16 @@ const ModalActions = styled.div`
 `;
 
 const GoogleButtonMount = styled.div`
-  width: min(100%, 360px);
+  width: min(100%, 320px);
+  max-width: calc(100vw - 4.2rem);
+  box-sizing: border-box;
   min-height: 44px;
   display: grid;
   justify-items: center;
+
+  @media (min-width: 640px) {
+    width: min(100%, 360px);
+  }
 `;
 
 const GoogleButtonStatus = styled.p`
@@ -919,7 +931,9 @@ const GoogleLoginButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
-  width: min(100%, 360px);
+  width: min(100%, 320px);
+  max-width: calc(100vw - 4.2rem);
+  box-sizing: border-box;
   margin-top: 0.2rem;
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -938,6 +952,10 @@ const GoogleLoginButton = styled.button`
   line-height: 1.25rem;
   letter-spacing: 0.01em;
   text-align: center;
+
+  @media (min-width: 640px) {
+    width: min(100%, 360px);
+  }
 
   &:hover:not(:disabled) {
     background: #1e1f20;
@@ -1974,12 +1992,28 @@ const TsaWaitTimesPage: React.FC = () => {
     }
 
     googleButtonRef.current.innerHTML = "";
+    const buttonWidth = Math.max(
+      220,
+      Math.floor(
+        Math.min(
+          googleButtonRef.current.getBoundingClientRect().width || 0,
+          typeof window !== "undefined" &&
+            window.innerWidth < MOBILE_GOOGLE_BUTTON_BREAKPOINT
+            ? 320
+            : 360
+        )
+      )
+    );
+    const isMobileGoogleButton =
+      typeof window !== "undefined" &&
+      window.innerWidth < MOBILE_GOOGLE_BUTTON_BREAKPOINT;
+
     accountsId.renderButton(googleButtonRef.current, {
       theme: "filled_black",
-      size: "large",
+      size: isMobileGoogleButton ? "medium" : "large",
       shape: "pill",
       text: "continue_with",
-      width: 360,
+      width: buttonWidth,
       logo_alignment: "left",
     });
   }, [isGoogleGisReady, isModalOpen]);

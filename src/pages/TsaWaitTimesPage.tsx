@@ -766,8 +766,9 @@ const Modal = styled.div`
   width: min(calc(100vw - 1rem), 840px);
   position: relative;
   max-height: calc(100dvh - 1rem);
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
+  scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   border-radius: 1.35rem;
@@ -1643,6 +1644,8 @@ const TsaWaitTimesPage: React.FC = () => {
   const { trackCTAClick } = useConversionTracking();
   const bootstrapAuthCallbackUrl = resolveBootstrapAuthCallbackUrl();
   const hasGoogleGisConfigured = Boolean(appConfig.googleGisClientId);
+  const shouldShowGoogleRedirectFallback =
+    !hasGoogleGisConfigured || !isGoogleGisReady || Boolean(googleBridgeError);
 
   useQuery({
     queryKey: ["tsa-auth-user-bootstrap", status],
@@ -2432,18 +2435,18 @@ const TsaWaitTimesPage: React.FC = () => {
                   Finishing Google sign-in…
                 </GoogleButtonStatus>
               ) : null}
-              <GoogleLoginButton
-                type="button"
-                onClick={handleGoogleLogin}
-                disabled={status === "loading" || isGoogleBridgeLoading}
-              >
-                <GoogleLogoWrap>
-                  <GoogleMark />
-                </GoogleLogoWrap>
-                {hasGoogleGisConfigured && isGoogleGisReady
-                  ? "Use Google redirect instead"
-                  : "Continue with Google"}
-              </GoogleLoginButton>
+              {shouldShowGoogleRedirectFallback ? (
+                <GoogleLoginButton
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={status === "loading" || isGoogleBridgeLoading}
+                >
+                  <GoogleLogoWrap>
+                    <GoogleMark />
+                  </GoogleLogoWrap>
+                  Continue with Google
+                </GoogleLoginButton>
+              ) : null}
               <ModalDivider>Or</ModalDivider>
             </ModalActions>
             <WaitlistForm

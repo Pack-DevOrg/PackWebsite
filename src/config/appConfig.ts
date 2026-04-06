@@ -162,6 +162,7 @@ const AppConfigSchema = z.object({
   apiBaseUrl: z.string().url(),
   cognitoDomain: z.string().url(),
   cognitoClientId: z.string().min(1, "Missing Cognito client id"),
+  googleGisClientId: z.string().min(1).optional(),
   cognitoRedirectUri: z.string().url(),
   postLogoutRedirectUri: z.string().url(),
   appBaseUrl: z.string().url(),
@@ -189,6 +190,8 @@ const resolvedConfig = AppConfigSchema.parse({
   cognitoClientId:
     (env.VITE_COGNITO_CLIENT_ID as string | undefined) ??
     defaultCognitoClientId,
+  googleGisClientId: (env.VITE_GOOGLE_GIS_CLIENT_ID as string | undefined)
+    ?.trim() || undefined,
   cognitoRedirectUri: ensureProtocol(
     normalizeUrl(
       (env.VITE_COGNITO_REDIRECT_URI as string | undefined) ??

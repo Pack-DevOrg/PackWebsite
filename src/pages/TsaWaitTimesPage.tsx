@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { AirportWaitTimeObservation } from "@/schemas/airport-security";
 import { fetchPublicAirportSecuritySummary } from "@/api/airportSecurity";
+import { requestPublicApi } from "@/api/client";
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
 import { appConfig } from "@/config/appConfig";
@@ -37,6 +38,122 @@ const WAITLIST_MODAL_FORCE_QUERY_KEY = "forceModal";
 
 const normalizeAirportSearchText = (value: string | undefined): string =>
   (value ?? "").trim().toLowerCase();
+
+type GoogleCredentialSource = "one_tap" | "button";
+
+type GoogleAccountsIdPromptMomentNotification = {
+  isNotDisplayed?: () => boolean;
+  isSkippedMoment?: () => boolean;
+};
+
+type GoogleCredentialResponse = {
+  credential?: string;
+  select_by?: string;
+};
+
+type GoogleAccountsId = {
+  initialize: (options: {
+    client_id: string;
+    callback: (response: GoogleCredentialResponse) => void;
+    auto_select?: boolean;
+    cancel_on_tap_outside?: boolean;
+    context?: "signin" | "signup" | "use";
+    itp_support?: boolean;
+    use_fedcm_for_prompt?: boolean;
+  }) => void;
+  prompt: (
+    listener?: (notification: GoogleAccountsIdPromptMomentNotification) => void
+  ) => void;
+  renderButton: (
+    element: HTMLElement,
+    options: {
+      theme?: "outline" | "filled_blue" | "filled_black";
+      size?: "large" | "medium" | "small";
+      shape?: "rectangular" | "pill" | "circle" | "square";
+      text?:
+        | "signin_with"
+        | "signup_with"
+        | "continue_with"
+        | "signin"
+        | "signup";
+      width?: number;
+      logo_alignment?: "left" | "center";
+    }
+  ) => void;
+  cancel: () => void;
+};
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: GoogleAccountsId;
+      };
+    };
+  }
+}
+
+type GoogleAuthBridgeResult = {
+  email: string;
+  emailVerified: boolean;
+  givenName?: string;
+  familyName?: string;
+  name?: string;
+  picture?: string;
+  cognitoSub: string;
+  cognitoUsername: string;
+  status:
+    | "created_and_linked"
+    | "linked_existing_local_user"
+    | "existing_google_user";
+  shouldContinueWithHostedLogin: true;
+};
+
+let googleGisScriptPromise: Promise<void> | null = null;
+
+const loadGoogleGisScript = (): Promise<void> => {
+  if (typeof window === "undefined") {
+    return Promise.resolve();
+  }
+
+  if (window.google?.accounts?.id) {
+    return Promise.resolve();
+  }
+
+  if (googleGisScriptPromise) {
+    return googleGisScriptPromise;
+  }
+
+  googleGisScriptPromise = new Promise<void>((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve(), { once: true });
+      existingScript.addEventListener(
+        "error",
+        () => reject(new Error("Failed to load Google Identity Services")),
+        { once: true }
+      );
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () =>
+      reject(new Error("Failed to load Google Identity Services"));
+    document.head.appendChild(script);
+  }).catch((error) => {
+    googleGisScriptPromise = null;
+    throw error;
+  });
+
+  return googleGisScriptPromise;
+};
 
 const Page = styled.section`
   display: grid;
@@ -710,6 +827,29 @@ const ModalActions = styled.div`
   gap: 0.65rem;
   padding: 0.45rem 0 0.05rem;
   justify-items: center;
+`;
+
+const GoogleButtonMount = styled.div`
+  width: min(100%, 360px);
+  min-height: 44px;
+  display: grid;
+  justify-items: center;
+`;
+
+const GoogleButtonStatus = styled.p`
+  margin: 0;
+  color: rgba(247, 240, 227, 0.58);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  text-align: center;
+`;
+
+const GoogleBridgeErrorText = styled.p`
+  margin: 0;
+  color: #ffd5d5;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  text-align: center;
 `;
 
 const ModalDivider = styled.div`
@@ -1481,6 +1621,9 @@ const TsaWaitTimesPage: React.FC = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [openFaqId, setOpenFaqId] = useState<string | null>(FAQ_ITEMS[0]?.id ?? null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGoogleGisReady, setIsGoogleGisReady] = useState(false);
+  const [isGoogleBridgeLoading, setIsGoogleBridgeLoading] = useState(false);
+  const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -1488,11 +1631,18 @@ const TsaWaitTimesPage: React.FC = () => {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const hasInitializedGoogleIdentityRef = useRef(false);
+  const isHandlingGoogleCredentialRef = useRef(false);
+  const handleGoogleCredentialRef = useRef<
+    ((credential: string, source: GoogleCredentialSource) => Promise<void>) | null
+  >(null);
   const resultsTopRef = useRef<HTMLElement | null>(null);
   const trimmedQuery = query.trim();
   const deferredAirportQuery = useDeferredValue(trimmedQuery.toLowerCase());
   const { trackCTAClick } = useConversionTracking();
   const bootstrapAuthCallbackUrl = resolveBootstrapAuthCallbackUrl();
+  const hasGoogleGisConfigured = Boolean(appConfig.googleGisClientId);
 
   useQuery({
     queryKey: ["tsa-auth-user-bootstrap", status],
@@ -1629,9 +1779,8 @@ const TsaWaitTimesPage: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleGoogleLogin = () => {
+  const startHostedGoogleLogin = () => {
     persistWaitlistModalCompletion();
-    trackCTAClick("TSA Waitlist Modal Google Login", "tsa_waits_modal_google_login");
 
     void login({
       redirectPath:
@@ -1642,6 +1791,155 @@ const TsaWaitTimesPage: React.FC = () => {
       useCanonicalOrigin: false,
     });
   };
+
+  const handleGoogleBridgeCredential = async (
+    credential: string,
+    source: GoogleCredentialSource
+  ): Promise<void> => {
+    if (isHandlingGoogleCredentialRef.current || !credential) {
+      return;
+    }
+
+    isHandlingGoogleCredentialRef.current = true;
+    setGoogleBridgeError(null);
+    setIsGoogleBridgeLoading(true);
+
+    trackCTAClick(
+      source === "one_tap"
+        ? "TSA Waitlist Google One Tap"
+        : "TSA Waitlist GIS Button",
+      source === "one_tap"
+        ? "tsa_waits_google_one_tap"
+        : "tsa_waits_google_gis_button"
+    );
+
+    try {
+      const redirectPath =
+        typeof window === "undefined"
+          ? "/tsa"
+          : stripWaitlistModalQueryFlags(window.location.href);
+
+      const result = await requestPublicApi<
+        GoogleAuthBridgeResult,
+        { credential: string; redirectPath: string; source: "tsa" }
+      >({
+        path: "/auth/google/bridge",
+        method: "POST",
+        body: {
+          credential,
+          redirectPath,
+          source: "tsa",
+        },
+      });
+
+      if (!result.shouldContinueWithHostedLogin) {
+        throw new Error("Google bridge response did not request hosted login.");
+      }
+
+      setIsModalOpen(false);
+      startHostedGoogleLogin();
+    } catch (error) {
+      console.error("Failed to complete Google bridge sign-in", error);
+      setGoogleBridgeError(
+        "Google sign-in couldn't finish in-page. You can continue with the standard Google redirect below."
+      );
+    } finally {
+      isHandlingGoogleCredentialRef.current = false;
+      setIsGoogleBridgeLoading(false);
+    }
+  };
+
+  handleGoogleCredentialRef.current = handleGoogleBridgeCredential;
+
+  const handleGoogleLogin = () => {
+    trackCTAClick("TSA Waitlist Modal Google Login", "tsa_waits_modal_google_login");
+    startHostedGoogleLogin();
+  };
+
+  useEffect(() => {
+    if (!isClient || status !== "unauthenticated" || !hasGoogleGisConfigured) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void loadGoogleGisScript()
+      .then(() => {
+        if (cancelled) {
+          return;
+        }
+
+        const accountsId = window.google?.accounts?.id;
+        if (!accountsId || !appConfig.googleGisClientId) {
+          return;
+        }
+
+        if (!hasInitializedGoogleIdentityRef.current) {
+          accountsId.initialize({
+            client_id: appConfig.googleGisClientId,
+            callback: (response) => {
+              if (!response.credential) {
+                return;
+              }
+              void handleGoogleCredentialRef.current?.(
+                response.credential,
+                "one_tap"
+              );
+            },
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            context: "signin",
+            itp_support: true,
+            use_fedcm_for_prompt: true,
+          });
+          hasInitializedGoogleIdentityRef.current = true;
+        }
+
+        setIsGoogleGisReady(true);
+        accountsId.prompt((notification) => {
+          if (
+            notification.isNotDisplayed?.() ||
+            notification.isSkippedMoment?.()
+          ) {
+            setIsGoogleGisReady(true);
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to initialize Google Identity Services", error);
+        if (!cancelled) {
+          setGoogleBridgeError(
+            "Google One Tap isn't available in this browser yet. The redirect flow still works."
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      window.google?.accounts?.id.cancel();
+    };
+  }, [hasGoogleGisConfigured, isClient, status]);
+
+  useEffect(() => {
+    if (!isModalOpen || !isGoogleGisReady || !googleButtonRef.current) {
+      return;
+    }
+
+    const accountsId = window.google?.accounts?.id;
+    if (!accountsId) {
+      return;
+    }
+
+    googleButtonRef.current.innerHTML = "";
+    accountsId.renderButton(googleButtonRef.current, {
+      theme: "filled_black",
+      size: "large",
+      shape: "pill",
+      text: "continue_with",
+      width: 360,
+      logo_alignment: "left",
+    });
+  }, [isGoogleGisReady, isModalOpen]);
 
   const requestLocation = () => {
     if (typeof window === "undefined" || !navigator.geolocation) {
@@ -2116,15 +2414,35 @@ const TsaWaitTimesPage: React.FC = () => {
               </ModalText>
             </ModalHeader>
             <ModalActions>
+              {hasGoogleGisConfigured ? (
+                <>
+                  <GoogleButtonMount ref={googleButtonRef} />
+                  {!isGoogleGisReady ? (
+                    <GoogleButtonStatus>
+                      Loading Google sign-in…
+                    </GoogleButtonStatus>
+                  ) : null}
+                </>
+              ) : null}
+              {googleBridgeError ? (
+                <GoogleBridgeErrorText>{googleBridgeError}</GoogleBridgeErrorText>
+              ) : null}
+              {isGoogleBridgeLoading ? (
+                <GoogleButtonStatus>
+                  Finishing Google sign-in…
+                </GoogleButtonStatus>
+              ) : null}
               <GoogleLoginButton
                 type="button"
                 onClick={handleGoogleLogin}
-                disabled={status === "loading"}
+                disabled={status === "loading" || isGoogleBridgeLoading}
               >
                 <GoogleLogoWrap>
                   <GoogleMark />
                 </GoogleLogoWrap>
-                Continue with Google
+                {hasGoogleGisConfigured && isGoogleGisReady
+                  ? "Use Google redirect instead"
+                  : "Continue with Google"}
               </GoogleLoginButton>
               <ModalDivider>Or</ModalDivider>
             </ModalActions>

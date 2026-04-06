@@ -8,6 +8,7 @@ import {
   useParams,
 } from "react-router-dom";
 import styled from "styled-components";
+import { AuthProvider } from "@/auth/AuthContext";
 import Layout from "@/components/Layout";
 import PrefetchLink from "@/components/PrefetchLink";
 import { appConfig, shouldExposeTsaForCurrentHost } from "@/config/appConfig";
@@ -565,15 +566,17 @@ const NonHomeRoutes: React.FC = () => {
           <Route
             path="/tsa"
             element={
+              <AuthProvider>
                 <Layout>
                   <Suspense fallback={null}>
                     <TsaWaitTimesPage />
                   </Suspense>
                   <Suspense fallback={null}>
                     <Footer />
-                  <ScrollToTop />
-                </Suspense>
-              </Layout>
+                    <ScrollToTop />
+                  </Suspense>
+                </Layout>
+              </AuthProvider>
             }
           />
         ) : null}
@@ -790,15 +793,17 @@ const NonHomeRoutes: React.FC = () => {
             <Route
               path="tsa"
               element={
-                <Layout>
-                  <Suspense fallback={null}>
-                    <TsaWaitTimesPage />
-                  </Suspense>
-                  <Suspense fallback={null}>
-                    <Footer />
-                    <ScrollToTop />
-                  </Suspense>
-                </Layout>
+                <AuthProvider>
+                  <Layout>
+                    <Suspense fallback={null}>
+                      <TsaWaitTimesPage />
+                    </Suspense>
+                    <Suspense fallback={null}>
+                      <Footer />
+                      <ScrollToTop />
+                    </Suspense>
+                  </Layout>
+                </AuthProvider>
               }
             />
           ) : null}

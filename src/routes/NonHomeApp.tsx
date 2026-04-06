@@ -1,5 +1,4 @@
 import React, { Suspense } from "react";
-import { AuthProvider } from "@/auth/AuthContext";
 import { env } from "@/utils/env";
 import NonHomeRoutes from "./NonHomeRoutes";
 
@@ -15,14 +14,14 @@ const ReactQueryDevtools =
 
 const NonHomeApp: React.FC = () => {
   return (
-    <AuthProvider>
+    <>
       <NonHomeRoutes />
       {ReactQueryDevtools !== null ? (
         <Suspense fallback={null}>
           <ReactQueryDevtools initialIsOpen={false} />
         </Suspense>
       ) : null}
-    </AuthProvider>
+    </>
   );
 };
 

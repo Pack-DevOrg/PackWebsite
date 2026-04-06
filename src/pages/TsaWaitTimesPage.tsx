@@ -818,25 +818,30 @@ const Modal = styled.div`
 
 const ModalBody = styled.div`
   display: grid;
-  gap: 1rem;
+  gap: 0.7rem;
+  align-content: center;
 `;
 
 const SignupChoiceGrid = styled.div`
   display: grid;
-  gap: 0.9rem;
+  gap: 0.75rem;
+  justify-items: center;
 
   @media (min-width: 960px) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
+    align-items: stretch;
+    justify-items: stretch;
   }
 `;
 
 const SignupChoiceCard = styled.div`
   display: grid;
-  gap: 0.8rem;
+  gap: 0.55rem;
   min-width: 0;
-  align-content: start;
-  padding: 1rem;
+  width: min(100%, 34rem);
+  align-content: center;
+  justify-items: center;
+  padding: 0.9rem;
   border-radius: 1.2rem;
   border: 1px solid rgba(243, 210, 122, 0.12);
   background:
@@ -844,75 +849,45 @@ const SignupChoiceCard = styled.div`
     rgba(12, 9, 7, 0.46);
 
   @media (min-width: 960px) {
+    width: 100%;
     min-height: 100%;
-    padding: 1.05rem 1.1rem;
+    padding: 0.95rem 1rem;
   }
-`;
-
-const SignupChoiceEyebrow = styled.p`
-  margin: 0;
-  color: rgba(243, 210, 122, 0.82);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-`;
-
-const SignupChoiceTitle = styled.h3`
-  margin: 0;
-  color: #fff7e7;
-  font-size: 1.05rem;
-  line-height: 1.2;
-`;
-
-const SignupChoiceText = styled.p`
-  margin: 0;
-  color: rgba(247, 240, 227, 0.66);
-  font-size: 0.92rem;
-  line-height: 1.5;
 `;
 
 const ModalHeader = styled.div`
   display: grid;
-  gap: 0.45rem;
-  padding: 0.8rem 0.9rem 0.9rem;
-  border-radius: 1.25rem;
-  background:
-    radial-gradient(circle at top left, rgba(231, 35, 64, 0.16), transparent 34%),
-    radial-gradient(circle at top right, rgba(243, 210, 122, 0.16), transparent 38%),
-    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.02));
-  border: 1px solid rgba(243, 210, 122, 0.12);
-
-  @media (min-width: 640px) {
-    padding: 1.15rem 1.25rem 1.25rem;
-  }
+  gap: 0.2rem;
+  justify-items: center;
+  text-align: center;
+  padding: 0.1rem 0.2rem;
 `;
 
 const ModalTitle = styled.h2`
   margin: 0;
   color: #fff7e7;
-  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-size: clamp(1.45rem, 3.2vw, 2rem);
   line-height: 1.04;
   letter-spacing: -0.04em;
-  padding-bottom: 0.08em;
 `;
 
 const ModalText = styled.p`
   margin: 0;
   color: rgba(247, 240, 227, 0.72);
-  font-size: 0.96rem;
-  line-height: 1.5;
+  max-width: 46rem;
+  font-size: 0.84rem;
+  line-height: 1.35;
 
   @media (min-width: 640px) {
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 0.88rem;
   }
 `;
 
 const ModalActions = styled.div`
   display: grid;
-  gap: 0.65rem;
-  padding: 0.15rem 0 0.05rem;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0;
   justify-items: center;
 `;
 
@@ -986,8 +961,8 @@ const GoogleLogoWrap = styled.span`
 const ModalLegalNote = styled.p`
   margin: 0;
   color: rgba(247, 240, 227, 0.62);
-  font-size: 0.92rem;
-  line-height: 1.6;
+  font-size: 0.8rem;
+  line-height: 1.4;
   text-align: center;
 
   a {
@@ -1005,9 +980,9 @@ const BrandWord = styled.span`
 
 const ModalFooter = styled.div`
   display: grid;
-  gap: 0.7rem;
+  gap: 0.4rem;
   justify-items: center;
-  padding: 0.6rem 0.35rem 0.1rem;
+  padding: 0;
 `;
 
 const ModalDismissButton = styled.button`
@@ -2484,11 +2459,6 @@ const TsaWaitTimesPage: React.FC = () => {
               </ModalHeader>
               <SignupChoiceGrid>
                 <SignupChoiceCard>
-                  <SignupChoiceEyebrow>Fastest</SignupChoiceEyebrow>
-                  <SignupChoiceTitle>Continue with Google</SignupChoiceTitle>
-                  <SignupChoiceText>
-                    Use your Google account to skip the form and keep moving.
-                  </SignupChoiceText>
                   <ModalActions>
                     {hasGoogleGisConfigured ? (
                       <>
@@ -2523,11 +2493,6 @@ const TsaWaitTimesPage: React.FC = () => {
                   </ModalActions>
                 </SignupChoiceCard>
                 <SignupChoiceCard>
-                  <SignupChoiceEyebrow>Fallback</SignupChoiceEyebrow>
-                  <SignupChoiceTitle>Join by email</SignupChoiceTitle>
-                  <SignupChoiceText>
-                    Prefer not to use Google? Drop your email and we’ll keep you updated.
-                  </SignupChoiceText>
                   <WaitlistForm
                     variant="embedded"
                     showTitle={false}

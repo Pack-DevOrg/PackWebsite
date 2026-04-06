@@ -130,6 +130,8 @@ const defaultOauthResourceServerIdentifier =
 // Public OAuth client IDs are not secrets. Keep a stable production fallback
 // so deploys cannot silently ship an invalid hosted-auth configuration.
 const defaultCognitoClientId = "6qjkv282db2701o9m0uroh6c9k";
+const defaultGoogleGisClientId =
+  "954475259916-15eeqa9prhfgllda42ofrcdv2sirav5n.apps.googleusercontent.com";
 
 const baseScopes = [
   "openid",
@@ -190,8 +192,9 @@ const resolvedConfig = AppConfigSchema.parse({
   cognitoClientId:
     (env.VITE_COGNITO_CLIENT_ID as string | undefined) ??
     defaultCognitoClientId,
-  googleGisClientId: (env.VITE_GOOGLE_GIS_CLIENT_ID as string | undefined)
-    ?.trim() || undefined,
+  googleGisClientId:
+    (env.VITE_GOOGLE_GIS_CLIENT_ID as string | undefined)?.trim() ||
+    defaultGoogleGisClientId,
   cognitoRedirectUri: ensureProtocol(
     normalizeUrl(
       (env.VITE_COGNITO_REDIRECT_URI as string | undefined) ??

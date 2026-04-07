@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # React Native Web Compatibility Assessment Script
-# Run this in your DoneAI mobile app directory to assess web migration feasibility
+# Run this in your PackApp mobile app directory to assess web migration feasibility
 
 set -e
 

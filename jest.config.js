@@ -3,7 +3,7 @@ export default {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    // DoneAIWebsite is part of a workspace and some deps may be hoisted to the repo root.
+    // PackWebsite is part of a workspace and some deps may be hoisted to the repo root.
     // Prefer the website-local React copy so React + renderer resolve consistently (avoids invalid hook calls when the
     // root workspace pulls a different React major version).
     '^react$': '<rootDir>/node_modules/react/index.js',

@@ -5,8 +5,8 @@ import { spawn } from "node:child_process";
 import net from "node:net";
 
 const REPO_ROOT = path.resolve(process.cwd(), "..");
-const WEBSITE_ROOT = path.resolve(REPO_ROOT, "DoneAIWebsite");
-const MOBILE_ROOT = path.resolve(REPO_ROOT, "DoneAI");
+const WEBSITE_ROOT = path.resolve(REPO_ROOT, "PackWebsite");
+const MOBILE_ROOT = path.resolve(REPO_ROOT, "PackApp");
 const DEFAULT_EXPORT_DIR = path.join(MOBILE_ROOT, "manual-live-activity-review");
 const DEFAULT_LAB_ARTIFACT_DIR = path.join(
   WEBSITE_ROOT,
@@ -154,7 +154,9 @@ async function cleanDirectoryContents(dirPath) {
 
 async function main() {
   const exportDir =
-    process.env.DONEAI_EXPORT_LIVE_ACTIVITY_REVIEW_DIR ?? DEFAULT_EXPORT_DIR;
+    process.env.PACK_EXPORT_LIVE_ACTIVITY_REVIEW_DIR ??
+    process.env.DONEAI_EXPORT_LIVE_ACTIVITY_REVIEW_DIR ??
+    DEFAULT_EXPORT_DIR;
   const labArtifactDir =
     process.env.LIVE_ACTIVITY_LAB_OUTPUT_DIR ?? DEFAULT_LAB_ARTIFACT_DIR;
   const targetUrl = process.env.LIVE_ACTIVITY_LAB_URL ?? DEFAULT_URL;

@@ -1,4 +1,4 @@
-# React Native Web Migration Assessment for DoneAI Mobile App
+# React Native Web Migration Assessment for PackApp
 
 **Assessment Date:** 2025-11-05
 **Mobile App Stack:** React Native 0.76.9 + Expo SDK 52
@@ -485,7 +485,7 @@ grep -r "NativeModules" --include="*.ts" --include="*.tsx" src/
 ### Option 1: Unified Expo Monorepo (Recommended)
 
 ```
-DoneAI/
+PackApp/
 ├── app/                    # Expo Router (iOS, Android, Web)
 │   ├── (auth)/
 │   │   ├── login.tsx       # All platforms
@@ -526,9 +526,9 @@ DoneAI/
 ### Option 2: Separate Marketing + App
 
 ```
-DoneAIWebsite/              # Keep as marketing site (current)
-DoneAI/                     # Mobile + web app (Expo)
-DoneAI-Shared/              # Shared business logic
+PackWebsite/                # Keep as marketing site (current)
+PackApp/                    # Mobile + web app (Expo)
+packages/                   # Shared business logic
 ```
 
 **Pros:**
@@ -551,7 +551,7 @@ DoneAI-Shared/              # Shared business logic
 **Day 1-2: Environment Setup**
 ```bash
 # In your mobile app directory
-cd DoneAI
+cd PackApp
 
 # Add web support
 npx expo install react-native-web react-dom @expo/metro-runtime
@@ -830,7 +830,7 @@ aws cloudfront create-invalidation --distribution-id XXX --paths "/*"
 
 1. **Run Dependency Audit** (1 hour)
    ```bash
-   cd DoneAI
+   cd PackApp
    npm list --depth=0 | grep "react-native"
    npm list --depth=0 | grep "expo"
    ```
@@ -929,5 +929,5 @@ A production-ready web app that shares 75-85% of code with your mobile app, depl
 ---
 
 **Assessment Created By:** Claude
-**For:** DoneAI Mobile App → Web Migration
+**For:** PackApp → Web Migration
 **Contact:** Open GitHub issue for questions

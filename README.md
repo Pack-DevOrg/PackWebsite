@@ -1,10 +1,10 @@
-# DoneAI Website - Marketing and Waitlist Platform
+# PackWebsite - Marketing and Waitlist Platform
 
-> **React-based marketing website and waitlist platform for DoneAI**
+> **React-based marketing website and waitlist platform for Pack**
 
 ## Overview
 
-DoneAI Website is a modern, responsive marketing website built with React and TypeScript that serves as the primary landing page for DoneAI. It features an interactive waitlist form, comprehensive privacy policy integration, and smooth animations to create an engaging user experience for potential users.
+PackWebsite is a modern, responsive marketing website built with React and TypeScript that serves as the primary landing page for Pack. It features an interactive waitlist form, comprehensive privacy policy integration, and smooth animations to create an engaging user experience for potential users.
 
 ## 🚀 Quick Start
 
@@ -18,7 +18,7 @@ DoneAI Website is a modern, responsive marketing website built with React and Ty
 
 ```bash
 # Clone repository and navigate to website directory
-cd DoneAI Website
+cd PackWebsite
 
 # Install dependencies
 npm install
@@ -215,7 +215,7 @@ const staggerContainer = {
 
 ### Waitlist API
 
-The waitlist form integrates with the DoneAI Server backend:
+The waitlist form integrates with the PackServer backend:
 
 ```typescript
 // API endpoint configuration
@@ -406,8 +406,8 @@ npm run test:watch
 
 ## 🔗 Related Projects
 
-- [DoneAI Mobile App](../DoneAI/README.md) - React Native mobile application
-- [DoneAI Server](../DoneAIServer/README.md) - Serverless backend infrastructure
+- [PackApp](../PackApp/README.md) - React Native mobile application
+- [PackServer](../PackServer/README.md) - Serverless backend infrastructure
 
 ---
 

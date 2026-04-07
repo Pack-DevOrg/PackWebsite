@@ -61,7 +61,7 @@
 
 ```bash
 # 1. Go to your mobile app directory
-cd ../DoneAI
+cd ../PackApp
 
 # 2. Install web dependencies
 npx expo install react-native-web react-dom @expo/metro-runtime
@@ -185,7 +185,7 @@ import { Calendar } from './Calendar';
 ### Option 1: Unified Codebase (Recommended)
 
 ```
-DoneAI/                     # Single repo
+PackApp/                    # Single repo
 ├── app/                    # Expo Router (iOS, Android, Web)
 ├── components/             # Shared components
 ├── services/               # Shared API/auth/storage
@@ -199,8 +199,8 @@ DoneAI/                     # Single repo
 ### Option 2: Separate Marketing + App
 
 ```
-DoneAIWebsite/              # Marketing (SEO-optimized)
-DoneAI/                     # App (mobile + web)
+PackWebsite/                # Marketing (SEO-optimized)
+PackApp/                    # App (mobile + web)
 ```
 
 **Deploy:**
@@ -278,8 +278,8 @@ DoneAI/                     # App (mobile + web)
 
 ```bash
 # Copy the script to your mobile app directory
-cd ../DoneAI
-cp ../DoneAIWebsite/assess-rn-web-compatibility.sh .
+cd ../PackApp
+cp ../PackWebsite/assess-rn-web-compatibility.sh .
 
 # Run it
 ./assess-rn-web-compatibility.sh
@@ -367,7 +367,7 @@ After seeing the app running on web and reading the assessment:
 
 ### Q: Should we keep the marketing website separate?
 
-**A:** YES! Keep `DoneAIWebsite` as your SEO-optimized marketing site. The web app from React Native will be for logged-in users (like app.itsdoneai.com).
+**A:** YES! Keep `PackWebsite` as your SEO-optimized marketing site. The web app from React Native will be for logged-in users (like app.itsdoneai.com).
 
 ### Q: What if we find a blocking issue during migration?
 

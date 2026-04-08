@@ -17,7 +17,7 @@ const resolveAirlineLogoModules = (): Record<string, string> => {
     }
 
     return glob(
-      "../../../DoneAIAesthetics/assets/airlines-shared/*.png",
+      "../../../PackAesthetics/assets/airlines-shared/*.png",
       {
         eager: true,
         import: "default",

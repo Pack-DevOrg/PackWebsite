@@ -4,9 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
-const isStrict =
-  process.env.PACK_LINT_STRICT === '1' ||
-  process.env.DONEAI_LINT_STRICT === '1';
+const isStrict = process.env.PACK_LINT_STRICT === '1';
 const strictness = isStrict ? 'error' : 'warn';
 
 export default tseslint.config(

@@ -1,7 +1,7 @@
 import { shouldHydrateRoot } from "./ssrHydration";
 
 describe("shouldHydrateRoot", () => {
-  it("hydrates when prerendered markup matches the current pathname", () => {
+  it("hydrates only the stable homepage prerender when the pathname matches", () => {
     expect(
       shouldHydrateRoot({
         currentPathname: "/",
@@ -16,7 +16,7 @@ describe("shouldHydrateRoot", () => {
         hasExistingMarkup: true,
         prerenderedPath: "/features/",
       })
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("skips hydration when static fallback markup is for a different route", () => {

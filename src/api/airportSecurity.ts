@@ -21,7 +21,7 @@ const PublicAirportSecurityEnvelopeSchema = z.object({
 const RECAPTCHA_ACTION = "tsa_wait_times_public_lookup";
 const PUBLIC_TSA_BOARD_CACHE_KEY = "tsa-public-board-cache-v1";
 const PROD_PUBLIC_TSA_BOARD_URL =
-  "https://tsa-board.trypackai.com/airport-wait-times/public/current.json";
+  "https://d3063a7vb003az.cloudfront.net/airport-wait-times/public/current.json";
 
 function shouldUseLocalDevProxy(): boolean {
   if (typeof window === "undefined") {

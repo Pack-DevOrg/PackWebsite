@@ -16,6 +16,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { appConfig } from "@/config/appConfig";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
+import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "@/legal/legalUiCopy";
@@ -36,9 +37,31 @@ const AIRPORT_SEARCH_ALIAS_RANK: Record<string, number> = {
 
 const WAITLIST_MODAL_FORCE_QUERY_KEY = "forceModal";
 const MOBILE_GOOGLE_BUTTON_BREAKPOINT = 640;
+const GOOGLE_BUTTON_MIN_WIDTH = 180;
+const GOOGLE_BUTTON_MOBILE_MAX_WIDTH = 320;
+const GOOGLE_BUTTON_DESKTOP_MAX_WIDTH = 360;
 
 const normalizeAirportSearchText = (value: string | undefined): string =>
   (value ?? "").trim().toLowerCase();
+
+const getGoogleButtonWidth = (mountWidth: number, viewportWidth: number): number => {
+  const resolvedMountWidth = Math.max(Math.floor(mountWidth), 0);
+
+  if (resolvedMountWidth === 0) {
+    return 0;
+  }
+
+  const maxWidth =
+    viewportWidth < MOBILE_GOOGLE_BUTTON_BREAKPOINT
+      ? GOOGLE_BUTTON_MOBILE_MAX_WIDTH
+      : GOOGLE_BUTTON_DESKTOP_MAX_WIDTH;
+
+  if (resolvedMountWidth <= GOOGLE_BUTTON_MIN_WIDTH) {
+    return resolvedMountWidth;
+  }
+
+  return Math.floor(Math.min(resolvedMountWidth, maxWidth));
+};
 
 type GoogleCredentialSource = "one_tap" | "button";
 
@@ -898,15 +921,22 @@ const ModalActions = styled.div`
 `;
 
 const GoogleButtonMount = styled.div`
-  width: min(100%, 320px);
-  max-width: calc(100vw - 4.2rem);
+  width: 100%;
+  max-width: 320px;
   box-sizing: border-box;
   min-height: 44px;
-  display: grid;
-  justify-items: center;
+  margin: 0 auto;
+  line-height: 0;
+  overflow: hidden;
+  border-radius: 999px;
+
+  & > div,
+  & > iframe {
+    max-width: 100%;
+  }
 
   @media (min-width: 640px) {
-    width: min(100%, 360px);
+    max-width: 360px;
   }
 `;
 
@@ -1678,6 +1708,7 @@ const TsaWaitTimesPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGoogleGisReady, setIsGoogleGisReady] = useState(false);
   const [isGoogleBridgeLoading, setIsGoogleBridgeLoading] = useState(false);
+  const [googleButtonWidth, setGoogleButtonWidth] = useState(0);
   const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
@@ -1977,8 +2008,49 @@ const TsaWaitTimesPage: React.FC = () => {
     };
   }, [hasGoogleGisConfigured, isClient, status]);
 
+  useIsomorphicLayoutEffect(() => {
+    if (!isModalOpen || typeof window === "undefined") {
+      setGoogleButtonWidth(0);
+      return;
+    }
+
+    const mount = googleButtonRef.current;
+    if (!mount) {
+      return;
+    }
+
+    const measure = () => {
+      const nextWidth = getGoogleButtonWidth(
+        mount.getBoundingClientRect().width,
+        window.innerWidth
+      );
+
+      setGoogleButtonWidth((currentWidth) =>
+        currentWidth === nextWidth ? currentWidth : nextWidth
+      );
+    };
+
+    measure();
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+
+    resizeObserver?.observe(mount);
+    window.addEventListener("resize", measure);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [isModalOpen]);
+
   useEffect(() => {
-    if (!isModalOpen || !isGoogleGisReady || !googleButtonRef.current) {
+    if (
+      !isModalOpen ||
+      !isGoogleGisReady ||
+      !googleButtonRef.current ||
+      googleButtonWidth <= 0
+    ) {
       return;
     }
 
@@ -1988,18 +2060,6 @@ const TsaWaitTimesPage: React.FC = () => {
     }
 
     googleButtonRef.current.innerHTML = "";
-    const buttonWidth = Math.max(
-      220,
-      Math.floor(
-        Math.min(
-          googleButtonRef.current.getBoundingClientRect().width || 0,
-          typeof window !== "undefined" &&
-            window.innerWidth < MOBILE_GOOGLE_BUTTON_BREAKPOINT
-            ? 320
-            : 360
-        )
-      )
-    );
     const isMobileGoogleButton =
       typeof window !== "undefined" &&
       window.innerWidth < MOBILE_GOOGLE_BUTTON_BREAKPOINT;
@@ -2009,10 +2069,10 @@ const TsaWaitTimesPage: React.FC = () => {
       size: isMobileGoogleButton ? "medium" : "large",
       shape: "pill",
       text: "continue_with",
-      width: buttonWidth,
+      width: googleButtonWidth,
       logo_alignment: "left",
     });
-  }, [isGoogleGisReady, isModalOpen]);
+  }, [googleButtonWidth, isGoogleGisReady, isModalOpen]);
 
   const requestLocation = () => {
     if (typeof window === "undefined" || !navigator.geolocation) {

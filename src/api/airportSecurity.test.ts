@@ -4,11 +4,13 @@ import {
 import {env} from '@/utils/env';
 import {executeRecaptchaAction} from '@/utils/recaptcha';
 
+const mockedAppConfig = {
+  apiBaseUrl: 'https://api.example.com/prod',
+  environment: 'dev',
+};
+
 jest.mock('@/config/appConfig', () => ({
-  appConfig: {
-    apiBaseUrl: 'https://api.example.com/prod',
-    environment: 'dev',
-  },
+  appConfig: mockedAppConfig,
 }));
 
 jest.mock('@/utils/env', () => ({
@@ -48,6 +50,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
 
   afterEach(() => {
     env.VITE_PUBLIC_TSA_BOARD_URL = undefined;
+    mockedAppConfig.environment = 'dev';
   });
 
   it('sends the reCAPTCHA token on the public TSA request for non-localhost traffic', async () => {
@@ -181,6 +184,43 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(response.airports).toEqual([]);
   });
 
+  it('ignores raw cloudfront board URLs in production and uses the API path instead', async () => {
+    mockedAppConfig.environment = 'prod';
+    env.VITE_PUBLIC_TSA_BOARD_URL =
+      'https://d3063a7vb003az.cloudfront.net/airport-wait-times/public/current.json';
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          generatedAt: '2026-03-24T12:00:00.000Z',
+          refreshIntervalMinutes: 15,
+          airports: [],
+        },
+        requestId: 'req-tsa-prod-api-direct',
+      }),
+    });
+
+    const response = await fetchPublicAirportSecuritySummary();
+
+    expect(executeRecaptchaAction).toHaveBeenCalledWith(
+      'tsa_wait_times_public_lookup',
+      'test-site-key',
+    );
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://api.example.com/prod/airport-security/public-current',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          Accept: 'application/json',
+          'X-Recaptcha-Token': 'test-recaptcha-token',
+        }),
+      }),
+    );
+    expect(response.airports).toEqual([]);
+  });
+
   it('falls back to the API path when the direct edge board URL is unavailable', async () => {
     Object.defineProperty(window, 'location', {
       configurable: true,
@@ -229,23 +269,49 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(response.airports).toEqual([]);
   });
 
-  it('does not fall back to the API path for non-localhost traffic when the direct edge board URL fails', async () => {
+  it('falls back to the API path for non-localhost traffic when the direct edge board URL fails', async () => {
     env.VITE_PUBLIC_TSA_BOARD_URL =
       'https://cdn.example.com/airport-wait-times/public/current.json';
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    (global.fetch as jest.Mock)
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            generatedAt: '2026-03-24T12:00:00.000Z',
+            refreshIntervalMinutes: 15,
+            airports: [],
+          },
+          requestId: 'req-tsa-prod-api-fallback',
+        }),
+      });
 
-    await expect(fetchPublicAirportSecuritySummary()).rejects.toThrow(
-      'Failed to fetch',
+    const response = await fetchPublicAirportSecuritySummary();
+
+    expect(executeRecaptchaAction).toHaveBeenCalledWith(
+      'tsa_wait_times_public_lookup',
+      'test-site-key',
     );
-
-    expect(executeRecaptchaAction).not.toHaveBeenCalled();
-    expect(global.fetch).toHaveBeenCalledTimes(1);
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
       'https://cdn.example.com/airport-wait-times/public/current.json',
       expect.objectContaining({
         method: 'GET',
       }),
     );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      2,
+      'https://api.example.com/prod/airport-security/public-current',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          Accept: 'application/json',
+          'X-Recaptcha-Token': 'test-recaptcha-token',
+        }),
+      }),
+    );
+    expect(response.airports).toEqual([]);
   });
 
   it('fails closed when reCAPTCHA is unavailable outside localhost', async () => {

@@ -23,6 +23,21 @@ const PUBLIC_TSA_BOARD_CACHE_KEY = "tsa-public-board-cache-v1";
 const PROD_PUBLIC_TSA_BOARD_URL =
   "https://d3063a7vb003az.cloudfront.net/airport-wait-times/public/current.json";
 
+function isUsablePublicBoardUrl(candidateUrl: string): boolean {
+  try {
+    const parsedUrl = new URL(candidateUrl);
+    const hostname = parsedUrl.hostname.trim().toLowerCase();
+
+    if (appConfig.environment === "prod" && hostname.endsWith(".cloudfront.net")) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function shouldUseLocalDevProxy(): boolean {
   if (typeof window === "undefined") {
     return false;
@@ -53,11 +68,14 @@ function getPublicBoardUrl(): string | null {
       ? env.VITE_PUBLIC_TSA_BOARD_URL.trim()
       : "";
 
-  if (explicitBoardUrl.length > 0) {
+  if (explicitBoardUrl.length > 0 && isUsablePublicBoardUrl(explicitBoardUrl)) {
     return explicitBoardUrl;
   }
 
-  if (appConfig.environment === "prod") {
+  if (
+    appConfig.environment === "prod" &&
+    isUsablePublicBoardUrl(PROD_PUBLIC_TSA_BOARD_URL)
+  ) {
     return PROD_PUBLIC_TSA_BOARD_URL;
   }
 
@@ -180,11 +198,7 @@ export async function fetchPublicAirportSecuritySummary(): Promise<AirportWaitTi
 
         const rawPayload = (await response.json()) as unknown;
         payload = AirportWaitTimePublicCollectionResponseSchema.parse(rawPayload);
-      } catch (error) {
-        if (!useLocalDevProxy) {
-          throw error;
-        }
-
+      } catch {
         payload = await fetchPublicAirportSecurityViaApi(useLocalDevProxy);
       }
     } else {

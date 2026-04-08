@@ -156,7 +156,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
   const viteEnv = loadEnv(mode, process.cwd(), 'VITE_');
   const publicTsaBoardUrl = resolvePublicTsaBoardUrlFromStack(viteEnv, mode);
   const allEnv = loadEnv(mode, process.cwd(), '');
-  const localDevBypassSecret = allEnv.DONEAI_LOCAL_DEV_BYPASS_SECRET?.trim() ?? '';
+  const localDevBypassSecret = allEnv.PACK_LOCAL_DEV_BYPASS_SECRET?.trim() ?? '';
   const babelPlugins: Array<
     | string
     | [string, Record<string, unknown>]
@@ -289,8 +289,8 @@ export default defineConfig(({ mode, ssrBuild }) => {
             .digest('hex');
 
           proxyReq.setHeader('Origin', origin);
-          proxyReq.setHeader('X-DoneAI-Client-Timestamp', timestamp);
-          proxyReq.setHeader('X-DoneAI-Client-Integrity', signature);
+          proxyReq.setHeader('X-Pack-Client-Timestamp', timestamp);
+          proxyReq.setHeader('X-Pack-Client-Integrity', signature);
         });
       },
     },

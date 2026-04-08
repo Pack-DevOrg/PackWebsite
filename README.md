@@ -292,7 +292,7 @@ VITE_API_ENDPOINT=http://localhost:3000/api
 VITE_RECAPTCHA_SITE_KEY=development_key
 
 # Production
-VITE_API_ENDPOINT=https://api.itsdoneai.com
+VITE_API_ENDPOINT=https://api.trypackai.com
 VITE_RECAPTCHA_SITE_KEY=production_key
 ```
 

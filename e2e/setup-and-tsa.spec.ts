@@ -128,7 +128,7 @@ test.describe("Setup and TSA journeys", () => {
     await mockTsaPublicBoard(page);
 
     const authorizeRequestPromise = page.waitForRequest((request) =>
-      request.url().includes("auth.itsdoneai.com/oauth2/authorize"),
+      request.url().includes("auth.trypackai.com/oauth2/authorize"),
     );
 
     await page.goto("/tsa?forceModal=1", { waitUntil: "domcontentloaded" });

@@ -5,7 +5,7 @@ test.describe("App auth wiring", () => {
     page,
   }) => {
     const authorizeRequestPromise = page.waitForRequest((request) => {
-      return request.url().includes("auth.itsdoneai.com/oauth2/authorize");
+      return request.url().includes("auth.trypackai.com/oauth2/authorize");
     });
 
     await page.goto("/app", { waitUntil: "domcontentloaded" });
@@ -13,7 +13,7 @@ test.describe("App auth wiring", () => {
     const authorizeRequest = await authorizeRequestPromise;
     const currentUrl = new URL(authorizeRequest.url());
 
-    expect(currentUrl.origin).toBe("https://auth.itsdoneai.com");
+    expect(currentUrl.origin).toBe("https://auth.trypackai.com");
     expect(currentUrl.pathname).toBe("/oauth2/authorize");
     expect(currentUrl.searchParams.get("response_type")).toBe("code");
 
@@ -32,7 +32,6 @@ test.describe("App auth wiring", () => {
       [
         "https://www.trypackai.com",
         "https://trypackai.com",
-        "https://itsdoneai.com",
         "http://localhost:5173",
         "http://localhost:4173",
       ].includes(parsedRedirectUri.origin),

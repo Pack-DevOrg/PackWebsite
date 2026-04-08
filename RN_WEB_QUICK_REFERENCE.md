@@ -204,8 +204,8 @@ PackApp/                    # App (mobile + web)
 ```
 
 **Deploy:**
-- Marketing: https://itsdoneai.com (current site)
-- App: https://app.itsdoneai.com (web version)
+- Marketing: https://trypackai.com (current site)
+- App: https://www.trypackai.com (web version)
 - Mobile: App stores
 
 ---
@@ -367,7 +367,7 @@ After seeing the app running on web and reading the assessment:
 
 ### Q: Should we keep the marketing website separate?
 
-**A:** YES! Keep `PackWebsite` as your SEO-optimized marketing site. The web app from React Native will be for logged-in users (like app.itsdoneai.com).
+**A:** YES! Keep `PackWebsite` as your SEO-optimized marketing site. The web app from React Native will be for logged-in users (like www.trypackai.com).
 
 ### Q: What if we find a blocking issue during migration?
 

@@ -1,7 +1,7 @@
 import { expect, test } from "playwright/test";
 
-const apiBaseUrl = process.env.E2E_API_BASE_URL ?? "https://api.itsdoneai.com/prod";
-const websiteOrigin = process.env.E2E_WEBSITE_ORIGIN ?? "https://itsdoneai.com";
+const apiBaseUrl = process.env.E2E_API_BASE_URL ?? "https://api.trypackai.com/prod";
+const websiteOrigin = process.env.E2E_WEBSITE_ORIGIN ?? "https://trypackai.com";
 
 test.describe("Backend API contracts for website flows", () => {
   test("subscribe endpoint supports CORS preflight from website origin", async ({ request }) => {

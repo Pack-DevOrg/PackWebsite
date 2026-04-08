@@ -80,7 +80,7 @@ const redirectUri = 'com.doneai.app://oauth/callback';
 
 // Web OAuth redirect (add this)
 const redirectUri = Platform.select({
-  web: 'https://itsdoneai.com/oauth/callback',
+  web: 'https://trypackai.com/oauth/callback',
   default: 'com.doneai.app://oauth/callback'
 });
 ```
@@ -110,11 +110,11 @@ Amplify.configure({
     oauth: {
       ...oauthConfig,
       redirectSignIn: Platform.select({
-        web: 'https://itsdoneai.com/',
+        web: 'https://trypackai.com/',
         default: 'com.doneai.app://'
       }),
       redirectSignOut: Platform.select({
-        web: 'https://itsdoneai.com/',
+        web: 'https://trypackai.com/',
         default: 'com.doneai.app://'
       })
     }
@@ -331,10 +331,10 @@ const registerForPushNotifications = async () => {
 // Expo Router works out of the box on web
 app/
 ├── (tabs)/
-│   ├── index.tsx           → https://itsdoneai.com/
-│   ├── trips.tsx           → https://itsdoneai.com/trips
-│   └── profile.tsx         → https://itsdoneai.com/profile
-├── trip/[id].tsx           → https://itsdoneai.com/trip/123
+│   ├── index.tsx           → https://trypackai.com/
+│   ├── trips.tsx           → https://trypackai.com/trips
+│   └── profile.tsx         → https://trypackai.com/profile
+├── trip/[id].tsx           → https://trypackai.com/trip/123
 └── _layout.tsx
 
 // Deep linking works automatically
@@ -697,7 +697,7 @@ describe('Web OAuth Flow', () => {
 import { test, expect } from '@playwright/test';
 
 test('book a trip on web', async ({ page }) => {
-  await page.goto('https://app.itsdoneai.com');
+  await page.goto('https://www.trypackai.com');
   await page.click('text=New Trip');
   // ... test flow
 });
@@ -771,7 +771,7 @@ vercel --prod web-build/
 npx expo export:web
 
 # Deploy to S3
-aws s3 sync web-build/ s3://app.itsdoneai.com
+aws s3 sync web-build/ s3://www.trypackai.com
 
 # Invalidate CloudFront
 aws cloudfront create-invalidation --distribution-id XXX --paths "/*"

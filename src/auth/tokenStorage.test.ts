@@ -95,7 +95,7 @@ describe('tokenStorage', () => {
       verifier: 'pkce-verifier',
       createdAt: Date.now(),
       redirectPath: '/app',
-      redirectUri: 'https://itsdoneai.com/auth/callback',
+      redirectUri: 'https://trypackai.com/auth/callback',
     };
 
     storePendingPkce(pending);
@@ -111,7 +111,7 @@ describe('tokenStorage', () => {
       verifier: 'pkce-verifier',
       createdAt: Date.now(),
       redirectPath: '/app',
-      redirectUri: 'https://itsdoneai.com/auth/callback',
+      redirectUri: 'https://trypackai.com/auth/callback',
     };
 
     window.localStorage.setItem(PKCE_STORAGE_KEY, JSON.stringify(pending));
@@ -125,8 +125,8 @@ describe('tokenStorage', () => {
       state: 'oauth-state',
       verifier: 'pkce-verifier',
       createdAt: Date.now(),
-      redirectPath: 'https://itsdoneai.com/tsa?forceModal=1',
-      redirectUri: 'https://itsdoneai.com/auth/callback',
+      redirectPath: 'https://trypackai.com/tsa?forceModal=1',
+      redirectUri: 'https://trypackai.com/auth/callback',
     };
 
     document.cookie = `pack.auth.pkce.shared.v1=${encodeURIComponent(JSON.stringify(pending))}; path=/`;
@@ -142,7 +142,7 @@ describe('tokenStorage', () => {
       verifier: 'pkce-verifier',
       createdAt: Date.now(),
       redirectPath: '/app',
-      redirectUri: 'https://itsdoneai.com/auth/callback',
+      redirectUri: 'https://trypackai.com/auth/callback',
     };
 
     window.sessionStorage.setItem(PKCE_STORAGE_KEY, JSON.stringify(pending));

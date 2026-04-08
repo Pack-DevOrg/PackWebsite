@@ -679,7 +679,7 @@ export default function EmailForwardingSetup(): React.JSX.Element {
             </SmallText>
             <SmallText style={{ marginTop: "0.5rem" }}>
               {localizedContent.gmailStep2Body3Prefix}
-              <strong>itsdoneai.com</strong>.
+              <strong>trypackai.com</strong>.
             </SmallText>
           </Step>
 
@@ -836,7 +836,7 @@ export default function EmailForwardingSetup(): React.JSX.Element {
           <li>
             <strong>{localizedContent.troubleshootingItems[2].strong}</strong>
             {localizedContent.troubleshootingItems[2].textPrefix}
-            <strong>itsdoneai.com</strong>.
+            <strong>trypackai.com</strong>.
           </li>
         </ul>
       </Card>

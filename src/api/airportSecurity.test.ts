@@ -31,7 +31,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
     Object.defineProperty(window, 'location', {
       configurable: true,
       value: {
-        origin: 'https://itsdoneai.com',
+        origin: 'https://trypackai.com',
         hostname: 'itsdoneai.com',
       },
     });

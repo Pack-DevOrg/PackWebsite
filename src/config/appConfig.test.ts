@@ -14,7 +14,7 @@ describe("appConfig domain helpers", () => {
 
   it("recognizes legacy itsdoneai hosts separately", () => {
     expect(isItsDoneAiHostname("itsdoneai.com")).toBe(true);
-    expect(isItsDoneAiHostname("app.itsdoneai.com")).toBe(true);
+    expect(isItsDoneAiHostname("www.trypackai.com")).toBe(true);
     expect(isItsDoneAiHostname("trypackai.com")).toBe(false);
   });
 
@@ -24,6 +24,6 @@ describe("appConfig domain helpers", () => {
     expect(shouldExposeTsaForHostname("localhost")).toBe(true);
     expect(shouldExposeTsaForHostname("127.0.0.1")).toBe(true);
     expect(shouldExposeTsaForHostname("itsdoneai.com")).toBe(false);
-    expect(shouldExposeTsaForHostname("www.itsdoneai.com")).toBe(false);
+    expect(shouldExposeTsaForHostname("www.trypackai.com")).toBe(false);
   });
 });

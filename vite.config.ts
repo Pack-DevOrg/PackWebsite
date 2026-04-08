@@ -243,7 +243,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
 
   const devProxy = {
     '/dev': {
-      target: 'https://api.itsdoneai.com',
+      target: 'https://api.trypackai.com',
       changeOrigin: true,
       secure: true,
       configure: (proxy: {

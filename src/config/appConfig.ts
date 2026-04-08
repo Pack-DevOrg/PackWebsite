@@ -125,7 +125,7 @@ const defaultAppBaseUrl =
   (env.VITE_APP_BASE_URL as string | undefined) ?? "https://www.trypackai.com";
 const defaultOauthResourceServerIdentifier =
   (env.VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER as string | undefined)?.trim() ||
-  "api.itsdoneai.com";
+  "api.trypackai.com";
 
 // Public OAuth client IDs are not secrets. Keep a stable production fallback
 // so deploys cannot silently ship an invalid hosted-auth configuration.
@@ -186,7 +186,7 @@ const resolvedConfig = AppConfigSchema.parse({
   cognitoDomain: ensureProtocol(
     normalizeUrl(
       (env.VITE_COGNITO_DOMAIN as string | undefined) ??
-        "https://auth.itsdoneai.com"
+        "https://auth.trypackai.com"
     )
   ),
   cognitoClientId:

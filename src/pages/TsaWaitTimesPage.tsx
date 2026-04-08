@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import type { AirportWaitTimeObservation } from "@/schemas/airport-security";
 import { fetchPublicAirportSecuritySummary } from "@/api/airportSecurity";
-import { requestPublicApi } from "@/api/client";
+import { ApiRequestError, requestPublicApi } from "@/api/client";
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
 import { appConfig } from "@/config/appConfig";
@@ -65,11 +65,6 @@ const getGoogleButtonWidth = (mountWidth: number, viewportWidth: number): number
 
 type GoogleCredentialSource = "one_tap" | "button";
 
-type GoogleAccountsIdPromptMomentNotification = {
-  isNotDisplayed?: () => boolean;
-  isSkippedMoment?: () => boolean;
-};
-
 type GoogleCredentialResponse = {
   credential?: string;
   select_by?: string;
@@ -85,9 +80,6 @@ type GoogleAccountsId = {
     itp_support?: boolean;
     use_fedcm_for_prompt?: boolean;
   }) => void;
-  prompt: (
-    listener?: (notification: GoogleAccountsIdPromptMomentNotification) => void
-  ) => void;
   renderButton: (
     element: HTMLElement,
     options: {
@@ -1948,7 +1940,14 @@ const TsaWaitTimesPage: React.FC = () => {
       setIsModalOpen(false);
       startHostedGoogleLogin();
     } catch (error) {
-      console.error("Failed to complete Google bridge sign-in", error);
+      const isExpectedFallbackError =
+        error instanceof ApiRequestError ||
+        (error instanceof DOMException && error.name === "AbortError");
+
+      if (!isExpectedFallbackError && appConfig.environment !== "prod") {
+        console.warn("Failed to complete Google bridge sign-in", error);
+      }
+
       setGoogleBridgeError(
         "Google sign-in couldn't finish in-page. You can continue with the standard Google redirect below."
       );
@@ -1966,7 +1965,12 @@ const TsaWaitTimesPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!isClient || status !== "unauthenticated" || !hasGoogleGisConfigured) {
+    if (
+      !isClient ||
+      !isModalOpen ||
+      status !== "unauthenticated" ||
+      !hasGoogleGisConfigured
+    ) {
       return;
     }
 
@@ -1999,20 +2003,11 @@ const TsaWaitTimesPage: React.FC = () => {
             cancel_on_tap_outside: true,
             context: "signin",
             itp_support: true,
-            use_fedcm_for_prompt: true,
           });
           hasInitializedGoogleIdentityRef.current = true;
         }
 
         setIsGoogleGisReady(true);
-        accountsId.prompt((notification) => {
-          if (
-            notification.isNotDisplayed?.() ||
-            notification.isSkippedMoment?.()
-          ) {
-            setIsGoogleGisReady(true);
-          }
-        });
       })
       .catch((error) => {
         console.error("Failed to initialize Google Identity Services", error);
@@ -2025,9 +2020,8 @@ const TsaWaitTimesPage: React.FC = () => {
 
     return () => {
       cancelled = true;
-      window.google?.accounts?.id.cancel();
     };
-  }, [hasGoogleGisConfigured, isClient, status]);
+  }, [hasGoogleGisConfigured, isClient, isModalOpen, status]);
 
   useIsomorphicLayoutEffect(() => {
     if (!isModalOpen || typeof window === "undefined") {

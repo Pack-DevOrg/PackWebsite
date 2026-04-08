@@ -741,7 +741,7 @@ export const ConversationPage: React.FC = () => {
           saveFailed: "No se pudo guardar el viaje.",
           generateBeforeShare: "Genera un plan antes de compartirlo.",
           travelPlan: "Plan de viaje",
-          plannedWithDoneAi: "Planeado con Pack",
+          plannedWithPack: "Planeado con Pack",
           shareCreated: "Se creó un enlace para compartir este plan.",
           shareFailed: "No se pudo crear el enlace para compartir.",
           yourPlanReady: "Tu plan está listo. Revisa el esquema abajo.",
@@ -790,7 +790,7 @@ export const ConversationPage: React.FC = () => {
           saveFailed: "Could not save the trip.",
           generateBeforeShare: "Generate a plan before sharing.",
           travelPlan: "Travel plan",
-          plannedWithDoneAi: "Planned with Pack",
+          plannedWithPack: "Planned with Pack",
           shareCreated: "Created a share link for this plan.",
           shareFailed: "Could not create share link.",
           yourPlanReady: "Your plan is ready. Review the outline below.",
@@ -971,7 +971,7 @@ export const ConversationPage: React.FC = () => {
       const payload = buildSharePayload(
         timelineItems,
         planTitle || localizedContent.travelPlan,
-        localizedContent.plannedWithDoneAi
+        localizedContent.plannedWithPack
       );
       const response = await createSharedTravelPlan(apiClient, payload);
       setShareUrl(response.shareUrl);

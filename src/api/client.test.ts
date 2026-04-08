@@ -16,7 +16,7 @@ describe('createApiClient', () => {
       configurable: true,
       value: {
         origin: 'https://trypackai.com',
-        hostname: 'itsdoneai.com',
+        hostname: 'trypackai.com',
       },
     });
     global.fetch = jest.fn().mockResolvedValue({

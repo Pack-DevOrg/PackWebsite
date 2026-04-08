@@ -1502,7 +1502,7 @@ const getAirportSearchScore = (
 
 const FAQ_ITEMS = [
   {
-    id: "doneai",
+    id: "pack",
     eyebrow: "Pack",
     question: "Why is Pack publishing TSA wait times publicly?",
     answer:
@@ -1574,8 +1574,8 @@ const FAQ_ITEMS = [
 ];
 
 const WAITLIST_MODAL_COMPLETED_KEY = "tsa-waits-email-modal-completed";
-const WAITLIST_MODAL_HANDOFF_QUERY_KEY = "doneaiStartLogin";
-const WAITLIST_MODAL_HANDOFF_REDIRECT_QUERY_KEY = "doneaiRedirectPath";
+const WAITLIST_MODAL_HANDOFF_QUERY_KEY = "packStartLogin";
+const WAITLIST_MODAL_HANDOFF_REDIRECT_QUERY_KEY = "packRedirectPath";
 const WAITLIST_MODAL_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180;
 const AIRPORTS_PAGE_SIZE = 5;
 
@@ -1614,10 +1614,6 @@ const getCrossSubdomainCookieDomain = (): string | undefined => {
   if (hostname === "trypackai.com" || hostname.endsWith(".trypackai.com")) {
     return ".trypackai.com";
   }
-  if (hostname === "itsdoneai.com" || hostname.endsWith(".itsdoneai.com")) {
-    return ".itsdoneai.com";
-  }
-
   return undefined;
 };
 

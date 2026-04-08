@@ -770,7 +770,7 @@ export default function EmailForwardingSetup(): React.JSX.Element {
             title={localizedContent.powershellTitle}
             description={localizedContent.powershellDescription}
             content={outlookRulesScript}
-            download={{ filename: "doneai-m365-inbox-rules.ps1", mimeType: "text/plain" }}
+            download={{ filename: "pack-m365-inbox-rules.ps1", mimeType: "text/plain" }}
           />
 
           <Step index={4} title={localizedContent.outlookStep4Title}>

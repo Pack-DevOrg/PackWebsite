@@ -22,7 +22,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import type { SupportedLocale } from "@/i18n/config";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import styled from "styled-components";
-import doneAiLogo from "../assets/logo.png";
+import packLogo from "../assets/logo.png";
 
 type AccentTone = "flight" | "arrival" | "ground" | "generic";
 type IconKey =
@@ -2845,7 +2845,7 @@ function renderWatchSurface(state: LiveActivityMock) {
   return (
     <WatchCard $accent={state.accent}>
       <WatchTopRow>
-        <DoneLogo src={doneAiLogo} alt="Pack logo" $size={16} />
+        <DoneLogo src={packLogo} alt="Pack logo" $size={16} />
         <WatchTimerChip>
           {renderIcon(watchTimerIcon(state), 10)}
           <span>{watchTimerText(state)}</span>
@@ -2921,7 +2921,7 @@ function renderActionRows(state: LiveActivityMock) {
 function renderTopRow(state: LiveActivityMock) {
   return (
     <TopRow>
-      <DoneLogo src={doneAiLogo} alt="Pack logo" $size={20} />
+      <DoneLogo src={packLogo} alt="Pack logo" $size={20} />
       <TitleBlock>
         {state.phaseLabel ? (
           <PhaseLabel $accent={state.accent}>{state.phaseLabel}</PhaseLabel>
@@ -2998,7 +2998,7 @@ function renderExpandedIsland(state: LiveActivityMock) {
     <IslandExpanded data-capture-target="dynamic-island-expanded-raw">
       <IslandRegion>
         <ExpandedLogoWrap>
-          <DoneLogo src={doneAiLogo} alt="Pack logo" $size={16} />
+          <DoneLogo src={packLogo} alt="Pack logo" $size={16} />
           {state.dynamicIsland.expandedLeadingText ? (
             <IslandText>{state.dynamicIsland.expandedLeadingText}</IslandText>
           ) : null}
@@ -3022,7 +3022,7 @@ function renderCompactIsland(state: LiveActivityMock) {
   return (
     <CompactIslandShell data-capture-target="dynamic-island-compact-raw">
       <CompactIslandSegment $align="left">
-        <DoneLogo src={doneAiLogo} alt="Pack logo" $size={14} />
+        <DoneLogo src={packLogo} alt="Pack logo" $size={14} />
         {state.dynamicIsland.compactLeadingText ? (
           <IslandText>{state.dynamicIsland.compactLeadingText}</IslandText>
         ) : null}

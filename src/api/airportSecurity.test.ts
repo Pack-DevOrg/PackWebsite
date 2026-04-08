@@ -32,7 +32,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
       configurable: true,
       value: {
         origin: 'https://trypackai.com',
-        hostname: 'itsdoneai.com',
+        hostname: 'trypackai.com',
       },
     });
     global.fetch = jest.fn();
@@ -128,7 +128,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
       },
     });
     env.VITE_PUBLIC_TSA_BOARD_URL =
-      'https://tsa-board-dev.itsdoneai.com/airport-wait-times/public/current.json';
+      'https://tsa-board-dev.trypackai.com/airport-wait-times/public/current.json';
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -143,7 +143,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(executeRecaptchaAction).not.toHaveBeenCalled();
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://tsa-board-dev.itsdoneai.com/airport-wait-times/public/current.json',
+      'https://tsa-board-dev.trypackai.com/airport-wait-times/public/current.json',
       expect.objectContaining({
         method: 'GET',
         headers: expect.objectContaining({

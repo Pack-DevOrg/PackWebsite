@@ -1,5 +1,5 @@
 {
-  "name": "doneai-website",
+  "name": "pack-website",
   "private": true,
   "version": "1.0.0",
   "homepage": "https://trypackai.com",
@@ -15,7 +15,7 @@
     "legal:check-staged": "node scripts/check-legal-lock.mjs --staged",
     "legal:refresh-lock": "node scripts/refresh-legal-lock.mjs",
     "lint": "eslint .",
-    "lint:strict": "DONEAI_LINT_STRICT=1 npm run lint",
+    "lint:strict": "PACK_LINT_STRICT=1 npm run lint",
     "preview": "vite preview",
     "validate:meta-browser": "node scripts/validate-meta-browser-events.mjs",
     "capture:live-activity-lab": "node scripts/capture-live-activity-lab.mjs",

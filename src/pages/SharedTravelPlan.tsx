@@ -144,8 +144,8 @@ type SharedTravelContent = {
   secureLink: string;
   sharedSubtitle: string;
   addToCalendar: string;
-  openInDoneAi: string;
-  downloadDoneAi: string;
+  openInPack: string;
+  downloadPack: string;
   tripTimeline: string;
   tripTimelineBody: string;
   noTimeline: string;
@@ -186,8 +186,8 @@ const SHARED_TRAVEL_CONTENT: Record<SupportedLocale, SharedTravelContent> = {
     secureLink: 'Secure link',
     sharedSubtitle: 'Shared from Pack',
     addToCalendar: 'Add to calendar (.ics)',
-    openInDoneAi: 'Open in Pack',
-    downloadDoneAi: 'Download Pack',
+    openInPack: 'Open in Pack',
+    downloadPack: 'Download Pack',
     tripTimeline: 'Trip timeline',
     tripTimelineBody: "Quick peek from the app's timeline view.",
     noTimeline: 'No flights or stays yet. Once your trip is ready, you\'ll see it here.',
@@ -226,8 +226,8 @@ const SHARED_TRAVEL_CONTENT: Record<SupportedLocale, SharedTravelContent> = {
     secureLink: 'Enlace seguro',
     sharedSubtitle: 'Compartido desde Pack',
     addToCalendar: 'Agregar al calendario (.ics)',
-    openInDoneAi: 'Abrir en Pack',
-    downloadDoneAi: 'Descargar Pack',
+    openInPack: 'Abrir en Pack',
+    downloadPack: 'Descargar Pack',
     tripTimeline: 'Cronología del viaje',
     tripTimelineBody: 'Vista rápida desde la línea de tiempo de la app.',
     noTimeline: 'Todavía no hay vuelos ni estancias. Cuando el viaje esté listo, aparecerá aquí.',
@@ -434,7 +434,7 @@ export const SharedTravelPlan: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `doneai-shared-trip${shareId ? `-${shareId.slice(0, 6)}` : ''}.ics`;
+    link.download = `pack-shared-trip${shareId ? `-${shareId.slice(0, 6)}` : ''}.ics`;
     link.click();
     URL.revokeObjectURL(url);
 
@@ -614,7 +614,7 @@ export const SharedTravelPlan: React.FC = () => {
                     }}
                   >
                     <Sparkles size={18} />
-                    {localizedContent.openInDoneAi}
+                    {localizedContent.openInPack}
                   </button>
                   <button
                     onClick={handleDownloadApp}
@@ -626,7 +626,7 @@ export const SharedTravelPlan: React.FC = () => {
                     }}
                   >
                     <Download size={18} />
-                    {localizedContent.downloadDoneAi}
+                    {localizedContent.downloadPack}
                   </button>
                 </div>
                 {actionFeedback && (

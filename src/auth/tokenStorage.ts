@@ -53,10 +53,6 @@ const getCrossSubdomainCookieDomain = (): string | undefined => {
   if (hostname === "trypackai.com" || hostname.endsWith(".trypackai.com")) {
     return ".trypackai.com";
   }
-  if (hostname === "itsdoneai.com" || hostname.endsWith(".itsdoneai.com")) {
-    return ".itsdoneai.com";
-  }
-
   return undefined;
 };
 

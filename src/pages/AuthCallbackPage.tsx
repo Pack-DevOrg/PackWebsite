@@ -8,7 +8,7 @@ import { clearLogoutIntent, hasLogoutIntent } from "@/auth/tokenStorage";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 import { useI18n } from "@/i18n/I18nProvider";
-import doneAiLogo from "@/assets/logo.png";
+import packLogo from "@/assets/logo.png";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -229,7 +229,7 @@ const AuthCallbackPageInstance: React.FC<{ readonly search: string }> = ({
       <Container>
         <Card>
           <LogoBadge>
-            <Logo src={doneAiLogo} alt="Pack" />
+            <Logo src={packLogo} alt="Pack" />
           </LogoBadge>
           <Eyebrow>Pack</Eyebrow>
           <LoadingIcon aria-hidden="true" />
@@ -249,7 +249,7 @@ const AuthCallbackPageInstance: React.FC<{ readonly search: string }> = ({
     <Container>
       <Card>
         <LogoBadge>
-          <Logo src={doneAiLogo} alt="Pack" />
+          <Logo src={packLogo} alt="Pack" />
         </LogoBadge>
         <Eyebrow>Pack</Eyebrow>
         <ErrorIcon aria-hidden="true" />

@@ -37,11 +37,6 @@ export const isTryPackHostname = (hostname: string): boolean => {
   return normalized === "trypackai.com" || normalized.endsWith(".trypackai.com");
 };
 
-export const isItsDoneAiHostname = (hostname: string): boolean => {
-  const normalized = normalizeHostname(hostname);
-  return normalized === "itsdoneai.com" || normalized.endsWith(".itsdoneai.com");
-};
-
 export const shouldExposeTsaForHostname = (hostname: string): boolean =>
   isLocalhostHostname(hostname) || isTryPackHostname(hostname);
 
@@ -219,7 +214,9 @@ const resolvedConfig = AppConfigSchema.parse({
     (env.VITE_FORWARDING_EMAIL as string | undefined) ?? "trips@trypackai.com",
   friendsEmail:
     (env.VITE_FRIENDS_EMAIL as string | undefined) ?? "friends@trypackai.com",
-  apiKey: env.VITE_DONEAI_API_KEY as string | undefined,
+  apiKey:
+    (env.VITE_PACK_API_KEY as string | undefined) ??
+    (env.VITE_DONEAI_API_KEY as string | undefined),
   oauthScopes: scopeList,
   environment: inferredEnvironment,
 });

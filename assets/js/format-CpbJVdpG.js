@@ -1,0 +1,1 @@
+import{G as t,I as e,J as n}from"./index-DR010S9z.js";function o(o,r,s=function(){if("undefined"==typeof document)return e;const t=document.documentElement.lang;return t.startsWith("es")?"es":n(t.slice(0,2))}()){return new Intl.DateTimeFormat(t(s),r).format(o)}export{o as f};

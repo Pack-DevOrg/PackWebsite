@@ -58,7 +58,7 @@ When submitting a request as an authorized agent, you must provide:
 Choose one of these methods:
 
 **Email Method:**
-- Send to: support@itsdoneai.com
+- Send to: support@trypackai.com
 - Subject: "CCPA Authorized Agent Request"
 - Include all documentation as attachments
 - Clearly state the type of request (know, delete, correct, etc.)
@@ -121,7 +121,7 @@ All documentation you provide will be:
 
 If you have questions about the authorized agent process:
 
-- **Email**: support@itsdoneai.com (include "Authorized Agent Question" in subject)
+- **Email**: support@trypackai.com (include "Authorized Agent Question" in subject)
 - **Privacy Policy**: [Read our full Privacy Policy](/PrivacyPolicy.md)
 - **CCPA Request Form**: [Submit a request](/ccpa-request.html)
 

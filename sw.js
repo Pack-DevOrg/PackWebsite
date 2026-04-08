@@ -12,9 +12,9 @@
  */
 
 // Bump versions to flush old caches after deploys
-const CACHE_NAME = 'doneai-v1.0.8';
-const STATIC_CACHE = 'doneai-static-v1.0.8';
-const DYNAMIC_CACHE = 'doneai-dynamic-v1.0.8';
+const CACHE_NAME = 'pack-v1.0.10';
+const STATIC_CACHE = 'pack-static-v1.0.10';
+const DYNAMIC_CACHE = 'pack-dynamic-v1.0.10';
 
 // Static assets that change rarely
 const STATIC_ASSETS = [
@@ -24,7 +24,6 @@ const STATIC_ASSETS = [
   // Legal pages are content-critical and should be available even during brief outages.
   '/PrivacyPolicy.md',
   '/TermsOfService.md',
-  '/DoNotSell.md',
   // Offline fallback page.
   '/offline.html',
 ];
@@ -484,7 +483,7 @@ self.addEventListener('push', (event) => {
       body: data.body,
       icon: '/favicon.png',
       badge: '/favicon.png',
-      tag: 'doneai-notification',
+      tag: 'pack-notification',
       requireInteraction: false,
       actions: [
         { action: 'view', title: 'View Details' },

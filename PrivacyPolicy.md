@@ -120,7 +120,7 @@ Depending on where you live, you may have rights to:
 - opt out of the sale of personal information or the sharing or processing of personal information for targeted advertising; and
 - Limit our use of your sensitive personal information.
 
-To exercise privacy rights, contact support@itsdoneai.com or use our [privacy request page](/privacy-request). We may need to verify your identity before fulfilling your request.
+To exercise privacy rights, contact support@trypackai.com or use our [privacy request page](/privacy-request). We may need to verify your identity before fulfilling your request.
 
 We will not retaliate or discriminate against you for exercising any of these rights. Further information may be needed to verify your identity before exercising these rights, such as your email address or government issued ID. Depending on your location, you may be able to designate, in writing or through a power of attorney document, an authorized agent to make requests on your behalf to exercise your rights. Before accepting such a request from an agent, we will require that the agent provide proof you have authorized them to act on your behalf, and we may need you to verify your identity directly with us.
 
@@ -157,7 +157,7 @@ While we do not sell personal information in the traditional sense, we disclose 
 
 ### California Rights
 
-In addition to the rights described in the section above, Privacy Rights, that are applicable to California residents, we provide California residents with the ability to opt out of the disclosure of their personal information to third parties for the third parties’ direct marketing purposes under the California “Shine the Light” law at no cost. To exercise this right, please contact support@itsdoneai.com or use our [Do Not Sell or Share My Personal Information page](/privacy-request).
+In addition to the rights described in the section above, Privacy Rights, that are applicable to California residents, we provide California residents with the ability to opt out of the disclosure of their personal information to third parties for the third parties’ direct marketing purposes under the California “Shine the Light” law at no cost. To exercise this right, please contact support@trypackai.com or use our [Do Not Sell or Share My Personal Information page](/privacy-request).
 
 ## International Data Transfers
 
@@ -175,6 +175,6 @@ We may update this Privacy Policy from time to time. If we make material changes
 
 If you have questions about this Privacy Policy or want to exercise a privacy right, contact us at:
 
-**Email:** support@itsdoneai.com
+**Email:** support@trypackai.com
 
 **Mailing Address:** DoneAI, 584 Castro St, Suite #4036, San Francisco, CA 94114

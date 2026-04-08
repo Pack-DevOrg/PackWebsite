@@ -1,19 +1,68 @@
 {
-  "_AccentWord-UQJTvl5b.js": {
-    "file": "assets/js/AccentWord-UQJTvl5b.js",
+  "../node_modules/@fontsource-variable/inter/files/inter-cyrillic-ext-wght-normal.woff2": {
+    "file": "assets/inter-cyrillic-ext-wght-normal-BOeWTOD4.woff2",
+    "src": "../node_modules/@fontsource-variable/inter/files/inter-cyrillic-ext-wght-normal.woff2"
+  },
+  "../node_modules/@fontsource-variable/inter/files/inter-cyrillic-wght-normal.woff2": {
+    "file": "assets/inter-cyrillic-wght-normal-DqGufNeO.woff2",
+    "src": "../node_modules/@fontsource-variable/inter/files/inter-cyrillic-wght-normal.woff2"
+  },
+  "../node_modules/@fontsource-variable/inter/files/inter-greek-ext-wght-normal.woff2": {
+    "file": "assets/inter-greek-ext-wght-normal-DlzME5K_.woff2",
+    "src": "../node_modules/@fontsource-variable/inter/files/inter-greek-ext-wght-normal.woff2"
+  },
+  "../node_modules/@fontsource-variable/inter/files/inter-greek-wght-normal.woff2": {
+    "file": "assets/inter-greek-wght-normal-CkhJZR-_.woff2",
+    "src": "../node_modules/@fontsource-variable/inter/files/inter-greek-wght-normal.woff2"
+  },
+  "../node_modules/@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2": {
+    "file": "assets/inter-latin-ext-wght-normal-DO1Apj_S.woff2",
+    "src": "../node_modules/@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2"
+  },
+  "../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2": {
+    "file": "assets/inter-latin-wght-normal-Dx4kXJAl.woff2",
+    "src": "../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2"
+  },
+  "../node_modules/@fontsource-variable/inter/files/inter-vietnamese-wght-normal.woff2": {
+    "file": "assets/inter-vietnamese-wght-normal-CBcvBZtf.woff2",
+    "src": "../node_modules/@fontsource-variable/inter/files/inter-vietnamese-wght-normal.woff2"
+  },
+  "_AccentWord-Clf0DpEu.js": {
+    "file": "assets/js/AccentWord-Clf0DpEu.js",
     "name": "AccentWord",
     "imports": [
       "_ui-vendor-BWNt4uBj.js"
     ]
   },
-  "_NonHomeRoutes-B6brqWHx.js": {
-    "file": "assets/js/NonHomeRoutes-B6brqWHx.js",
-    "name": "NonHomeRoutes",
+  "_EnhancedTripsPage-C4QQ8Eh3.js": {
+    "file": "assets/js/EnhancedTripsPage-C4QQ8Eh3.js",
+    "name": "EnhancedTripsPage",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_NonHomeApp-Zi2Growq.js",
+      "_useApiClient-um2Ywiqf.js",
+      "_trips-C5n0Mrkf.js",
+      "_travel-map-vendor-DeGh6b1f.js",
+      "_format-CpbJVdpG.js",
+      "_date-vendor-Wa5K57-7.js",
+      "_useIsomorphicLayoutEffect-MTIJuguU.js",
+      "_utils-vendor-JbuVyVRk.js"
+    ],
+    "dynamicImports": [
+      "src/components/app/TravelStatsOverview.tsx"
+    ]
+  },
+  "_NonHomeApp-Zi2Growq.js": {
+    "file": "assets/js/NonHomeApp-Zi2Growq.js",
+    "name": "NonHomeApp",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_react-vendor-C1c5d54_.js",
       "_ui-vendor-BWNt4uBj.js",
       "src/pages/PrivacyPolicy.tsx",
       "src/pages/TermsOfService.tsx"
@@ -42,28 +91,24 @@
       "src/routes/ProtectedAppShell.tsx",
       "src/routes/AuthCallbackRoute.tsx",
       "src/pages/ConversationPage.tsx",
-      "src/pages/EnhancedTripsPage.tsx",
-      "src/pages/TsaWaitTimesPage.tsx"
+      "_EnhancedTripsPage-C4QQ8Eh3.js",
+      "src/pages/TsaWaitTimesPage.tsx",
+      "node_modules/@tanstack/react-query-devtools/build/modern/index.js"
     ]
   },
-  "_app-trips-ui-C8pTmpsq.js": {
-    "file": "assets/js/app-trips-ui-C8pTmpsq.js",
-    "name": "app-trips-ui",
-    "isDynamicEntry": true,
-    "imports": [
-      "_react-vendor-C1c5d54_.js",
-      "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js"
-    ]
-  },
-  "_date-vendor-6P0UfYev.js": {
-    "file": "assets/js/date-vendor-6P0UfYev.js",
+  "_date-vendor-Wa5K57-7.js": {
+    "file": "assets/js/date-vendor-Wa5K57-7.js",
     "name": "date-vendor"
   },
-  "_logo-DfXDY8W8.js": {
-    "file": "assets/js/logo-DfXDY8W8.js",
+  "_format-CpbJVdpG.js": {
+    "file": "assets/js/format-CpbJVdpG.js",
+    "name": "format",
+    "imports": [
+      "index.html"
+    ]
+  },
+  "_logo-DUrA18g9.js": {
+    "file": "assets/js/logo-DUrA18g9.js",
     "name": "logo",
     "assets": [
       "assets/images/logo-DGYrJsq1.png"
@@ -80,19 +125,19 @@
     "file": "assets/js/react-vendor-C1c5d54_.js",
     "name": "react-vendor"
   },
-  "_travel-map-vendor-j2dq6jST.js": {
-    "file": "assets/js/travel-map-vendor-j2dq6jST.js",
+  "_travel-map-vendor-DeGh6b1f.js": {
+    "file": "assets/js/travel-map-vendor-DeGh6b1f.js",
     "name": "travel-map-vendor",
     "imports": [
       "_react-vendor-C1c5d54_.js"
     ]
   },
-  "_trips-DmPnVc71.js": {
-    "file": "assets/js/trips-DmPnVc71.js",
+  "_trips-C5n0Mrkf.js": {
+    "file": "assets/js/trips-C5n0Mrkf.js",
     "name": "trips",
     "imports": [
       "index.html",
-      "_useApiClient-DdFZOjN2.js"
+      "_useApiClient-um2Ywiqf.js"
     ]
   },
   "_ui-vendor-BWNt4uBj.js": {
@@ -102,42 +147,46 @@
       "_react-vendor-C1c5d54_.js"
     ]
   },
-  "_useApiClient-DdFZOjN2.js": {
-    "file": "assets/js/useApiClient-DdFZOjN2.js",
+  "_useApiClient-um2Ywiqf.js": {
+    "file": "assets/js/useApiClient-um2Ywiqf.js",
     "name": "useApiClient",
     "imports": [
-      "_app-trips-ui-C8pTmpsq.js",
-      "index.html"
+      "index.html",
+      "_NonHomeApp-Zi2Growq.js"
     ]
   },
-  "_useLegalMarkdown-C-tXDFXo.js": {
-    "file": "assets/js/useLegalMarkdown-C-tXDFXo.js",
+  "_useIsomorphicLayoutEffect-MTIJuguU.js": {
+    "file": "assets/js/useIsomorphicLayoutEffect-MTIJuguU.js",
+    "name": "useIsomorphicLayoutEffect",
+    "imports": [
+      "_react-vendor-C1c5d54_.js"
+    ]
+  },
+  "_useLegalMarkdown-QDCIWY5-.js": {
+    "file": "assets/js/useLegalMarkdown-QDCIWY5-.js",
     "name": "useLegalMarkdown",
     "imports": [
       "index.html",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
-  "_utils-vendor-C5NSTuQz.js": {
-    "file": "assets/js/utils-vendor-C5NSTuQz.js",
+  "_utils-vendor-JbuVyVRk.js": {
+    "file": "assets/js/utils-vendor-JbuVyVRk.js",
     "name": "utils-vendor",
     "imports": [
       "_react-vendor-C1c5d54_.js"
     ]
   },
   "index.html": {
-    "file": "assets/js/index-DlmTG9qM.js",
+    "file": "assets/js/index-DR010S9z.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js"
+      "_utils-vendor-JbuVyVRk.js"
     ],
     "dynamicImports": [
       "src/tracking/runtime.ts",
@@ -159,8 +208,7 @@
       "src/components/LiveActivityStackSection.tsx",
       "src/components/BookingTimelineHighlight.tsx",
       "src/components/TrustBanner.tsx",
-      "node_modules/@tanstack/react-query-devtools/build/modern/index.js",
-      "_NonHomeRoutes-B6brqWHx.js"
+      "_NonHomeApp-Zi2Growq.js"
     ],
     "css": [
       "assets/css/index-G_SiVUqZ.css"
@@ -174,34 +222,6 @@
       "assets/inter-latin-ext-wght-normal-DO1Apj_S.woff2",
       "assets/inter-latin-wght-normal-Dx4kXJAl.woff2"
     ]
-  },
-  "node_modules/@fontsource-variable/inter/files/inter-cyrillic-ext-wght-normal.woff2": {
-    "file": "assets/inter-cyrillic-ext-wght-normal-BOeWTOD4.woff2",
-    "src": "node_modules/@fontsource-variable/inter/files/inter-cyrillic-ext-wght-normal.woff2"
-  },
-  "node_modules/@fontsource-variable/inter/files/inter-cyrillic-wght-normal.woff2": {
-    "file": "assets/inter-cyrillic-wght-normal-DqGufNeO.woff2",
-    "src": "node_modules/@fontsource-variable/inter/files/inter-cyrillic-wght-normal.woff2"
-  },
-  "node_modules/@fontsource-variable/inter/files/inter-greek-ext-wght-normal.woff2": {
-    "file": "assets/inter-greek-ext-wght-normal-DlzME5K_.woff2",
-    "src": "node_modules/@fontsource-variable/inter/files/inter-greek-ext-wght-normal.woff2"
-  },
-  "node_modules/@fontsource-variable/inter/files/inter-greek-wght-normal.woff2": {
-    "file": "assets/inter-greek-wght-normal-CkhJZR-_.woff2",
-    "src": "node_modules/@fontsource-variable/inter/files/inter-greek-wght-normal.woff2"
-  },
-  "node_modules/@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2": {
-    "file": "assets/inter-latin-ext-wght-normal-DO1Apj_S.woff2",
-    "src": "node_modules/@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2"
-  },
-  "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2": {
-    "file": "assets/inter-latin-wght-normal-Dx4kXJAl.woff2",
-    "src": "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2"
-  },
-  "node_modules/@fontsource-variable/inter/files/inter-vietnamese-wght-normal.woff2": {
-    "file": "assets/inter-vietnamese-wght-normal-CBcvBZtf.woff2",
-    "src": "node_modules/@fontsource-variable/inter/files/inter-vietnamese-wght-normal.woff2"
   },
   "node_modules/@tanstack/react-query-devtools/build/modern/index.js": {
     "file": "assets/js/index-BXAdmnwS.js",
@@ -218,429 +238,376 @@
     "src": "src/assets/logo.png"
   },
   "src/components/AITrainingOptimization.tsx": {
-    "file": "assets/js/AITrainingOptimization-5M-LWtQn.js",
+    "file": "assets/js/AITrainingOptimization-jRcJAhbF.js",
     "name": "AITrainingOptimization",
     "src": "src/components/AITrainingOptimization.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "index.html",
+      "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/BookingTimelineHighlight.tsx": {
-    "file": "assets/js/BookingTimelineHighlight-qLVbzUch.js",
+    "file": "assets/js/BookingTimelineHighlight-jk6j97is.js",
     "name": "BookingTimelineHighlight",
     "src": "src/components/BookingTimelineHighlight.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_AccentWord-UQJTvl5b.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_AccentWord-Clf0DpEu.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/ConversationalAIContent.tsx": {
-    "file": "assets/js/ConversationalAIContent-B3YSh7Tb.js",
+    "file": "assets/js/ConversationalAIContent-C2aKM73f.js",
     "name": "ConversationalAIContent",
     "src": "src/components/ConversationalAIContent.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "index.html",
+      "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/ExitIntentOptimization.tsx": {
-    "file": "assets/js/ExitIntentOptimization-DVTU7Fk6.js",
+    "file": "assets/js/ExitIntentOptimization-CMXtI3Hu.js",
     "name": "ExitIntentOptimization",
     "src": "src/components/ExitIntentOptimization.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/components/Footer.tsx": {
-    "file": "assets/js/Footer-BUaC6Yl_.js",
+    "file": "assets/js/Footer-kp0XfrE7.js",
     "name": "Footer",
     "src": "src/components/Footer.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/components/Hero.tsx": {
-    "file": "assets/js/Hero-BrKC3pmM.js",
+    "file": "assets/js/Hero-Daf0aEup.js",
     "name": "Hero",
     "src": "src/components/Hero.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_useIsomorphicLayoutEffect-MTIJuguU.js",
+      "_travel-map-vendor-DeGh6b1f.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/components/LiveActivityStackSection.tsx": {
-    "file": "assets/js/LiveActivityStackSection-B8GD0_5t.js",
+    "file": "assets/js/LiveActivityStackSection-BaAC16vH.js",
     "name": "LiveActivityStackSection",
     "src": "src/components/LiveActivityStackSection.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
-      "_logo-DfXDY8W8.js",
-      "_AccentWord-UQJTvl5b.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_logo-DUrA18g9.js",
+      "_AccentWord-Clf0DpEu.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/components/PerformanceOptimization.tsx": {
-    "file": "assets/js/PerformanceOptimization-HfR5hJ0_.js",
+    "file": "assets/js/PerformanceOptimization-BAZTR9gx.js",
     "name": "PerformanceOptimization",
     "src": "src/components/PerformanceOptimization.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "index.html",
+      "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/ScrollToTop.tsx": {
-    "file": "assets/js/ScrollToTop-RxdnfxyH.js",
+    "file": "assets/js/ScrollToTop-DtrMM7Nq.js",
     "name": "ScrollToTop",
     "src": "src/components/ScrollToTop.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/components/SemanticSearchOptimization.tsx": {
-    "file": "assets/js/SemanticSearchOptimization-BtPJwwF2.js",
+    "file": "assets/js/SemanticSearchOptimization-DWZ2Msls.js",
     "name": "SemanticSearchOptimization",
     "src": "src/components/SemanticSearchOptimization.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "index.html",
+      "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/TrustBanner.tsx": {
-    "file": "assets/js/TrustBanner-GUaUJGfV.js",
+    "file": "assets/js/TrustBanner-B_zhiXK6.js",
     "name": "TrustBanner",
     "src": "src/components/TrustBanner.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_AccentWord-UQJTvl5b.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_AccentWord-Clf0DpEu.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/ValueProp.tsx": {
-    "file": "assets/js/ValueProp-dH-I931f.js",
+    "file": "assets/js/ValueProp-CDRwjtTu.js",
     "name": "ValueProp",
     "src": "src/components/ValueProp.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_AccentWord-UQJTvl5b.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_AccentWord-Clf0DpEu.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/VoiceSearchOptimization.tsx": {
-    "file": "assets/js/VoiceSearchOptimization-DmU-a36Z.js",
+    "file": "assets/js/VoiceSearchOptimization-0iO1KHc1.js",
     "name": "VoiceSearchOptimization",
     "src": "src/components/VoiceSearchOptimization.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "index.html",
+      "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/components/app/AppShell.tsx": {
-    "file": "assets/js/AppShell-BXtHdtsx.js",
+    "file": "assets/js/AppShell-CKABo_Vr.js",
     "name": "AppShell",
     "src": "src/components/app/AppShell.tsx",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_logo-DfXDY8W8.js",
-      "_utils-vendor-C5NSTuQz.js",
+      "_NonHomeApp-Zi2Growq.js",
+      "_logo-DUrA18g9.js",
+      "_useIsomorphicLayoutEffect-MTIJuguU.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js"
+      "src/pages/PrivacyPolicy.tsx",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "src/pages/TermsOfService.tsx"
     ],
     "dynamicImports": [
-      "src/pages/EnhancedTripsPage.tsx"
+      "_EnhancedTripsPage-C4QQ8Eh3.js"
+    ]
+  },
+  "src/components/app/TravelStatsOverview.tsx": {
+    "file": "assets/js/TravelStatsOverview-B5cX4hbF.js",
+    "name": "TravelStatsOverview",
+    "src": "src/components/app/TravelStatsOverview.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_react-vendor-C1c5d54_.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_travel-map-vendor-DeGh6b1f.js",
+      "_EnhancedTripsPage-C4QQ8Eh3.js",
+      "_date-vendor-Wa5K57-7.js",
+      "_utils-vendor-JbuVyVRk.js",
+      "index.html",
+      "_query-vendor-Dd2uS8re.js",
+      "_NonHomeApp-Zi2Growq.js",
+      "src/pages/PrivacyPolicy.tsx",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "src/pages/TermsOfService.tsx",
+      "_useApiClient-um2Ywiqf.js",
+      "_trips-C5n0Mrkf.js",
+      "_format-CpbJVdpG.js",
+      "_useIsomorphicLayoutEffect-MTIJuguU.js"
     ]
   },
   "src/pages/Accessibility.tsx": {
-    "file": "assets/js/Accessibility-IJjEql1p.js",
+    "file": "assets/js/Accessibility-kUg_IIDo.js",
     "name": "Accessibility",
     "src": "src/pages/Accessibility.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/pages/AuthCallbackPage.tsx": {
-    "file": "assets/js/AuthCallbackPage-Bj88BsFG.js",
+    "file": "assets/js/AuthCallbackPage-4YBJ6_Z8.js",
     "name": "AuthCallbackPage",
     "src": "src/pages/AuthCallbackPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_logo-DfXDY8W8.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_NonHomeApp-Zi2Growq.js",
+      "_logo-DUrA18g9.js",
+      "_utils-vendor-JbuVyVRk.js",
+      "_query-vendor-Dd2uS8re.js",
+      "src/pages/PrivacyPolicy.tsx",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "src/pages/TermsOfService.tsx"
     ]
   },
   "src/pages/ConversationPage.tsx": {
-    "file": "assets/js/ConversationPage-BOIBic2S.js",
+    "file": "assets/js/ConversationPage-Cj7U2WRF.js",
     "name": "ConversationPage",
     "src": "src/pages/ConversationPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
-      "_useApiClient-DdFZOjN2.js",
       "index.html",
-      "_trips-DmPnVc71.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_useApiClient-um2Ywiqf.js",
+      "_trips-C5n0Mrkf.js",
+      "_date-vendor-Wa5K57-7.js",
+      "_NonHomeApp-Zi2Growq.js",
+      "_utils-vendor-JbuVyVRk.js",
+      "_query-vendor-Dd2uS8re.js",
+      "src/pages/PrivacyPolicy.tsx",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "src/pages/TermsOfService.tsx"
     ]
   },
   "src/pages/EmailForwardingSetup.tsx": {
-    "file": "assets/js/EmailForwardingSetup-nk-RDoBx.js",
+    "file": "assets/js/EmailForwardingSetup-BNzuSCya.js",
     "name": "EmailForwardingSetup",
     "src": "src/pages/EmailForwardingSetup.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ],
     "assets": [
       "assets/images/gmail-filter-import-C8X1Q5jW.png"
     ]
   },
-  "src/pages/EnhancedTripsPage.tsx": {
-    "file": "assets/js/EnhancedTripsPage-Csa3GLCS.js",
-    "name": "EnhancedTripsPage",
-    "src": "src/pages/EnhancedTripsPage.tsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "index.html",
-      "_react-vendor-C1c5d54_.js",
-      "_ui-vendor-BWNt4uBj.js",
-      "_query-vendor-Dd2uS8re.js",
-      "_useApiClient-DdFZOjN2.js",
-      "_trips-DmPnVc71.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js"
-    ],
-    "dynamicImports": [
-      "_app-trips-ui-C8pTmpsq.js"
-    ]
-  },
   "src/pages/FAQ.tsx": {
-    "file": "assets/js/FAQ-7xti5ust.js",
+    "file": "assets/js/FAQ--NrzChVD.js",
     "name": "FAQ",
     "src": "src/pages/FAQ.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/pages/Features.tsx": {
-    "file": "assets/js/Features-Cv8WyBP1.js",
+    "file": "assets/js/Features-ew-98fOM.js",
     "name": "Features",
     "src": "src/pages/Features.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/pages/HowItWorks.tsx": {
-    "file": "assets/js/HowItWorks-BYsj2JyJ.js",
+    "file": "assets/js/HowItWorks-COKWXoKw.js",
     "name": "HowItWorks",
     "src": "src/pages/HowItWorks.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_ui-vendor-BWNt4uBj.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/pages/LinkedTripInviteLanding.tsx": {
-    "file": "assets/js/LinkedTripInviteLanding-BFchlhp9.js",
+    "file": "assets/js/LinkedTripInviteLanding-D4-CKqbn.js",
     "name": "LinkedTripInviteLanding",
     "src": "src/pages/LinkedTripInviteLanding.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_ui-vendor-BWNt4uBj.js"
     ]
   },
   "src/pages/LiveActivityLab.tsx": {
-    "file": "assets/js/LiveActivityLab-BTlMLz-r.js",
+    "file": "assets/js/LiveActivityLab-BhBDGzp8.js",
     "name": "LiveActivityLab",
     "src": "src/pages/LiveActivityLab.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "index.html",
       "_ui-vendor-BWNt4uBj.js",
-      "_logo-DfXDY8W8.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_logo-DUrA18g9.js",
+      "_utils-vendor-JbuVyVRk.js",
       "_query-vendor-Dd2uS8re.js"
     ]
   },
   "src/pages/PrivacyPolicy.tsx": {
-    "file": "assets/js/PrivacyPolicy-DksV95T6.js",
+    "file": "assets/js/PrivacyPolicy-CT6PPSzO.js",
     "name": "PrivacyPolicy",
     "src": "src/pages/PrivacyPolicy.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_useLegalMarkdown-C-tXDFXo.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/pages/PrivacyRequest.tsx": {
-    "file": "assets/js/PrivacyRequest-UqybFWNv.js",
+    "file": "assets/js/PrivacyRequest-D2tTDviE.js",
     "name": "PrivacyRequest",
     "src": "src/pages/PrivacyRequest.tsx",
     "isDynamicEntry": true,
@@ -648,147 +615,129 @@
       "_react-vendor-C1c5d54_.js",
       "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/pages/PrivacyRequestVerificationPage.tsx": {
-    "file": "assets/js/PrivacyRequestVerificationPage-CiAaPkEg.js",
+    "file": "assets/js/PrivacyRequestVerificationPage-DgWjXMeC.js",
     "name": "PrivacyRequestVerificationPage",
     "src": "src/pages/PrivacyRequestVerificationPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/pages/SharedTravelPlan.tsx": {
-    "file": "assets/js/SharedTravelPlan-DzZVzyzT.js",
+    "file": "assets/js/SharedTravelPlan-C3OBTHh1.js",
     "name": "SharedTravelPlan",
     "src": "src/pages/SharedTravelPlan.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
       "index.html",
-      "_utils-vendor-C5NSTuQz.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_ui-vendor-BWNt4uBj.js"
     ]
   },
   "src/pages/Support.tsx": {
-    "file": "assets/js/Support-FA-wXo_P.js",
+    "file": "assets/js/Support-CkBtkhMy.js",
     "name": "Support",
     "src": "src/pages/Support.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/pages/TermsOfService.tsx": {
-    "file": "assets/js/TermsOfService-CC1zDtWn.js",
+    "file": "assets/js/TermsOfService-B0Bdtqli.js",
     "name": "TermsOfService",
     "src": "src/pages/TermsOfService.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_useLegalMarkdown-C-tXDFXo.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/pages/TsaWaitTimesPage.tsx": {
-    "file": "assets/js/TsaWaitTimesPage-Dw8wUrJ8.js",
+    "file": "assets/js/TsaWaitTimesPage-BJF7gJCS.js",
     "name": "TsaWaitTimesPage",
     "src": "src/pages/TsaWaitTimesPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
+      "index.html",
       "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "index.html",
-      "_useApiClient-DdFZOjN2.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js"
+      "_useApiClient-um2Ywiqf.js",
+      "_NonHomeApp-Zi2Growq.js",
+      "_format-CpbJVdpG.js",
+      "_utils-vendor-JbuVyVRk.js",
+      "src/pages/PrivacyPolicy.tsx",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "src/pages/TermsOfService.tsx"
     ]
   },
   "src/pages/UnsubscribePage.tsx": {
-    "file": "assets/js/UnsubscribePage-C4UrGGya.js",
+    "file": "assets/js/UnsubscribePage-B7Z8md2p.js",
     "name": "UnsubscribePage",
     "src": "src/pages/UnsubscribePage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
-      "_ui-vendor-BWNt4uBj.js",
       "index.html",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_ui-vendor-BWNt4uBj.js",
+      "_query-vendor-Dd2uS8re.js",
+      "_utils-vendor-JbuVyVRk.js"
     ]
   },
   "src/routes/AuthCallbackRoute.tsx": {
-    "file": "assets/js/AuthCallbackRoute-BTghDhzr.js",
+    "file": "assets/js/AuthCallbackRoute-xym3M9C3.js",
     "name": "AuthCallbackRoute",
     "src": "src/routes/AuthCallbackRoute.tsx",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
+      "_NonHomeApp-Zi2Growq.js",
       "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js"
+      "_utils-vendor-JbuVyVRk.js",
+      "src/pages/PrivacyPolicy.tsx",
+      "_useLegalMarkdown-QDCIWY5-.js",
+      "src/pages/TermsOfService.tsx"
     ],
     "dynamicImports": [
       "src/pages/AuthCallbackPage.tsx"
     ]
   },
   "src/routes/ProtectedAppShell.tsx": {
-    "file": "assets/js/ProtectedAppShell-DB4zOsEM.js",
+    "file": "assets/js/ProtectedAppShell-i5xUQ-3G.js",
     "name": "ProtectedAppShell",
     "src": "src/routes/ProtectedAppShell.tsx",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_NonHomeRoutes-B6brqWHx.js",
+      "_NonHomeApp-Zi2Growq.js",
       "_query-vendor-Dd2uS8re.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
+      "_utils-vendor-JbuVyVRk.js",
       "src/pages/PrivacyPolicy.tsx",
-      "_useLegalMarkdown-C-tXDFXo.js",
+      "_useLegalMarkdown-QDCIWY5-.js",
       "src/pages/TermsOfService.tsx"
     ],
     "dynamicImports": [
@@ -796,19 +745,16 @@
     ]
   },
   "src/tracking/runtime.ts": {
-    "file": "assets/js/runtime-B8Y9CszJ.js",
+    "file": "assets/js/runtime-BCswWmXL.js",
     "name": "runtime",
     "src": "src/tracking/runtime.ts",
     "isDynamicEntry": true,
     "imports": [
       "index.html",
       "_react-vendor-C1c5d54_.js",
-      "_app-trips-ui-C8pTmpsq.js",
+      "_query-vendor-Dd2uS8re.js",
       "_ui-vendor-BWNt4uBj.js",
-      "_travel-map-vendor-j2dq6jST.js",
-      "_date-vendor-6P0UfYev.js",
-      "_utils-vendor-C5NSTuQz.js",
-      "_query-vendor-Dd2uS8re.js"
+      "_utils-vendor-JbuVyVRk.js"
     ]
   }
 }

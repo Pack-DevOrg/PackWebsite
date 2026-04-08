@@ -1,0 +1,1 @@
+import{u as n}from"./ui-vendor-BWNt4uBj.js";const e=n.span.withConfig({componentId:"sc-5xenbg-0"})(["display:inline-block;padding-bottom:0.08em;background:linear-gradient(135deg,#f3d27a 0%,#ebbe58 62%,#f8e6b3 100%);-webkit-background-clip:text;background-clip:text;color:transparent;"]);export{e as A};

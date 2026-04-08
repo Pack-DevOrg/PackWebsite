@@ -921,10 +921,12 @@ const ModalActions = styled.div`
 `;
 
 const GoogleButtonMount = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: 320px;
   box-sizing: border-box;
-  min-height: 44px;
   margin: 0 auto;
   line-height: 0;
   overflow: hidden;
@@ -932,7 +934,26 @@ const GoogleButtonMount = styled.div`
 
   & > div,
   & > iframe {
+    display: block;
     max-width: 100%;
+  }
+
+  & > div {
+    width: 100%;
+    line-height: 0;
+    font-size: 0;
+  }
+
+  & .S9gUrf-YoZ4jf,
+  & .S9gUrf-YoZ4jf > div {
+    display: block;
+    width: 100%;
+    line-height: 0;
+    font-size: 0;
+  }
+
+  & .nsm7Bb-HzV7m-LgbsSe {
+    margin: 0 auto;
   }
 
   @media (min-width: 640px) {

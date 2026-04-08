@@ -18,7 +18,6 @@ const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || "";
 const APP_STORE_URL = APPLE_APP_ID
   ? `https://apps.apple.com/app/pack/id${APPLE_APP_ID}`
   : "https://apps.apple.com/search/app/pack";
-const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.packai.app";
 
 const palette = {
   bg: "#0e0d0c",
@@ -159,9 +158,7 @@ export const LinkedTripInviteLanding: React.FC = () => {
     if (APPLE_APP_ID) {
       setTimeout(() => {
         const userAgent = navigator.userAgent.toLowerCase();
-        if (userAgent.includes("android")) {
-          window.location.href = PLAY_STORE_URL;
-        } else if (
+        if (
           userAgent.includes("iphone") ||
           userAgent.includes("ipad")
         ) {
@@ -181,11 +178,6 @@ export const LinkedTripInviteLanding: React.FC = () => {
   ]);
 
   const handleDownloadApp = useCallback(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    if (userAgent.includes("android")) {
-      window.location.href = PLAY_STORE_URL;
-      return;
-    }
     window.location.href = APP_STORE_URL;
   }, []);
 

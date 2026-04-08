@@ -27,7 +27,6 @@ const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || ''; // e.g., '65023456
 const APP_STORE_URL = APPLE_APP_ID
   ? `https://apps.apple.com/app/pack/id${APPLE_APP_ID}`
   : 'https://apps.apple.com/search/app/pack'; // Fallback to search
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.packai.app';
 const APP_SCHEME_PREFIX = 'com.packai.app://';
 
 const DateOnlyStringSchema = z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
@@ -411,9 +410,7 @@ export const SharedTravelPlan: React.FC = () => {
     if (APPLE_APP_ID) {
       setTimeout(() => {
         const userAgent = navigator.userAgent.toLowerCase();
-        if (userAgent.includes('android')) {
-          window.location.href = PLAY_STORE_URL;
-        } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+        if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
           window.location.href = APP_STORE_URL;
         }
       }, 2400);

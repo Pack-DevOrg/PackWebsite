@@ -7,7 +7,6 @@ const appAlias =
   process.env.PACK_APP_DISTRIBUTION_ALIAS?.trim() ||
   process.env.PACK_APP_DOMAIN?.trim() ||
   "www.trypackai.com";
-const appBucket = process.env.PACK_APP_BUCKET?.trim() || `s3://${appAlias}`;
 const allowSharedDistribution =
   process.env.PACK_ALLOW_SHARED_APP_DISTRIBUTION === "1";
 
@@ -27,6 +26,33 @@ const captureJson = (command, args) =>
       env: process.env,
     }),
   );
+
+const inferBucketFromOriginDomain = (originDomain) => {
+  const websiteMatch = originDomain.match(
+    /^(?<bucket>.+)\.s3-website[.-][^.]+\.amazonaws\.com$/i,
+  );
+  if (websiteMatch?.groups?.bucket) {
+    return `s3://${websiteMatch.groups.bucket}`;
+  }
+
+  const regionalMatch = originDomain.match(
+    /^(?<bucket>.+)\.s3[.-][^.]+\.amazonaws\.com$/i,
+  );
+  if (regionalMatch?.groups?.bucket) {
+    return `s3://${regionalMatch.groups.bucket}`;
+  }
+
+  const globalMatch = originDomain.match(
+    /^(?<bucket>.+)\.s3\.amazonaws\.com$/i,
+  );
+  if (globalMatch?.groups?.bucket) {
+    return `s3://${globalMatch.groups.bucket}`;
+  }
+
+  throw new Error(
+    `CloudFront origin ${originDomain} is not an S3 origin. Set PACK_APP_BUCKET explicitly before deploying.`,
+  );
+};
 
 const resolveDistribution = () => {
   const explicitId = process.env.PACK_APP_DISTRIBUTION_ID?.trim();
@@ -75,11 +101,20 @@ const resolveDistribution = () => {
   return {
     id: matchingDistribution.Id,
     aliases,
+    originDomain:
+      matchingDistribution.Origins?.Items?.[0]?.DomainName || null,
   };
 };
 
 const appDistribution = resolveDistribution();
 const appDistributionId = appDistribution.id;
+const appBucket =
+  process.env.PACK_APP_BUCKET?.trim() ||
+  inferBucketFromOriginDomain(appDistribution.originDomain || "");
+
+console.log(
+  `[deploy] Deploying app-origin build to ${appBucket} via CloudFront ${appDistributionId} (${appAlias}).`,
+);
 
 run("npm", ["run", "legal:check"]);
 run("npm", ["run", "build:app-origin"]);

@@ -286,7 +286,7 @@ const PrivacyRequestPage: React.FC = () => {
           securityUnavailable: "La verificación de seguridad no está disponible.",
           securityRetry: "La verificación de seguridad no está disponible. Inténtalo más tarde.",
           submitError:
-            "No pudimos enviar tu solicitud. Inténtalo de nuevo o escribe a support@itsdoneai.com.",
+            "No pudimos enviar tu solicitud. Inténtalo de nuevo o escribe a support@trypackai.com.",
           optOutSuccess:
             "Hemos recibido tu solicitud de exclusión. Revisa tu correo para confirmarla antes de aplicar el cambio.",
           requestSuccess:
@@ -301,7 +301,7 @@ const PrivacyRequestPage: React.FC = () => {
           accountDeletionGuidance: [
             "Si tienes una cuenta de Pack, elimina la cuenta dentro de la app para completar la eliminación usando tu sesión autenticada.",
             "Ruta: App Menu > Settings > Account > Delete Account.",
-            "Si solo te apuntaste a la lista de espera o recibes correos de marketing, usa el enlace de unsubscribe en esos correos o escribe a support@itsdoneai.com.",
+            "Si solo te apuntaste a la lista de espera o recibes correos de marketing, usa el enlace de unsubscribe en esos correos o escribe a support@trypackai.com.",
           ],
           successTitle: "Solicitud enviada",
           errorTitle: "Hubo un problema",
@@ -352,7 +352,7 @@ const PrivacyRequestPage: React.FC = () => {
           securityUnavailable: "Security verification is unavailable.",
           securityRetry: "Security verification unavailable. Please try again later.",
           submitError:
-            "We were unable to submit your request. Please try again or reach out to support@itsdoneai.com.",
+            "We were unable to submit your request. Please try again or reach out to support@trypackai.com.",
           optOutSuccess:
             "Your opt-out request has been received. Check your email to confirm it before we apply the change.",
           requestSuccess:
@@ -367,7 +367,7 @@ const PrivacyRequestPage: React.FC = () => {
           accountDeletionGuidance: [
             "If you have a Pack account, delete it inside the app so we can rely on your authenticated session.",
             "Path: App Menu > Settings > Account > Delete Account.",
-            "If you only joined the waitlist or receive marketing emails, use the unsubscribe link in those emails or contact support@itsdoneai.com.",
+            "If you only joined the waitlist or receive marketing emails, use the unsubscribe link in those emails or contact support@trypackai.com.",
           ],
           successTitle: "Request Submitted",
           errorTitle: "There was a problem",

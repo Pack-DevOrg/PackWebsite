@@ -37,7 +37,7 @@ const Container = styled.div`
 const SupportPage = () => {
   const {pathFor, t} = useI18n();
   const [contactIntro, contactOutro] = t("support.contactBody").split(
-    "support@itsdoneai.com",
+    "support@trypackai.com",
   );
 
   return (
@@ -48,8 +48,8 @@ const SupportPage = () => {
       <h2>{t("support.contactHeading")}</h2>
       <p>
         {contactIntro}
-        <a href="mailto:support@itsdoneai.com">
-          support@itsdoneai.com
+        <a href="mailto:support@trypackai.com">
+          support@trypackai.com
         </a>{" "}
         {contactOutro}
       </p>

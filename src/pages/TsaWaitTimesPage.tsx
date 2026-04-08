@@ -1102,7 +1102,7 @@ const buildAirportSupportMailtoHref = (params: {
     `pageUrl=${pageUrl ?? "unknown"}`,
   ];
 
-  return `mailto:support@itsdoneai.com?subject=${encodeURIComponent(
+  return `mailto:support@trypackai.com?subject=${encodeURIComponent(
     subject
   )}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
 };
@@ -2129,7 +2129,7 @@ const TsaWaitTimesPage: React.FC = () => {
       <LlmNotice>
         Scraping our website or parsing it? We'd prefer you didn't, but please
         reach out to{" "}
-        <a href="mailto:friends@itsdoneai.com">friends@itsdoneai.com</a> and
+        <a href="mailto:friends@trypackai.com">friends@trypackai.com</a> and
         we'd love to help you build your own with sources. Human? We'd still
         love to meet you if you're seeing this.
       </LlmNotice>

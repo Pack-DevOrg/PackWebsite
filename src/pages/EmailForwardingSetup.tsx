@@ -220,12 +220,12 @@ const CodeBlock = styled.pre`
 
 type CopyState = "idle" | "copied" | "error";
 
-function isDoneAiForwardingAddress(candidate: string): boolean {
+function isPackForwardingAddress(candidate: string): boolean {
   const trimmed = candidate.trim().toLowerCase();
-  return Boolean(trimmed) && /^[^\s@]+@itsdoneai\.com$/.test(trimmed);
+  return Boolean(trimmed) && /^[^\s@]+@trypackai\.com$/.test(trimmed);
 }
 
-const DEFAULT_FORWARD_TO = "trips@itsdoneai.com";
+const DEFAULT_FORWARD_TO = "trips@trypackai.com";
 
 const emailForwardingContent = {
   en: {
@@ -517,7 +517,7 @@ export default function EmailForwardingSetup(): React.JSX.Element {
   const isGmail = provider === "gmail";
   const rawForwardTo = useQueryParam("forwardTo");
   const forwardingAddress = useMemo(() => {
-    if (rawForwardTo && isDoneAiForwardingAddress(rawForwardTo)) {
+    if (rawForwardTo && isPackForwardingAddress(rawForwardTo)) {
       return rawForwardTo;
     }
     return DEFAULT_FORWARD_TO;
@@ -538,7 +538,7 @@ export default function EmailForwardingSetup(): React.JSX.Element {
   const pastEmailsAnchorId = "past-emails";
   const forwardToAnchorId = "forward-to-address";
 
-  const canGenerate = isDoneAiForwardingAddress(forwardingAddress);
+  const canGenerate = isPackForwardingAddress(forwardingAddress);
 
   const gmailChecklistUrl = useMemo(() => {
     const params = new URLSearchParams({ provider: "gmail" });

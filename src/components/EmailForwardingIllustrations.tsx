@@ -186,7 +186,7 @@ export function OutlookRulesIllustration(): React.JSX.Element {
 
           <rect x="40" y="176" width="680" height="92" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.10)" />
           <text x="54" y="206" fontSize="12" fill="rgba(255,255,255,0.78)" fontFamily="system-ui">
-            If from domain is (airlines/hotels) → Redirect/Forward to: trips@itsdoneai.com
+            If from domain is (airlines/hotels) → Redirect/Forward to: trips@trypackai.com
           </text>
           <text x="54" y="232" fontSize="12" fill="rgba(255,255,255,0.68)" fontFamily="system-ui">
             Save rule → it applies to new emails

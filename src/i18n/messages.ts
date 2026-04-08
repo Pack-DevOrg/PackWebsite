@@ -69,7 +69,7 @@ export const WEBSITE_MESSAGES: Record<SupportedLocale, Messages> = {
       'Pack support is available by email for account, booking, trip-planning, accessibility, and privacy questions.',
     'support.contactHeading': 'Contact',
     'support.contactBody':
-      'Email support@itsdoneai.com and include the account email tied to your Pack profile if possible.',
+      'Email support@trypackai.com and include the account email tied to your Pack profile if possible.',
     'support.includeHeading': 'What to include',
     'support.include1': 'what you were trying to do',
     'support.include2': 'the trip, booking, or screen involved',
@@ -151,7 +151,7 @@ export const WEBSITE_MESSAGES: Record<SupportedLocale, Messages> = {
       'El soporte de Pack está disponible por correo para preguntas sobre cuenta, reservas, planificación de viajes, accesibilidad y privacidad.',
     'support.contactHeading': 'Contacto',
     'support.contactBody':
-      'Escribe a support@itsdoneai.com e incluye, si es posible, el correo asociado a tu perfil de Pack.',
+      'Escribe a support@trypackai.com e incluye, si es posible, el correo asociado a tu perfil de Pack.',
     'support.includeHeading': 'Qué incluir',
     'support.include1': 'lo que intentabas hacer',
     'support.include2': 'el viaje, reserva o pantalla involucrada',

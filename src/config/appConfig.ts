@@ -214,11 +214,11 @@ const resolvedConfig = AppConfigSchema.parse({
     )
   ),
   supportEmail:
-    (env.VITE_SUPPORT_EMAIL as string | undefined) ?? "support@itsdoneai.com",
+    (env.VITE_SUPPORT_EMAIL as string | undefined) ?? "support@trypackai.com",
   forwardingEmail:
-    (env.VITE_FORWARDING_EMAIL as string | undefined) ?? "trips@itsdoneai.com",
+    (env.VITE_FORWARDING_EMAIL as string | undefined) ?? "trips@trypackai.com",
   friendsEmail:
-    (env.VITE_FRIENDS_EMAIL as string | undefined) ?? "friends@itsdoneai.com",
+    (env.VITE_FRIENDS_EMAIL as string | undefined) ?? "friends@trypackai.com",
   apiKey: env.VITE_DONEAI_API_KEY as string | undefined,
   oauthScopes: scopeList,
   environment: inferredEnvironment,

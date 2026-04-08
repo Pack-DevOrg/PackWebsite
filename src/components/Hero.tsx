@@ -4711,7 +4711,7 @@ const PlanShowcasePhone: React.FC<{
                         <BookingField><BookingFieldLabel>Last Name</BookingFieldLabel><BookingFieldValue>Aurelius</BookingFieldValue></BookingField>
                         <BookingField><BookingFieldLabel>Date of Birth</BookingFieldLabel><BookingFieldValue>October 18, 1992</BookingFieldValue></BookingField>
                         <BookingField><BookingFieldLabel>Gender</BookingFieldLabel><BookingFieldValue>Male</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Email</BookingFieldLabel><BookingFieldValue>trips@itsdoneai.com</BookingFieldValue></BookingField>
+                        <BookingField><BookingFieldLabel>Email</BookingFieldLabel><BookingFieldValue>trips@trypackai.com</BookingFieldValue></BookingField>
                         <BookingField><BookingFieldLabel>Phone Number</BookingFieldLabel><BookingFieldValue>+12125550186</BookingFieldValue></BookingField>
                         <BookingField><BookingFieldLabel>Document Type</BookingFieldLabel><BookingFieldValue>Passport</BookingFieldValue></BookingField>
                         <BookingField><BookingFieldLabel>Document Number</BookingFieldLabel><BookingFieldValue>L9501843</BookingFieldValue></BookingField>
@@ -4735,7 +4735,7 @@ const PlanShowcasePhone: React.FC<{
                         </BookingModalSectionChevron>
                       </BookingModalSectionHeader>
                       <BookingFieldStack>
-                        <BookingField><BookingFieldLabel>Email</BookingFieldLabel><BookingFieldValue>trips@itsdoneai.com</BookingFieldValue></BookingField>
+                        <BookingField><BookingFieldLabel>Email</BookingFieldLabel><BookingFieldValue>trips@trypackai.com</BookingFieldValue></BookingField>
                         <BookingField><BookingFieldLabel>Phone Number</BookingFieldLabel><BookingFieldValue>+12125550186</BookingFieldValue></BookingField>
                       </BookingFieldStack>
                     </BookingModalSectionCard>

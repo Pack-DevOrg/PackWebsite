@@ -152,7 +152,7 @@ const UnsubscribePageInstance: React.FC<{readonly token: string | null}> = ({
         >
           {message || localizedContent.processing}
         </StatusMessage>
-        <SupportLink href="mailto:support@itsdoneai.com">
+        <SupportLink href="mailto:support@trypackai.com">
           {localizedContent.support}
         </SupportLink>
       </Card>

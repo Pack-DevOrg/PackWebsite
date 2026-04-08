@@ -40,7 +40,7 @@ test.describe("Setup and TSA journeys", () => {
     page,
   }) => {
     await page.goto(
-      "/setup/email-forwarding?provider=gmail&forwardTo=trips@itsdoneai.com",
+      "/setup/email-forwarding?provider=gmail&forwardTo=trips@trypackai.com",
       { waitUntil: "domcontentloaded" },
     );
     await dismissConsentBannerIfVisible(page);
@@ -49,7 +49,7 @@ test.describe("Setup and TSA journeys", () => {
       page.getByRole("heading", { name: /email forwarding setup/i }),
     ).toBeVisible();
     await expect(
-      page.locator("code").filter({ hasText: "trips@itsdoneai.com" }).first(),
+      page.locator("code").filter({ hasText: "trips@trypackai.com" }).first(),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /download filters xml/i }),

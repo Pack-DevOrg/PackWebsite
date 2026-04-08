@@ -52,7 +52,7 @@ const AccessibilityPage = () => {
             "Si una función no funciona con tu tecnología de asistencia, queremos saberlo para corregirlo. Si necesitas ayuda con una tarea relacionada con viajes o con un flujo de reserva, nuestro equipo de soporte también puede ayudarte directamente.",
           reportTitle: "Cómo reportar un problema",
           reportBody:
-            "Si encuentras una barrera de accesibilidad, escribe a support@itsdoneai.com con:",
+            "Si encuentras una barrera de accesibilidad, escribe a support@trypackai.com con:",
           reportItems: [
             "la página o pantalla y lo que intentabas hacer",
             "tu dispositivo y versión del navegador o app",
@@ -76,7 +76,7 @@ const AccessibilityPage = () => {
             "If a feature does not work with your assistive technology, we want to know so we can fix it. If you need help completing a travel-related task or booking flow, our support team can also assist directly.",
           reportTitle: "How to report an issue",
           reportBody:
-            "If you encounter an accessibility barrier, email support@itsdoneai.com with:",
+            "If you encounter an accessibility barrier, email support@trypackai.com with:",
           reportItems: [
             "the page/screen and what you were trying to do",
             "your device + browser/app version",
@@ -101,8 +101,8 @@ const AccessibilityPage = () => {
 
       <h2>{localizedContent.reportTitle}</h2>
       <p>
-        {localizedContent.reportBody.replace("support@itsdoneai.com", "")}
-        <a href="mailto:support@itsdoneai.com">support@itsdoneai.com</a>
+        {localizedContent.reportBody.replace("support@trypackai.com", "")}
+        <a href="mailto:support@trypackai.com">support@trypackai.com</a>
         :
       </p>
       <ul>

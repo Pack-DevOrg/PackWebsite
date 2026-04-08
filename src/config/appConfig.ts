@@ -214,9 +214,7 @@ const resolvedConfig = AppConfigSchema.parse({
     (env.VITE_FORWARDING_EMAIL as string | undefined) ?? "trips@trypackai.com",
   friendsEmail:
     (env.VITE_FRIENDS_EMAIL as string | undefined) ?? "friends@trypackai.com",
-  apiKey:
-    (env.VITE_PACK_API_KEY as string | undefined) ??
-    (env.VITE_DONEAI_API_KEY as string | undefined),
+  apiKey: env.VITE_PACK_API_KEY as string | undefined,
   oauthScopes: scopeList,
   environment: inferredEnvironment,
 });

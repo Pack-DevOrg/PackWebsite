@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import styled from "styled-components";
-import doneAiLogo from "../assets/logo.png";
+import packLogo from "../assets/logo.png";
 import AccentWord from "./AccentWord";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -906,7 +906,7 @@ const LiveActivityStackSection: React.FC = () => {
                   <LockScreenActivityWrap>
                     <LiveActivityFrame $accent={state.accent}>
                       <TopRow>
-                        <DoneLogo src={doneAiLogo} alt="Pack logo" $size={24} />
+                        <DoneLogo src={packLogo} alt="Pack logo" $size={24} />
                         <TitleBlock>
                           <TitleRow>
                             <LiveTitle>{state.title}</LiveTitle>

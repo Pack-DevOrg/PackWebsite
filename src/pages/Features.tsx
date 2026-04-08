@@ -271,14 +271,14 @@ const Features: React.FC = () => {
             "Pack conecta tu inbox, calendario, preferencias y opciones de reserva para que planear se sienta curado y no caótico.",
           comparisonTitle: "Planificación tradicional vs. Pack",
           traditionalTitle: "Apps tradicionales de viaje",
-          doneAiTitle: "Experiencia Pack",
+          packTitle: "Experiencia Pack",
           traditionalItems: [
             "Resultados de búsqueda en lugar de un viaje terminado",
             "Demasiadas pestañas, formularios y correos de confirmación",
             "Poca memoria de cómo viajas en realidad",
             "Organización manual después de reservar",
           ],
-          doneAiItems: [
+          packItems: [
             "Conversación natural que se convierte en un borrador real del viaje",
             "Recomendaciones guiadas por tus preferencias e historial",
             "Confirmaciones y tiempos organizados automáticamente",
@@ -360,14 +360,14 @@ const Features: React.FC = () => {
             "Pack connects your inbox, calendar, preferences, and booking options so planning feels curated instead of chaotic.",
           comparisonTitle: "Traditional travel planning vs. Pack",
           traditionalTitle: "Traditional Travel Apps",
-          doneAiTitle: "Pack Experience",
+          packTitle: "Pack Experience",
           traditionalItems: [
             "Search results instead of a finished trip",
             "Too many tabs, forms, and confirmation emails",
             "Little memory of how you actually travel",
             "Manual organization after booking",
           ],
-          doneAiItems: [
+          packItems: [
             "Natural conversation that turns into a real trip draft",
             "Recommendations shaped by your preferences and history",
             "Confirmations and timing organized automatically",
@@ -548,9 +548,9 @@ const Features: React.FC = () => {
           </ComparisonCard>
 
           <ComparisonCard $isRoute>
-            <ComparisonCardTitle>{localizedContent.doneAiTitle}</ComparisonCardTitle>
+            <ComparisonCardTitle>{localizedContent.packTitle}</ComparisonCardTitle>
             <ComparisonList>
-              {localizedContent.doneAiItems.map((item) => (
+              {localizedContent.packItems.map((item) => (
                 <ComparisonItem key={item} $isPositive>
                   {item}
                 </ComparisonItem>

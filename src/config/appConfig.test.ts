@@ -5,7 +5,7 @@ describe("appConfig domain helpers", () => {
     expect(isTryPackHostname("trypackai.com")).toBe(true);
     expect(isTryPackHostname("www.trypackai.com")).toBe(true);
     expect(isTryPackHostname("app.trypackai.com")).toBe(true);
-    expect(isTryPackHostname("itsdoneai.com")).toBe(false);
+    expect(isTryPackHostname("example.com")).toBe(false);
   });
 
   it("only exposes public TSA routes for trypack and localhost", () => {
@@ -13,7 +13,7 @@ describe("appConfig domain helpers", () => {
     expect(shouldExposeTsaForHostname("tsa.trypackai.com")).toBe(true);
     expect(shouldExposeTsaForHostname("localhost")).toBe(true);
     expect(shouldExposeTsaForHostname("127.0.0.1")).toBe(true);
-    expect(shouldExposeTsaForHostname("itsdoneai.com")).toBe(false);
+    expect(shouldExposeTsaForHostname("example.com")).toBe(false);
     expect(shouldExposeTsaForHostname("www.trypackai.com")).toBe(true);
   });
 });

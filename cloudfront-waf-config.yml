@@ -4,13 +4,13 @@ Description: "CloudFormation template for the Pack app website with CloudFront a
 Parameters:
   DomainName:
     Type: String
-    Description: The domain name for the app website (e.g. app.itsdoneai.com)
-    Default: app.itsdoneai.com
+    Description: The domain name for the app website (e.g. www.trypackai.com)
+    Default: www.trypackai.com
 
   S3BucketName:
     Type: String
     Description: S3 bucket name for website content
-    Default: doneai-website-content
+    Default: pack-website-content
 
 Resources:
   # S3 bucket for website content
@@ -53,14 +53,14 @@ Resources:
   WAFWebACL:
     Type: AWS::WAFv2::WebACL
     Properties:
-      Name: DoneAIAppWebACL
+      Name: PackAppWebACL
       Scope: CLOUDFRONT
       DefaultAction:
         Allow: {}
       VisibilityConfig:
         SampledRequestsEnabled: true
         CloudWatchMetricsEnabled: true
-        MetricName: DoneAIWebsiteACL
+        MetricName: PackWebsiteACL
       Rules:
         - Name: RateLimitPerIp
           Priority: 0

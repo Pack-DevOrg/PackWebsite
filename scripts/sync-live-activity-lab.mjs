@@ -154,9 +154,7 @@ async function cleanDirectoryContents(dirPath) {
 
 async function main() {
   const exportDir =
-    process.env.PACK_EXPORT_LIVE_ACTIVITY_REVIEW_DIR ??
-    process.env.DONEAI_EXPORT_LIVE_ACTIVITY_REVIEW_DIR ??
-    DEFAULT_EXPORT_DIR;
+    process.env.PACK_EXPORT_LIVE_ACTIVITY_REVIEW_DIR ?? DEFAULT_EXPORT_DIR;
   const labArtifactDir =
     process.env.LIVE_ACTIVITY_LAB_OUTPUT_DIR ?? DEFAULT_LAB_ARTIFACT_DIR;
   const targetUrl = process.env.LIVE_ACTIVITY_LAB_URL ?? DEFAULT_URL;

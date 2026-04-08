@@ -6,14 +6,14 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 const DISTRIBUTION_ALIAS =
-  process.env.DONEAI_APP_DISTRIBUTION_ALIAS?.trim() || "www.trypackai.com";
+  process.env.PACK_APP_DISTRIBUTION_ALIAS?.trim() || "www.trypackai.com";
 const WEB_ACL_NAME =
-  process.env.DONEAI_WEB_ACL_NAME?.trim() ||
+  process.env.PACK_WEB_ACL_NAME?.trim() ||
   `${DISTRIBUTION_ALIAS.replace(/\./g, "-")}-waf`;
 const WEB_ACL_METRIC_NAME =
-  process.env.DONEAI_WEB_ACL_METRIC_NAME?.trim() || WEB_ACL_NAME;
+  process.env.PACK_WEB_ACL_METRIC_NAME?.trim() || WEB_ACL_NAME;
 const ALLOW_SHARED_DISTRIBUTION =
-  process.env.DONEAI_ALLOW_SHARED_APP_DISTRIBUTION === "1";
+  process.env.PACK_ALLOW_SHARED_APP_DISTRIBUTION === "1";
 const DRY_RUN = process.argv.includes("--dry-run");
 
 const desiredRules = [
@@ -108,7 +108,10 @@ function findDistributionByAlias(alias) {
 function ensureDistributionIsSafe(distribution) {
   const aliases = distribution.Aliases?.Items || [];
   const sharesLegacyAlias = aliases.some(
-    (alias) => alias !== DISTRIBUTION_ALIAS && alias.endsWith(".itsdoneai.com"),
+    (alias) =>
+      alias !== DISTRIBUTION_ALIAS &&
+      alias !== "trypackai.com" &&
+      !alias.endsWith(".trypackai.com"),
   );
 
   if (sharesLegacyAlias && !ALLOW_SHARED_DISTRIBUTION) {
@@ -257,7 +260,7 @@ function main() {
   }
   ensureDistributionIsSafe(distribution);
 
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "doneai-app-waf-"));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "pack-app-waf-"));
   try {
     const webAcl = ensureWebAcl(tmpDir);
     ensureDistributionAssociation(distribution.Id, webAcl.arn, tmpDir);

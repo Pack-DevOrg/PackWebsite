@@ -4,12 +4,12 @@ import { resolve } from "node:path";
 
 const distDir = resolve("dist");
 const appAlias =
-  process.env.DONEAI_APP_DISTRIBUTION_ALIAS?.trim() ||
-  process.env.DONEAI_APP_DOMAIN?.trim() ||
+  process.env.PACK_APP_DISTRIBUTION_ALIAS?.trim() ||
+  process.env.PACK_APP_DOMAIN?.trim() ||
   "www.trypackai.com";
-const appBucket = process.env.DONEAI_APP_BUCKET?.trim() || `s3://${appAlias}`;
+const appBucket = process.env.PACK_APP_BUCKET?.trim() || `s3://${appAlias}`;
 const allowSharedDistribution =
-  process.env.DONEAI_ALLOW_SHARED_APP_DISTRIBUTION === "1";
+  process.env.PACK_ALLOW_SHARED_APP_DISTRIBUTION === "1";
 
 const run = (command, args) => {
   execFileSync(command, args, {
@@ -29,7 +29,7 @@ const captureJson = (command, args) =>
   );
 
 const resolveDistribution = () => {
-  const explicitId = process.env.DONEAI_APP_DISTRIBUTION_ID?.trim();
+  const explicitId = process.env.PACK_APP_DISTRIBUTION_ID?.trim();
   if (explicitId) {
     return {
       id: explicitId,
@@ -52,20 +52,23 @@ const resolveDistribution = () => {
 
   if (!matchingDistribution?.Id) {
     throw new Error(
-      `No CloudFront distribution found for alias ${appAlias}. Set DONEAI_APP_DISTRIBUTION_ID to deploy explicitly.`,
+      `No CloudFront distribution found for alias ${appAlias}. Set PACK_APP_DISTRIBUTION_ID to deploy explicitly.`,
     );
   }
 
   const aliases = matchingDistribution.Aliases?.Items || [];
   const sharesLegacyAlias = aliases.some(
-    (alias) => alias !== appAlias && alias.endsWith(".itsdoneai.com"),
+    (alias) =>
+      alias !== appAlias &&
+      alias !== "trypackai.com" &&
+      !alias.endsWith(".trypackai.com"),
   );
 
   if (sharesLegacyAlias && !allowSharedDistribution) {
     throw new Error(
       `Distribution ${matchingDistribution.Id} for ${appAlias} still shares legacy aliases (${aliases.join(
         ", ",
-      )}). Duplicate CloudFront first, then rerun with DONEAI_APP_DISTRIBUTION_ID pointing at the trypack-only distribution.`,
+      )}). Duplicate CloudFront first, then rerun with PACK_APP_DISTRIBUTION_ID pointing at the trypack-only distribution.`,
     );
   }
 

@@ -11,7 +11,7 @@ const distPath = path.join(repoRoot, 'dist');
 const cnamePath = path.join(distPath, 'CNAME');
 const noJekyllPath = path.join(distPath, '.nojekyll');
 const pagesDomain =
-  process.env.DONEAI_GITHUB_PAGES_DOMAIN?.trim() ||
+  process.env.PACK_GITHUB_PAGES_DOMAIN?.trim() ||
   process.env.VITE_WEBSITE_URL?.trim()?.replace(/^https?:\/\//i, '').replace(/\/.*$/, '') ||
   'trypackai.com';
 
@@ -74,7 +74,7 @@ function publishToGhPages({dryRun}) {
   runCommand('npx', args, {
     env: {
       ...process.env,
-      DONEAI_ALLOW_GH_PAGES_PUSH: '1',
+      PACK_ALLOW_GH_PAGES_PUSH: '1',
     },
   });
 }

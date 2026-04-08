@@ -16,9 +16,9 @@ import { useI18n } from "@/i18n/I18nProvider";
 const WEBSITE_URL = appConfig.publicSiteUrl;
 const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || "";
 const APP_STORE_URL = APPLE_APP_ID
-  ? `https://apps.apple.com/app/doneai/id${APPLE_APP_ID}`
-  : "https://apps.apple.com/search/app/doneai";
-const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.doneai.app";
+  ? `https://apps.apple.com/app/pack/id${APPLE_APP_ID}`
+  : "https://apps.apple.com/search/app/pack";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.packai.app";
 
 const palette = {
   bg: "#0e0d0c",
@@ -134,8 +134,8 @@ export const LinkedTripInviteLanding: React.FC = () => {
     ? `${WEBSITE_URL}/trip/${encodedLinkedTripId}${inviteQuery}`
     : `${WEBSITE_URL}/trip`;
   const appSchemeInviteUrl = encodedLinkedTripId
-    ? `com.doneai.app://trip/${encodedLinkedTripId}${inviteQuery}`
-    : "com.doneai.app://trip";
+    ? `com.packai.app://trip/${encodedLinkedTripId}${inviteQuery}`
+    : "com.packai.app://trip";
 
   const handleOpenInApp = useCallback(() => {
     if (!encodedLinkedTripId) {

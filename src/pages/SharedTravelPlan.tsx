@@ -25,10 +25,10 @@ const SHARED_PLAN_API_BASE = import.meta.env.VITE_API_URL || appConfig.apiBaseUr
 // These deep link back to the shared plan when user opens app from store
 const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || ''; // e.g., '6502345678'
 const APP_STORE_URL = APPLE_APP_ID
-  ? `https://apps.apple.com/app/doneai/id${APPLE_APP_ID}`
-  : 'https://apps.apple.com/search/app/doneai'; // Fallback to search
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.doneai.app';
-const APP_SCHEME_PREFIX = 'com.doneai.app://';
+  ? `https://apps.apple.com/app/pack/id${APPLE_APP_ID}`
+  : 'https://apps.apple.com/search/app/pack'; // Fallback to search
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.packai.app';
+const APP_SCHEME_PREFIX = 'com.packai.app://';
 
 const DateOnlyStringSchema = z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
 

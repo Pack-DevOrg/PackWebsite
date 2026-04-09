@@ -13,13 +13,7 @@ import { ThemeProvider } from "@/styles/ThemeProvider";
 const trackCTAClickMock = jest.fn();
 const loginMock = jest.fn();
 const apiRequestMock = jest.fn();
-const requestPublicApiMock = jest.fn();
 const useAuthMock = jest.fn();
-const googleInitializeMock = jest.fn();
-const googleCancelMock = jest.fn();
-let googleCredentialCallback:
-  | ((response: { credential?: string }) => void)
-  | undefined;
 
 jest.mock("@/api/airportSecurity", () => ({
   fetchPublicAirportSecuritySummary: jest.fn(async () => ({
@@ -200,25 +194,9 @@ jest.mock("@/hooks/useConversionTracking", () => ({
   }),
 }));
 
-jest.mock("@/api/client", () => {
-  const actual = jest.requireActual("@/api/client");
-  return {
-    ...actual,
-    requestPublicApi: (...args: unknown[]) => requestPublicApiMock(...args),
-  };
-});
-
 jest.mock("@/auth/AuthContext", () => ({
   useAuth: () => useAuthMock(),
 }));
-
-jest.mock("@/config/appConfig", () => {
-  const actual = jest.requireActual("@/config/appConfig");
-  return {
-    ...actual,
-    isTryPackHostname: () => true,
-  };
-});
 
 jest.mock("@/api/useApiClient", () => ({
   useApiClient: () => ({
@@ -236,21 +214,6 @@ describe("TsaWaitTimesPage", () => {
     jest.clearAllMocks();
     loginMock.mockReset();
     apiRequestMock.mockReset();
-    requestPublicApiMock.mockReset();
-    googleCredentialCallback = undefined;
-    googleInitializeMock.mockImplementation(
-      ({ callback }: { callback?: (response: { credential?: string }) => void }) => {
-        googleCredentialCallback = callback;
-      }
-    );
-    window.google = {
-      accounts: {
-        id: {
-          initialize: googleInitializeMock,
-          cancel: googleCancelMock,
-        },
-      },
-    };
     useAuthMock.mockReturnValue({
       status: "unauthenticated",
       login: loginMock,
@@ -349,7 +312,7 @@ describe("TsaWaitTimesPage", () => {
     );
   });
 
-  it("shows the clean Google CTA immediately while GIS initializes in the background", async () => {
+  it("renders a single shared waitlist form in the modal", async () => {
     renderPage();
 
     await screen.findByText("John F. Kennedy International Airport");
@@ -358,74 +321,10 @@ describe("TsaWaitTimesPage", () => {
       jest.advanceTimersByTime(3200);
     });
 
+    expect(await screen.findByTestId("waitlist-form")).toBeInTheDocument();
     expect(
-      await screen.findByRole("button", { name: /sign up with google/i })
-    ).toBeInTheDocument();
-    expect(googleInitializeMock).toHaveBeenCalled();
-  });
-
-  it("captures the GIS email and closes the modal without hosted login", async () => {
-    requestPublicApiMock.mockResolvedValue({
-      email: "traveler@example.com",
-      emailVerified: true,
-      cognitoSub: "sub_123",
-      cognitoUsername: "google_123",
-      status: "existing_google_user",
-    });
-    window.history.replaceState({}, "", "/tsa?forceModal=1");
-
-    renderPage();
-
-    await screen.findByText("John F. Kennedy International Airport");
-
-    act(() => {
-      jest.advanceTimersByTime(3200);
-    });
-
-    await waitFor(() => {
-      expect(googleInitializeMock).toHaveBeenCalled();
-    });
-
-    await act(async () => {
-      googleCredentialCallback?.({ credential: "google_jwt" });
-    });
-
-    await waitFor(() => {
-      expect(requestPublicApiMock).toHaveBeenCalledWith({
-        path: "/auth/google/bridge",
-        method: "POST",
-        body: {
-          credential: "google_jwt",
-          redirectPath: "/tsa",
-          source: "tsa",
-        },
-      });
-    });
-
-    expect(loginMock).not.toHaveBeenCalled();
-    expect(window.localStorage.getItem("tsa-waits-email-modal-completed")).toBe("1");
-    expect(document.cookie).toContain("tsa-waits-email-modal-completed=1");
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
-
-  it("strips forceModal from the Google login return path", async () => {
-    window.history.replaceState({}, "", "/tsa?forceModal=1");
-
-    renderPage();
-
-    await screen.findByText("John F. Kennedy International Airport");
-
-    act(() => {
-      jest.advanceTimersByTime(3200);
-    });
-
-    fireEvent.click(await screen.findByRole("button", { name: /sign up with google/i }));
-
-    expect(loginMock).toHaveBeenCalledWith({
-      redirectPath: "/tsa",
-      redirectUri: "https://www.trypackai.com/auth/callback",
-      useCanonicalOrigin: false,
-    });
+      screen.queryByRole("button", { name: /sign up with google/i })
+    ).not.toBeInTheDocument();
   });
 
   it("does not auto-open the modal for authenticated users", async () => {

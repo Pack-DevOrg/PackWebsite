@@ -58,10 +58,10 @@ import {
   CONSENT_MAX_AGE_SECONDS,
   CONSENT_TIMESTAMP_COOKIE_KEY,
 } from '../constants/consent';
-import { apiEndpoints } from "../config/appConfig";
+import { ApiRequestError, requestPublicApi } from "@/api/client";
+import { apiEndpoints, appConfig } from "../config/appConfig";
 import { useI18n } from "../i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "../legal/legalUiCopy";
-import { initiateLogin } from "@/auth/cognito";
 
 // Add global styles for animations
 const GlobalStyle = createGlobalStyle`
@@ -254,6 +254,112 @@ const readMarketingTrackingConsent = (): boolean => {
 
 type WaitlistFormVariant = 'default' | 'hero' | 'embedded';
 
+type GoogleCredentialResponse = {
+  credential?: string;
+};
+
+type GoogleAccountsId = {
+  initialize: (options: {
+    client_id: string;
+    callback?: (response: GoogleCredentialResponse) => void;
+    auto_select?: boolean;
+    cancel_on_tap_outside?: boolean;
+    context?: "signin" | "signup" | "use";
+    itp_support?: boolean;
+    ux_mode?: "popup" | "redirect";
+  }) => void;
+  renderButton: (
+    parent: HTMLElement,
+    options: {
+      type?: "standard" | "icon";
+      theme?: "outline" | "filled_blue" | "filled_black";
+      size?: "large" | "medium" | "small";
+      text?:
+        | "signin_with"
+        | "signup_with"
+        | "continue_with"
+        | "signin"
+        | "signup";
+      shape?: "rectangular" | "pill" | "circle" | "square";
+      logo_alignment?: "left" | "center";
+      width?: number;
+      locale?: string;
+    }
+  ) => void;
+};
+
+type GoogleAuthBridgeCaptureResult = {
+  email: string;
+  emailVerified: boolean;
+  givenName?: string;
+  familyName?: string;
+  name?: string;
+  picture?: string;
+  cognitoSub: string;
+  cognitoUsername: string;
+  status:
+    | "created_and_linked"
+    | "linked_existing_local_user"
+    | "existing_google_user";
+  shouldContinueWithHostedLogin: true;
+};
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: GoogleAccountsId;
+      };
+    };
+  }
+}
+
+let googleGisScriptPromise: Promise<void> | null = null;
+
+const loadGoogleGisScript = (): Promise<void> => {
+  if (typeof window === "undefined") {
+    return Promise.resolve();
+  }
+
+  if (window.google?.accounts?.id) {
+    return Promise.resolve();
+  }
+
+  if (googleGisScriptPromise) {
+    return googleGisScriptPromise;
+  }
+
+  googleGisScriptPromise = new Promise<void>((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve(), { once: true });
+      existingScript.addEventListener(
+        "error",
+        () => reject(new Error("Failed to load Google Identity Services")),
+        { once: true }
+      );
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () =>
+      reject(new Error("Failed to load Google Identity Services"));
+    document.head.appendChild(script);
+  }).catch((error) => {
+    googleGisScriptPromise = null;
+    throw error;
+  });
+
+  return googleGisScriptPromise;
+};
+
 interface WaitlistFormProps {
   variant?: WaitlistFormVariant;
   onSuccess?: (email: string) => void;
@@ -264,9 +370,10 @@ interface WaitlistFormProps {
 const FormContainer = styled.section<{ $variant: WaitlistFormVariant }>`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: min(100%, 640px);
-  max-width: 640px;
+  align-items: ${({ $variant }) => ($variant === "embedded" ? "stretch" : "center")};
+  width: ${({ $variant }) =>
+    $variant === "embedded" ? "100%" : "min(100%, 640px)"};
+  max-width: ${({ $variant }) => ($variant === "embedded" ? "none" : "640px")};
   margin: ${({ $variant, theme }) =>
     $variant === 'hero'
       ? `${theme.spacing[1]} auto ${theme.spacing[3]}`
@@ -347,10 +454,12 @@ const FormTitle = styled.h2<{ $variant: WaitlistFormVariant }>`
   ${fadeSequence};
 `;
 
-const Form = styled.form`
+const Form = styled.form<{ $variant: WaitlistFormVariant }>`
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: ${({ $variant }) => ($variant === "embedded" ? "34rem" : "none")};
+  margin: 0 auto;
 `;
 
 const InputGroup = styled.div`
@@ -535,73 +644,25 @@ const SubmitButton = styled.button`
   }
 `;
 
-const GoogleLoginButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
+const GoogleButtonHost = styled.div`
   width: 100%;
-  box-sizing: border-box;
-  border-radius: 1rem;
-  border: 1px solid transparent;
-  background:
-    linear-gradient(#131314, #131314) padding-box,
-    linear-gradient(
-        135deg,
-        rgba(243, 210, 122, 0.92) 0%,
-        rgba(231, 35, 64, 0.9) 62%,
-        rgba(248, 230, 179, 0.9) 100%
-      )
-      border-box;
-  color: #e3e3e3;
-  font-weight: 800;
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  cursor: pointer;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-  font-family:
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  letter-spacing: 0.01em;
-  text-align: center;
-  transition: background 180ms ease, transform 180ms ease, opacity 180ms ease;
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
 
-  &:hover:not(:disabled) {
-    background:
-      linear-gradient(#1e1f20, #1e1f20) padding-box,
-      linear-gradient(
-          135deg,
-          rgba(243, 210, 122, 0.96) 0%,
-          rgba(231, 35, 64, 0.94) 62%,
-          rgba(248, 230, 179, 0.94) 100%
-        )
-        border-box;
-    transform: translateY(-1px);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow:
-      0 12px 28px rgba(0, 0, 0, 0.28),
-      0 0 0 3px rgba(243, 210, 122, 0.18);
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.65;
+  > div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 `;
 
-const GoogleLogoWrap = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+const GoogleButtonStatus = styled.p`
+  margin: 0 0 ${({ theme }) => theme.spacing[2]};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.small};
+  line-height: 1.45;
+  text-align: center;
 `;
 
 const ButtonDivider = styled.div`
@@ -741,33 +802,6 @@ const CircleDecoration = styled.div`
   z-index: -1;
 `;
 
-const GoogleMark: React.FC = () => (
-  <svg
-    aria-hidden="true"
-    width="18"
-    height="18"
-    viewBox="0 0 18 18"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fill="#4285F4"
-      d="M17.64 9.2045c0-.6382-.0573-1.2518-.1636-1.8409H9v3.4818h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2582h2.9086c1.7018-1.5668 2.6837-3.8741 2.6837-6.6155Z"
-    />
-    <path
-      fill="#34A853"
-      d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1791l-2.9086-2.2582c-.8059.54-1.8368.8591-3.0478.8591-2.3441 0-4.3282-1.5823-5.0364-3.7091H.9568v2.3318A8.9997 8.9997 0 0 0 9 18Z"
-    />
-    <path
-      fill="#FBBC05"
-      d="M3.9636 10.7127A5.4108 5.4108 0 0 1 3.6818 9c0-.5945.1023-1.1727.2818-1.7127V4.9555H.9568A8.9996 8.9996 0 0 0 0 9c0 1.4518.3477 2.8268.9568 4.0445l3.0068-2.3318Z"
-    />
-    <path
-      fill="#EA4335"
-      d="M9 3.5782c1.3214 0 2.5077.4541 3.4405 1.3459l2.5814-2.5814C13.4632.8918 11.426 0 9 0A8.9997 8.9997 0 0 0 .9568 4.9555l3.0068 2.3318C4.6718 5.1605 6.6559 3.5782 9 3.5782Z"
-    />
-  </svg>
-);
-
 /**
  * WaitlistForm Component
  *
@@ -799,7 +833,9 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   const [emailError, setEmailError] = useState("");
   const [captchaError, setCaptchaError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGoogleBridgeLoading, setIsGoogleBridgeLoading] = useState(false);
+  const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
+  const [isGoogleButtonReady, setIsGoogleButtonReady] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [message, setMessage] = useState<{
@@ -807,6 +843,11 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
     text: string;
   } | null>(null);
   const hasTrackedFormStartRef = React.useRef(false);
+  const googleButtonRef = React.useRef<HTMLDivElement | null>(null);
+  const googleCredentialHandlerRef = React.useRef<
+    ((credential: string) => Promise<void>) | null
+  >(null);
+  const hasInitializedGoogleIdentityRef = React.useRef(false);
   const theme = useTheme();
   
   // Conversion tracking
@@ -1071,8 +1112,8 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
     }
   };
 
-  const handleGoogleSignup = async () => {
-    if (isGoogleLoading || isLoading) {
+  const handleGoogleCredential = async (credential: string): Promise<void> => {
+    if (!credential || isGoogleBridgeLoading || isLoading) {
       return;
     }
 
@@ -1080,11 +1121,12 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
     setSubmitError("");
     setCaptchaError("");
     setMessage(null);
-    setIsGoogleLoading(true);
+    setGoogleBridgeError(null);
+    setIsGoogleBridgeLoading(true);
 
     trackCTAClick(
-      isHeroVariant ? "Hero Waitlist Google Login" : "Waitlist Google Login",
-      isHeroVariant ? "hero_waitlist_google_login" : "waitlist_google_login"
+      isHeroVariant ? "Hero Waitlist Google GIS Button" : "Waitlist Google GIS Button",
+      isHeroVariant ? "hero_waitlist_google_gis_button" : "waitlist_google_gis_button"
     );
 
     try {
@@ -1093,23 +1135,127 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
           ? pathFor("/")
           : `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
-      await initiateLogin({
-        redirectPath,
-        useCanonicalOrigin: false,
+      const result = await requestPublicApi<
+        GoogleAuthBridgeCaptureResult,
+        { credential: string; redirectPath: string; source: "tsa" }
+      >({
+        path: "/auth/google/bridge",
+        method: "POST",
+        body: {
+          credential,
+          redirectPath,
+          source: "tsa",
+        },
       });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Unable to start Google sign-in. Please try again.";
-      setSubmitError(errorMessage);
+
+      setEmail(result.email);
+      setIsSubmitted(true);
       setMessage({
-        type: "error",
-        text: `❌ ${errorMessage}`,
+        type: "success",
+        text: "✅ Success! Welcome to the waitlist.",
       });
-      setIsGoogleLoading(false);
+
+      trackFormSubmit('waitlist_form', {
+        form_name: 'waitlist_google_signup',
+        page_section: isHeroVariant ? 'hero_cta' : 'main_cta',
+        event_category: 'conversion',
+        value: 1,
+      });
+      trackConversion('generate_lead', {
+        event_category: 'conversion',
+        event_label: 'waitlist_google_signup_success',
+        value: 1,
+        conversion_type: 'lead_generation',
+        form_name: 'waitlist_google_signup',
+        page_section: isHeroVariant ? 'hero_cta' : 'main_cta',
+      });
+      onSuccess?.(result.email);
+    } catch (error) {
+      const isExpectedError =
+        error instanceof ApiRequestError ||
+        (error instanceof DOMException && error.name === "AbortError");
+
+      if (!isExpectedError && env.DEV) {
+        console.warn("Failed to capture Google waitlist email", error);
+      }
+
+      setGoogleBridgeError(
+        "Google couldn't confirm your email. Try again or use the form below."
+      );
+    } finally {
+      setIsGoogleBridgeLoading(false);
     }
   };
+
+  googleCredentialHandlerRef.current = handleGoogleCredential;
+
+  useMountEffect(() => {
+    if (typeof window === "undefined" || !appConfig.googleGisClientId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void loadGoogleGisScript()
+      .then(() => {
+        if (cancelled) {
+          return;
+        }
+
+        const accountsId = window.google?.accounts?.id;
+        const buttonContainer = googleButtonRef.current;
+        if (!accountsId || !buttonContainer || !appConfig.googleGisClientId) {
+          return;
+        }
+
+        if (!hasInitializedGoogleIdentityRef.current) {
+          accountsId.initialize({
+            client_id: appConfig.googleGisClientId,
+            callback: (response) => {
+              if (!response.credential) {
+                return;
+              }
+
+              void googleCredentialHandlerRef.current?.(response.credential);
+            },
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            context: "signup",
+            itp_support: true,
+            ux_mode: "popup",
+          });
+          hasInitializedGoogleIdentityRef.current = true;
+        }
+
+        buttonContainer.replaceChildren();
+        accountsId.renderButton(buttonContainer, {
+          type: "standard",
+          theme: "filled_black",
+          size: "large",
+          text: "signup_with",
+          shape: "pill",
+          logo_alignment: "left",
+          width: 320,
+          locale,
+        });
+        setIsGoogleButtonReady(true);
+      })
+      .catch((error) => {
+        if (env.DEV) {
+          console.error("Failed to initialize Google Identity Services", error);
+        }
+
+        if (!cancelled) {
+          setGoogleBridgeError(
+            "Google sign-up isn't available in this browser right now. Use the email form below."
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  });
 
   return (
     <>
@@ -1147,19 +1293,20 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
               {t("waitlist.title")}
             </FormTitle>
           ) : null}
-          <Form onSubmit={handleSubmit}>
-              <GoogleLoginButton
-                type="button"
-                onClick={() => {
-                  void handleGoogleSignup();
-                }}
-                disabled={isGoogleLoading || isLoading}
-              >
-                <GoogleLogoWrap>
-                  <GoogleMark />
-                </GoogleLogoWrap>
-                {isGoogleLoading ? t("common.redirectingGoogle") : t("waitlist.googleCta")}
-              </GoogleLoginButton>
+          <Form $variant={variant} onSubmit={handleSubmit}>
+              {googleBridgeError ? (
+                <GoogleButtonStatus>{googleBridgeError}</GoogleButtonStatus>
+              ) : null}
+              {isGoogleBridgeLoading ? (
+                <GoogleButtonStatus>Saving your Google email…</GoogleButtonStatus>
+              ) : null}
+              <GoogleButtonHost aria-live="polite">
+                {!isGoogleButtonReady ? <SkeletonLoader aria-hidden="true" /> : null}
+                <div
+                  ref={googleButtonRef}
+                  style={{ display: isGoogleButtonReady ? "flex" : "none", justifyContent: "center", width: "100%" }}
+                />
+              </GoogleButtonHost>
 
               <ButtonDivider>{t("waitlist.useEmailInstead")}</ButtonDivider>
 

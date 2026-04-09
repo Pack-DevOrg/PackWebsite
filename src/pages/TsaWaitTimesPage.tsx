@@ -10,10 +10,9 @@ import {
 } from "lucide-react";
 import type { AirportWaitTimeObservation } from "@/schemas/airport-security";
 import { fetchPublicAirportSecuritySummary } from "@/api/airportSecurity";
-import { ApiRequestError, requestPublicApi } from "@/api/client";
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
-import { appConfig, isTryPackHostname } from "@/config/appConfig";
+import { appConfig } from "@/config/appConfig";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 import { useMountEffect } from "@/hooks/useMountEffect";
@@ -37,99 +36,6 @@ const AIRPORT_SEARCH_ALIAS_RANK: Record<string, number> = {
 const WAITLIST_MODAL_FORCE_QUERY_KEY = "forceModal";
 const normalizeAirportSearchText = (value: string | undefined): string =>
   (value ?? "").trim().toLowerCase();
-
-type GoogleCredentialSource = "one_tap" | "button";
-
-type GoogleCredentialResponse = {
-  credential?: string;
-  select_by?: string;
-};
-
-type GoogleAccountsId = {
-  initialize: (options: {
-    client_id: string;
-    callback?: (response: GoogleCredentialResponse) => void;
-    auto_select?: boolean;
-    cancel_on_tap_outside?: boolean;
-    context?: "signin" | "signup" | "use";
-    itp_support?: boolean;
-    use_fedcm_for_prompt?: boolean;
-    ux_mode?: "popup" | "redirect";
-    login_uri?: string;
-  }) => void;
-  cancel: () => void;
-};
-
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: GoogleAccountsId;
-      };
-    };
-  }
-}
-
-type GoogleAuthBridgeCaptureResult = {
-  email: string;
-  emailVerified: boolean;
-  givenName?: string;
-  familyName?: string;
-  name?: string;
-  picture?: string;
-  cognitoSub: string;
-  cognitoUsername: string;
-  status:
-    | "created_and_linked"
-    | "linked_existing_local_user"
-    | "existing_google_user";
-};
-
-let googleGisScriptPromise: Promise<void> | null = null;
-
-const loadGoogleGisScript = (): Promise<void> => {
-  if (typeof window === "undefined") {
-    return Promise.resolve();
-  }
-
-  if (window.google?.accounts?.id) {
-    return Promise.resolve();
-  }
-
-  if (googleGisScriptPromise) {
-    return googleGisScriptPromise;
-  }
-
-  googleGisScriptPromise = new Promise<void>((resolve, reject) => {
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      'script[src="https://accounts.google.com/gsi/client"]'
-    );
-
-    if (existingScript) {
-      existingScript.addEventListener("load", () => resolve(), { once: true });
-      existingScript.addEventListener(
-        "error",
-        () => reject(new Error("Failed to load Google Identity Services")),
-        { once: true }
-      );
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () =>
-      reject(new Error("Failed to load Google Identity Services"));
-    document.head.appendChild(script);
-  }).catch((error) => {
-    googleGisScriptPromise = null;
-    throw error;
-  });
-
-  return googleGisScriptPromise;
-};
 
 const Page = styled.section`
   display: grid;
@@ -798,26 +704,12 @@ const ModalBody = styled.div`
   align-content: center;
 `;
 
-const SignupChoiceGrid = styled.div`
+const ModalWaitlistShell = styled.div`
   display: grid;
   gap: 0.75rem;
-  justify-items: center;
-
-  @media (min-width: 960px) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: stretch;
-    justify-items: stretch;
-  }
-`;
-
-const SignupChoiceCard = styled.div`
-  display: grid;
-  gap: 0.55rem;
   min-width: 0;
   width: 100%;
   box-sizing: border-box;
-  align-content: center;
-  justify-items: center;
   padding: 0.9rem;
   border-radius: 1.2rem;
   border: 1px solid rgba(243, 210, 122, 0.12);
@@ -826,12 +718,10 @@ const SignupChoiceCard = styled.div`
     rgba(12, 9, 7, 0.46);
 
   @media (max-width: 639px) {
-    max-width: 34rem;
+    padding: 0.8rem;
   }
 
   @media (min-width: 960px) {
-    width: 100%;
-    min-height: 100%;
     padding: 0.95rem 1rem;
   }
 `;
@@ -862,90 +752,6 @@ const ModalText = styled.p`
   @media (min-width: 640px) {
     font-size: 0.88rem;
   }
-`;
-
-const ModalActions = styled.div`
-  display: grid;
-  gap: 0.45rem;
-  width: 100%;
-  padding: 0;
-  justify-items: center;
-`;
-
-const GoogleButtonStatus = styled.p`
-  margin: 0;
-  color: rgba(247, 240, 227, 0.58);
-  font-size: 0.82rem;
-  line-height: 1.45;
-  text-align: center;
-`;
-
-const GoogleBridgeErrorText = styled.p`
-  margin: 0;
-  color: #ffd5d5;
-  font-size: 0.88rem;
-  line-height: 1.45;
-  text-align: center;
-`;
-
-const GoogleLoginButton = styled.button<{ $visible: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-  width: min(100%, 320px);
-  max-width: calc(100vw - 4.2rem);
-  box-sizing: border-box;
-  margin-top: 0.2rem;
-  border-radius: 1rem;
-  border: 1px solid transparent;
-  background:
-    linear-gradient(#131314, #131314) padding-box,
-    linear-gradient(135deg, rgba(243, 210, 122, 0.92) 0%, rgba(231, 35, 64, 0.9) 62%, rgba(248, 230, 179, 0.9) 100%)
-      border-box;
-  color: #e3e3e3;
-  font-weight: 800;
-  padding: 0.85rem 1rem;
-  cursor: pointer;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-  font-family:
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  letter-spacing: 0.01em;
-  text-align: center;
-  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  visibility: ${({ $visible }) => ($visible ? "visible" : "hidden")};
-  pointer-events: ${({ $visible }) => ($visible ? "auto" : "none")};
-  transition: opacity 180ms ease;
-
-  @media (min-width: 640px) {
-    width: min(100%, 360px);
-  }
-
-  &:hover:not(:disabled) {
-    background:
-      linear-gradient(#1e1f20, #1e1f20) padding-box,
-      linear-gradient(135deg, rgba(243, 210, 122, 0.96) 0%, rgba(231, 35, 64, 0.94) 62%, rgba(248, 230, 179, 0.94) 100%)
-        border-box;
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.65;
-  }
-`;
-
-const GoogleLogoWrap = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
 `;
 
 const ModalLegalNote = styled.p`
@@ -988,33 +794,6 @@ const ModalDismissButton = styled.button`
     color: rgba(247, 240, 227, 0.74);
   }
 `;
-
-const GoogleMark: React.FC = () => (
-  <svg
-    aria-hidden="true"
-    width="18"
-    height="18"
-    viewBox="0 0 18 18"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fill="#4285F4"
-      d="M17.64 9.2045c0-.6382-.0573-1.2518-.1636-1.8409H9v3.4818h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2582h2.9086c1.7018-1.5668 2.6837-3.8741 2.6837-6.6155Z"
-    />
-    <path
-      fill="#34A853"
-      d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1791l-2.9086-2.2582c-.8059.54-1.8368.8591-3.0478.8591-2.3441 0-4.3282-1.5823-5.0364-3.7091H.9568v2.3318A8.9997 8.9997 0 0 0 9 18Z"
-    />
-    <path
-      fill="#FBBC05"
-      d="M3.9636 10.7127A5.4108 5.4108 0 0 1 3.6818 9c0-.5945.1023-1.1727.2818-1.7127V4.9555H.9568A8.9996 8.9996 0 0 0 0 9c0 1.4518.3477 2.8268.9568 4.0445l3.0068-2.3318Z"
-    />
-    <path
-      fill="#EA4335"
-      d="M9 3.5782c1.3214 0 2.5077.4541 3.4405 1.3459l2.5814-2.5814C13.4632.8918 11.426 0 9 0A8.9997 8.9997 0 0 0 .9568 4.9555l3.0068 2.3318C4.6718 5.1605 6.6559 3.5782 9 3.5782Z"
-    />
-  </svg>
-);
 
 const formatTimestamp = (value: string | undefined): string => {
   if (!value) {
@@ -1639,8 +1418,6 @@ const TsaWaitTimesPage: React.FC = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [openFaqId, setOpenFaqId] = useState<string | null>(FAQ_ITEMS[0]?.id ?? null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isGoogleBridgeLoading, setIsGoogleBridgeLoading] = useState(false);
-  const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -1648,19 +1425,11 @@ const TsaWaitTimesPage: React.FC = () => {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const hasInitializedGoogleIdentityRef = useRef(false);
-  const isHandlingGoogleCredentialRef = useRef(false);
-  const handleGoogleCredentialRef = useRef<
-    ((credential: string, source: GoogleCredentialSource) => Promise<void>) | null
-  >(null);
   const resultsTopRef = useRef<HTMLElement | null>(null);
   const trimmedQuery = query.trim();
   const deferredAirportQuery = useDeferredValue(trimmedQuery.toLowerCase());
   const { trackCTAClick } = useConversionTracking();
   const bootstrapAuthCallbackUrl = resolveBootstrapAuthCallbackUrl();
-  const hasGoogleGisConfigured = Boolean(appConfig.googleGisClientId);
-  const isGoogleGisHostAllowed =
-    typeof window !== "undefined" && isTryPackHostname(window.location.hostname);
 
   useQuery({
     queryKey: ["tsa-auth-user-bootstrap", status],
@@ -1796,144 +1565,6 @@ const TsaWaitTimesPage: React.FC = () => {
     persistWaitlistModalCompletion();
     setIsModalOpen(false);
   };
-
-  const startHostedGoogleLogin = () => {
-    persistWaitlistModalCompletion();
-
-    void login({
-      redirectPath:
-        typeof window === "undefined"
-          ? "/tsa"
-          : stripWaitlistModalQueryFlags(window.location.href),
-      redirectUri: bootstrapAuthCallbackUrl,
-      useCanonicalOrigin: false,
-    });
-  };
-
-  const handleGoogleLogin = () => {
-    trackCTAClick("TSA Waitlist Modal Google Login", "tsa_waits_modal_google_login");
-    startHostedGoogleLogin();
-  };
-
-  const handleGoogleBridgeCredential = async (
-    credential: string,
-    source: GoogleCredentialSource
-  ): Promise<void> => {
-    if (isHandlingGoogleCredentialRef.current || !credential) {
-      return;
-    }
-
-    isHandlingGoogleCredentialRef.current = true;
-    setGoogleBridgeError(null);
-    setIsGoogleBridgeLoading(true);
-
-    trackCTAClick(
-      source === "one_tap"
-        ? "TSA Waitlist Google One Tap"
-        : "TSA Waitlist GIS Button",
-      source === "one_tap"
-        ? "tsa_waits_google_one_tap"
-        : "tsa_waits_google_gis_button"
-    );
-
-    try {
-      const redirectPath =
-        typeof window === "undefined"
-          ? "/tsa"
-          : stripWaitlistModalQueryFlags(window.location.href);
-
-      await requestPublicApi<
-        GoogleAuthBridgeCaptureResult,
-        { credential: string; redirectPath: string; source: "tsa" }
-      >({
-        path: "/auth/google/bridge",
-        method: "POST",
-        body: {
-          credential,
-          redirectPath,
-          source: "tsa",
-        },
-      });
-
-      persistWaitlistModalCompletion();
-      setIsModalOpen(false);
-    } catch (error) {
-      const isExpectedFallbackError =
-        error instanceof ApiRequestError ||
-        (error instanceof DOMException && error.name === "AbortError");
-
-      if (!isExpectedFallbackError && appConfig.environment !== "prod") {
-        console.warn("Failed to capture Google waitlist email", error);
-      }
-
-      setGoogleBridgeError(
-        "Google couldn't confirm your email. Try again or use the form below."
-      );
-    } finally {
-      isHandlingGoogleCredentialRef.current = false;
-      setIsGoogleBridgeLoading(false);
-    }
-  };
-
-  handleGoogleCredentialRef.current = handleGoogleBridgeCredential;
-
-  useEffect(() => {
-    if (
-      !isClient ||
-      !isModalOpen ||
-      status !== "unauthenticated" ||
-      !hasGoogleGisConfigured ||
-      !isGoogleGisHostAllowed
-    ) {
-      return;
-    }
-
-    let cancelled = false;
-
-    void loadGoogleGisScript()
-      .then(() => {
-        if (cancelled) {
-          return;
-        }
-
-        const accountsId = window.google?.accounts?.id;
-        if (!accountsId || !appConfig.googleGisClientId) {
-          return;
-        }
-
-        if (!hasInitializedGoogleIdentityRef.current) {
-          accountsId.initialize({
-            client_id: appConfig.googleGisClientId,
-            callback: (response) => {
-              if (!response.credential) {
-                return;
-              }
-              void handleGoogleCredentialRef.current?.(
-                response.credential,
-                "one_tap"
-              );
-            },
-            auto_select: false,
-            cancel_on_tap_outside: true,
-            context: "signin",
-            itp_support: true,
-          });
-          hasInitializedGoogleIdentityRef.current = true;
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to initialize Google Identity Services", error);
-        if (!cancelled) {
-          setGoogleBridgeError(
-            "Google One Tap isn't available in this browser yet. The redirect flow still works."
-          );
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [hasGoogleGisConfigured, isClient, isGoogleGisHostAllowed, isModalOpen, status]);
 
   const requestLocation = () => {
     if (typeof window === "undefined" || !navigator.geolocation) {
@@ -2408,39 +2039,14 @@ const TsaWaitTimesPage: React.FC = () => {
                   would book yourself.
                 </ModalText>
               </ModalHeader>
-              <SignupChoiceGrid>
-                <SignupChoiceCard>
-                  <ModalActions>
-                    {googleBridgeError ? (
-                      <GoogleBridgeErrorText>{googleBridgeError}</GoogleBridgeErrorText>
-                    ) : null}
-                    {isGoogleBridgeLoading ? (
-                      <GoogleButtonStatus>
-                        Saving your Google email…
-                      </GoogleButtonStatus>
-                    ) : null}
-                    <GoogleLoginButton
-                      $visible
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      disabled={status === "loading" || isGoogleBridgeLoading}
-                    >
-                      <GoogleLogoWrap>
-                        <GoogleMark />
-                      </GoogleLogoWrap>
-                      Sign up with Google
-                    </GoogleLoginButton>
-                  </ModalActions>
-                </SignupChoiceCard>
-                <SignupChoiceCard>
-                  <WaitlistForm
-                    variant="embedded"
-                    showTitle={false}
-                    onSuccess={handleWaitlistSuccess}
-                    showLegalNotice={false}
-                  />
-                </SignupChoiceCard>
-              </SignupChoiceGrid>
+              <ModalWaitlistShell>
+                <WaitlistForm
+                  variant="embedded"
+                  showTitle={false}
+                  onSuccess={handleWaitlistSuccess}
+                  showLegalNotice={false}
+                />
+              </ModalWaitlistShell>
               <ModalFooter>
                 <ModalDismissButton type="button" onClick={closeModal}>
                   I'm already on the waitlist

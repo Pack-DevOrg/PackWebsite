@@ -2,6 +2,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act } from "@testing-library/react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
 
@@ -12,7 +13,14 @@ import { ThemeProvider } from "@/styles/ThemeProvider";
 const trackCTAClickMock = jest.fn();
 const loginMock = jest.fn();
 const apiRequestMock = jest.fn();
+const requestPublicApiMock = jest.fn();
 const useAuthMock = jest.fn();
+const googleInitializeMock = jest.fn();
+const googleRenderButtonMock = jest.fn();
+const googleCancelMock = jest.fn();
+let googleCredentialCallback:
+  | ((response: { credential?: string }) => void)
+  | undefined;
 
 jest.mock("@/api/airportSecurity", () => ({
   fetchPublicAirportSecuritySummary: jest.fn(async () => ({
@@ -193,9 +201,25 @@ jest.mock("@/hooks/useConversionTracking", () => ({
   }),
 }));
 
+jest.mock("@/api/client", () => {
+  const actual = jest.requireActual("@/api/client");
+  return {
+    ...actual,
+    requestPublicApi: (...args: unknown[]) => requestPublicApiMock(...args),
+  };
+});
+
 jest.mock("@/auth/AuthContext", () => ({
   useAuth: () => useAuthMock(),
 }));
+
+jest.mock("@/config/appConfig", () => {
+  const actual = jest.requireActual("@/config/appConfig");
+  return {
+    ...actual,
+    isTryPackHostname: () => true,
+  };
+});
 
 jest.mock("@/api/useApiClient", () => ({
   useApiClient: () => ({
@@ -213,12 +237,30 @@ describe("TsaWaitTimesPage", () => {
     jest.clearAllMocks();
     loginMock.mockReset();
     apiRequestMock.mockReset();
+    requestPublicApiMock.mockReset();
+    googleCredentialCallback = undefined;
+    googleInitializeMock.mockImplementation(
+      ({ callback }: { callback?: (response: { credential?: string }) => void }) => {
+        googleCredentialCallback = callback;
+      }
+    );
+    window.google = {
+      accounts: {
+        id: {
+          initialize: googleInitializeMock,
+          renderButton: googleRenderButtonMock,
+          cancel: googleCancelMock,
+        },
+      },
+    };
     useAuthMock.mockReturnValue({
       status: "unauthenticated",
       login: loginMock,
     });
     window.sessionStorage.clear();
     window.localStorage.clear();
+    document.cookie =
+      "tsa-waits-email-modal-completed=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
     window.history.replaceState({}, "", "/tsa");
   });
 
@@ -332,6 +374,52 @@ describe("TsaWaitTimesPage", () => {
     expect(
       window.localStorage.getItem("tsa-waits-email-modal-completed")
     ).toBe("1");
+    expect(document.cookie).toContain("tsa-waits-email-modal-completed=1");
+  });
+
+  it("captures the GIS email and closes the modal without hosted login", async () => {
+    requestPublicApiMock.mockResolvedValue({
+      email: "traveler@example.com",
+      emailVerified: true,
+      cognitoSub: "sub_123",
+      cognitoUsername: "google_123",
+      status: "existing_google_user",
+    });
+    window.history.replaceState({}, "", "/tsa?forceModal=1");
+
+    renderPage();
+
+    await screen.findByText("John F. Kennedy International Airport");
+
+    await act(async () => {
+      jest.advanceTimersByTime(3200);
+      await Promise.resolve();
+    });
+
+    await screen.findByRole("dialog");
+    await waitFor(() => expect(googleInitializeMock).toHaveBeenCalled());
+    expect(googleCredentialCallback).toBeDefined();
+
+    await act(async () => {
+      googleCredentialCallback?.({ credential: "google-jwt" });
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    expect(requestPublicApiMock).toHaveBeenCalledWith({
+      path: "/auth/google/bridge",
+      method: "POST",
+      body: {
+        credential: "google-jwt",
+        redirectPath: "/tsa",
+        source: "tsa",
+      },
+    });
+    expect(loginMock).not.toHaveBeenCalled();
+    expect(window.localStorage.getItem("tsa-waits-email-modal-completed")).toBe("1");
     expect(document.cookie).toContain("tsa-waits-email-modal-completed=1");
   });
 

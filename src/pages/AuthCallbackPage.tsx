@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { AlertTriangle, Loader2 } from "lucide-react";
@@ -15,52 +15,137 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at top, rgba(240, 198, 45, 0.16), transparent 34%),
-    linear-gradient(180deg, #08050e 0%, #100914 45%, #05030b 100%);
-  color: ${({ theme }) => theme?.colors?.neutral?.gray050 ?? "#ffffff"};
-  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--page-gradient);
+  color: ${({ theme }) => theme.colors.text.primary};
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(231, 35, 64, 0.12), transparent 24%),
+      radial-gradient(circle at 82% 12%, rgba(243, 210, 122, 0.16), transparent 26%),
+      radial-gradient(circle at 50% 100%, rgba(243, 210, 122, 0.08), transparent 30%);
+    pointer-events: none;
+  }
+`;
+
+const GridVeil = styled.div`
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 248, 236, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 248, 236, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.36), transparent 78%);
+  pointer-events: none;
+`;
+
+const Shell = styled.section`
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  display: grid;
+  gap: 1rem;
 `;
 
 const Card = styled.div`
-  width: min(520px, 100%);
   background:
-    linear-gradient(180deg, rgba(23, 16, 30, 0.9), rgba(9, 7, 18, 0.92)),
-    rgba(9, 7, 18, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+    linear-gradient(180deg, rgba(255, 248, 236, 0.08), rgba(255, 248, 236, 0.03)),
+    radial-gradient(circle at top right, rgba(231, 35, 64, 0.16), transparent 28%),
+    rgba(12, 9, 7, 0.88);
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
   border-radius: 28px;
-  padding: clamp(1.9rem, 5vw, 3rem);
+  padding: clamp(1.4rem, 4vw, 2.4rem);
   display: grid;
+  gap: 1.4rem;
+  box-shadow: ${({ theme }) => theme.colors.shadow.dark};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 28%);
+    pointer-events: none;
+  }
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 1rem;
-  box-shadow: 0 32px 80px rgba(5, 3, 12, 0.62);
-  text-align: center;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
 `;
 
 const LogoBadge = styled.div`
-  width: 76px;
-  height: 76px;
-  margin: 0 auto 0.15rem;
-  border-radius: 22px;
+  width: 88px;
+  height: 88px;
+  border-radius: 28px;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at top, rgba(243, 210, 122, 0.2), transparent 60%),
+    linear-gradient(180deg, rgba(255, 248, 236, 0.12), rgba(255, 248, 236, 0.04));
+  border: 1px solid ${({ theme }) => theme.colors.border.medium};
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 20px 40px rgba(0, 0, 0, 0.24);
 `;
 
 const Logo = styled.img`
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
 `;
 
 const Eyebrow = styled.p`
   margin: 0;
-  color: ${({ theme }) => theme?.colors?.brand?.primary ?? "#f0c62d"};
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-size: 0.76rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+`;
+
+const StatusPill = styled.div<{ $state: CallbackState }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid
+    ${({ $state, theme }) =>
+      $state === "error" ? "rgba(231, 35, 64, 0.32)" : theme.colors.border.medium};
+  background:
+    ${({ $state }) =>
+      $state === "error"
+        ? "rgba(231, 35, 64, 0.12)"
+        : "linear-gradient(180deg, rgba(243, 210, 122, 0.14), rgba(243, 210, 122, 0.06))"};
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+`;
+
+const StatusDot = styled.span<{ $state: CallbackState }>`
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: ${({ $state, theme }) =>
+    $state === "error" ? theme.colors.secondary.main : theme.colors.primary.main};
+  box-shadow: 0 0 18px
+    ${({ $state, theme }) =>
+      $state === "error" ? "rgba(231, 35, 64, 0.45)" : "rgba(243, 210, 122, 0.45)"};
 `;
 
 const spin = keyframes`
@@ -70,54 +155,105 @@ const spin = keyframes`
 `;
 
 const LoadingIcon = styled(Loader2)`
-  width: 42px;
-  height: 42px;
-  margin: 0 auto;
+  width: 38px;
+  height: 38px;
   animation: ${spin} 1.2s linear infinite;
-  color: ${({ theme }) => theme?.colors?.brand?.primary ?? "#f0c62d"};
+  color: ${({ theme }) => theme.colors.primary.main};
 `;
 
 const ErrorIcon = styled(AlertTriangle)`
-  width: 42px;
-  height: 42px;
-  margin: 0 auto;
-  color: ${({ theme }) => theme?.colors?.brand?.secondary ?? "#e72340"};
+  width: 38px;
+  height: 38px;
+  color: ${({ theme }) => theme.colors.secondary.main};
 `;
 
-const Heading = styled.h2`
+const Heading = styled.h1`
   margin: 0;
-  font-size: clamp(1.4rem, 3.2vw, 1.9rem);
-  font-weight: 600;
+  font-size: clamp(2rem, 4.6vw, 3.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Message = styled.p`
-  margin: 0 auto;
-  max-width: 44ch;
+  margin: 0;
   font-size: 1rem;
   line-height: 1.6;
-  color: ${({ theme }) => theme?.colors?.neutral?.gray200 ?? "#d5d6dc"};
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const HeroCopy = styled.div`
+  display: grid;
+  gap: 0.75rem;
+  max-width: 34rem;
+`;
+
+const MessageStack = styled.div`
+  display: grid;
+  gap: 0.7rem;
+`;
+
+const SupportPanel = styled.div`
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem 1.05rem;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.05), rgba(255, 248, 236, 0.02)),
+    rgba(255, 248, 236, 0.02);
+  border: 1px solid rgba(255, 248, 236, 0.08);
+`;
+
+const SupportTitle = styled.p`
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const SupportList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+`;
+
+const SupportChip = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.72rem;
+  border-radius: 999px;
+  background: rgba(255, 248, 236, 0.04);
+  border: 1px solid rgba(255, 248, 236, 0.08);
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.84rem;
+  line-height: 1.2;
 `;
 
 const FooterNote = styled.p`
-  margin: 0.2rem 0 0;
-  color: rgba(213, 214, 220, 0.62);
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.tertiary};
   font-size: 0.9rem;
   line-height: 1.5;
 `;
 
 const RetryButton = styled.button`
-  margin: 0 auto;
-  padding: 0.75rem 1.5rem;
+  width: fit-content;
+  padding: 0.9rem 1.3rem;
   border-radius: 999px;
   border: none;
-  background: ${({ theme }) => theme?.colors?.brand?.primary ?? "#f0c62d"};
-  color: ${({ theme }) => theme?.colors?.neutral?.gray950 ?? "#05030b"};
-  font-weight: 600;
+  background: ${({ theme }) => theme.colors.gradients.primaryButton};
+  color: ${({ theme }) => theme.colors.background.primary};
+  font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  box-shadow: 0 18px 42px rgba(243, 210, 122, 0.18);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-1px);
+    box-shadow: 0 22px 48px rgba(243, 210, 122, 0.24);
   }
 `;
 
@@ -227,46 +363,89 @@ const AuthCallbackPageInstance: React.FC<{ readonly search: string }> = ({
   if (state === "processing") {
     return (
       <Container>
-        <Card>
-          <LogoBadge>
-            <Logo src={packLogo} alt="Pack" />
-          </LogoBadge>
-          <Eyebrow>Pack</Eyebrow>
-          <LoadingIcon aria-hidden="true" />
-          <Heading>Finalizing your sign-in…</Heading>
-          <Message>
-            We&apos;re getting your travel profile ready so your next page feels
-            like it already knows you.
-          </Message>
-          <Message>{errorMessage}</Message>
-          <FooterNote>Built with ❤️ for travellers.</FooterNote>
-        </Card>
+        <GridVeil aria-hidden="true" />
+        <Shell>
+          <Card>
+            <Header>
+              <LogoBadge>
+                <Logo src={packLogo} alt="Pack" />
+              </LogoBadge>
+              <StatusPill $state="processing">
+                <StatusDot $state="processing" />
+                Secure sign-in
+              </StatusPill>
+            </Header>
+            <HeroCopy>
+              <Eyebrow>Pack account handoff</Eyebrow>
+              <LoadingIcon aria-hidden="true" />
+              <Heading>Welcome back. We&apos;re setting your trip space.</Heading>
+              <Message>
+                We&apos;re getting your travel profile ready so your next page
+                feels like it already knows you.
+              </Message>
+            </HeroCopy>
+            <SupportPanel>
+              <SupportTitle>{errorMessage}</SupportTitle>
+              <SupportList aria-label="Sign-in progress">
+                <SupportChip>Confirming your account</SupportChip>
+                <SupportChip>Syncing your travel profile</SupportChip>
+                <SupportChip>Preparing the app view</SupportChip>
+              </SupportList>
+            </SupportPanel>
+            <FooterNote>Built with care for travellers who hate messy travel days.</FooterNote>
+          </Card>
+        </Shell>
       </Container>
     );
   }
 
   return (
     <Container>
-      <Card>
-        <LogoBadge>
-          <Logo src={packLogo} alt="Pack" />
-        </LogoBadge>
-        <Eyebrow>Pack</Eyebrow>
-        <ErrorIcon aria-hidden="true" />
-        <Heading>We hit a snag finishing your sign-in</Heading>
-        <Message>{errorMessage}</Message>
-        <FooterNote>Built with ❤️ for travellers.</FooterNote>
-        <RetryButton onClick={() => login({ redirectPath: pathFor("/app") })}>
-          Try Again
-        </RetryButton>
-      </Card>
+      <GridVeil aria-hidden="true" />
+      <Shell>
+        <Card>
+          <Header>
+            <LogoBadge>
+              <Logo src={packLogo} alt="Pack" />
+            </LogoBadge>
+            <StatusPill $state="error">
+              <StatusDot $state="error" />
+              Sign-in interrupted
+            </StatusPill>
+          </Header>
+          <HeroCopy>
+            <Eyebrow>Pack account handoff</Eyebrow>
+            <ErrorIcon aria-hidden="true" />
+            <Heading>We hit a snag finishing your sign-in.</Heading>
+            <MessageStack>
+              <Message>{errorMessage}</Message>
+              <Message>
+                Nothing about your trip data has been lost. Start the sign-in
+                again and we&apos;ll bring you back to the app.
+              </Message>
+            </MessageStack>
+          </HeroCopy>
+          <SupportPanel>
+            <SupportTitle>What you can do next</SupportTitle>
+            <SupportList aria-label="Recovery options">
+              <SupportChip>Retry the secure handoff</SupportChip>
+              <SupportChip>Return directly to your app workspace</SupportChip>
+              <SupportChip>Use the same Google account as before</SupportChip>
+            </SupportList>
+          </SupportPanel>
+          <FooterNote>Pack keeps the handoff tight so your travel context stays intact.</FooterNote>
+          <RetryButton onClick={() => login({ redirectPath: pathFor("/app") })}>
+            Try Again
+          </RetryButton>
+        </Card>
+      </Shell>
     </Container>
   );
 };
 
 export const AuthCallbackPage: React.FC = () => {
   const location = useLocation();
-  const callbackKey = useMemo(() => location.search || "__empty__", [location.search]);
+  const callbackKey = location.search || "__empty__";
 
   return <AuthCallbackPageInstance key={callbackKey} search={location.search} />;
 };

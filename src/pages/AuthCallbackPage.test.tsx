@@ -98,9 +98,14 @@ describe("AuthCallbackPage", () => {
     renderPage();
 
     expect(
+      screen.getByText("Welcome back. We're setting your trip space."),
+    ).toBeInTheDocument();
+    expect(
       screen.getByText("We're getting your travel profile ready so your next page feels like it already knows you."),
     ).toBeInTheDocument();
-    expect(screen.getByText("Built with ❤️ for travellers.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Built with care for travellers who hate messy travel days."),
+    ).toBeInTheDocument();
     expect(screen.getByAltText("Pack")).toBeInTheDocument();
   });
 });

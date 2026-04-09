@@ -111,7 +111,7 @@ declare global {
   }
 }
 
-type GoogleAuthBridgeResult = {
+type GoogleAuthBridgeCaptureResult = {
   email: string;
   emailVerified: boolean;
   givenName?: string;
@@ -124,7 +124,6 @@ type GoogleAuthBridgeResult = {
     | "created_and_linked"
     | "linked_existing_local_user"
     | "existing_google_user";
-  shouldContinueWithHostedLogin: true;
 };
 
 let googleGisScriptPromise: Promise<void> | null = null;
@@ -1923,8 +1922,8 @@ const TsaWaitTimesPage: React.FC = () => {
           ? "/tsa"
           : stripWaitlistModalQueryFlags(window.location.href);
 
-      const result = await requestPublicApi<
-        GoogleAuthBridgeResult,
+      await requestPublicApi<
+        GoogleAuthBridgeCaptureResult,
         { credential: string; redirectPath: string; source: "tsa" }
       >({
         path: "/auth/google/bridge",
@@ -1936,23 +1935,19 @@ const TsaWaitTimesPage: React.FC = () => {
         },
       });
 
-      if (!result.shouldContinueWithHostedLogin) {
-        throw new Error("Google bridge response did not request hosted login.");
-      }
-
+      persistWaitlistModalCompletion();
       setIsModalOpen(false);
-      startHostedGoogleLogin();
     } catch (error) {
       const isExpectedFallbackError =
         error instanceof ApiRequestError ||
         (error instanceof DOMException && error.name === "AbortError");
 
       if (!isExpectedFallbackError && appConfig.environment !== "prod") {
-        console.warn("Failed to complete Google bridge sign-in", error);
+        console.warn("Failed to capture Google waitlist email", error);
       }
 
       setGoogleBridgeError(
-        "Google sign-in couldn't finish in-page. You can continue with the standard Google redirect below."
+        "Google couldn't confirm your email. Try again or use the form below."
       );
     } finally {
       isHandlingGoogleCredentialRef.current = false;
@@ -2579,7 +2574,7 @@ const TsaWaitTimesPage: React.FC = () => {
                     ) : null}
                     {isGoogleBridgeLoading ? (
                       <GoogleButtonStatus>
-                        Finishing Google sign-in…
+                        Saving your Google email…
                       </GoogleButtonStatus>
                     ) : null}
                     {shouldShowGoogleRedirectFallback ? (

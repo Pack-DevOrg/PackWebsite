@@ -36,6 +36,24 @@ const AWS_REGION = 'us-east-1';
 const LEGACY_SERVER_STACK_PREFIX = 'doneaiserver-';
 const TSA_BOARD_STACK_OUTPUT_KEY = 'AirportWaitTimePublicBoardUrl';
 
+function isUsablePublicTsaBoardUrl(
+  candidateUrl: string,
+  environment: 'dev' | 'prod',
+): boolean {
+  try {
+    const parsedUrl = new URL(candidateUrl);
+    const hostname = parsedUrl.hostname.trim().toLowerCase();
+
+    if (environment === 'prod' && hostname.endsWith('.cloudfront.net')) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const getLocalDevBypassAction = (requestPath: string): string | null => {
   // Mirror the backend's action-specific HMAC contract so localhost testing can
   // bypass third-party bot checks without weakening deployed environments.
@@ -91,6 +109,11 @@ function resolvePublicTsaBoardUrlFromStack(
 ): string {
   const explicitUrl = viteEnv.VITE_PUBLIC_TSA_BOARD_URL?.trim();
   if (explicitUrl && explicitUrl.length > 0) {
+    const environment = inferServerEnvironment(viteEnv, mode);
+    if (!environment || !isUsablePublicTsaBoardUrl(explicitUrl, environment)) {
+      return '';
+    }
+
     return explicitUrl;
   }
 
@@ -121,7 +144,11 @@ function resolvePublicTsaBoardUrlFromStack(
       },
     ).trim();
 
-    return output === 'None' ? '' : output;
+    if (output === 'None' || !isUsablePublicTsaBoardUrl(output, environment)) {
+      return '';
+    }
+
+    return output;
   } catch {
     return '';
   }

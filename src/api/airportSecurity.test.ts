@@ -1,16 +1,15 @@
 import {
   fetchPublicAirportSecuritySummary,
 } from './airportSecurity';
+import {appConfig} from '@/config/appConfig';
 import {env} from '@/utils/env';
 import {executeRecaptchaAction} from '@/utils/recaptcha';
 
-const mockedAppConfig = {
-  apiBaseUrl: 'https://api.example.com/prod',
-  environment: 'dev',
-};
-
 jest.mock('@/config/appConfig', () => ({
-  appConfig: mockedAppConfig,
+  appConfig: {
+    apiBaseUrl: 'https://api.example.com/prod',
+    environment: 'dev',
+  },
 }));
 
 jest.mock('@/utils/env', () => ({
@@ -50,7 +49,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
 
   afterEach(() => {
     env.VITE_PUBLIC_TSA_BOARD_URL = undefined;
-    mockedAppConfig.environment = 'dev';
+    appConfig.environment = 'dev';
   });
 
   it('sends the reCAPTCHA token on the public TSA request for non-localhost traffic', async () => {
@@ -185,7 +184,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
   });
 
   it('ignores raw cloudfront board URLs in production and uses the API path instead', async () => {
-    mockedAppConfig.environment = 'prod';
+    appConfig.environment = 'prod';
     env.VITE_PUBLIC_TSA_BOARD_URL =
       'https://d3063a7vb003az.cloudfront.net/airport-wait-times/public/current.json';
     (global.fetch as jest.Mock).mockResolvedValue({

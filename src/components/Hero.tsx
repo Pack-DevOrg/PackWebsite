@@ -2049,18 +2049,17 @@ const CarouselControls = styled.div`
 const CarouselArrow = styled.button`
   appearance: none;
   border: 0;
-  min-height: 1.28rem;
+  width: 1.28rem;
+  height: 1.28rem;
   border-radius: 999px;
   background: transparent;
   color: rgba(240, 198, 45, 0.94);
   display: grid;
   place-items: center;
   cursor: pointer;
-  padding: 0 0.18rem;
-  font-size: 0.62rem;
-  font-weight: 700;
+  padding: 0;
+  font-size: 1rem;
   line-height: 1;
-  text-transform: uppercase;
 `;
 
 const CarouselMeta = styled.div`
@@ -4500,7 +4499,7 @@ const BookingCarousel: React.FC<{
       <CarouselControls>
         <CarouselArrowGroup>
           <CarouselArrow type="button" onClick={onPrev} aria-label="Previous option">
-            Previous
+            ‹
           </CarouselArrow>
         </CarouselArrowGroup>
         <CarouselMeta>
@@ -4513,7 +4512,7 @@ const BookingCarousel: React.FC<{
         </CarouselMeta>
         <CarouselRightControls>
           <CarouselArrow type="button" onClick={onNext} aria-label="Next option">
-            Next
+            ›
           </CarouselArrow>
           <CarouselSkipButton type="button">Skip</CarouselSkipButton>
         </CarouselRightControls>

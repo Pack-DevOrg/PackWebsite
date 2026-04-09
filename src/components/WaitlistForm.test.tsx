@@ -220,7 +220,29 @@ describe('WaitlistForm Component', () => {
           body: expect.objectContaining({
             credential: 'google_jwt',
             redirectPath: '/',
-            source: 'tsa',
+            source: 'waitlist',
+          }),
+        }),
+      ),
+    );
+  });
+
+  test('includes Google-side email marketing consent only when checked', async () => {
+    render(<WaitlistFormWrapper />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /marketing email consent/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /sign up with google/i }));
+
+    await waitFor(() =>
+      expect(requestPublicApiMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/auth/google/bridge',
+          method: 'POST',
+          body: expect.objectContaining({
+            credential: 'google_jwt',
+            redirectPath: '/',
+            source: 'waitlist',
+            marketingEmailConsent: true,
           }),
         }),
       ),

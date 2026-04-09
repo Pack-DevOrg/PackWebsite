@@ -288,7 +288,25 @@ describe('WaitlistForm marketing payload', () => {
         body: expect.objectContaining({
           credential: 'google_jwt',
           redirectPath: '/?gclid=test-gclid&wbraid=test-wbraid&gbraid=test-gbraid&ttclid=test-ttclid',
-          source: 'tsa',
+          source: 'waitlist',
+        }),
+      }),
+    );
+  });
+
+  it('passes Google-side marketing email opt-in only when explicitly checked', async () => {
+    renderWaitlistForm();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('checkbox', {name: /marketing email consent/i}));
+    await user.click(await screen.findByRole('button', {name: /sign up with google/i}));
+
+    expect(requestPublicApiMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          credential: 'google_jwt',
+          source: 'waitlist',
+          marketingEmailConsent: true,
         }),
       }),
     );

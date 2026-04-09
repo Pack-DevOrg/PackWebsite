@@ -2045,6 +2045,7 @@ const TsaWaitTimesPage: React.FC = () => {
                   showTitle={false}
                   onSuccess={handleWaitlistSuccess}
                   showLegalNotice={false}
+                  googleBridgeSource="tsa"
                 />
               </ModalWaitlistShell>
               <ModalFooter>

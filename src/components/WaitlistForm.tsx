@@ -304,6 +304,13 @@ type GoogleAuthBridgeCaptureResult = {
   shouldContinueWithHostedLogin: true;
 };
 
+type GoogleAuthBridgeRequestBody = {
+  credential: string;
+  redirectPath: string;
+  source: "tsa" | "waitlist";
+  marketingEmailConsent?: true;
+};
+
 declare global {
   interface Window {
     google?: {
@@ -365,6 +372,7 @@ interface WaitlistFormProps {
   onSuccess?: (email: string) => void;
   showLegalNotice?: boolean;
   showTitle?: boolean;
+  googleBridgeSource?: "tsa" | "waitlist";
 }
 
 const FormContainer = styled.section<{ $variant: WaitlistFormVariant }>`
@@ -652,14 +660,16 @@ const GoogleButtonHost = styled.div`
   align-self: center;
   justify-content: center;
   min-height: 44px;
-  padding: 0.85px;
-  border-radius: calc(var(--border-radius) + 2px);
+  padding: 4px;
+  border-radius: calc(var(--border-radius) + 7px);
   background:
     linear-gradient(rgba(19, 19, 20, 0.92), rgba(19, 19, 20, 0.92)) padding-box,
-    ${({ theme }) => theme.colors.gradients.primaryAccent} border-box;
+    linear-gradient(135deg, #ffd86f 0%, #f0c62d 34%, #f6a14f 66%, #e72340 100%) border-box;
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.22),
-    0 0 0 1px rgba(243, 210, 122, 0.05);
+    0 14px 32px rgba(0, 0, 0, 0.24),
+    0 0 24px rgba(240, 198, 45, 0.18),
+    0 0 18px rgba(231, 35, 64, 0.16),
+    0 0 0 1px rgba(255, 216, 111, 0.18);
   overflow: hidden;
 
   > div {
@@ -667,9 +677,9 @@ const GoogleButtonHost = styled.div`
     max-width: 100%;
     display: inline-flex;
     justify-content: center;
-    border-radius: var(--border-radius);
+    border-radius: calc(var(--border-radius) + 5px);
     background: rgba(19, 19, 20, 0.92);
-    padding: ${({ theme }) => theme.spacing[1]};
+    padding: 1px;
   }
 `;
 
@@ -838,6 +848,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   onSuccess,
   showLegalNotice = true,
   showTitle = true,
+  googleBridgeSource = "waitlist",
 }) => {
   const { locale, pathFor, t } = useI18n();
   const acceptanceNotice = getAcceptanceNoticeLegalCopy(locale);
@@ -853,6 +864,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
   const [isGoogleButtonReady, setIsGoogleButtonReady] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedMarketingEmailConsent, setSubmittedMarketingEmailConsent] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [message, setMessage] = useState<{
     type: "error" | "success" | "info";
@@ -1069,6 +1081,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
       }
 
       setIsSubmitted(true);
+      setSubmittedMarketingEmailConsent(marketingEmailOptIn);
       
       // Track successful form completion
       trackFormSubmit('waitlist_form', {
@@ -1153,19 +1166,21 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
 
       const result = await requestPublicApi<
         GoogleAuthBridgeCaptureResult,
-        { credential: string; redirectPath: string; source: "tsa" }
+        GoogleAuthBridgeRequestBody
       >({
         path: "/auth/google/bridge",
         method: "POST",
         body: {
           credential,
           redirectPath,
-          source: "tsa",
+          source: googleBridgeSource,
+          ...(marketingEmailOptIn ? {marketingEmailConsent: true as const} : {}),
         },
       });
 
       setEmail(result.email);
       setIsSubmitted(true);
+      setSubmittedMarketingEmailConsent(marketingEmailOptIn);
       setMessage({
         type: "success",
         text: "✅ Success! Welcome to the waitlist.",
@@ -1316,6 +1331,20 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
               {isGoogleBridgeLoading ? (
                 <GoogleButtonStatus>Saving your Google email…</GoogleButtonStatus>
               ) : null}
+              <CheckboxGroup>
+                <Checkbox
+                  type="checkbox"
+                  id={`marketing-${formId}`}
+                  checked={marketingEmailOptIn}
+                  onChange={(e) => setMarketingEmailOptIn(e.target.checked)}
+                  aria-label="Marketing email consent"
+                />
+                <CheckboxLabel htmlFor={`marketing-${formId}`}>
+                  {t("waitlist.marketingOptIn")}
+                  <br />
+                  {t("waitlist.unsubscribeAnytime")}
+                </CheckboxLabel>
+              </CheckboxGroup>
               <GoogleButtonHost aria-live="polite">
                 {!isGoogleButtonReady ? <SkeletonLoader aria-hidden="true" /> : null}
                 <div
@@ -1349,21 +1378,6 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
                   </ErrorMessage>
                 )}
               </InputGroup>
-
-              <CheckboxGroup>
-                <Checkbox
-                  type="checkbox"
-                  id={`marketing-${formId}`}
-                  checked={marketingEmailOptIn}
-                  onChange={(e) => setMarketingEmailOptIn(e.target.checked)}
-                  aria-label="Marketing email consent"
-                />
-                <CheckboxLabel htmlFor={`marketing-${formId}`}>
-                  {t("waitlist.marketingOptIn")}
-                  <br />
-                  {t("waitlist.unsubscribeAnytime")}
-                </CheckboxLabel>
-              </CheckboxGroup>
 
               {/* reCAPTCHA v3 is invisible - no UI element needed */}
               {captchaError && (
@@ -1422,7 +1436,10 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
               You're on the list!
             </SuccessHeading>
             <SuccessCopy>
-              We'll email you at {email} with updates. Follow us for more news!
+              {submittedMarketingEmailConsent
+                ? `We'll email you at ${email} with updates.`
+                : `We'll keep your spot on the waitlist for ${email}.`}
+              {' '}Follow us for more news!
             </SuccessCopy>
             <ShareContainer>
               <a

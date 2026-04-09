@@ -166,9 +166,9 @@ export const capabilityPageDefinitions = [
           "No. The goal is broader support across flights, hotels, and rental cars where that information is relevant.",
       },
       {
-        question: "Why make loyalty details a standalone page?",
+        question: "How do loyalty details fit into the rest of the trip?",
         answer:
-          "Because loyalty details are a separate part of staying ready to travel, even before the next booking starts.",
+          "They stay useful before booking, during the trip, and when you are planning again later, so they work best as part of broader traveler context.",
       },
     ],
     related: ["traveler-profiles", "travel-history", "travel-booking"],
@@ -262,9 +262,9 @@ export const capabilityPageDefinitions = [
           "Yes. Those signals can help inform how a trip is reorganized or refreshed inside Pack.",
       },
       {
-        question: "Why does this need its own page?",
+        question: "How are trip updates different from planning the trip?",
         answer:
-          "Because updating a trip after plans move is a different part of travel than creating the trip in the first place.",
+          "Planning builds the trip. Updates keep it organized after plans change in chat, email, calendars, or other travel inputs.",
       },
     ],
     related: ["trip-planning-from-events", "trip-sharing", "upcoming-trip-details"],
@@ -358,9 +358,9 @@ export const capabilityPageDefinitions = [
           "It can. Pack's upcoming trip view is designed to work alongside airport security-wait information and other travel-day signals.",
       },
       {
-        question: "Why make a separate upcoming-trip page?",
+        question: "How are upcoming-trip details different from planning?",
         answer:
-          "Because the next-trip view is about staying ready to move, not about planning the whole trip from scratch.",
+          "Planning is about shaping the trip. Upcoming-trip details are about staying ready once the trip is close and timing starts to matter.",
       },
     ],
     related: ["airport-security-wait-times", "trip-calendar-sync", "live-trip-views"],
@@ -508,9 +508,9 @@ export const capabilityPageDefinitions = [
           "Connected accounts bring information into Pack. Calendar sync pushes useful trip timing back out.",
       },
       {
-        question: "Why make this a standalone page?",
+        question: "How do connected accounts help the trip stay organized?",
         answer:
-          "Because connected accounts are one of the ways Pack reduces manual trip setup and keeps more travel context in one place.",
+          "They let Pack start from richer email, calendar, and travel context so less of the trip has to be assembled manually.",
       },
     ],
     related: ["trip-planning-from-events", "trip-calendar-sync", "travel-history"],
@@ -556,9 +556,9 @@ export const capabilityPageDefinitions = [
           "Loyalty details are one subset of a broader traveler profile that can also include preferences and accessibility context.",
       },
       {
-        question: "Why make traveler profiles a separate page?",
+        question: "How are traveler profiles different from travel history?",
         answer:
-          "Because traveler profiles are a real part of how Pack works, separate from trip search, booking, or travel history.",
+          "Travel history is the record of where you have been. Traveler profiles hold the preferences and recurring details that shape future trips.",
       },
     ],
     related: ["loyalty-details", "travel-booking", "connected-accounts"],
@@ -604,9 +604,9 @@ export const capabilityPageDefinitions = [
           "No. Pack is also designed for linked trips, copies, and group-travel cases where several travelers need to stay coordinated.",
       },
       {
-        question: "Why does this need its own page?",
+        question: "How is group travel different from solo trip planning?",
         answer:
-          "Because collaborative travel is its own part of the product, with different needs from solo planning or solo booking.",
+          "Group travel needs shared visibility, coordination, and linked plans in a way solo trip planning does not.",
       },
     ],
     related: ["trip-updates", "live-trip-views", "trip-expenses"],
@@ -652,9 +652,9 @@ export const capabilityPageDefinitions = [
           "No. The point is to keep key trip context accessible through more immediate surfaces when travelers need it quickly.",
       },
       {
-        question: "Why make this separate from upcoming-trip details?",
+        question: "How are live trip views different from upcoming-trip details?",
         answer:
-          "Upcoming-trip details describe the information itself. Live trip views describe how that information stays visible in the moment.",
+          "Upcoming-trip details are the information itself. Live trip views are about keeping that information visible in faster, more glanceable surfaces.",
       },
     ],
     related: ["upcoming-trip-details", "airport-security-wait-times", "trip-sharing"],

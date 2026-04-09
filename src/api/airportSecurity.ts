@@ -2,7 +2,7 @@ import {
   AirportWaitTimePublicCollectionResponseSchema,
   type AirportWaitTimePublicCollectionResponse,
 } from "@/schemas/airport-security";
-import { appConfig } from "@/config/appConfig";
+import { appConfig, isLocalhostHostname } from "@/config/appConfig";
 import { env } from "@/utils/env";
 import { executeRecaptchaAction } from "@/utils/recaptcha";
 import { z } from "zod";
@@ -43,11 +43,22 @@ function shouldUseLocalDevProxy(): boolean {
     return false;
   }
 
-  const hostname = window.location.hostname.trim().toLowerCase();
   return (
     appConfig.environment === "dev" &&
-    (hostname === "localhost" || hostname === "127.0.0.1")
+    isLocalhostHostname(window.location.hostname)
   );
+}
+
+function shouldDefaultToProdPublicBoard(): boolean {
+  if (appConfig.environment === "prod") {
+    return true;
+  }
+
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return isLocalhostHostname(window.location.hostname);
 }
 
 function getAirportSecurityBaseUrl(): string {
@@ -72,10 +83,8 @@ function getPublicBoardUrl(): string | null {
     return explicitBoardUrl;
   }
 
-  if (
-    appConfig.environment === "prod" &&
-    isUsablePublicBoardUrl(PROD_PUBLIC_TSA_BOARD_URL)
-  ) {
+  if (shouldDefaultToProdPublicBoard() &&
+      isUsablePublicBoardUrl(PROD_PUBLIC_TSA_BOARD_URL)) {
     return PROD_PUBLIC_TSA_BOARD_URL;
   }
 

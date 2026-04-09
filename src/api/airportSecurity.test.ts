@@ -10,6 +10,8 @@ jest.mock('@/config/appConfig', () => ({
     apiBaseUrl: 'https://api.example.com/prod',
     environment: 'dev',
   },
+  isLocalhostHostname: (hostname: string) =>
+    hostname === 'localhost' || hostname === '127.0.0.1',
 }));
 
 jest.mock('@/utils/env', () => ({
@@ -85,7 +87,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(response.airports).toEqual([]);
   });
 
-  it('uses the local dev proxy without browser-side reCAPTCHA on localhost dev requests', async () => {
+  it('uses the prod public board on localhost without browser-side reCAPTCHA', async () => {
     Object.defineProperty(window, 'location', {
       configurable: true,
       value: {
@@ -110,7 +112,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
 
     expect(executeRecaptchaAction).not.toHaveBeenCalled();
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:5173/dev/airport-security/public-current',
+      'https://tsa-board.trypackai.com/airport-wait-times/public/current.json',
       expect.objectContaining({
         method: 'GET',
         headers: expect.objectContaining({
@@ -121,7 +123,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(response.airports).toEqual([]);
   });
 
-  it('uses the public board URL on localhost when it is configured', async () => {
+  it('prefers the explicit public board URL on localhost when it is configured', async () => {
     Object.defineProperty(window, 'location', {
       configurable: true,
       value: {

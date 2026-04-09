@@ -38,7 +38,7 @@ export const isTryPackHostname = (hostname: string): boolean => {
 };
 
 export const shouldExposeTsaForHostname = (hostname: string): boolean =>
-  isTryPackHostname(hostname);
+  isTryPackHostname(hostname) || isLocalhostHostname(hostname);
 
 const alignLocalhostOrigin = (url: string, fallbackUrl?: string): string => {
   if (typeof window === "undefined") {

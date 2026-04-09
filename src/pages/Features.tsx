@@ -4,7 +4,6 @@ import {
   MessageSquareText,
   PlaneTakeoff,
   Calendar,
-  CreditCard,
   Globe,
   Smartphone,
   Zap,
@@ -263,180 +262,200 @@ const Features: React.FC = () => {
   const localizedContent =
     locale === "es"
       ? {
-          pageTitle: "Por qué los viajeros usan Pack",
+          pageTitle: "Por qué los viajeros usan Pack como planificador de viajes con IA",
           pageSubtitle:
-            "Pack convierte contexto y preferencias de viaje en un viaje curado que puedes revisar con confianza.",
-          heroTitle: "De detalles de viaje dispersos a un viaje terminado",
+            "Pack convierte contexto de viaje, viajes pasados, confirmaciones y preferencias en un viaje curado que puedes revisar con confianza.",
+          heroTitle: "De correos, fotos y planes dispersos a un viaje terminado",
           heroDescription:
-            "Pack conecta tu inbox, calendario, preferencias y opciones de reserva para que planear se sienta curado y no caótico.",
-          comparisonTitle: "Planificación tradicional vs. Pack",
-          traditionalTitle: "Apps tradicionales de viaje",
-          packTitle: "Experiencia Pack",
+            "Pack conecta tu inbox, calendario, viajes pasados, preferencias y fotos de viaje para que planear se sienta curado en vez de caótico.",
+          comparisonTitle: "Apps de búsqueda o itinerario vs. Pack",
+          traditionalTitle: "Apps de búsqueda e itinerario",
+          packTitle: "Planificador con IA de Pack",
           traditionalItems: [
-            "Resultados de búsqueda en lugar de un viaje terminado",
+            "Ideas o resultados de búsqueda en lugar de un borrador de viaje listo para revisar",
             "Demasiadas pestañas, formularios y correos de confirmación",
-            "Poca memoria de cómo viajas en realidad",
-            "Organización manual después de reservar",
+            "Poca memoria de viajes pasados, preferencias y hábitos reales",
+            "Fotos, reservas y tiempos organizados manualmente después de reservar",
           ],
           packItems: [
-            "Conversación natural que se convierte en un borrador real del viaje",
-            "Recomendaciones guiadas por tus preferencias e historial",
-            "Confirmaciones y tiempos organizados automáticamente",
-            "Checkout del proveedor más una cronología más clara",
+            "Historial de viaje, reservas y contexto en una sola vista",
+            "Planificación proactiva y reactiva desde múltiples fuentes",
+            "Búsqueda y reserva de vuelos, hoteles y autos",
+            "Más utilidad antes y durante el viaje",
           ],
           ctaTitle: "Mira cómo Pack planearía tu próximo viaje",
           ctaBody:
             "Únete a la lista de espera para obtener acceso anticipado a una forma de viajar más organizada y personalizada.",
-          ctaNote:
-            "Las funciones descritas representan capacidades planificadas. Pack está actualmente en desarrollo. La tecnología de IA tiene limitaciones y los resultados pueden variar.",
           schemaName: "Pack - Asistente de viaje con IA",
           schemaDescription:
-            "Asistente inteligente de viajes que planifica viajes, te ayuda a completar vuelos y hoteles mediante el checkout seguro del proveedor y crea itinerarios personalizados a través de conversación natural.",
+            "Asistente inteligente de viajes que planifica viajes, coordina vuelos y hoteles mediante una experiencia de reserva integrada y crea itinerarios personalizados a través de conversación natural.",
           schemaAudience:
             "Viajeros, viajeros de negocios y personas que planifican vacaciones",
           coreFeatures: [
             {
               icon: <MessageSquareText />,
-              title: "Planifica conversando",
+              title: "Planificador de viajes con IA por conversación",
               description:
-                "Describe el viaje en lenguaje natural y Pack lo convierte en un borrador estructurado en lugar de un hilo de sugerencias.",
+                "Describe un viaje como 'una semana en España' y Pack puede convertirlo en un borrador estructurado usando conversación, contexto y preferencias.",
             },
             {
               icon: <Brain />,
-              title: "Aprende tus preferencias",
+              title: "Extrae y muestra viajes pasados",
               description:
-                "Pack usa tus viajes pasados, tu inbox y el contexto del calendario para entender cómo reservas, dónde te quedas y qué tiempos te funcionan.",
+                "Pack puede extraer historial de viaje y reconstruir vuelos, hoteles, autos y otros detalles para que tus viajes pasados queden visibles y reutilizables.",
             },
             {
               icon: <Clock />,
-              title: "Borradores de viaje, no respuestas de chat",
+              title: "Muestra stats, mapas y contexto del viaje",
               description:
-                "Vuelos, hoteles y tiempos del viaje se ensamblan en algo que realmente puedes revisar y aprobar.",
+                "Stats, mapas y líneas de tiempo ayudan a entender de un vistazo cómo se conectan vuelos, hoteles, autos y eventos.",
             },
             {
               icon: <Heart />,
-              title: "Recuerda lo que te gusta",
+              title: "Guarda lealtad y preferencias del viajero",
               description:
-                "Aeropuertos preferidos, aerolíneas favoritas, estilos de hotel y hábitos de reserva se mantienen para que cada viaje comience más cerca de lo que encaja contigo.",
+                "Pack organiza números de viajero frecuente, programas de lealtad, perfiles, preferencias, necesidades de accesibilidad y detalles del viajero confiable.",
             },
             {
               icon: <Calendar />,
-              title: "Organiza confirmaciones automáticamente",
+              title: "Planea viajes de forma proactiva",
               description:
-                "Las confirmaciones de viaje y el calendario se integran en una sola vista organizada en vez de quedar dispersos entre correos y pestañas.",
+                "Pack puede planear viajes desde eventos públicos, eventos privados de correo o calendario, y prompts sintéticos en lenguaje natural.",
+            },
+            {
+              icon: <MapPin />,
+              title: "Edita y actualiza viajes desde múltiples fuentes",
+              description:
+                "Chat, voz, fotos, email, calendario y metadatos de fotos pueden ayudar a editar, organizar y actualizar viajes de forma reactiva.",
+            },
+            {
+              icon: <Users />,
+              title: "Busca y reserva viajes",
+              description:
+                "Pack está diseñado para buscar y reservar vuelos, hoteles, autos y flujos relacionados de reserva dentro de una experiencia conectada.",
             },
             {
               icon: <PlaneTakeoff />,
-              title: "Checkout del proveedor",
+              title: "Más utilidad antes y durante el viaje",
               description:
-                "Pack te ayuda a elegir y luego te envía al checkout de la aerolínea o del hotel para que la reserva permanezca con el proveedor.",
+                "El viaje puede mostrar clima, tiempos, esperas de seguridad, eventos, traslados y acciones de transporte cuando se acerca la salida.",
             },
             {
               icon: <Shield />,
-              title: "Manejo discreto",
+              title: "Esperas de seguridad y sincronización",
               description:
-                "El contexto del viaje se maneja con cuidado y los datos de pago permanecen en páginas alojadas por el proveedor y no dentro de Pack.",
+                "Pack muestra tiempos de seguridad aeroportuaria en app y web, y también puede sincronizar eventos del viaje al calendario del dispositivo.",
             },
             {
               icon: <Smartphone />,
-              title: "Una vista clara del viaje",
+              title: "Cuentas conectadas, colaboración y vistas en vivo",
               description:
-                "Planes, confirmaciones, estancias y tiempos viven juntos en una vista más fácil de entender de un vistazo.",
+                "Conecta cuentas externas, comparte viajes, colabora con grupos y mantén vistas en vivo del próximo viaje con acciones y estados útiles.",
             },
             {
               icon: <Zap />,
-              title: "Útil cuando los planes cambian rápido",
+              title: "Organiza gastos del viaje",
               description:
-                "Desde una escapada rápida hasta un itinerario de último minuto, Pack te ayuda a llegar más rápido a una respuesta terminada.",
+                "Pack también está diseñado para organizar gastos relacionados con el viaje para que el costo total del viaje sea más legible.",
             },
           ],
         }
       : {
-          pageTitle: "Why travelers use Pack",
+          pageTitle: "Why travelers use Pack as an AI travel planner",
           pageSubtitle:
-            "Pack turns travel context and preferences into one curated trip you can review with confidence.",
-          heroTitle: "From scattered travel details to one finished trip",
+            "Pack turns travel context, past trips, confirmations, and preferences into one curated trip you can review with confidence.",
+          heroTitle: "From scattered emails, photos, and plans to one finished trip",
           heroDescription:
-            "Pack connects your inbox, calendar, preferences, and booking options so planning feels curated instead of chaotic.",
-          comparisonTitle: "Traditional travel planning vs. Pack",
-          traditionalTitle: "Traditional Travel Apps",
-          packTitle: "Pack Experience",
+            "Pack connects your inbox, calendar, past trips, preferences, and travel photos so planning feels curated instead of chaotic.",
+          comparisonTitle: "Search-first or itinerary-only travel apps vs. Pack",
+          traditionalTitle: "Search and itinerary apps",
+          packTitle: "Pack AI travel planner",
           traditionalItems: [
-            "Search results instead of a finished trip",
+            "Ideas or search results instead of a trip draft you can actually review",
             "Too many tabs, forms, and confirmation emails",
-            "Little memory of how you actually travel",
-            "Manual organization after booking",
+            "Little memory of past trips, preferences, and real booking habits",
+            "Photos, reservations, and timing organized manually after booking",
           ],
           packItems: [
-            "Natural conversation that turns into a real trip draft",
-            "Recommendations shaped by your preferences and history",
-            "Confirmations and timing organized automatically",
-            "Provider checkout plus one clearer travel timeline",
+            "Travel history, bookings, and context in one view",
+            "Proactive and reactive trip planning from many sources",
+            "Search and booking across flights, hotels, and cars",
+            "More utility before and during the trip",
           ],
           ctaTitle: "See how Pack would plan your next trip",
           ctaBody:
             "Join the waitlist to get early access to a more organized, more personalized way to travel.",
-          ctaNote:
-            "Features described represent planned capabilities. Pack is currently in development. AI technology has limitations and results may vary.",
           schemaName: "Pack - AI Travel Assistant",
           schemaDescription:
-            "Intelligent AI travel assistant that plans trips, helps you complete flights and hotels through the provider's secure checkout, and creates personalized itineraries through natural conversation.",
+            "Intelligent AI travel assistant that plans trips, coordinates flights and hotels through an integrated booking experience, and creates personalized itineraries through natural conversation.",
           schemaAudience:
             "Travelers, Business Travelers, Vacation Planners",
           coreFeatures: [
             {
               icon: <MessageSquareText />,
-              title: "Plan by conversation",
+              title: "AI travel planner by conversation",
               description:
-                "Describe the trip in plain language and Pack turns it into a structured travel draft instead of a thread of suggestions.",
+                "Describe a trip like 'a week in Spain' and Pack can turn it into a structured travel draft using conversation, context, and preferences.",
             },
             {
               icon: <Brain />,
-              title: "Learns your travel preferences",
+              title: "Extracts and displays past travel history",
               description:
-                "Pack uses your past trips, inbox, and calendar context to understand how you book, where you stay, and what timing works for you.",
+                "Pack can extract travel history and reconstruct flights, hotels, cars, and related details so past trips become visible and reusable.",
             },
             {
               icon: <Clock />,
-              title: "Trip drafts, not chat replies",
+              title: "Shows travel stats, maps, and trip context",
               description:
-                "Flights, hotel stays, and trip timing are assembled into something you can actually review and approve.",
+                "Travel stats, maps, and timelines help show how flights, hotels, cars, and trip events connect at a glance.",
             },
             {
               icon: <Heart />,
-              title: "Remembers what you like",
+              title: "Stores loyalty and traveler preferences",
               description:
-                "Preferred airports, favorite airlines, hotel styles, and booking habits carry forward so each trip starts closer to what fits.",
+                "Pack organizes loyalty numbers, program details, traveler profiles, trusted traveler details, accessibility needs, and booking preferences.",
             },
             {
               icon: <Calendar />,
-              title: "Auto-organizes confirmations",
+              title: "Plans trips proactively",
               description:
-                "Travel confirmations and calendar timing are pulled into one organized trip view instead of scattered emails and tabs.",
+                "Pack can plan trips from public events, private email and calendar events, and synthetic prompts in plain language.",
+            },
+            {
+              icon: <MapPin />,
+              title: "Edits and updates trips from many inputs",
+              description:
+                "Chat, voice, photos, email, calendar, and photo metadata can all help edit, organize, and reactively update trips.",
+            },
+            {
+              icon: <Users />,
+              title: "Searches and books travel",
+              description:
+                "Pack is designed to search and book flights, hotels, rental cars, and related travel booking workflows inside one connected experience.",
             },
             {
               icon: <PlaneTakeoff />,
-              title: "Provider checkout",
+              title: "Adds utility before and during the trip",
               description:
-                "Pack helps you choose, then hands off to the airline or hotel checkout flow so the booking stays with the provider.",
+                "Upcoming trips can show weather, timing, airport security waits, trip events, drive times, and transportation actions.",
             },
             {
               icon: <Shield />,
-              title: "Handled discreetly",
+              title: "Security waits and calendar sync",
               description:
-                "Travel context is handled with care, and payment details stay on provider-hosted checkout pages rather than inside Pack.",
+                "Pack shows airport security wait times in the app and web experience, and can sync trip events to device calendars.",
             },
             {
               icon: <Smartphone />,
-              title: "One clear trip view",
+              title: "Connected accounts, sharing, and live trip views",
               description:
-                "Plans, confirmations, stays, and timing live together in one view that is easier to understand at a glance.",
+                "External accounts can be connected, trips can be shared and collaborated on, and upcoming trips can stay visible with live status and actions.",
             },
             {
               icon: <Zap />,
-              title: "Useful when plans move fast",
+              title: "Organizes trip expenses",
               description:
-                "From a quick weekend to a last-minute itinerary, Pack helps you get to a finished answer faster.",
+                "Pack is also designed to organize travel expenses so the full cost of a trip is easier to track and review.",
             },
           ],
         };
@@ -587,16 +606,6 @@ const Features: React.FC = () => {
           }}
         >
           {localizedContent.ctaBody}
-        </p>
-        <p
-          style={{
-            color: "var(--color-text-secondary)",
-            fontSize: "var(--font-size-small)",
-            fontStyle: "italic",
-            marginBottom: "var(--space-3)",
-          }}
-        >
-          {localizedContent.ctaNote}
         </p>
         <WaitlistForm />
       </div>

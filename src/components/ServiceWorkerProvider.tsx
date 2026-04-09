@@ -36,6 +36,7 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({ ch
   const isDev = env.DEV === true;
   const isAppRoute =
     typeof window !== 'undefined' && window.location.pathname.startsWith('/app');
+  const serviceWorkerScope = '/app/';
   const [isSupported, setIsSupported] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isOffline, setIsOffline] = useState(() => (typeof navigator !== 'undefined' ? !navigator.onLine : false));
@@ -69,7 +70,7 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({ ch
 
     try {
       const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
+        scope: serviceWorkerScope,
         updateViaCache: 'none' // Always check for updates
       });
 
@@ -119,7 +120,7 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({ ch
         console.error('[SW] Service worker registration failed:', error);
       }
     }
-  }, [isAppRoute, isDev]);
+  }, [isAppRoute, isDev, serviceWorkerScope]);
 
   /**
    * Update service worker

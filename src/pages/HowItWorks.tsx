@@ -303,7 +303,7 @@ const howItWorksContent = {
       { icon: <Brain />, title: "Learn", description: "Pack understands your preferences and patterns" },
       { icon: <Search />, title: "Curate", description: "Flights and stays become one organized draft" },
       { icon: <CheckCircle />, title: "Review", description: "See one clear answer before approval" },
-      { icon: <PlaneTakeoff />, title: "Book", description: "Finish checkout through the provider" },
+      { icon: <PlaneTakeoff />, title: "Book", description: "Finish booking in one integrated flow" },
       { icon: <Bell />, title: "Travel", description: "Keep the trip current while plans move" },
     ],
     steps: [
@@ -357,12 +357,12 @@ const howItWorksContent = {
       },
       {
         number: 5,
-        title: "Checkout stays with the provider",
+        title: "Booking stays connected",
         description:
-          "Once you are ready, Pack passes the trip into the airline or hotel checkout flow so payment and reservation stay with the provider.",
+          "Once you are ready, Pack moves the trip into an integrated booking flow so planning, reservation details, and trip context stay connected.",
         features: [
-          "Provider-hosted checkout for flights and stays",
-          "Pack does not need to hold your card details",
+          "Integrated booking flow for flights and stays",
+          "Fewer disconnected steps between planning and booking",
           "Less copying and re-entering trip data",
           "Booked details can flow back into your organized trip view",
         ],
@@ -394,7 +394,7 @@ const howItWorksContent = {
     comparisonRouteItems: [
       "Natural conversation instead of form-heavy search",
       "Options shaped by your preferences and past travel",
-      "One organized trip draft before checkout",
+      "One organized trip draft before booking",
       "Travel details coordinated into one timeline",
       "Review before approval with better context",
       "Smarter planning as your travel history grows",
@@ -419,7 +419,7 @@ const howItWorksContent = {
       { icon: <Brain />, title: "Aprende", description: "Pack entiende tus preferencias y patrones" },
       { icon: <Search />, title: "Curar", description: "Vuelos y estancias se convierten en un borrador organizado" },
       { icon: <CheckCircle />, title: "Revisa", description: "Ve una respuesta clara antes de aprobar" },
-      { icon: <PlaneTakeoff />, title: "Reserva", description: "Termina el checkout con el proveedor" },
+      { icon: <PlaneTakeoff />, title: "Reserva", description: "Termina la reserva en un flujo integrado" },
       { icon: <Bell />, title: "Viaja", description: "Mantén el viaje al día mientras los planes se mueven" },
     ],
     steps: [
@@ -473,12 +473,12 @@ const howItWorksContent = {
       },
       {
         number: 5,
-        title: "El checkout se queda con el proveedor",
+        title: "La reserva se mantiene conectada",
         description:
-          "Cuando estás listo, Pack envía el viaje al flujo de checkout de la aerolínea o del hotel para que el pago y la reserva permanezcan con el proveedor.",
+          "Cuando estás listo, Pack mueve el viaje a un flujo de reserva integrado para que la planificación, los detalles de la reserva y el contexto del viaje permanezcan conectados.",
         features: [
-          "Checkout alojado por el proveedor para vuelos y estancias",
-          "Pack no necesita guardar tus datos de tarjeta",
+          "Flujo de reserva integrado para vuelos y estancias",
+          "Menos pasos desconectados entre planear y reservar",
           "Menos copiar y volver a ingresar información",
           "Los detalles reservados pueden volver a tu vista organizada",
         ],
@@ -510,7 +510,7 @@ const howItWorksContent = {
     comparisonRouteItems: [
       "Conversación natural en lugar de búsqueda con formularios",
       "Opciones moldeadas por tus preferencias y viajes pasados",
-      "Un borrador organizado antes del checkout",
+      "Un borrador organizado antes de reservar",
       "Detalles del viaje coordinados en una sola línea de tiempo",
       "Revisión antes de aprobar con mejor contexto",
       "Planificación más inteligente a medida que crece tu historial",

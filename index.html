@@ -13,6 +13,49 @@
       })(window.location);
     </script>
     <script>
+      (() => {
+        const MARKETING_SW_RESET_KEY = "pack-marketing-sw-reset-v1";
+
+        if (
+          window.location.pathname.startsWith("/app") ||
+          !("serviceWorker" in navigator)
+        ) {
+          return;
+        }
+
+        void navigator.serviceWorker
+          .getRegistrations()
+          .then(async (registrations) => {
+            const rootScopedRegistrations = registrations.filter((registration) =>
+              registration.scope.startsWith(`${window.location.origin}/`)
+            );
+
+            if (rootScopedRegistrations.length === 0) {
+              window.sessionStorage.removeItem(MARKETING_SW_RESET_KEY);
+              return;
+            }
+
+            await Promise.all(
+              rootScopedRegistrations.map((registration) => registration.unregister())
+            );
+
+            if (
+              navigator.serviceWorker.controller &&
+              window.sessionStorage.getItem(MARKETING_SW_RESET_KEY) !== "1"
+            ) {
+              window.sessionStorage.setItem(MARKETING_SW_RESET_KEY, "1");
+              window.location.reload();
+              return;
+            }
+
+            window.sessionStorage.removeItem(MARKETING_SW_RESET_KEY);
+          })
+          .catch(() => {
+            window.sessionStorage.removeItem(MARKETING_SW_RESET_KEY);
+          });
+      })();
+    </script>
+    <script>
       // Single Page Apps for GitHub Pages (inline to avoid render-blocking request)
       // MIT License - Adapted from https://github.com/rafgraph/spa-github-pages
       ((location) => {

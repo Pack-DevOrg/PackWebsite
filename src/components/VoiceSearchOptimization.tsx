@@ -85,12 +85,12 @@ const VoiceSearchOptimizationInstance: React.FC<VoiceSearchOptimizationProps> = 
             {
               question: "Is Pack safe for booking travel?",
               answer:
-                "Yes, Pack is designed with advanced security and industry-standard encryption, works only with verified providers, offers secure payment processing, and includes standard travel insurance and customer protection policies.",
+                "Yes, Pack is designed with advanced security and industry-standard encryption to help protect travel planning and booking activity. Exact booking protections and payment handling can depend on the trip and booking partner involved.",
             },
             {
               question: "What payment methods does Pack accept?",
               answer:
-                "Pack accepts all major credit cards, debit cards, PayPal, Apple Pay, Google Pay, and other digital wallets for secure and convenient payments worldwide.",
+                "Available payment methods can depend on the itinerary, market, and booking partner used for the reservation flow. Specific options are shown during booking when available.",
             },
             {
               question: "Can I modify my travel plans after booking?",

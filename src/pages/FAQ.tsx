@@ -190,8 +190,6 @@ const faqContent = {
     ctaTitle: "Still have questions?",
     ctaBody:
       "Join the waitlist to get early access to a more organized and more personalized way to plan travel.",
-    disclaimer:
-      "Features described represent planned capabilities. Pack is currently in development. AI technology has limitations and results may vary. No warranties or guarantees are provided.",
     categories: [
       {
         id: "getting-started",
@@ -202,13 +200,19 @@ const faqContent = {
             id: "what-is-pack",
             question: "What is Pack?",
             answer:
-              "Pack is a travel planning app that turns conversation, confirmations, and calendar context into organized trip drafts. Instead of juggling tabs, emails, and booking sites, you get one clearer view of the trip before checkout.",
+              "Pack is an AI travel planning app that turns conversation, confirmations, calendar context, and past travel signals into organized trip drafts. Instead of juggling tabs, emails, and booking sites, you get one clearer view of the trip before booking.",
+          },
+          {
+            id: "is-pack-ai-travel-planner",
+            question: "Is Pack an AI travel planner?",
+            answer:
+              "Yes. Pack is designed as an AI travel planner that uses natural language, past trips, confirmation emails, and travel preferences to help assemble a trip draft you can review before booking.",
           },
           {
             id: "how-does-it-work",
             question: "How does Pack work?",
             answer:
-              "You can describe a trip in natural language or connect your travel context so Pack can organize what is already in motion. From there, Pack learns your preferences, assembles a trip draft, and hands you off to provider checkout when you are ready to book.",
+              "You can describe a trip in natural language or connect your travel context so Pack can organize what is already in motion. From there, Pack learns your preferences, assembles a trip draft, and guides you into an integrated booking flow when you are ready to book.",
           },
           {
             id: "when-available",
@@ -227,7 +231,7 @@ const faqContent = {
             id: "what-can-pack-book",
             question: "What can Pack help me book?",
             answer:
-              "Pack helps coordinate flights and hotels, then sends you into the airline or hotel checkout flow to complete the booking. The reservation and payment stay with the provider.",
+              "Pack is designed to help coordinate flights and hotels through an integrated booking experience. Exact booking coverage can vary by market, itinerary, and partner setup.",
           },
           {
             id: "supports-destinations",
@@ -239,13 +243,31 @@ const faqContent = {
             id: "travel-planning",
             question: "What makes Pack different from other travel apps?",
             answer:
-              "Most travel apps give you search results. Pack is designed to give you a clearer answer. It learns how you travel, pulls in confirmations and calendar timing, builds a trip draft, and keeps checkout with the provider.",
+              "Most travel apps give you search results. Pack is designed to give you a clearer answer. It learns how you travel, pulls in confirmations and calendar timing, builds a trip draft, and connects planning with an integrated booking flow.",
+          },
+          {
+            id: "past-travel-history",
+            question: "Can Pack extract and display my past travel history?",
+            answer:
+              "Yes. Pack is designed to extract and display past travel history so earlier flights, hotel stays, rental cars, and related trip records are easier to review and reuse.",
+          },
+          {
+            id: "travel-stats-maps",
+            question: "Can Pack show travel stats and maps across flights, hotels, and rental cars?",
+            answer:
+              "Yes. Pack is designed to show travel stats, route context, and maps so your travel footprint is easier to understand across different trip components.",
+          },
+          {
+            id: "loyalty-programs",
+            question: "Can Pack extract loyalty numbers and program details?",
+            answer:
+              "Yes. Pack is designed to organize loyalty numbers and program details for flights, hotels, and rental cars so that traveler information stays easier to access.",
           },
           {
             id: "technology-security",
             question: "How reliable and secure is Pack?",
             answer:
-              "Pack is built to make travel details easier to verify before you book while handling travel data with care. Payment details stay on provider-hosted checkout pages rather than inside Pack.",
+              "Pack is built to make travel details easier to verify before you book while handling travel data with care. The booking flow is designed to protect sensitive information and reduce avoidable manual steps.",
           },
           {
             id: "flight-disruptions",
@@ -297,7 +319,7 @@ const faqContent = {
             id: "automation-goal",
             question: "What is Pack's goal for travel planning?",
             answer:
-              "Pack aims to automate as much of the travel process as possible. From understanding your preferences and finding the best options to guiding you through secure checkout directly with the airline or hotel and organizing your itinerary, we want to eliminate the tedious parts of travel planning so you can focus on enjoying your trip.",
+              "Pack aims to automate as much of the travel process as possible. From understanding your preferences and finding the best options to guiding you through an integrated booking experience and organizing your itinerary, we want to eliminate the tedious parts of travel planning so you can focus on enjoying your trip.",
           },
           {
             id: "last-minute-travel",
@@ -330,6 +352,72 @@ const faqContent = {
             ),
           },
           {
+            id: "past-trips-from-connected-data",
+            question: "Can Pack rebuild past trips from connected travel data?",
+            answer:
+              "Yes. Connected emails, calendars, photos, and related travel signals can help Pack reconstruct trip history and keep reservation details easier to find.",
+          },
+          {
+            id: "proactive-trip-planning",
+            question: "Can Pack proactively plan trips from events or prompts?",
+            answer:
+              "Yes. Pack is designed to proactively plan trips from public events, private email or calendar events, and prompts like a destination request or a trip idea in plain language.",
+          },
+          {
+            id: "edit-trips-from-inputs",
+            question: "Can I edit or update trips from chat, voice, photos, email, or calendar?",
+            answer:
+              "Yes. Pack is designed to let trips be edited, organized, and reactively updated from chat, voice, photos, email, calendar inputs, and photo metadata.",
+          },
+          {
+            id: "travel-photo-albums",
+            question: "Can Pack create a travel photo album, trip map, or travel journal?",
+            answer:
+              "That is a natural direction for Pack. When trip confirmations, dates, places, and photos are connected, Pack can present a trip as something closer to a travel album, mapped timeline, or journal instead of a pile of disconnected records.",
+          },
+          {
+            id: "trip-utility-details",
+            question: "What trip details can Pack show before and during travel?",
+            answer:
+              "Pack can show upcoming trip details such as weather, timing, airport security wait times, trip events, drive times, and transportation actions so the trip stays useful as departure gets closer.",
+          },
+          {
+            id: "calendar-sync",
+            question: "Can Pack sync trip events to my device calendar?",
+            answer:
+              "Yes. Pack is designed to sync trip events into device calendars so key travel moments are easier to keep in view with the rest of your schedule.",
+          },
+          {
+            id: "connected-accounts",
+            question: "Can Pack connect external accounts and travel providers?",
+            answer:
+              "Yes. Pack is designed to connect external accounts and providers so email, calendar, and travel context can be pulled into one more useful trip view.",
+          },
+          {
+            id: "profiles-accessibility",
+            question: "Can Pack manage traveler profiles, accessibility needs, and loyalty information?",
+            answer:
+              "Yes. Pack is designed to manage traveler profiles, preferences, trusted traveler details, accessibility needs, and loyalty information as part of the trip planning experience.",
+          },
+          {
+            id: "sharing-group-travel",
+            question: "Can I share trips and collaborate with other travelers?",
+            answer:
+              "Yes. Pack is designed to support trip links, invitations, linked trips, imports, copies, and group travel workflows so planning can be shared across people.",
+          },
+          {
+            id: "live-trip-views",
+            question: "Does Pack support live upcoming-trip views?",
+            answer:
+              "Yes. Pack is designed to support live upcoming-trip views with status details and trip actions so the next leg of travel stays easy to access.",
+          },
+          {
+            id: "trip-expenses",
+            question: "Can Pack organize trip expenses?",
+            answer:
+              "Yes. Organizing trip expenses is part of the Pack product direction so travel costs are easier to review as part of the broader trip record.",
+          },
+          {
             id: "booking-mistakes",
             question: "How does Pack help prevent booking mistakes?",
             answer: (
@@ -358,7 +446,7 @@ const faqContent = {
                 </ul>
                 <p>
                   The goal is simple: fewer avoidable mistakes, less stress, and more confidence
-                  before checkout.
+                  before booking.
                 </p>
               </div>
             ),
@@ -417,7 +505,7 @@ const faqContent = {
             id: "payment-methods",
             question: "What payment methods does Pack accept?",
             answer:
-              "Payment methods depend on the airline or hotel checkout page you use. Because Pack hands you off to the provider to complete the purchase, the available payment options are set by that provider.",
+              "Available payment methods may depend on the itinerary, market, and booking partner used for the reservation flow. Specific options will be shown during booking when available.",
           },
         ],
       },
@@ -435,10 +523,6 @@ const faqContent = {
                 <ul>
                   <li>
                     <strong>Encryption:</strong> All data is encrypted in transit and at rest
-                  </li>
-                  <li>
-                    <strong>Minimal data collection:</strong> We only collect what&apos;s necessary
-                    for bookings
                   </li>
                   <li>
                     <strong>No selling data:</strong> We never sell your personal information to
@@ -466,7 +550,7 @@ const faqContent = {
             id: "booking-security",
             question: "Is it safe to book travel through Pack?",
             answer:
-              "Yes. Checkout happens on PCI-compliant pages hosted directly by the airline or hotel partner, so your payment details go straight to the merchant of record. Pack never sees or stores your card information, and your reservations include the standard policies from the airline or hotel you purchase from.",
+              "Pack is designed with security in mind for booking travel. Sensitive information should be handled through protected booking infrastructure and the specific terms, policies, and payment handling can depend on the booking partner and reservation flow used for a trip.",
           },
         ],
       },
@@ -479,8 +563,6 @@ const faqContent = {
     ctaTitle: "¿Todavía tienes preguntas?",
     ctaBody:
       "Únete a la lista de espera para obtener acceso anticipado a una forma más organizada y personalizada de planear viajes.",
-    disclaimer:
-      "Las funciones descritas representan capacidades planificadas. Pack está actualmente en desarrollo. La tecnología de IA tiene limitaciones y los resultados pueden variar. No se ofrecen garantías.",
     categories: [
       {
         id: "getting-started",
@@ -491,13 +573,19 @@ const faqContent = {
             id: "what-is-pack",
             question: "¿Qué es Pack?",
             answer:
-              "Pack es una app de planificación de viajes que convierte conversaciones, confirmaciones y contexto del calendario en borradores de viaje organizados. En lugar de saltar entre pestañas, correos y sitios de reserva, obtienes una vista más clara del viaje antes del checkout.",
+              "Pack es una app de planificación de viajes con IA que convierte conversaciones, confirmaciones, contexto del calendario y señales de viajes pasados en borradores de viaje organizados. En lugar de saltar entre pestañas, correos y sitios de reserva, obtienes una vista más clara del viaje antes de reservar.",
+          },
+          {
+            id: "is-pack-ai-travel-planner",
+            question: "¿Pack es un planificador de viajes con IA?",
+            answer:
+              "Sí. Pack está diseñado como un planificador de viajes con IA que usa lenguaje natural, viajes pasados, correos de confirmación y preferencias para ayudarte a armar un borrador de viaje antes de reservar.",
           },
           {
             id: "how-does-it-work",
             question: "¿Cómo funciona Pack?",
             answer:
-              "Puedes describir un viaje en lenguaje natural o conectar tu contexto de viaje para que Pack organice lo que ya está en marcha. A partir de ahí, Pack aprende tus preferencias, arma un borrador del viaje y te envía al checkout del proveedor cuando estás listo para reservar.",
+              "Puedes describir un viaje en lenguaje natural o conectar tu contexto de viaje para que Pack organice lo que ya está en marcha. A partir de ahí, Pack aprende tus preferencias, arma un borrador del viaje y te guía a un flujo de reserva integrado cuando estás listo para reservar.",
           },
           {
             id: "when-available",
@@ -516,7 +604,7 @@ const faqContent = {
             id: "what-can-pack-book",
             question: "¿Qué puede ayudarme a reservar Pack?",
             answer:
-              "Pack ayuda a coordinar vuelos y hoteles, y luego te envía al flujo de checkout de la aerolínea o del hotel para completar la reserva. La reservación y el pago permanecen con el proveedor.",
+              "Pack está diseñado para ayudar a coordinar vuelos y hoteles mediante una experiencia de reserva integrada. La cobertura exacta puede variar según el mercado, el itinerario y la configuración con socios.",
           },
           {
             id: "supports-destinations",
@@ -528,13 +616,31 @@ const faqContent = {
             id: "travel-planning",
             question: "¿Qué hace diferente a Pack de otras apps de viaje?",
             answer:
-              "La mayoría de las apps de viaje te muestran resultados de búsqueda. Pack está diseñada para darte una respuesta más clara. Aprende cómo viajas, incorpora confirmaciones y tiempos del calendario, arma un borrador del viaje y mantiene el checkout con el proveedor.",
+              "La mayoría de las apps de viaje te muestran resultados de búsqueda. Pack está diseñada para darte una respuesta más clara. Aprende cómo viajas, incorpora confirmaciones y tiempos del calendario, arma un borrador del viaje y conecta la planificación con un flujo de reserva integrado.",
+          },
+          {
+            id: "past-travel-history",
+            question: "¿Pack puede extraer y mostrar mi historial de viajes pasados?",
+            answer:
+              "Sí. Pack está diseñado para extraer y mostrar historial de viajes pasados para que vuelos, hoteles, autos y otros registros queden más fáciles de revisar y reutilizar.",
+          },
+          {
+            id: "travel-stats-maps",
+            question: "¿Pack puede mostrar stats y mapas entre vuelos, hoteles y autos?",
+            answer:
+              "Sí. Pack está diseñado para mostrar stats de viaje, contexto de rutas y mapas para que tu huella de viaje sea más fácil de entender entre distintos componentes del viaje.",
+          },
+          {
+            id: "loyalty-programs",
+            question: "¿Pack puede extraer números de lealtad y detalles de programas?",
+            answer:
+              "Sí. Pack está diseñado para organizar números de lealtad y detalles de programas de vuelos, hoteles y autos para que la información del viajero sea más fácil de encontrar.",
           },
           {
             id: "technology-security",
             question: "¿Qué tan confiable y seguro es Pack?",
             answer:
-              "Pack está diseñado para que los detalles del viaje sean más fáciles de verificar antes de reservar, tratando la información con cuidado. Los datos de pago permanecen en páginas de checkout alojadas por el proveedor, no dentro de Pack.",
+              "Pack está diseñado para que los detalles del viaje sean más fáciles de verificar antes de reservar, tratando la información con cuidado. El flujo de reserva está pensado para proteger información sensible y reducir pasos manuales evitables.",
           },
           {
             id: "flight-disruptions",
@@ -588,7 +694,7 @@ const faqContent = {
             id: "automation-goal",
             question: "¿Cuál es el objetivo de Pack para la planificación de viajes?",
             answer:
-              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte al checkout seguro directamente con la aerolínea o el hotel y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
+              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por una experiencia de reserva integrada y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
           },
           {
             id: "last-minute-travel",
@@ -628,6 +734,76 @@ const faqContent = {
             ),
           },
           {
+            id: "past-trips-from-connected-data",
+            question:
+              "¿Pack puede reconstruir viajes pasados desde datos de viaje conectados?",
+            answer:
+              "Sí. Correos, calendarios, fotos y otras señales conectadas pueden ayudar a Pack a reconstruir el historial del viaje y mantener los detalles de reserva más fáciles de encontrar.",
+          },
+          {
+            id: "proactive-trip-planning",
+            question: "¿Pack puede planear viajes de forma proactiva desde eventos o prompts?",
+            answer:
+              "Sí. Pack está diseñado para planear viajes de forma proactiva desde eventos públicos, eventos privados de correo o calendario y prompts en lenguaje natural.",
+          },
+          {
+            id: "edit-trips-from-inputs",
+            question:
+              "¿Puedo editar o actualizar viajes desde chat, voz, fotos, email o calendario?",
+            answer:
+              "Sí. Pack está diseñado para que los viajes se puedan editar, organizar y actualizar de forma reactiva desde chat, voz, fotos, email, calendario y metadatos de fotos.",
+          },
+          {
+            id: "travel-photo-albums",
+            question:
+              "¿Pack puede crear un álbum de viaje, mapa del viaje o diario de viaje?",
+            answer:
+              "Esa es una dirección natural para Pack. Cuando confirmaciones, fechas, lugares y fotos están conectados, Pack puede presentar un viaje como algo más cercano a un álbum, una cronología en mapa o un diario en lugar de un conjunto de registros desconectados.",
+          },
+          {
+            id: "trip-utility-details",
+            question: "¿Qué detalles puede mostrar Pack antes y durante el viaje?",
+            answer:
+              "Pack puede mostrar detalles del próximo viaje como clima, tiempos, esperas de seguridad aeroportuaria, eventos, tiempos de manejo y acciones de transporte para que el viaje siga siendo útil cuando se acerca la salida.",
+          },
+          {
+            id: "calendar-sync",
+            question: "¿Pack puede sincronizar eventos del viaje con mi calendario del dispositivo?",
+            answer:
+              "Sí. Pack está diseñado para sincronizar eventos del viaje con calendarios del dispositivo para que los momentos clave del viaje se mantengan visibles junto con el resto de tu agenda.",
+          },
+          {
+            id: "connected-accounts",
+            question: "¿Pack puede conectar cuentas externas y proveedores de viaje?",
+            answer:
+              "Sí. Pack está diseñado para conectar cuentas y proveedores externos para que el contexto de correo, calendario y viaje se reúna en una vista más útil del viaje.",
+          },
+          {
+            id: "profiles-accessibility",
+            question:
+              "¿Pack puede gestionar perfiles del viajero, necesidades de accesibilidad y lealtad?",
+            answer:
+              "Sí. Pack está diseñado para gestionar perfiles del viajero, preferencias, detalles de viajero confiable, necesidades de accesibilidad e información de lealtad como parte de la experiencia de planificación.",
+          },
+          {
+            id: "sharing-group-travel",
+            question: "¿Puedo compartir viajes y colaborar con otros viajeros?",
+            answer:
+              "Sí. Pack está diseñado para soportar enlaces de viaje, invitaciones, viajes vinculados, importaciones, copias y flujos de viaje grupal para que la planificación se pueda compartir entre personas.",
+          },
+          {
+            id: "live-trip-views",
+            question: "¿Pack soporta vistas en vivo del próximo viaje?",
+            answer:
+              "Sí. Pack está diseñado para soportar vistas en vivo del próximo viaje con estados y acciones útiles para que el siguiente tramo sea fácil de consultar.",
+          },
+          {
+            id: "trip-expenses",
+            question: "¿Pack puede organizar gastos del viaje?",
+            answer:
+              "Sí. Organizar gastos del viaje forma parte de la dirección del producto para que los costos sean más fáciles de revisar dentro del registro completo del viaje.",
+          },
+          {
             id: "booking-mistakes",
             question: "¿Cómo ayuda Pack a evitar errores de reserva?",
             answer: (
@@ -656,7 +832,7 @@ const faqContent = {
                 </ul>
                 <p>
                   La meta es simple: menos errores evitables, menos estrés y más confianza antes
-                  del checkout.
+                  de reservar.
                 </p>
               </div>
             ),
@@ -714,7 +890,7 @@ const faqContent = {
             id: "payment-methods",
             question: "¿Qué métodos de pago acepta Pack?",
             answer:
-              "Los métodos de pago dependen de la página de checkout de la aerolínea o del hotel que uses. Como Pack te envía al proveedor para completar la compra, las opciones disponibles las define ese proveedor.",
+              "Los métodos de pago disponibles pueden depender del itinerario, del mercado y del socio de reserva usado en el flujo. Las opciones específicas se mostrarán durante la reserva cuando estén disponibles.",
           },
         ],
       },
@@ -733,10 +909,6 @@ const faqContent = {
                   <li>
                     <strong>Cifrado:</strong> Todos los datos están cifrados en tránsito y en
                     reposo
-                  </li>
-                  <li>
-                    <strong>Recolección mínima:</strong> Solo recopilamos lo necesario para las
-                    reservas
                   </li>
                   <li>
                     <strong>No vendemos datos:</strong> Nunca vendemos tu información personal a
@@ -764,7 +936,7 @@ const faqContent = {
             id: "booking-security",
             question: "¿Es seguro reservar viajes a través de Pack?",
             answer:
-              "Sí. El checkout ocurre en páginas alojadas directamente por la aerolínea o el hotel asociado y compatibles con PCI, así que tus datos de pago van directo al merchant of record. Pack nunca ve ni almacena la información de tu tarjeta, y tus reservas incluyen las políticas estándar del proveedor al que compras.",
+              "Pack está diseñado con seguridad en mente para la reserva de viajes. La información sensible debe manejarse mediante infraestructura protegida de reserva, y los términos, políticas y manejo de pagos específicos pueden depender del socio de reserva y del flujo usado para cada viaje.",
           },
         ],
       },
@@ -908,16 +1080,6 @@ const FAQ: React.FC = () => {
           }}
         >
           {localizedContent.ctaBody}
-        </p>
-        <p
-          style={{
-            color: "var(--color-text-secondary)",
-            fontSize: "var(--font-size-small)",
-            fontStyle: "italic",
-            marginBottom: "var(--space-3)",
-          }}
-        >
-          {localizedContent.disclaimer}
         </p>
         <WaitlistForm />
       </div>

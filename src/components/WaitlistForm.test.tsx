@@ -23,13 +23,6 @@ import WaitlistForm from './WaitlistForm';
 import { executeRecaptchaAction } from '../utils/recaptcha';
 import { I18nProvider } from '../i18n/I18nProvider';
 
-const requestPublicApiMock = jest.fn();
-const googleInitializeMock = jest.fn();
-const googleRenderButtonMock = jest.fn();
-let googleCredentialCallback:
-  | ((response: { credential?: string }) => void)
-  | undefined;
-
 jest.mock('../utils/env', () => ({
   env: {
     VITE_RECAPTCHA_SITE_KEY: 'test-recaptcha-site-key',
@@ -95,19 +88,6 @@ jest.mock('../hooks/useConversionTracking', () => {
   };
 });
 
-jest.mock('@/api/client', () => ({
-  requestPublicApi: (...args: unknown[]) => requestPublicApiMock(...args),
-  ApiRequestError: class ApiRequestError extends Error {
-    status: number;
-    details?: unknown;
-    constructor(status: number, message: string, details?: unknown) {
-      super(message);
-      this.status = status;
-      this.details = details;
-    }
-  },
-}));
-
 /**
  * Mock the global fetch function to simulate API responses
  * Default mock returns successful response
@@ -158,95 +138,20 @@ describe('WaitlistForm Component', () => {
     // Clear all mocks before each test
     jest.clearAllMocks();
     (executeRecaptchaAction as jest.Mock).mockResolvedValue('test-token');
-    requestPublicApiMock.mockResolvedValue({
-      email: 'traveler@example.com',
-      emailVerified: true,
-      cognitoSub: 'sub_123',
-      cognitoUsername: 'google_123',
-      status: 'existing_google_user',
-      shouldContinueWithHostedLogin: true,
-    });
-    googleCredentialCallback = undefined;
-    googleInitializeMock.mockImplementation(
-      ({ callback }: { callback?: (response: { credential?: string }) => void }) => {
-        googleCredentialCallback = callback;
-      }
-    );
-    googleRenderButtonMock.mockImplementation((parent: HTMLElement) => {
-      parent.replaceChildren();
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.textContent = 'Sign up with Google';
-      button.addEventListener('click', () => {
-        googleCredentialCallback?.({ credential: 'google_jwt' });
-      });
-      parent.appendChild(button);
-    });
-    window.google = {
-      accounts: {
-        id: {
-          initialize: googleInitializeMock,
-          renderButton: googleRenderButtonMock,
-        },
-      },
-    };
   });
 
   /**
    * Test that the form renders all required elements correctly
    * Validates presence of form fields, labels, and interactive elements
    */
-  test('renders correctly', async () => {
+  test('renders correctly', () => {
     render(<WaitlistFormWrapper />);
     
     // Check if important elements are present
     expect(screen.getByRole('heading', { name: /planning a trip\?/i })).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: /sign up with google/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
     expect(screen.getByText(/By continuing, you agree to our/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /pack it\./i })).toBeInTheDocument();
-  });
-
-  test('starts Google sign-in from the shared waitlist form', async () => {
-    render(<WaitlistFormWrapper />);
-
-    fireEvent.click(await screen.findByRole('button', { name: /sign up with google/i }));
-
-    await waitFor(() =>
-      expect(requestPublicApiMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: '/auth/google/bridge',
-          method: 'POST',
-          body: expect.objectContaining({
-            credential: 'google_jwt',
-            redirectPath: '/',
-            source: 'waitlist',
-          }),
-        }),
-      ),
-    );
-  });
-
-  test('includes Google-side email marketing consent only when checked', async () => {
-    render(<WaitlistFormWrapper />);
-
-    fireEvent.click(screen.getByRole('checkbox', { name: /marketing email consent/i }));
-    fireEvent.click(await screen.findByRole('button', { name: /sign up with google/i }));
-
-    await waitFor(() =>
-      expect(requestPublicApiMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: '/auth/google/bridge',
-          method: 'POST',
-          body: expect.objectContaining({
-            credential: 'google_jwt',
-            redirectPath: '/',
-            source: 'waitlist',
-            marketingEmailConsent: true,
-          }),
-        }),
-      ),
-    );
   });
 
   /**

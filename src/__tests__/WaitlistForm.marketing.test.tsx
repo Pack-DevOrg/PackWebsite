@@ -69,20 +69,13 @@ jest.mock('framer-motion', () => {
 const trackConversionMock = jest.fn();
 const trackFormSubmitMock = jest.fn();
 const trackFormStartMock = jest.fn();
-const trackCTAClickMock = jest.fn();
-const requestPublicApiMock = jest.fn();
-const googleInitializeMock = jest.fn();
-const googleRenderButtonMock = jest.fn();
-let googleCredentialCallback:
-  | ((response: { credential?: string }) => void)
-  | undefined;
 
 jest.mock('../hooks/useConversionTracking', () => ({
   useConversionTracking: () => ({
     trackConversion: trackConversionMock,
     trackFormStart: trackFormStartMock,
     trackFormSubmit: trackFormSubmitMock,
-    trackCTAClick: trackCTAClickMock,
+    trackCTAClick: jest.fn(),
     trackScrollMilestone: jest.fn(),
     trackVideoEngagement: jest.fn(),
     trackABTest: jest.fn(),
@@ -96,19 +89,6 @@ jest.mock('../hooks/useConversionTracking', () => ({
     trackRevenue: jest.fn(),
     updateUserProperties: jest.fn(),
   }),
-}));
-
-jest.mock('@/api/client', () => ({
-  requestPublicApi: (...args: unknown[]) => requestPublicApiMock(...args),
-  ApiRequestError: class ApiRequestError extends Error {
-    status: number;
-    details?: unknown;
-    constructor(status: number, message: string, details?: unknown) {
-      super(message);
-      this.status = status;
-      this.details = details;
-    }
-  },
 }));
 
 jest.mock('../utils/recaptcha', () => ({
@@ -155,39 +135,6 @@ describe('WaitlistForm marketing payload', () => {
       ok: true,
       json: async () => ({ success: true, message: 'ok' }),
     } as Response);
-    requestPublicApiMock.mockResolvedValue({
-      email: 'traveler@example.com',
-      emailVerified: true,
-      cognitoSub: 'sub_123',
-      cognitoUsername: 'google_123',
-      status: 'existing_google_user',
-      shouldContinueWithHostedLogin: true,
-    });
-    googleCredentialCallback = undefined;
-    googleInitializeMock.mockImplementation(
-      ({ callback }: { callback?: (response: { credential?: string }) => void }) => {
-        googleCredentialCallback = callback;
-      }
-    );
-    googleRenderButtonMock.mockImplementation((parent: HTMLElement) => {
-      parent.replaceChildren();
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.textContent = 'Sign up with Google';
-      button.addEventListener('click', () => {
-        googleCredentialCallback?.({ credential: 'google_jwt' });
-      });
-      parent.appendChild(button);
-    });
-    window.google = {
-      accounts: {
-        id: {
-          initialize: googleInitializeMock,
-          renderButton: googleRenderButtonMock,
-        },
-      },
-    };
-
     (globalThis as unknown as { fetch: typeof fetch }).fetch = fetchMock;
     (window as unknown as { fetch: typeof fetch }).fetch = fetchMock;
 
@@ -269,47 +216,6 @@ describe('WaitlistForm marketing payload', () => {
     const privacyPolicyLinks = screen.getAllByRole('link', {name: /privacy policy/i});
     expect(privacyPolicyLinks.some((link) => link.getAttribute('href') === '/privacy')).toBe(true);
     expect(screen.getByRole('link', {name: /your privacy choices/i})).toHaveAttribute('href', '/privacy-request');
-  });
-
-  it('starts Google sign-in from the waitlist CTA', async () => {
-    renderWaitlistForm();
-
-    const user = userEvent.setup();
-    await user.click(await screen.findByRole('button', {name: /sign up with google/i}));
-
-    expect(trackCTAClickMock).toHaveBeenCalledWith(
-      'Waitlist Google GIS Button',
-      'waitlist_google_gis_button',
-    );
-    expect(requestPublicApiMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        path: '/auth/google/bridge',
-        method: 'POST',
-        body: expect.objectContaining({
-          credential: 'google_jwt',
-          redirectPath: '/?gclid=test-gclid&wbraid=test-wbraid&gbraid=test-gbraid&ttclid=test-ttclid',
-          source: 'waitlist',
-        }),
-      }),
-    );
-  });
-
-  it('passes Google-side marketing email opt-in only when explicitly checked', async () => {
-    renderWaitlistForm();
-
-    const user = userEvent.setup();
-    await user.click(screen.getByRole('checkbox', {name: /marketing email consent/i}));
-    await user.click(await screen.findByRole('button', {name: /sign up with google/i}));
-
-    expect(requestPublicApiMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        body: expect.objectContaining({
-          credential: 'google_jwt',
-          source: 'waitlist',
-          marketingEmailConsent: true,
-        }),
-      }),
-    );
   });
 
   it('omits attribution identifiers when marketing consent is not granted', async () => {

@@ -41,6 +41,7 @@ import styled, {
 } from "styled-components";
 import { Loader2, Check, AlertCircle, Twitter, Shield } from "lucide-react";
 import { useConversionTracking } from "../hooks/useConversionTracking";
+import { useMountEffect } from "../hooks/useMountEffect";
 import { env } from '../utils/env';
 import { submitToEncryptedWaitlist, checkEncryptedWaitlistStatus } from "../services/encryptedWaitlistService";
 import { executeRecaptchaAction, loadRecaptchaScript } from "../utils/recaptcha";
@@ -57,7 +58,8 @@ import {
   CONSENT_MAX_AGE_SECONDS,
   CONSENT_TIMESTAMP_COOKIE_KEY,
 } from '../constants/consent';
-import { apiEndpoints } from "../config/appConfig";
+import { ApiRequestError, requestPublicApi } from "@/api/client";
+import { apiEndpoints, appConfig } from "../config/appConfig";
 import { useI18n } from "../i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "../legal/legalUiCopy";
 
@@ -69,6 +71,15 @@ const GlobalStyle = createGlobalStyle`
     }
     to {
       transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes skeleton {
+    0% {
+      background-position: -200px 0;
+    }
+    100% {
+      background-position: calc(200px + 100%) 0;
     }
   }
   
@@ -88,6 +99,26 @@ const SpinningLoader = styled(Loader2)`
   
   @media (prefers-reduced-motion: reduce) {
     animation: none;
+  }
+`;
+
+// Skeleton loading component
+const SkeletonLoader = styled.div`
+  height: 50px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200px 100%;
+  animation: skeleton 1.5s ease-in-out infinite;
+  border-radius: var(--border-radius);
+  margin-bottom: ${(props) => props.theme.spacing[3]};
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background: rgba(255, 255, 255, 0.1);
   }
 `;
 
@@ -223,11 +254,125 @@ const readMarketingTrackingConsent = (): boolean => {
 
 type WaitlistFormVariant = 'default' | 'hero' | 'embedded';
 
+type GoogleCredentialResponse = {
+  credential?: string;
+};
+
+type GoogleAccountsId = {
+  initialize: (options: {
+    client_id: string;
+    callback?: (response: GoogleCredentialResponse) => void;
+    auto_select?: boolean;
+    cancel_on_tap_outside?: boolean;
+    context?: "signin" | "signup" | "use";
+    itp_support?: boolean;
+    ux_mode?: "popup" | "redirect";
+  }) => void;
+  renderButton: (
+    parent: HTMLElement,
+    options: {
+      type?: "standard" | "icon";
+      theme?: "outline" | "filled_blue" | "filled_black";
+      size?: "large" | "medium" | "small";
+      text?:
+        | "signin_with"
+        | "signup_with"
+        | "continue_with"
+        | "signin"
+        | "signup";
+      shape?: "rectangular" | "pill" | "circle" | "square";
+      logo_alignment?: "left" | "center";
+      width?: number;
+      locale?: string;
+    }
+  ) => void;
+};
+
+type GoogleAuthBridgeCaptureResult = {
+  email: string;
+  emailVerified: boolean;
+  givenName?: string;
+  familyName?: string;
+  name?: string;
+  picture?: string;
+  cognitoSub: string;
+  cognitoUsername: string;
+  status:
+    | "created_and_linked"
+    | "linked_existing_local_user"
+    | "existing_google_user";
+  shouldContinueWithHostedLogin: true;
+};
+
+type GoogleAuthBridgeRequestBody = {
+  credential: string;
+  redirectPath: string;
+  source: "tsa" | "waitlist";
+  marketingEmailConsent?: true;
+};
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: GoogleAccountsId;
+      };
+    };
+  }
+}
+
+let googleGisScriptPromise: Promise<void> | null = null;
+
+const loadGoogleGisScript = (): Promise<void> => {
+  if (typeof window === "undefined") {
+    return Promise.resolve();
+  }
+
+  if (window.google?.accounts?.id) {
+    return Promise.resolve();
+  }
+
+  if (googleGisScriptPromise) {
+    return googleGisScriptPromise;
+  }
+
+  googleGisScriptPromise = new Promise<void>((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve(), { once: true });
+      existingScript.addEventListener(
+        "error",
+        () => reject(new Error("Failed to load Google Identity Services")),
+        { once: true }
+      );
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () =>
+      reject(new Error("Failed to load Google Identity Services"));
+    document.head.appendChild(script);
+  }).catch((error) => {
+    googleGisScriptPromise = null;
+    throw error;
+  });
+
+  return googleGisScriptPromise;
+};
+
 interface WaitlistFormProps {
   variant?: WaitlistFormVariant;
   onSuccess?: (email: string) => void;
   showLegalNotice?: boolean;
   showTitle?: boolean;
+  googleBridgeSource?: "tsa" | "waitlist";
 }
 
 const FormContainer = styled.section<{ $variant: WaitlistFormVariant }>`
@@ -361,7 +506,7 @@ const EmailInput = styled.input`
   }
 
   &::placeholder {
-    color: rgba(255, 248, 236, 0.78);
+    color: ${(props) => props.theme.colors.text.placeholder};
     transition: all 0.3s ease;
   }
 
@@ -447,20 +592,15 @@ const SubmitButton = styled.button`
   justify-content: center;
   width: 100%;
   padding: ${(props) => props.theme.spacing[2]};
-  background:
-    linear-gradient(rgba(19, 19, 20, 0.94), rgba(19, 19, 20, 0.94)) padding-box,
-    linear-gradient(135deg, #ffd86f 0%, #f0c62d 34%, #f6a14f 66%, #e72340 100%) border-box;
+  background: ${(props) => props.theme.colors.gradients.primaryAccent};
+  background-size: 200% auto;
   color: white;
   border-radius: var(--border-radius);
   font-weight: ${(props) => props.theme.typography.fontWeights.bold};
   letter-spacing: 0.03em;
   transition: all 0.3s ease;
   height: 50px;
-  box-shadow:
-    0 14px 32px rgba(0, 0, 0, 0.26),
-    0 0 24px rgba(240, 198, 45, 0.18),
-    0 0 18px rgba(231, 35, 64, 0.16),
-    0 0 0 1px rgba(255, 216, 111, 0.12);
+  box-shadow: ${(props) => props.theme.colors.shadow.primary};
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -486,12 +626,9 @@ const SubmitButton = styled.button`
   }
 
   &:hover:not(:disabled) {
+    background-position: right center;
     transform: translateY(-2px);
-    box-shadow:
-      0 18px 38px rgba(0, 0, 0, 0.32),
-      0 0 28px rgba(240, 198, 45, 0.24),
-      0 0 22px rgba(231, 35, 64, 0.22),
-      0 0 0 1px rgba(255, 216, 111, 0.18);
+    box-shadow: ${(props) => props.theme.colors.shadow.primaryHover};
 
     &::before {
       left: 100%;
@@ -500,18 +637,13 @@ const SubmitButton = styled.button`
 
   &:active:not(:disabled) {
     transform: translateY(1px);
-    box-shadow:
-      0 10px 22px rgba(0, 0, 0, 0.3),
-      0 0 14px rgba(240, 198, 45, 0.16),
-      0 0 12px rgba(231, 35, 64, 0.12);
+    box-shadow: ${(props) => props.theme.colors.shadow.primaryActive};
   }
 
   &:focus-visible {
     border-color: rgba(243, 210, 122, 0.42);
     box-shadow:
-      0 14px 32px rgba(0, 0, 0, 0.26),
-      0 0 24px rgba(240, 198, 45, 0.18),
-      0 0 18px rgba(231, 35, 64, 0.16),
+      ${(props) => props.theme.colors.shadow.primary},
       0 0 0 3px rgba(243, 210, 122, 0.18);
   }
 
@@ -519,6 +651,64 @@ const SubmitButton = styled.button`
     opacity: 0.7;
     cursor: not-allowed;
     filter: grayscale(40%);
+  }
+`;
+
+const GoogleButtonHost = styled.div`
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  display: inline-flex;
+  align-self: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 4px;
+  border-radius: calc(var(--border-radius) + 7px);
+  background:
+    linear-gradient(rgba(19, 19, 20, 0.92), rgba(19, 19, 20, 0.92)) padding-box,
+    linear-gradient(135deg, #ffd86f 0%, #f0c62d 34%, #f6a14f 66%, #e72340 100%) border-box;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.24),
+    0 0 24px rgba(240, 198, 45, 0.18),
+    0 0 18px rgba(231, 35, 64, 0.16),
+    0 0 0 1px rgba(255, 216, 111, 0.18);
+  overflow: hidden;
+
+  > div {
+    width: auto;
+    max-width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    border-radius: calc(var(--border-radius) + 5px);
+    background: rgba(19, 19, 20, 0.92);
+    padding: 1px;
+  }
+`;
+
+const GoogleButtonStatus = styled.p`
+  margin: 0 0 ${({ theme }) => theme.spacing[2]};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.small};
+  line-height: 1.45;
+  text-align: center;
+`;
+
+const ButtonDivider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  width: 100%;
+  margin: ${({ theme }) => `${theme.spacing[3]} 0`};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.small};
+  text-align: center;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
   }
 `;
 
@@ -660,6 +850,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   onSuccess,
   showLegalNotice = true,
   showTitle = true,
+  googleBridgeSource = "waitlist",
 }) => {
   const { locale, pathFor, t } = useI18n();
   const acceptanceNotice = getAcceptanceNoticeLegalCopy(locale);
@@ -671,19 +862,26 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   const [emailError, setEmailError] = useState("");
   const [captchaError, setCaptchaError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleBridgeLoading, setIsGoogleBridgeLoading] = useState(false);
+  const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
+  const [isGoogleButtonReady, setIsGoogleButtonReady] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submittedMarketingEmailConsent, setSubmittedMarketingEmailConsent] =
-    useState(false);
+  const [submittedMarketingEmailConsent, setSubmittedMarketingEmailConsent] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [message, setMessage] = useState<{
     type: "error" | "success" | "info";
     text: string;
   } | null>(null);
   const hasTrackedFormStartRef = React.useRef(false);
+  const googleButtonRef = React.useRef<HTMLDivElement | null>(null);
+  const googleCredentialHandlerRef = React.useRef<
+    ((credential: string) => Promise<void>) | null
+  >(null);
+  const hasInitializedGoogleIdentityRef = React.useRef(false);
   const theme = useTheme();
   
   // Conversion tracking
-  const { trackFormStart, trackFormSubmit, trackConversion } = useConversionTracking();
+  const { trackCTAClick, trackFormStart, trackFormSubmit, trackConversion } = useConversionTracking();
   
   // Check if encrypted waitlist is available
   const encryptedStatus = checkEncryptedWaitlistStatus();
@@ -945,6 +1143,153 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
     }
   };
 
+  const handleGoogleCredential = async (credential: string): Promise<void> => {
+    if (!credential || isGoogleBridgeLoading || isLoading) {
+      return;
+    }
+
+    trackInitialFormIntent();
+    setSubmitError("");
+    setCaptchaError("");
+    setMessage(null);
+    setGoogleBridgeError(null);
+    setIsGoogleBridgeLoading(true);
+
+    trackCTAClick(
+      isHeroVariant ? "Hero Waitlist Google GIS Button" : "Waitlist Google GIS Button",
+      isHeroVariant ? "hero_waitlist_google_gis_button" : "waitlist_google_gis_button"
+    );
+
+    try {
+      const redirectPath =
+        typeof window === "undefined"
+          ? pathFor("/")
+          : `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+      const result = await requestPublicApi<
+        GoogleAuthBridgeCaptureResult,
+        GoogleAuthBridgeRequestBody
+      >({
+        path: "/auth/google/bridge",
+        method: "POST",
+        body: {
+          credential,
+          redirectPath,
+          source: googleBridgeSource,
+          ...(marketingEmailOptIn ? {marketingEmailConsent: true as const} : {}),
+        },
+      });
+
+      setEmail(result.email);
+      setIsSubmitted(true);
+      setSubmittedMarketingEmailConsent(marketingEmailOptIn);
+      setMessage({
+        type: "success",
+        text: "✅ Success! Welcome to the waitlist.",
+      });
+
+      trackFormSubmit('waitlist_form', {
+        form_name: 'waitlist_google_signup',
+        page_section: isHeroVariant ? 'hero_cta' : 'main_cta',
+        event_category: 'conversion',
+        value: 1,
+      });
+      trackConversion('generate_lead', {
+        event_category: 'conversion',
+        event_label: 'waitlist_google_signup_success',
+        value: 1,
+        conversion_type: 'lead_generation',
+        form_name: 'waitlist_google_signup',
+        page_section: isHeroVariant ? 'hero_cta' : 'main_cta',
+      });
+      onSuccess?.(result.email);
+    } catch (error) {
+      const isExpectedError =
+        error instanceof ApiRequestError ||
+        (error instanceof DOMException && error.name === "AbortError");
+
+      if (!isExpectedError && env.DEV) {
+        console.warn("Failed to capture Google waitlist email", error);
+      }
+
+      setGoogleBridgeError(
+        "Google couldn't confirm your email. Try again or use the form below."
+      );
+    } finally {
+      setIsGoogleBridgeLoading(false);
+    }
+  };
+
+  googleCredentialHandlerRef.current = handleGoogleCredential;
+
+  useMountEffect(() => {
+    if (typeof window === "undefined" || !appConfig.googleGisClientId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void loadGoogleGisScript()
+      .then(() => {
+        if (cancelled) {
+          return;
+        }
+
+        const accountsId = window.google?.accounts?.id;
+        const buttonContainer = googleButtonRef.current;
+        if (!accountsId || !buttonContainer || !appConfig.googleGisClientId) {
+          return;
+        }
+
+        if (!hasInitializedGoogleIdentityRef.current) {
+          accountsId.initialize({
+            client_id: appConfig.googleGisClientId,
+            callback: (response) => {
+              if (!response.credential) {
+                return;
+              }
+
+              void googleCredentialHandlerRef.current?.(response.credential);
+            },
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            context: "signup",
+            itp_support: true,
+            ux_mode: "popup",
+          });
+          hasInitializedGoogleIdentityRef.current = true;
+        }
+
+        buttonContainer.replaceChildren();
+        accountsId.renderButton(buttonContainer, {
+          type: "standard",
+          theme: "filled_black",
+          size: "large",
+          text: "signup_with",
+          shape: "pill",
+          logo_alignment: "left",
+          width: 320,
+          locale,
+        });
+        setIsGoogleButtonReady(true);
+      })
+      .catch((error) => {
+        if (env.DEV) {
+          console.error("Failed to initialize Google Identity Services", error);
+        }
+
+        if (!cancelled) {
+          setGoogleBridgeError(
+            "Google sign-up isn't available in this browser right now. Use the email form below."
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  });
+
   return (
     <>
       <GlobalStyle />
@@ -982,6 +1327,37 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
             </FormTitle>
           ) : null}
           <Form $variant={variant} onSubmit={handleSubmit}>
+              {googleBridgeError ? (
+                <GoogleButtonStatus>{googleBridgeError}</GoogleButtonStatus>
+              ) : null}
+              {isGoogleBridgeLoading ? (
+                <GoogleButtonStatus>Saving your Google email…</GoogleButtonStatus>
+              ) : null}
+              <CheckboxGroup>
+                <Checkbox
+                  type="checkbox"
+                  id={`marketing-${formId}`}
+                  checked={marketingEmailOptIn}
+                  onChange={(e) => setMarketingEmailOptIn(e.target.checked)}
+                  aria-label="Marketing email consent"
+                />
+                <CheckboxLabel htmlFor={`marketing-${formId}`}>
+                  {t("waitlist.marketingOptIn")}
+                  <br />
+                  {t("waitlist.unsubscribeAnytime")}
+                </CheckboxLabel>
+              </CheckboxGroup>
+              <ButtonDivider>Then</ButtonDivider>
+              <GoogleButtonHost aria-live="polite">
+                {!isGoogleButtonReady ? <SkeletonLoader aria-hidden="true" /> : null}
+                <div
+                  ref={googleButtonRef}
+                  style={{ display: isGoogleButtonReady ? "flex" : "none", justifyContent: "center", width: "100%" }}
+                />
+              </GoogleButtonHost>
+
+              <ButtonDivider>{t("waitlist.useEmailInstead")}</ButtonDivider>
+
               <InputGroup>
                 <EmailInput
                   type="email"
@@ -1005,21 +1381,6 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
                   </ErrorMessage>
                 )}
               </InputGroup>
-
-              <CheckboxGroup>
-                <Checkbox
-                  type="checkbox"
-                  id={`marketing-${formId}`}
-                  checked={marketingEmailOptIn}
-                  onChange={(e) => setMarketingEmailOptIn(e.target.checked)}
-                  aria-label="Marketing email consent"
-                />
-                <CheckboxLabel htmlFor={`marketing-${formId}`}>
-                  {t("waitlist.marketingOptIn")}
-                  <br />
-                  {t("waitlist.unsubscribeAnytime")}
-                </CheckboxLabel>
-              </CheckboxGroup>
 
               {/* reCAPTCHA v3 is invisible - no UI element needed */}
               {captchaError && (
@@ -1080,8 +1441,8 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
             <SuccessCopy>
               {submittedMarketingEmailConsent
                 ? `We'll email you at ${email} with updates.`
-                : `We'll keep your spot on the waitlist for ${email}.`}{' '}
-              Follow us for more news!
+                : `We'll keep your spot on the waitlist for ${email}.`}
+              {' '}Follow us for more news!
             </SuccessCopy>
             <ShareContainer>
               <a

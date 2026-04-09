@@ -13,7 +13,6 @@ interface ImportMetaEnv {
   readonly VITE_DEBUG_TRACKING: string
   readonly VITE_ENABLE_CONSOLE_LOGS: string
   readonly VITE_COGNITO_CLIENT_ID: string
-  readonly VITE_GOOGLE_GIS_CLIENT_ID: string
   readonly VITE_COGNITO_DOMAIN: string
   readonly VITE_COGNITO_REDIRECT_URI: string
   readonly VITE_POST_LOGOUT_REDIRECT_URI: string

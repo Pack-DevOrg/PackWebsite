@@ -200,7 +200,7 @@ const faqContent = {
             id: "what-is-pack",
             question: "What is Pack?",
             answer:
-              "Pack is an AI travel planning app that turns conversation, confirmations, calendar context, and past travel signals into organized trip drafts. Instead of juggling tabs, emails, and booking sites, you get one clearer view of the trip before booking.",
+              "Pack is an AI travel app that personalizes, organizes, and books trips for you through conversation and travel signals.",
           },
           {
             id: "is-pack-ai-travel-planner",
@@ -212,7 +212,7 @@ const faqContent = {
             id: "how-does-it-work",
             question: "How does Pack work?",
             answer:
-              "You can describe a trip in natural language or connect your travel context so Pack can organize what is already in motion. From there, Pack learns your preferences, assembles a trip draft, and guides you into an integrated booking flow when you are ready to book.",
+              "You can describe a trip in natural language or let Pack organize trips you have already planned. Pack uses your preferences to assemble a trip draft and lets you complete booking inside Pack when you are ready.",
           },
           {
             id: "when-available",
@@ -231,7 +231,7 @@ const faqContent = {
             id: "what-can-pack-book",
             question: "What can Pack help me book?",
             answer:
-              "Pack is designed to help coordinate flights and hotels through an integrated booking experience. Exact booking coverage can vary by market, itinerary, and partner setup.",
+              "Pack helps coordinate flights and hotels, then lets you complete the full booking flow inside Pack. Reservation, payment, and trip details stay connected in one place.",
           },
           {
             id: "supports-destinations",
@@ -243,7 +243,7 @@ const faqContent = {
             id: "travel-planning",
             question: "What makes Pack different from other travel apps?",
             answer:
-              "Most travel apps give you search results. Pack is designed to give you a clearer answer. It learns how you travel, pulls in confirmations and calendar timing, builds a trip draft, and connects planning with an integrated booking flow.",
+              "Most travel apps give you search results. Pack is designed to give you a clearer answer. It learns how you travel, pulls in confirmations and calendar timing, builds a trip draft, and lets you complete checkout inside the Pack app.",
           },
           {
             id: "past-travel-history",
@@ -267,7 +267,7 @@ const faqContent = {
             id: "technology-security",
             question: "How reliable and secure is Pack?",
             answer:
-              "Pack is built to make travel details easier to verify before you book while handling travel data with care. The booking flow is designed to protect sensitive information and reduce avoidable manual steps.",
+              "Pack is built to make travel details easier to verify before you book while handling travel data and checkout details with care inside Pack.",
           },
           {
             id: "flight-disruptions",
@@ -319,7 +319,7 @@ const faqContent = {
             id: "automation-goal",
             question: "What is Pack's goal for travel planning?",
             answer:
-              "Pack aims to automate as much of the travel process as possible. From understanding your preferences and finding the best options to guiding you through an integrated booking experience and organizing your itinerary, we want to eliminate the tedious parts of travel planning so you can focus on enjoying your trip.",
+              "Pack aims to automate as much of the travel process as possible. From understanding your preferences and finding the best options to guiding you through secure checkout inside Pack and organizing your itinerary, we want to eliminate the tedious parts of travel planning so you can focus on enjoying your trip.",
           },
           {
             id: "last-minute-travel",
@@ -505,7 +505,7 @@ const faqContent = {
             id: "payment-methods",
             question: "What payment methods does Pack accept?",
             answer:
-              "Available payment methods may depend on the itinerary, market, and booking partner used for the reservation flow. Specific options will be shown during booking when available.",
+              "Pack supports the payment methods made available through its in-app checkout flow. The exact options may vary by booking, but payment happens inside Pack rather than through a separate provider checkout page.",
           },
         ],
       },
@@ -550,7 +550,7 @@ const faqContent = {
             id: "booking-security",
             question: "Is it safe to book travel through Pack?",
             answer:
-              "Pack is designed with security in mind for booking travel. Sensitive information should be handled through protected booking infrastructure and the specific terms, policies, and payment handling can depend on the booking partner and reservation flow used for a trip.",
+              "Yes. Pack is designed to support secure in-app checkout with industry-standard protections for payment and traveler information. Booking still follows the applicable airline or hotel reservation terms, while the full checkout flow stays inside Pack.",
           },
         ],
       },
@@ -585,7 +585,7 @@ const faqContent = {
             id: "how-does-it-work",
             question: "¿Cómo funciona Pack?",
             answer:
-              "Puedes describir un viaje en lenguaje natural o conectar tu contexto de viaje para que Pack organice lo que ya está en marcha. A partir de ahí, Pack aprende tus preferencias, arma un borrador del viaje y te guía a un flujo de reserva integrado cuando estás listo para reservar.",
+              "Puedes describir un viaje en lenguaje natural o conectar tu contexto de viaje para que Pack organice lo que ya está en marcha. A partir de ahí, Pack aprende tus preferencias, arma un borrador del viaje y te permite completar la reserva dentro de Pack cuando estás listo.",
           },
           {
             id: "when-available",
@@ -604,7 +604,7 @@ const faqContent = {
             id: "what-can-pack-book",
             question: "¿Qué puede ayudarme a reservar Pack?",
             answer:
-              "Pack está diseñado para ayudar a coordinar vuelos y hoteles mediante una experiencia de reserva integrada. La cobertura exacta puede variar según el mercado, el itinerario y la configuración con socios.",
+              "Pack ayuda a coordinar vuelos y hoteles, y te permite completar todo el flujo de reserva dentro de Pack. La reservación, el pago y los detalles del viaje permanecen conectados en un solo lugar.",
           },
           {
             id: "supports-destinations",
@@ -616,7 +616,7 @@ const faqContent = {
             id: "travel-planning",
             question: "¿Qué hace diferente a Pack de otras apps de viaje?",
             answer:
-              "La mayoría de las apps de viaje te muestran resultados de búsqueda. Pack está diseñada para darte una respuesta más clara. Aprende cómo viajas, incorpora confirmaciones y tiempos del calendario, arma un borrador del viaje y conecta la planificación con un flujo de reserva integrado.",
+              "La mayoría de las apps de viaje te muestran resultados de búsqueda. Pack está diseñada para darte una respuesta más clara. Aprende cómo viajas, incorpora confirmaciones y tiempos del calendario, arma un borrador del viaje y te permite completar el checkout dentro de la app de Pack.",
           },
           {
             id: "past-travel-history",
@@ -640,7 +640,7 @@ const faqContent = {
             id: "technology-security",
             question: "¿Qué tan confiable y seguro es Pack?",
             answer:
-              "Pack está diseñado para que los detalles del viaje sean más fáciles de verificar antes de reservar, tratando la información con cuidado. El flujo de reserva está pensado para proteger información sensible y reducir pasos manuales evitables.",
+              "Pack está diseñado para que los detalles del viaje sean más fáciles de verificar antes de reservar, tratando la información de viaje y checkout con seguridad y cuidado dentro de Pack.",
           },
           {
             id: "flight-disruptions",
@@ -694,7 +694,7 @@ const faqContent = {
             id: "automation-goal",
             question: "¿Cuál es el objetivo de Pack para la planificación de viajes?",
             answer:
-              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por una experiencia de reserva integrada y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
+              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por un checkout seguro dentro de Pack y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
           },
           {
             id: "last-minute-travel",
@@ -890,7 +890,7 @@ const faqContent = {
             id: "payment-methods",
             question: "¿Qué métodos de pago acepta Pack?",
             answer:
-              "Los métodos de pago disponibles pueden depender del itinerario, del mercado y del socio de reserva usado en el flujo. Las opciones específicas se mostrarán durante la reserva cuando estén disponibles.",
+              "Pack admite los métodos de pago disponibles dentro de su flujo de checkout en la app. Las opciones exactas pueden variar según la reserva, pero el pago ocurre dentro de Pack y no en una página separada del proveedor.",
           },
         ],
       },
@@ -936,7 +936,7 @@ const faqContent = {
             id: "booking-security",
             question: "¿Es seguro reservar viajes a través de Pack?",
             answer:
-              "Pack está diseñado con seguridad en mente para la reserva de viajes. La información sensible debe manejarse mediante infraestructura protegida de reserva, y los términos, políticas y manejo de pagos específicos pueden depender del socio de reserva y del flujo usado para cada viaje.",
+              "Sí. Pack está diseñado para admitir un checkout seguro dentro de la app con protecciones estándar de la industria para la información de pago y del viajero. La reserva sigue las políticas aplicables de la aerolínea o del hotel, mientras todo el flujo de checkout ocurre dentro de Pack.",
           },
         ],
       },

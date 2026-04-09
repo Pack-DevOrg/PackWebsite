@@ -292,19 +292,19 @@ const howItWorksContent = {
   en: {
     pageTitle: "How Pack Works",
     pageSubtitle:
-      "Pack turns messy travel signals, personal context, and live trip utility into one travel system you can actually use.",
+      "Pack turns conversation and travel context into a trip you can review, approve, and book with confidence.",
     schemaName: "How to Plan and Book Travel with Pack",
     schemaDescription:
       "Learn how Pack helps you rebuild travel history, plan trips proactively, update itineraries from real-world inputs, and stay ahead of travel-day details.",
     schemaSupply: ["Internet connection", "Travel preferences and budget"],
     schemaTool: "Pack Chat Interface",
     processSteps: [
-      { icon: <MessageSquareText />, title: "Connect", description: "Bring in the travel signals you already generate" },
-      { icon: <Brain />, title: "Understand", description: "Pack rebuilds how you travel, not just what you searched" },
-      { icon: <Search />, title: "Plan", description: "Trips can start from prompts, events, or emerging needs" },
-      { icon: <CheckCircle />, title: "Update", description: "Trip changes stay editable from the inputs you actually use" },
-      { icon: <PlaneTakeoff />, title: "Book", description: "Search and booking stay tied to the organized trip" },
-      { icon: <Bell />, title: "Move", description: "Travel-day details stay live when timing starts to matter" },
+      { icon: <MessageSquareText />, title: "Chat", description: "Tell Pack what you need, in plain language" },
+      { icon: <Brain />, title: "Learn", description: "Pack understands your preferences and patterns, and continues to improve the more you use it" },
+      { icon: <Search />, title: "Curate", description: "Flights and stays become one organized draft" },
+      { icon: <CheckCircle />, title: "Review", description: "See one clear travel plan and timeline before approval" },
+      { icon: <PlaneTakeoff />, title: "Book", description: "Finish checkout through Pack, with your frequent flyer and personal details pre-filled" },
+      { icon: <Bell />, title: "Travel", description: "Keep the trip up to date as plans change" },
     ],
     steps: [
       {
@@ -357,14 +357,14 @@ const howItWorksContent = {
       },
       {
         number: 5,
-        title: "Search and booking stay connected to the trip",
+        title: "Checkout happens in Pack",
         description:
-          "When it is time to act, Pack can search and book flights, hotels, and rental cars without losing the planning context, traveler details, or trip structure that got you there.",
+          "Once you are ready, you can complete booking inside Pack so payment, traveler details, and reservation flow stay in one place.",
         features: [
-          "Search and booking workflows stay tied to the itinerary you reviewed",
-          "Traveler profiles, preferences, and loyalty details can carry into booking flows",
-          "Booked details remain part of the same organized trip view",
-          "Trip expenses can stay attached to the travel record instead of getting lost later",
+          "In-app checkout for flights and stays",
+          "Frequent flyer and personal details can be pre-filled",
+          "Less copying and re-entering trip data",
+          "Booked details stay connected to your organized trip view",
         ],
       },
       {
@@ -406,19 +406,19 @@ const howItWorksContent = {
   es: {
     pageTitle: "Cómo funciona Pack",
     pageSubtitle:
-      "Pack convierte señales de viaje desordenadas, contexto personal y utilidad en vivo en un solo sistema de viaje que realmente puedes usar.",
+      "Pack convierte conversación y contexto de viaje en un trayecto que puedes revisar, aprobar y reservar con confianza.",
     schemaName: "Cómo planear y reservar un viaje con Pack",
     schemaDescription:
       "Descubre cómo Pack te ayuda a reconstruir historial de viajes, planear trayectos de forma proactiva, actualizar itinerarios desde entradas reales y adelantarte a los detalles del día de viaje.",
     schemaSupply: ["Conexión a internet", "Preferencias de viaje y presupuesto"],
     schemaTool: "Interfaz de chat de Pack",
     processSteps: [
-      { icon: <MessageSquareText />, title: "Conecta", description: "Trae las señales de viaje que ya generas" },
-      { icon: <Brain />, title: "Entiende", description: "Pack reconstruye cómo viajas, no solo lo que buscaste" },
-      { icon: <Search />, title: "Planea", description: "Los viajes pueden empezar desde prompts, eventos o necesidades emergentes" },
-      { icon: <CheckCircle />, title: "Actualiza", description: "Los cambios del viaje siguen editables desde las entradas que realmente usas" },
-      { icon: <PlaneTakeoff />, title: "Reserva", description: "La búsqueda y la reserva siguen unidas al viaje organizado" },
-      { icon: <Bell />, title: "Muévete", description: "Los detalles del día de viaje se mantienen vivos cuando el tiempo importa" },
+      { icon: <MessageSquareText />, title: "Habla", description: "Dile a Pack lo que necesitas, en lenguaje natural" },
+      { icon: <Brain />, title: "Aprende", description: "Pack entiende tus preferencias y patrones, y sigue mejorando cuanto más lo usas" },
+      { icon: <Search />, title: "Curar", description: "Vuelos y estancias se convierten en un borrador organizado" },
+      { icon: <CheckCircle />, title: "Revisa", description: "Ve un plan y una cronología claros antes de aprobar" },
+      { icon: <PlaneTakeoff />, title: "Reserva", description: "Termina el checkout dentro de Pack, con tus datos personales y de viajero frecuente prellenados" },
+      { icon: <Bell />, title: "Viaja", description: "Mantén el viaje al día a medida que cambian los planes" },
     ],
     steps: [
       {
@@ -471,14 +471,14 @@ const howItWorksContent = {
       },
       {
         number: 5,
-        title: "La búsqueda y la reserva siguen conectadas al viaje",
+        title: "El checkout ocurre dentro de Pack",
         description:
-          "Cuando llega el momento de actuar, Pack puede buscar y reservar vuelos, hoteles y autos sin perder el contexto de planificación, los datos del viajero ni la estructura del viaje.",
+          "Cuando estás listo, puedes completar la reserva dentro de Pack para que el pago, los datos del viajero y el flujo de reservación permanezcan en un solo lugar.",
         features: [
-          "Los flujos de búsqueda y reserva se mantienen unidos al itinerario revisado",
-          "Perfiles del viajero, preferencias y datos de lealtad pueden acompañar la reserva",
-          "Los detalles reservados permanecen dentro de la misma vista organizada",
-          "Los gastos del viaje pueden quedar unidos al registro en vez de perderse después",
+          "Checkout dentro de la app para vuelos y estancias",
+          "Los datos personales y de viajero frecuente pueden venir prellenados",
+          "Menos copiar y volver a ingresar información",
+          "Los detalles reservados permanecen conectados a tu vista organizada del viaje",
         ],
       },
       {

@@ -311,7 +311,7 @@ const Features: React.FC = () => {
           packItems: [
             "Historial de viaje, reservas y contexto en una sola vista",
             "Planificación proactiva y reactiva desde múltiples fuentes",
-            "Búsqueda y reserva de vuelos, hoteles y autos",
+            "Búsqueda y checkout dentro de Pack para vuelos, hoteles y autos",
             "Más utilidad antes y durante el viaje",
           ],
           ctaTitle: "Mira cómo Pack planearía tu próximo viaje",
@@ -319,7 +319,7 @@ const Features: React.FC = () => {
             "Únete a la lista de espera para obtener acceso anticipado a una forma de viajar más organizada y personalizada.",
           schemaName: "Pack - Asistente de viaje con IA",
           schemaDescription:
-            "Asistente inteligente de viajes que planifica viajes, coordina vuelos y hoteles mediante una experiencia de reserva integrada y crea itinerarios personalizados a través de conversación natural.",
+            "Asistente inteligente de viajes que planifica viajes, te ayuda a completar vuelos y hoteles mediante un checkout seguro dentro de Pack y crea itinerarios personalizados a través de conversación natural.",
           schemaAudience:
             "Viajeros, viajeros de negocios y personas que planifican vacaciones",
           coreFeatures: capabilityPageDefinitions.map((page) => ({
@@ -378,7 +378,7 @@ const Features: React.FC = () => {
           packItems: [
             "Travel history, bookings, and context in one view",
             "Proactive and reactive trip planning from many sources",
-            "Search and booking across flights, hotels, and cars",
+            "Search plus in-app checkout across flights, hotels, and cars",
             "More utility before and during the trip",
           ],
           ctaTitle: "See how Pack would plan your next trip",
@@ -386,7 +386,7 @@ const Features: React.FC = () => {
             "Join the waitlist to get early access to a more organized, more personalized way to travel.",
           schemaName: "Pack - AI Travel Assistant",
           schemaDescription:
-            "Intelligent AI travel assistant that plans trips, coordinates flights and hotels through an integrated booking experience, and creates personalized itineraries through natural conversation.",
+            "Intelligent AI travel assistant that plans trips, helps you complete flights and hotels through secure in-app checkout in Pack, and creates personalized itineraries through natural conversation.",
           schemaAudience:
             "Travelers, Business Travelers, Vacation Planners",
           coreFeatures: capabilityPageDefinitions.map((page) => ({

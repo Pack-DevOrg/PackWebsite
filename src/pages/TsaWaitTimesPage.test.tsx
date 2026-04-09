@@ -322,7 +322,7 @@ describe("TsaWaitTimesPage", () => {
 
     expect(loginMock).toHaveBeenCalledWith({
       redirectPath: "/tsa",
-      redirectUri: "http://localhost/auth/callback",
+      redirectUri: "https://www.trypackai.com/auth/callback",
       useCanonicalOrigin: false,
     });
     expect(trackCTAClickMock).toHaveBeenCalledWith(
@@ -352,7 +352,7 @@ describe("TsaWaitTimesPage", () => {
 
     expect(loginMock).toHaveBeenCalledWith({
       redirectPath: "/tsa",
-      redirectUri: "http://localhost/auth/callback",
+      redirectUri: "https://www.trypackai.com/auth/callback",
       useCanonicalOrigin: false,
     });
   });

@@ -1699,15 +1699,6 @@ const hasCompletedWaitlistModal = (): boolean => {
 };
 
 const resolveBootstrapAuthCallbackUrl = (): string | undefined => {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-
-  const hostname = window.location.hostname.trim().toLowerCase();
-  if (hostname === "localhost" || hostname === "127.0.0.1") {
-    return `${window.location.origin}/auth/callback`;
-  }
-
   return appConfig.cognitoRedirectUri;
 };
 

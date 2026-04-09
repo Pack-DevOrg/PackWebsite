@@ -8,11 +8,11 @@ describe("appConfig domain helpers", () => {
     expect(isTryPackHostname("example.com")).toBe(false);
   });
 
-  it("only exposes public TSA routes for trypack and localhost", () => {
+  it("only exposes public TSA routes for trypack hosts", () => {
     expect(shouldExposeTsaForHostname("trypackai.com")).toBe(true);
     expect(shouldExposeTsaForHostname("tsa.trypackai.com")).toBe(true);
-    expect(shouldExposeTsaForHostname("localhost")).toBe(true);
-    expect(shouldExposeTsaForHostname("127.0.0.1")).toBe(true);
+    expect(shouldExposeTsaForHostname("localhost")).toBe(false);
+    expect(shouldExposeTsaForHostname("127.0.0.1")).toBe(false);
     expect(shouldExposeTsaForHostname("example.com")).toBe(false);
     expect(shouldExposeTsaForHostname("www.trypackai.com")).toBe(true);
   });

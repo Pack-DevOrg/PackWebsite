@@ -645,15 +645,31 @@ const SubmitButton = styled.button`
 `;
 
 const GoogleButtonHost = styled.div`
-  width: 100%;
-  display: flex;
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  display: inline-flex;
+  align-self: center;
   justify-content: center;
   min-height: 44px;
+  padding: 0.85px;
+  border-radius: calc(var(--border-radius) + 2px);
+  background:
+    linear-gradient(rgba(19, 19, 20, 0.92), rgba(19, 19, 20, 0.92)) padding-box,
+    ${({ theme }) => theme.colors.gradients.primaryAccent} border-box;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(243, 210, 122, 0.05);
+  overflow: hidden;
 
   > div {
-    width: 100%;
-    display: flex;
+    width: auto;
+    max-width: 100%;
+    display: inline-flex;
     justify-content: center;
+    border-radius: var(--border-radius);
+    background: rgba(19, 19, 20, 0.92);
+    padding: ${({ theme }) => theme.spacing[1]};
   }
 `;
 

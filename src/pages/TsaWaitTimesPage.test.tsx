@@ -16,7 +16,6 @@ const apiRequestMock = jest.fn();
 const requestPublicApiMock = jest.fn();
 const useAuthMock = jest.fn();
 const googleInitializeMock = jest.fn();
-const googleRenderButtonMock = jest.fn();
 const googleCancelMock = jest.fn();
 let googleCredentialCallback:
   | ((response: { credential?: string }) => void)
@@ -248,7 +247,6 @@ describe("TsaWaitTimesPage", () => {
       accounts: {
         id: {
           initialize: googleInitializeMock,
-          renderButton: googleRenderButtonMock,
           cancel: googleCancelMock,
         },
       },
@@ -351,7 +349,7 @@ describe("TsaWaitTimesPage", () => {
     );
   });
 
-  it("shows GIS loading state without the fallback button during normal initialization", async () => {
+  it("shows the clean Google CTA immediately while GIS initializes in the background", async () => {
     renderPage();
 
     await screen.findByText("John F. Kennedy International Airport");
@@ -360,10 +358,10 @@ describe("TsaWaitTimesPage", () => {
       jest.advanceTimersByTime(3200);
     });
 
-    expect(await screen.findByText("Loading Google sign-in…")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /sign up with google/i })
-    ).not.toBeInTheDocument();
+      await screen.findByRole("button", { name: /sign up with google/i })
+    ).toBeInTheDocument();
+    expect(googleInitializeMock).toHaveBeenCalled();
   });
 
   it("captures the GIS email and closes the modal without hosted login", async () => {
@@ -412,9 +410,6 @@ describe("TsaWaitTimesPage", () => {
 
   it("strips forceModal from the Google login return path", async () => {
     window.history.replaceState({}, "", "/tsa?forceModal=1");
-    googleInitializeMock.mockImplementation(() => {
-      throw new Error("GIS init failed");
-    });
 
     renderPage();
 

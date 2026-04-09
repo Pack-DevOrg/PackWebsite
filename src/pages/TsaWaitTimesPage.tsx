@@ -16,7 +16,6 @@ import { useAuth } from "@/auth/AuthContext";
 import { appConfig, isTryPackHostname } from "@/config/appConfig";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
-import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "@/legal/legalUiCopy";
@@ -36,32 +35,8 @@ const AIRPORT_SEARCH_ALIAS_RANK: Record<string, number> = {
 };
 
 const WAITLIST_MODAL_FORCE_QUERY_KEY = "forceModal";
-const MOBILE_GOOGLE_BUTTON_BREAKPOINT = 640;
-const GOOGLE_BUTTON_MIN_WIDTH = 180;
-const GOOGLE_BUTTON_MOBILE_MAX_WIDTH = 320;
-const GOOGLE_BUTTON_DESKTOP_MAX_WIDTH = 360;
-
 const normalizeAirportSearchText = (value: string | undefined): string =>
   (value ?? "").trim().toLowerCase();
-
-const getGoogleButtonWidth = (mountWidth: number, viewportWidth: number): number => {
-  const resolvedMountWidth = Math.max(Math.floor(mountWidth), 0);
-
-  if (resolvedMountWidth === 0) {
-    return 0;
-  }
-
-  const maxWidth =
-    viewportWidth < MOBILE_GOOGLE_BUTTON_BREAKPOINT
-      ? GOOGLE_BUTTON_MOBILE_MAX_WIDTH
-      : GOOGLE_BUTTON_DESKTOP_MAX_WIDTH;
-
-  if (resolvedMountWidth <= GOOGLE_BUTTON_MIN_WIDTH) {
-    return resolvedMountWidth;
-  }
-
-  return Math.floor(Math.min(resolvedMountWidth, maxWidth));
-};
 
 type GoogleCredentialSource = "one_tap" | "button";
 
@@ -82,22 +57,6 @@ type GoogleAccountsId = {
     ux_mode?: "popup" | "redirect";
     login_uri?: string;
   }) => void;
-  renderButton: (
-    element: HTMLElement,
-    options: {
-      theme?: "outline" | "filled_blue" | "filled_black";
-      size?: "large" | "medium" | "small";
-      shape?: "rectangular" | "pill" | "circle" | "square";
-      text?:
-        | "signin_with"
-        | "signup_with"
-        | "continue_with"
-        | "signin"
-        | "signup";
-      width?: number;
-      logo_alignment?: "left" | "center";
-    }
-  ) => void;
   cancel: () => void;
 };
 
@@ -913,65 +872,6 @@ const ModalActions = styled.div`
   justify-items: center;
 `;
 
-const GoogleButtonMount = styled.div<{ $visible: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 320px;
-  min-height: 44px;
-  box-sizing: border-box;
-  margin: 0 auto;
-  padding: 2px;
-  line-height: 0;
-  overflow: hidden;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  background:
-    linear-gradient(
-        ${({ $visible }) => ($visible ? "rgba(19, 19, 20, 0.94)" : "rgba(18, 19, 20, 0.8)")},
-        ${({ $visible }) => ($visible ? "rgba(19, 19, 20, 0.94)" : "rgba(18, 19, 20, 0.8)")}
-      )
-      padding-box,
-    linear-gradient(135deg, rgba(243, 210, 122, 0.92) 0%, rgba(231, 35, 64, 0.9) 62%, rgba(248, 230, 179, 0.9) 100%)
-      border-box;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
-  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  visibility: ${({ $visible }) => ($visible ? "visible" : "hidden")};
-  pointer-events: ${({ $visible }) => ($visible ? "auto" : "none")};
-  transition:
-    opacity 180ms ease,
-    background 180ms ease;
-
-  & > div,
-  & > iframe {
-    display: block;
-    max-width: 100%;
-  }
-
-  & > div {
-    width: 100%;
-    line-height: 0;
-    font-size: 0;
-  }
-
-  & .S9gUrf-YoZ4jf,
-  & .S9gUrf-YoZ4jf > div {
-    display: block;
-    width: 100%;
-    line-height: 0;
-    font-size: 0;
-  }
-
-  & .nsm7Bb-HzV7m-LgbsSe {
-    margin: 0 auto;
-  }
-
-  @media (min-width: 640px) {
-    max-width: 360px;
-  }
-`;
-
 const GoogleButtonStatus = styled.p`
   margin: 0;
   color: rgba(247, 240, 227, 0.58);
@@ -1739,10 +1639,7 @@ const TsaWaitTimesPage: React.FC = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [openFaqId, setOpenFaqId] = useState<string | null>(FAQ_ITEMS[0]?.id ?? null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isGoogleGisReady, setIsGoogleGisReady] = useState(false);
   const [isGoogleBridgeLoading, setIsGoogleBridgeLoading] = useState(false);
-  const [showGoogleRedirectFallback, setShowGoogleRedirectFallback] = useState(false);
-  const [googleButtonWidth, setGoogleButtonWidth] = useState(0);
   const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
@@ -1751,7 +1648,6 @@ const TsaWaitTimesPage: React.FC = () => {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const hasInitializedGoogleIdentityRef = useRef(false);
   const isHandlingGoogleCredentialRef = useRef(false);
   const handleGoogleCredentialRef = useRef<
@@ -1765,31 +1661,6 @@ const TsaWaitTimesPage: React.FC = () => {
   const hasGoogleGisConfigured = Boolean(appConfig.googleGisClientId);
   const isGoogleGisHostAllowed =
     typeof window !== "undefined" && isTryPackHostname(window.location.hostname);
-  const shouldUseGoogleGis = hasGoogleGisConfigured && isGoogleGisHostAllowed;
-  const shouldShowGoogleRedirectFallback =
-    !shouldUseGoogleGis ||
-    Boolean(googleBridgeError) ||
-    showGoogleRedirectFallback;
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      setShowGoogleRedirectFallback(false);
-      return;
-    }
-
-    if (!shouldUseGoogleGis || isGoogleGisReady || googleBridgeError) {
-      setShowGoogleRedirectFallback(false);
-      return;
-    }
-
-    const timeout = window.setTimeout(() => {
-      setShowGoogleRedirectFallback(true);
-    }, 2200);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [googleBridgeError, isGoogleGisReady, isModalOpen, shouldUseGoogleGis]);
 
   useQuery({
     queryKey: ["tsa-auth-user-bootstrap", status],
@@ -2049,8 +1920,6 @@ const TsaWaitTimesPage: React.FC = () => {
           });
           hasInitializedGoogleIdentityRef.current = true;
         }
-
-        setIsGoogleGisReady(true);
       })
       .catch((error) => {
         console.error("Failed to initialize Google Identity Services", error);
@@ -2065,72 +1934,6 @@ const TsaWaitTimesPage: React.FC = () => {
       cancelled = true;
     };
   }, [hasGoogleGisConfigured, isClient, isGoogleGisHostAllowed, isModalOpen, status]);
-
-  useIsomorphicLayoutEffect(() => {
-    if (!isModalOpen || typeof window === "undefined") {
-      setGoogleButtonWidth(0);
-      return;
-    }
-
-    const mount = googleButtonRef.current;
-    if (!mount) {
-      return;
-    }
-
-    const measure = () => {
-      const nextWidth = getGoogleButtonWidth(
-        mount.getBoundingClientRect().width,
-        window.innerWidth
-      );
-
-      setGoogleButtonWidth((currentWidth) =>
-        currentWidth === nextWidth ? currentWidth : nextWidth
-      );
-    };
-
-    measure();
-
-    const resizeObserver =
-      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
-
-    resizeObserver?.observe(mount);
-    window.addEventListener("resize", measure);
-
-    return () => {
-      resizeObserver?.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [isModalOpen]);
-
-  useEffect(() => {
-    if (
-      !isModalOpen ||
-      !isGoogleGisReady ||
-      !googleButtonRef.current ||
-      googleButtonWidth <= 0
-    ) {
-      return;
-    }
-
-    const accountsId = window.google?.accounts?.id;
-    if (!accountsId) {
-      return;
-    }
-
-    googleButtonRef.current.innerHTML = "";
-    const isMobileGoogleButton =
-      typeof window !== "undefined" &&
-      window.innerWidth < MOBILE_GOOGLE_BUTTON_BREAKPOINT;
-
-    accountsId.renderButton(googleButtonRef.current, {
-      theme: "filled_black",
-      size: isMobileGoogleButton ? "medium" : "large",
-      shape: "pill",
-      text: "signup_with",
-      width: googleButtonWidth,
-      logo_alignment: "left",
-    });
-  }, [googleButtonWidth, isGoogleGisReady, isModalOpen]);
 
   const requestLocation = () => {
     if (typeof window === "undefined" || !navigator.geolocation) {
@@ -2608,17 +2411,6 @@ const TsaWaitTimesPage: React.FC = () => {
               <SignupChoiceGrid>
                 <SignupChoiceCard>
                   <ModalActions>
-                    {shouldUseGoogleGis ? (
-      <>
-        <GoogleButtonMount ref={googleButtonRef} $visible={isGoogleGisReady}>
-        </GoogleButtonMount>
-        {!isGoogleGisReady ? (
-          <GoogleButtonStatus>
-            Loading Google sign-in…
-          </GoogleButtonStatus>
-        ) : null}
-                      </>
-                    ) : null}
                     {googleBridgeError ? (
                       <GoogleBridgeErrorText>{googleBridgeError}</GoogleBridgeErrorText>
                     ) : null}
@@ -2627,19 +2419,17 @@ const TsaWaitTimesPage: React.FC = () => {
                         Saving your Google email…
                       </GoogleButtonStatus>
                     ) : null}
-                    {shouldShowGoogleRedirectFallback ? (
-                      <GoogleLoginButton
-                        $visible={shouldShowGoogleRedirectFallback}
-                        type="button"
-                        onClick={handleGoogleLogin}
-                        disabled={status === "loading" || isGoogleBridgeLoading}
-                      >
-                        <GoogleLogoWrap>
-                          <GoogleMark />
-                        </GoogleLogoWrap>
-                        Sign up with Google
-                      </GoogleLoginButton>
-                    ) : null}
+                    <GoogleLoginButton
+                      $visible
+                      type="button"
+                      onClick={handleGoogleLogin}
+                      disabled={status === "loading" || isGoogleBridgeLoading}
+                    >
+                      <GoogleLogoWrap>
+                        <GoogleMark />
+                      </GoogleLogoWrap>
+                      Sign up with Google
+                    </GoogleLoginButton>
                   </ModalActions>
                 </SignupChoiceCard>
                 <SignupChoiceCard>

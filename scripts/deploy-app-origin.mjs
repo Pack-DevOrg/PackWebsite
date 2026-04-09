@@ -122,7 +122,32 @@ run("npm", ["run", "build:app-origin"]);
 rmSync(resolve(distDir, "app"), { recursive: true, force: true });
 rmSync(resolve(distDir, "auth", "callback"), { recursive: true, force: true });
 
-run("aws", ["s3", "sync", `${distDir}/`, appBucket, "--delete"]);
+run("aws", [
+  "s3",
+  "sync",
+  `${distDir}/`,
+  appBucket,
+  "--delete",
+  "--exclude",
+  "*.html",
+]);
+run("aws", [
+  "s3",
+  "cp",
+  `${distDir}/`,
+  appBucket,
+  "--recursive",
+  "--exclude",
+  "*",
+  "--include",
+  "*.html",
+  "--cache-control",
+  "no-cache, no-store, must-revalidate",
+  "--content-type",
+  "text/html",
+  "--metadata-directive",
+  "REPLACE",
+]);
 run("aws", [
   "cloudfront",
   "create-invalidation",

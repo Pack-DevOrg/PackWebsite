@@ -1375,6 +1375,238 @@ export const LabsComparisonsPage: React.FC = () => {
   );
 };
 
+export const LabsLogoStudioPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+  const [companyName, setCompanyName] = React.useState("Pack");
+  const [prompt, setPrompt] = React.useState(getDefaultLogoStudioPrompt());
+  const [count, setCount] = React.useState("6");
+  const [refinementNote, setRefinementNote] = React.useState("");
+  const [requestBrainCluster, setRequestBrainCluster] = React.useState(false);
+  const [selectedPresetIds, setSelectedPresetIds] = React.useState<string[]>([]);
+  const [currentRun, setCurrentRun] = React.useState<LogoLabRun | null>(null);
+
+  const generateMutation = useMutation({
+    mutationFn: generateLogoLabRun,
+    onSuccess: (run) => {
+      setCurrentRun(run);
+      setSelectedPresetIds(run.selectedPresetIds);
+    },
+  });
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void generateMutation.mutateAsync({
+      companyName,
+      prompt,
+      count: Number(count),
+      refinementNote,
+      selectedPresetIds,
+      requestBrainCluster,
+    });
+  };
+
+  const togglePresetSelection = (presetId: string) => {
+    setSelectedPresetIds((current) =>
+      current.includes(presetId)
+        ? current.filter((value) => value !== presetId)
+        : [...current, presetId],
+    );
+  };
+
+  const selectedPresets = LOGO_VARIATION_PRESETS.filter((preset) =>
+    selectedPresetIds.includes(preset.id),
+  );
+  const selectedNumbers = (currentRun?.variants ?? [])
+    .filter((variant) => selectedPresetIds.includes(variant.presetId))
+    .map((variant) => `#${variant.number}`);
+
+  const applySelectedNumbersToNote = () => {
+    if (selectedPresets.length === 0) {
+      return;
+    }
+
+    const selectedLabels = selectedPresets.map((preset) => preset.label).join(", ");
+    const numberLabel = selectedNumbers.join(", ");
+    setRefinementNote(
+      `Push further toward ${selectedLabels}${numberLabel ? ` from ${numberLabel}` : ""}. Keep the strongest silhouette and premium black-and-gold restraint, but tighten the icon readability.`,
+    );
+  };
+
+  return (
+    <LabsShell
+      title={localizedContent.logoStudio.title}
+      description={localizedContent.logoStudio.description}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
+        <BreadcrumbLink to={pathFor("/labs/logo-studio")}>
+          {localizedContent.crumbs.logoStudio}
+        </BreadcrumbLink>
+      </BreadcrumbRow>
+      <StudioGrid>
+        <StudioPanel>
+          <SectionHeading>
+            <SectionTitle>{localizedContent.logoStudio.promptLabel}</SectionTitle>
+            <SectionDescription>
+              {localizedContent.logoStudio.promptHint}
+            </SectionDescription>
+          </SectionHeading>
+          <StudioForm onSubmit={handleSubmit}>
+            <FieldBlock>
+              <FieldLabel>{localizedContent.logoStudio.promptLabel}</FieldLabel>
+              <FieldTextArea
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+              />
+            </FieldBlock>
+            <FieldGrid>
+              <FieldBlock>
+                <FieldLabel>{localizedContent.logoStudio.companyLabel}</FieldLabel>
+                <FieldInput
+                  value={companyName}
+                  onChange={(event) => setCompanyName(event.target.value)}
+                />
+              </FieldBlock>
+              <FieldBlock>
+                <FieldLabel>{localizedContent.logoStudio.countLabel}</FieldLabel>
+                <FieldSelect
+                  value={count}
+                  onChange={(event) => setCount(event.target.value)}
+                >
+                  {["4", "6", "8"].map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </FieldSelect>
+              </FieldBlock>
+            </FieldGrid>
+            <FieldBlock>
+              <FieldLabel>{localizedContent.logoStudio.refinementLabel}</FieldLabel>
+              <FieldTextArea
+                value={refinementNote}
+                onChange={(event) => setRefinementNote(event.target.value)}
+              />
+              <FieldHint>{localizedContent.logoStudio.refinementHint}</FieldHint>
+            </FieldBlock>
+            <CheckboxRow>
+              <input
+                type="checkbox"
+                checked={requestBrainCluster}
+                onChange={(event) => setRequestBrainCluster(event.target.checked)}
+              />
+              <span>{localizedContent.logoStudio.brainClusterLabel}</span>
+            </CheckboxRow>
+            <FieldHint>{localizedContent.logoStudio.brainClusterHint}</FieldHint>
+            <StudioActionRow>
+              <PrimaryButton type="submit" disabled={generateMutation.isPending}>
+                {currentRun
+                  ? localizedContent.logoStudio.regenerateLabel
+                  : localizedContent.logoStudio.generateLabel}
+              </PrimaryButton>
+              <SecondaryButton
+                type="button"
+                disabled={selectedPresets.length === 0}
+                onClick={applySelectedNumbersToNote}
+              >
+                {localizedContent.logoStudio.selectedAction}
+              </SecondaryButton>
+            </StudioActionRow>
+          </StudioForm>
+          {generateMutation.isError ? (
+            <ErrorNotice>
+              {generateMutation.error instanceof Error
+                ? generateMutation.error.message
+                : "Generation failed."}
+            </ErrorNotice>
+          ) : null}
+          {currentRun?.warnings.length ? (
+            <Stack>
+              {currentRun.warnings.map((warning) => (
+                <Notice key={warning}>{warning}</Notice>
+              ))}
+            </Stack>
+          ) : null}
+        </StudioPanel>
+        <StudioPanel>
+          <SectionHeading>
+            <SectionTitle>{localizedContent.logoStudio.researchHeading}</SectionTitle>
+            <SectionDescription>
+              {localizedContent.logoStudio.resultHint}
+            </SectionDescription>
+          </SectionHeading>
+          <HelperList>
+            {LOGO_BRANDING_RESEARCH_PRINCIPLES.map((principle) => (
+              <li key={principle}>{principle}</li>
+            ))}
+          </HelperList>
+          <Notice>
+            {localizedContent.logoStudio.selectedHeading}:{" "}
+            {selectedNumbers.length > 0
+              ? selectedNumbers.join(", ")
+              : localizedContent.logoStudio.selectedEmpty}
+          </Notice>
+          {selectedPresets.length > 0 ? (
+            <SelectionSummary>
+              {selectedPresets.map((preset) => (
+                <SelectionChip key={preset.id}>{preset.label}</SelectionChip>
+              ))}
+            </SelectionSummary>
+          ) : null}
+        </StudioPanel>
+      </StudioGrid>
+      <SectionHeading>
+        <SectionTitle>{localizedContent.logoStudio.resultHeading}</SectionTitle>
+        <SectionDescription>
+          {currentRun
+            ? `${currentRun.companyName} · ${currentRun.generatedAt}`
+            : localizedContent.logoStudio.selectedEmpty}
+        </SectionDescription>
+      </SectionHeading>
+      {currentRun ? (
+        <ResultsGrid>
+          {currentRun.variants.map((variant) => {
+            const isSelected = selectedPresetIds.includes(variant.presetId);
+            return (
+              <VariantCard key={variant.id} $selected={isSelected}>
+                <VariantImageFrame>
+                  <VariantNumber>{variant.number}</VariantNumber>
+                  <VariantImage
+                    src={variant.previewUrl}
+                    alt={`${variant.presetLabel} logo exploration`}
+                    loading="lazy"
+                  />
+                </VariantImageFrame>
+                <Meta>
+                  <Kicker>{variant.presetLabel}</Kicker>
+                  <CardTitle>{variant.direction}</CardTitle>
+                  <CardBody>{variant.prompt}</CardBody>
+                  <LinkRow>
+                    <PrimaryButton
+                      type="button"
+                      onClick={() => togglePresetSelection(variant.presetId)}
+                    >
+                      {isSelected ? "Deselect" : `Keep #${variant.number}`}
+                    </PrimaryButton>
+                    <SecondaryLink
+                      href={variant.fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {localizedContent.logoStudio.openLocalFile}
+                    </SecondaryLink>
+                  </LinkRow>
+                </Meta>
+              </VariantCard>
+            );
+          })}
+        </ResultsGrid>
+      ) : null}
+    </LabsShell>
+  );
+};
+
 export const LabsBrandAssetsPage: React.FC = () => {
   const { locale, pathFor } = useI18n();
   const localizedContent = labsContent[locale];

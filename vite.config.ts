@@ -162,16 +162,21 @@ const handleLogoLabGenerate = async (
     fs.writeFileSync(tempPlanPath, JSON.stringify(planPayload), 'utf8');
 
     const python = resolveLogoLabPythonCommand();
-    const {stdout} = await execFileAsync(
-      python.command,
-      [...python.args, '--plan-json', tempPlanPath],
-      {
-        cwd: packAdsDir,
-        timeout: 1000 * 60 * 8,
-        maxBuffer: 1024 * 1024 * 10,
-      },
-    );
-    fs.rmSync(tempPlanPath, {force: true});
+    let stdout = '';
+    try {
+      const result = await execFileAsync(
+        python.command,
+        [...python.args, '--plan-json', tempPlanPath],
+        {
+          cwd: packAdsDir,
+          timeout: 1000 * 60 * 8,
+          maxBuffer: 1024 * 1024 * 10,
+        },
+      );
+      stdout = result.stdout;
+    } finally {
+      fs.rmSync(tempPlanPath, {force: true});
+    }
 
     const manifest = JSON.parse(stdout) as Record<string, unknown>;
     const hydratedManifest = {

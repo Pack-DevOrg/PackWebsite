@@ -23,6 +23,8 @@ import WaitlistForm from './WaitlistForm';
 import { executeRecaptchaAction } from '../utils/recaptcha';
 import { I18nProvider } from '../i18n/I18nProvider';
 
+const loginMock = jest.fn();
+
 jest.mock('../utils/env', () => ({
   env: {
     VITE_RECAPTCHA_SITE_KEY: 'test-recaptcha-site-key',
@@ -88,6 +90,10 @@ jest.mock('../hooks/useConversionTracking', () => {
   };
 });
 
+jest.mock('../auth/cognito', () => ({
+  initiateLogin: (...args: unknown[]) => loginMock(...args),
+}));
+
 /**
  * Mock the global fetch function to simulate API responses
  * Default mock returns successful response
@@ -149,9 +155,25 @@ describe('WaitlistForm Component', () => {
     
     // Check if important elements are present
     expect(screen.getByRole('heading', { name: /planning a trip\?/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sign up with google/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
     expect(screen.getByText(/By continuing, you agree to our/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^done\.?$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /pack it\./i })).toBeInTheDocument();
+  });
+
+  test('starts Google sign-in from the shared waitlist form', async () => {
+    render(<WaitlistFormWrapper />);
+
+    fireEvent.click(screen.getByRole('button', { name: /sign up with google/i }));
+
+    await waitFor(() =>
+      expect(loginMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          redirectPath: '/',
+          useCanonicalOrigin: false,
+        }),
+      ),
+    );
   });
 
   /**
@@ -161,7 +183,7 @@ describe('WaitlistForm Component', () => {
   test('requires email before submission', async () => {
     render(<WaitlistFormWrapper />);
 
-    const submitButton = screen.getByRole('button', { name: /^done\.?$/i });
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
     const form = submitButton.closest('form') as HTMLFormElement;
     expect(form).not.toBeNull();
     form.noValidate = true;
@@ -191,7 +213,7 @@ describe('WaitlistForm Component', () => {
     
     // Get form elements
     const emailInput = screen.getByLabelText(/email address/i);
-    const submitButton = screen.getByRole('button', { name: /^done\.?$/i });
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
     const form = submitButton.closest('form') as HTMLFormElement;
     expect(form).not.toBeNull();
 
@@ -234,7 +256,7 @@ describe('WaitlistForm Component', () => {
     render(<WaitlistFormWrapper />);
 
     const emailInput = screen.getByLabelText(/email address/i);
-    const submitButton = screen.getByRole('button', { name: /^done\.?$/i });
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
     const form = submitButton.closest('form') as HTMLFormElement;
     expect(form).not.toBeNull();
 
@@ -256,7 +278,7 @@ describe('WaitlistForm Component', () => {
     render(<WaitlistFormWrapper />);
 
     const emailInput = screen.getByLabelText(/email address/i);
-    const submitButton = screen.getByRole('button', { name: /^done\.?$/i });
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
     const form = submitButton.closest('form') as HTMLFormElement;
     expect(form).not.toBeNull();
 

@@ -61,6 +61,7 @@ import {
 import { apiEndpoints } from "../config/appConfig";
 import { useI18n } from "../i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "../legal/legalUiCopy";
+import { initiateLogin } from "@/auth/cognito";
 
 // Add global styles for animations
 const GlobalStyle = createGlobalStyle`
@@ -534,6 +535,94 @@ const SubmitButton = styled.button`
   }
 `;
 
+const GoogleLoginButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#131314, #131314) padding-box,
+    linear-gradient(
+        135deg,
+        rgba(243, 210, 122, 0.92) 0%,
+        rgba(231, 35, 64, 0.9) 62%,
+        rgba(248, 230, 179, 0.9) 100%
+      )
+      border-box;
+  color: #e3e3e3;
+  font-weight: 800;
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  font-family:
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.01em;
+  text-align: center;
+  transition: background 180ms ease, transform 180ms ease, opacity 180ms ease;
+
+  &:hover:not(:disabled) {
+    background:
+      linear-gradient(#1e1f20, #1e1f20) padding-box,
+      linear-gradient(
+          135deg,
+          rgba(243, 210, 122, 0.96) 0%,
+          rgba(231, 35, 64, 0.94) 62%,
+          rgba(248, 230, 179, 0.94) 100%
+        )
+        border-box;
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.28),
+      0 0 0 3px rgba(243, 210, 122, 0.18);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.65;
+  }
+`;
+
+const GoogleLogoWrap = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+`;
+
+const ButtonDivider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  width: 100%;
+  margin: ${({ theme }) => `${theme.spacing[3]} 0`};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.small};
+  text-align: center;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+`;
+
 const ErrorMessage = styled.div`
   color: ${(props) => props.theme.colors.error.main};
   font-size: ${(props) => props.theme.typography.fontSizes.small};
@@ -652,6 +741,33 @@ const CircleDecoration = styled.div`
   z-index: -1;
 `;
 
+const GoogleMark: React.FC = () => (
+  <svg
+    aria-hidden="true"
+    width="18"
+    height="18"
+    viewBox="0 0 18 18"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fill="#4285F4"
+      d="M17.64 9.2045c0-.6382-.0573-1.2518-.1636-1.8409H9v3.4818h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2582h2.9086c1.7018-1.5668 2.6837-3.8741 2.6837-6.6155Z"
+    />
+    <path
+      fill="#34A853"
+      d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1791l-2.9086-2.2582c-.8059.54-1.8368.8591-3.0478.8591-2.3441 0-4.3282-1.5823-5.0364-3.7091H.9568v2.3318A8.9997 8.9997 0 0 0 9 18Z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M3.9636 10.7127A5.4108 5.4108 0 0 1 3.6818 9c0-.5945.1023-1.1727.2818-1.7127V4.9555H.9568A8.9996 8.9996 0 0 0 0 9c0 1.4518.3477 2.8268.9568 4.0445l3.0068-2.3318Z"
+    />
+    <path
+      fill="#EA4335"
+      d="M9 3.5782c1.3214 0 2.5077.4541 3.4405 1.3459l2.5814-2.5814C13.4632.8918 11.426 0 9 0A8.9997 8.9997 0 0 0 .9568 4.9555l3.0068 2.3318C4.6718 5.1605 6.6559 3.5782 9 3.5782Z"
+    />
+  </svg>
+);
+
 /**
  * WaitlistForm Component
  *
@@ -683,6 +799,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   const [emailError, setEmailError] = useState("");
   const [captchaError, setCaptchaError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [message, setMessage] = useState<{
@@ -693,7 +810,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   const theme = useTheme();
   
   // Conversion tracking
-  const { trackFormStart, trackFormSubmit, trackConversion } = useConversionTracking();
+  const { trackCTAClick, trackFormStart, trackFormSubmit, trackConversion } = useConversionTracking();
   
   // Check if encrypted waitlist is available
   const encryptedStatus = checkEncryptedWaitlistStatus();
@@ -954,6 +1071,46 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
     }
   };
 
+  const handleGoogleSignup = async () => {
+    if (isGoogleLoading || isLoading) {
+      return;
+    }
+
+    trackInitialFormIntent();
+    setSubmitError("");
+    setCaptchaError("");
+    setMessage(null);
+    setIsGoogleLoading(true);
+
+    trackCTAClick(
+      isHeroVariant ? "Hero Waitlist Google Login" : "Waitlist Google Login",
+      isHeroVariant ? "hero_waitlist_google_login" : "waitlist_google_login"
+    );
+
+    try {
+      const redirectPath =
+        typeof window === "undefined"
+          ? pathFor("/")
+          : `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+      await initiateLogin({
+        redirectPath,
+        useCanonicalOrigin: false,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Unable to start Google sign-in. Please try again.";
+      setSubmitError(errorMessage);
+      setMessage({
+        type: "error",
+        text: `❌ ${errorMessage}`,
+      });
+      setIsGoogleLoading(false);
+    }
+  };
+
   return (
     <>
       <GlobalStyle />
@@ -991,6 +1148,21 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
             </FormTitle>
           ) : null}
           <Form onSubmit={handleSubmit}>
+              <GoogleLoginButton
+                type="button"
+                onClick={() => {
+                  void handleGoogleSignup();
+                }}
+                disabled={isGoogleLoading || isLoading}
+              >
+                <GoogleLogoWrap>
+                  <GoogleMark />
+                </GoogleLogoWrap>
+                {isGoogleLoading ? t("common.redirectingGoogle") : t("waitlist.googleCta")}
+              </GoogleLoginButton>
+
+              <ButtonDivider>{t("waitlist.useEmailInstead")}</ButtonDivider>
+
               <InputGroup>
                 <EmailInput
                   type="email"

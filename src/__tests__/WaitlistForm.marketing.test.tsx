@@ -69,13 +69,15 @@ jest.mock('framer-motion', () => {
 const trackConversionMock = jest.fn();
 const trackFormSubmitMock = jest.fn();
 const trackFormStartMock = jest.fn();
+const trackCTAClickMock = jest.fn();
+const loginMock = jest.fn();
 
 jest.mock('../hooks/useConversionTracking', () => ({
   useConversionTracking: () => ({
     trackConversion: trackConversionMock,
     trackFormStart: trackFormStartMock,
     trackFormSubmit: trackFormSubmitMock,
-    trackCTAClick: jest.fn(),
+    trackCTAClick: trackCTAClickMock,
     trackScrollMilestone: jest.fn(),
     trackVideoEngagement: jest.fn(),
     trackABTest: jest.fn(),
@@ -89,6 +91,10 @@ jest.mock('../hooks/useConversionTracking', () => ({
     trackRevenue: jest.fn(),
     updateUserProperties: jest.fn(),
   }),
+}));
+
+jest.mock('../auth/cognito', () => ({
+  initiateLogin: (...args: unknown[]) => loginMock(...args),
 }));
 
 jest.mock('../utils/recaptcha', () => ({
@@ -213,10 +219,29 @@ describe('WaitlistForm marketing payload', () => {
   it('shows a low-friction notice at collection with privacy controls', () => {
     renderWaitlistForm();
 
+    expect(screen.getByRole('button', {name: /sign up with google/i})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: /terms of service/i})).toHaveAttribute('href', '/terms');
     const privacyPolicyLinks = screen.getAllByRole('link', {name: /privacy policy/i});
     expect(privacyPolicyLinks.some((link) => link.getAttribute('href') === '/privacy')).toBe(true);
     expect(screen.getByRole('link', {name: /your privacy choices/i})).toHaveAttribute('href', '/privacy-request');
+  });
+
+  it('starts Google sign-in from the waitlist CTA', async () => {
+    renderWaitlistForm();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', {name: /sign up with google/i}));
+
+    expect(trackCTAClickMock).toHaveBeenCalledWith(
+      'Waitlist Google Login',
+      'waitlist_google_login',
+    );
+    expect(loginMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        redirectPath: '/?gclid=test-gclid&wbraid=test-wbraid&gbraid=test-gbraid&ttclid=test-ttclid',
+        useCanonicalOrigin: false,
+      }),
+    );
   });
 
   it('omits attribution identifiers when marketing consent is not granted', async () => {

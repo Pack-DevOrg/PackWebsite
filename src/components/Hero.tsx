@@ -1000,6 +1000,11 @@ const JourneyNarrativeTitle = styled.h3`
   }
 `;
 
+const JourneyNarrativeTitleLine = styled.span`
+  display: block;
+  white-space: nowrap;
+`;
+
 const JourneyNarrativeMeta = styled.p`
   margin: 0;
   color: rgba(247, 240, 227, 0.66);
@@ -5591,6 +5596,17 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
       parseDisplayAmount(selectedHotel.total) +
       parseDisplayAmount(selectedReturnFlight.price)
   ).toLocaleString("en-US");
+  const renderJourneyNarrativeTitle = (title: string) => {
+    if (!title.includes("\n")) {
+      return title;
+    }
+
+    return title.split("\n").map((line, index) => (
+      <JourneyNarrativeTitleLine key={`${title}-${index}`}>
+        {line}
+      </JourneyNarrativeTitleLine>
+    ));
+  };
 
   useMountEffect(() => {
     if (journeyOnly || shouldRenderJourneyShowcase || typeof window === "undefined") {
@@ -5832,7 +5848,9 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
                     key={item.key}
                     $active={activeJourneyScreen === item.key}
                   >
-                    <JourneyNarrativeTitle>{item.title}</JourneyNarrativeTitle>
+                    <JourneyNarrativeTitle>
+                      {renderJourneyNarrativeTitle(item.title)}
+                    </JourneyNarrativeTitle>
                     <JourneyNarrativeMeta>{item.meta}</JourneyNarrativeMeta>
                   </DesktopJourneyNarrativeLayer>
                 ))}
@@ -5849,7 +5867,9 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
                   $desktopMinHeight={item.desktopScrollSpan}
                 >
                   <JourneyNarrativeText>
-                    <JourneyNarrativeTitle>{item.title}</JourneyNarrativeTitle>
+                    <JourneyNarrativeTitle>
+                      {renderJourneyNarrativeTitle(item.title)}
+                    </JourneyNarrativeTitle>
                     <JourneyNarrativeMeta>{item.meta}</JourneyNarrativeMeta>
                   </JourneyNarrativeText>
                   <JourneyNarrativeTrigger aria-hidden="true" />
@@ -5890,7 +5910,9 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
                   $mobileMinHeight={item.mobileScrollSpan}
                 >
                   <JourneyNarrativeText>
-                    <JourneyNarrativeTitle>{item.title}</JourneyNarrativeTitle>
+                    <JourneyNarrativeTitle>
+                      {renderJourneyNarrativeTitle(item.title)}
+                    </JourneyNarrativeTitle>
                     <JourneyNarrativeMeta>{item.meta}</JourneyNarrativeMeta>
                   </JourneyNarrativeText>
                   <MobileJourneyInlinePhoneWrap>

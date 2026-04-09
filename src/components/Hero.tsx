@@ -1006,6 +1006,14 @@ const JourneyNarrativeTitle = styled.h3`
 const JourneyNarrativeTitleLine = styled.span`
   display: block;
   white-space: nowrap;
+
+  @media (max-width: 979px) {
+    display: inline;
+
+    &:not(:last-child)::after {
+      content: " ";
+    }
+  }
 `;
 
 const JourneyNarrativeMeta = styled.p`
@@ -2031,22 +2039,28 @@ const CarouselControls = styled.div`
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.58rem;
+
+  @media (max-width: 979px) {
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+  }
 `;
 
 const CarouselArrow = styled.button`
   appearance: none;
   border: 0;
-  width: 1.28rem;
-  height: 1.28rem;
+  min-height: 1.28rem;
   border-radius: 999px;
   background: transparent;
   color: rgba(240, 198, 45, 0.94);
   display: grid;
   place-items: center;
   cursor: pointer;
-  padding: 0;
-  font-size: 1rem;
+  padding: 0 0.18rem;
+  font-size: 0.62rem;
+  font-weight: 700;
   line-height: 1;
+  text-transform: uppercase;
 `;
 
 const CarouselMeta = styled.div`
@@ -2087,6 +2101,10 @@ const CarouselRightControls = styled.div`
   align-items: center;
   gap: 0.28rem;
   justify-self: end;
+
+  @media (max-width: 979px) {
+    justify-self: center;
+  }
 `;
 
 const CarouselSkipButton = styled.button`
@@ -2101,6 +2119,10 @@ const CarouselSkipButton = styled.button`
   font-size: 0.58rem;
   font-weight: 700;
   cursor: pointer;
+
+  @media (max-width: 979px) {
+    display: none;
+  }
 `;
 
 const BookingCard = styled.div<{ $selected?: boolean }>`
@@ -4478,7 +4500,7 @@ const BookingCarousel: React.FC<{
       <CarouselControls>
         <CarouselArrowGroup>
           <CarouselArrow type="button" onClick={onPrev} aria-label="Previous option">
-            ‹
+            Previous
           </CarouselArrow>
         </CarouselArrowGroup>
         <CarouselMeta>
@@ -4491,7 +4513,7 @@ const BookingCarousel: React.FC<{
         </CarouselMeta>
         <CarouselRightControls>
           <CarouselArrow type="button" onClick={onNext} aria-label="Next option">
-            ›
+            Next
           </CarouselArrow>
           <CarouselSkipButton type="button">Skip</CarouselSkipButton>
         </CarouselRightControls>

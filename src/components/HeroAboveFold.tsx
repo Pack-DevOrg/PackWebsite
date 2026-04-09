@@ -181,8 +181,11 @@ const RailStatementAccent = styled.span`
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-size: 1.5em;
-  line-height: 0.94;
+  font-size: clamp(3.5rem, 12vw, 9rem);
+  font-weight: 800;
+  line-height: 0.82;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
 `;
 
 const MarqueeViewport = styled.div`

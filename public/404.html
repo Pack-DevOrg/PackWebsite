@@ -38,6 +38,12 @@
       // Route app paths to the app origin before falling back to the SPA redirect.
       (function () {
         var l = window.location;
+        if (l.hostname === 'trypackai.com') {
+          var canonicalUrl = new URL(l.href);
+          canonicalUrl.hostname = 'www.trypackai.com';
+          window.location.replace(canonicalUrl.toString());
+          return;
+        }
         if (/^\/app(\/|$)/.test(l.pathname)) {
           var appUrl = l.protocol + '//' + 'www.trypackai.com' + l.pathname + l.search + l.hash;
           window.location.replace(appUrl);

@@ -332,7 +332,7 @@ describe("TsaWaitTimesPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("auto-opens the modal once per session", async () => {
+  it("auto-opens the waitlist modal once per session", async () => {
     renderPage();
 
     await screen.findByText("John F. Kennedy International Airport");
@@ -341,15 +341,17 @@ describe("TsaWaitTimesPage", () => {
       jest.advanceTimersByTime(3200);
     });
 
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
     expect(screen.getByTestId("waitlist-form")).toBeInTheDocument();
+    expect(window.localStorage.getItem("tsa-waits-email-modal-completed")).toBeNull();
+    expect(document.cookie).not.toContain("tsa-waits-email-modal-completed=1");
     expect(trackCTAClickMock).toHaveBeenCalledWith(
       "TSA Waitlist Modal Auto Open",
       "tsa_waits_modal_auto"
     );
   });
 
-  it("offers Google login and returns to /tsa", async () => {
+  it("shows GIS loading state without the fallback button during normal initialization", async () => {
     renderPage();
 
     await screen.findByText("John F. Kennedy International Airport");
@@ -358,23 +360,10 @@ describe("TsaWaitTimesPage", () => {
       jest.advanceTimersByTime(3200);
     });
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /continue with google/i })
-    );
-
-    expect(loginMock).toHaveBeenCalledWith({
-      redirectPath: "/tsa",
-      redirectUri: "https://www.trypackai.com/auth/callback",
-      useCanonicalOrigin: false,
-    });
-    expect(trackCTAClickMock).toHaveBeenCalledWith(
-      "TSA Waitlist Modal Google Login",
-      "tsa_waits_modal_google_login"
-    );
+    expect(await screen.findByText("Loading Google sign-in…")).toBeInTheDocument();
     expect(
-      window.localStorage.getItem("tsa-waits-email-modal-completed")
-    ).toBe("1");
-    expect(document.cookie).toContain("tsa-waits-email-modal-completed=1");
+      screen.queryByRole("button", { name: /sign up with google/i })
+    ).not.toBeInTheDocument();
   });
 
   it("captures the GIS email and closes the modal without hosted login", async () => {
@@ -391,40 +380,41 @@ describe("TsaWaitTimesPage", () => {
 
     await screen.findByText("John F. Kennedy International Airport");
 
-    await act(async () => {
+    act(() => {
       jest.advanceTimersByTime(3200);
-      await Promise.resolve();
-    });
-
-    await screen.findByRole("dialog");
-    await waitFor(() => expect(googleInitializeMock).toHaveBeenCalled());
-    expect(googleCredentialCallback).toBeDefined();
-
-    await act(async () => {
-      googleCredentialCallback?.({ credential: "google-jwt" });
-      await Promise.resolve();
     });
 
     await waitFor(() => {
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(googleInitializeMock).toHaveBeenCalled();
     });
 
-    expect(requestPublicApiMock).toHaveBeenCalledWith({
-      path: "/auth/google/bridge",
-      method: "POST",
-      body: {
-        credential: "google-jwt",
-        redirectPath: "/tsa",
-        source: "tsa",
-      },
+    await act(async () => {
+      googleCredentialCallback?.({ credential: "google_jwt" });
     });
+
+    await waitFor(() => {
+      expect(requestPublicApiMock).toHaveBeenCalledWith({
+        path: "/auth/google/bridge",
+        method: "POST",
+        body: {
+          credential: "google_jwt",
+          redirectPath: "/tsa",
+          source: "tsa",
+        },
+      });
+    });
+
     expect(loginMock).not.toHaveBeenCalled();
     expect(window.localStorage.getItem("tsa-waits-email-modal-completed")).toBe("1");
     expect(document.cookie).toContain("tsa-waits-email-modal-completed=1");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("strips forceModal from the Google login return path", async () => {
     window.history.replaceState({}, "", "/tsa?forceModal=1");
+    googleInitializeMock.mockImplementation(() => {
+      throw new Error("GIS init failed");
+    });
 
     renderPage();
 
@@ -434,9 +424,7 @@ describe("TsaWaitTimesPage", () => {
       jest.advanceTimersByTime(3200);
     });
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /continue with google/i })
-    );
+    fireEvent.click(await screen.findByRole("button", { name: /sign up with google/i }));
 
     expect(loginMock).toHaveBeenCalledWith({
       redirectPath: "/tsa",
@@ -496,12 +484,8 @@ describe("TsaWaitTimesPage", () => {
       jest.advanceTimersByTime(3200);
     });
 
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
     expect(window.localStorage.getItem("tsa-waits-email-modal-completed")).toBeNull();
-    expect(trackCTAClickMock).toHaveBeenCalledWith(
-      "TSA Waitlist Modal Auto Open",
-      "tsa_waits_modal_auto"
-    );
   });
 
   it("keeps the modal suppressed when the completion cookie is present", async () => {

@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
+      ((location) => {
+        if (location.hostname === "trypackai.com") {
+          const canonicalUrl = new URL(location.href);
+          canonicalUrl.hostname = "www.trypackai.com";
+          window.location.replace(canonicalUrl.toString());
+        }
+      })(window.location);
+    </script>
+    <script>
       // Single Page Apps for GitHub Pages (inline to avoid render-blocking request)
       // MIT License - Adapted from https://github.com/rafgraph/spa-github-pages
       ((location) => {

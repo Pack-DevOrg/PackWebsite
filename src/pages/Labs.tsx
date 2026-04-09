@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useI18n } from "@/i18n/I18nProvider";
+import { AuthCallbackSurface } from "@/pages/AuthCallbackPage";
 
 export type LabVideo = {
   slug: string;
@@ -145,6 +146,14 @@ const labSections: LabSection[] = [
       "Put variants next to each other so it is obvious what improved and what regressed.",
     href: "/labs/comparisons",
     kicker: "Creative review",
+  },
+  {
+    slug: "auth-callback",
+    title: "Auth Callback",
+    description:
+      "Inspect the redesigned sign-in handoff page in both processing and error states.",
+    href: "/labs/auth-callback",
+    kicker: "Auth surfaces",
   },
 ];
 
@@ -450,6 +459,20 @@ const ComparisonGrid = styled.div`
   }
 `;
 
+const SurfacePreviewCard = styled.article`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const SurfaceFrame = styled.div`
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
 const Meta = styled.div`
   display: flex;
   flex-direction: column;
@@ -666,6 +689,14 @@ const labsContent = {
           href: "/labs/comparisons",
           kicker: "Creative review",
         },
+        {
+          slug: "auth-callback",
+          title: "Auth Callback",
+          description:
+            "Inspect the redesigned sign-in handoff page in both processing and error states.",
+          href: "/labs/auth-callback",
+          kicker: "Auth surfaces",
+        },
       ],
     },
     videos: {
@@ -690,11 +721,27 @@ const labsContent = {
         "This is the approved homepage social card direction now promoted into the live website OG asset.",
       refinedConcepts: refinedOgConcepts,
     },
+    authCallback: {
+      title: "OAuth callback review surface.",
+      description:
+        "Use this page to inspect the intermediate sign-in handoff exactly as it should feel during a live OAuth return, including both the happy waiting state and the recovery state.",
+      processingTitle: "Processing state",
+      processingBody:
+        "Preview the in-between moment after Google hands the user back to Pack and before the app workspace is ready.",
+      processingMessage:
+        "Attempting to complete your sign-in. This should only take a moment.",
+      errorTitle: "Error state",
+      errorBody:
+        "Preview the fallback state when the handoff fails and the user needs a clear way back into the sign-in flow.",
+      errorMessage:
+        "We couldn't complete the sign-in because the callback is missing required parameters. Please try signing in again.",
+    },
     crumbs: {
       labs: "Labs",
       videos: "Videos",
       comparisons: "Comparisons",
       brandAssets: "Brand assets",
+      authCallback: "Auth callback",
     },
   },
   es: {
@@ -741,6 +788,14 @@ const labsContent = {
             "Pon las variantes una junto a otra para ver con claridad qué mejoró y qué empeoró.",
           href: "/labs/comparisons",
           kicker: "Revisión creativa",
+        },
+        {
+          slug: "auth-callback",
+          title: "Auth Callback",
+          description:
+            "Inspecciona la pantalla rediseñada de transición de inicio de sesión en estados de procesamiento y error.",
+          href: "/labs/auth-callback",
+          kicker: "Superficies de auth",
         },
       ],
     },
@@ -801,11 +856,27 @@ const labsContent = {
         "Esta es la dirección aprobada para la tarjeta social de la homepage y ya fue promovida al asset OG activo del sitio.",
       refinedConcepts: refinedOgConcepts,
     },
+    authCallback: {
+      title: "Superficie de revisión del callback OAuth.",
+      description:
+        "Usa esta página para inspeccionar la transición intermedia del inicio de sesión tal como debe sentirse durante un retorno real de OAuth, incluyendo el estado de espera y el estado de recuperación.",
+      processingTitle: "Estado en proceso",
+      processingBody:
+        "Previsualiza el momento intermedio después de que Google devuelve al usuario a Pack y antes de que el espacio de la app esté listo.",
+      processingMessage:
+        "Intentando completar tu inicio de sesión. Esto solo debería tardar un momento.",
+      errorTitle: "Estado de error",
+      errorBody:
+        "Previsualiza el estado de recuperación cuando la transición falla y el usuario necesita una forma clara de volver al flujo de inicio de sesión.",
+      errorMessage:
+        "No pudimos completar el inicio de sesión porque al callback le faltan parámetros requeridos. Intenta iniciar sesión de nuevo.",
+    },
     crumbs: {
       labs: "Labs",
       videos: "Videos",
       comparisons: "Comparaciones",
       brandAssets: "Brand assets",
+      authCallback: "Auth callback",
     },
   },
 } as const;
@@ -1032,6 +1103,53 @@ export const LabsBrandAssetsPage: React.FC = () => {
           </ConceptCard>
         ))}
       </Grid>
+    </LabsShell>
+  );
+};
+
+export const LabsAuthCallbackPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+
+  return (
+    <LabsShell
+      title={localizedContent.authCallback.title}
+      description={localizedContent.authCallback.description}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
+        <BreadcrumbLink to={pathFor("/labs/auth-callback")}>
+          {localizedContent.crumbs.authCallback}
+        </BreadcrumbLink>
+      </BreadcrumbRow>
+      <ComparisonGrid>
+        <SurfacePreviewCard>
+          <Meta>
+            <Kicker>{localizedContent.authCallback.processingTitle}</Kicker>
+            <CardTitle>{localizedContent.authCallback.processingTitle}</CardTitle>
+            <CardBody>{localizedContent.authCallback.processingBody}</CardBody>
+          </Meta>
+          <SurfaceFrame>
+            <AuthCallbackSurface
+              state="processing"
+              detailMessage={localizedContent.authCallback.processingMessage}
+            />
+          </SurfaceFrame>
+        </SurfacePreviewCard>
+        <SurfacePreviewCard>
+          <Meta>
+            <Kicker>{localizedContent.authCallback.errorTitle}</Kicker>
+            <CardTitle>{localizedContent.authCallback.errorTitle}</CardTitle>
+            <CardBody>{localizedContent.authCallback.errorBody}</CardBody>
+          </Meta>
+          <SurfaceFrame>
+            <AuthCallbackSurface
+              state="error"
+              detailMessage={localizedContent.authCallback.errorMessage}
+            />
+          </SurfaceFrame>
+        </SurfacePreviewCard>
+      </ComparisonGrid>
     </LabsShell>
   );
 };

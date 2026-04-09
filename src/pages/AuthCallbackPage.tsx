@@ -258,6 +258,12 @@ const RetryButton = styled.button`
 `;
 
 type CallbackState = "processing" | "error";
+type AuthCallbackSurfaceProps = {
+  readonly state: CallbackState;
+  readonly detailMessage: string;
+  readonly onRetry?: (() => void) | undefined;
+};
+
 const processedCallbackKeys = new Set<string>();
 
 const isAbsoluteRedirectUrl = (value: string): boolean =>
@@ -282,6 +288,96 @@ const bootstrapAuthenticatedUser = async (
         "We couldn't finish preparing your account. Please try again.",
     );
   }
+};
+
+export const AuthCallbackSurface: React.FC<AuthCallbackSurfaceProps> = ({
+  state,
+  detailMessage,
+  onRetry,
+}) => {
+  if (state === "processing") {
+    return (
+      <Container>
+        <GridVeil aria-hidden="true" />
+        <Shell>
+          <Card>
+            <Header>
+              <LogoBadge>
+                <Logo src={packLogo} alt="Pack" />
+              </LogoBadge>
+              <StatusPill $state="processing">
+                <StatusDot $state="processing" />
+                Secure sign-in
+              </StatusPill>
+            </Header>
+            <HeroCopy>
+              <Eyebrow>Pack account handoff</Eyebrow>
+              <LoadingIcon aria-hidden="true" />
+              <Heading>Welcome back. We&apos;re setting your trip space.</Heading>
+              <Message>
+                We&apos;re getting your travel profile ready so your next page
+                feels like it already knows you.
+              </Message>
+            </HeroCopy>
+            <SupportPanel>
+              <SupportTitle>{detailMessage}</SupportTitle>
+              <SupportList aria-label="Sign-in progress">
+                <SupportChip>Confirming your account</SupportChip>
+                <SupportChip>Syncing your travel profile</SupportChip>
+                <SupportChip>Preparing the app view</SupportChip>
+              </SupportList>
+            </SupportPanel>
+            <FooterNote>
+              Built with care for travellers who hate messy travel days.
+            </FooterNote>
+          </Card>
+        </Shell>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <GridVeil aria-hidden="true" />
+      <Shell>
+        <Card>
+          <Header>
+            <LogoBadge>
+              <Logo src={packLogo} alt="Pack" />
+            </LogoBadge>
+            <StatusPill $state="error">
+              <StatusDot $state="error" />
+              Sign-in interrupted
+            </StatusPill>
+          </Header>
+          <HeroCopy>
+            <Eyebrow>Pack account handoff</Eyebrow>
+            <ErrorIcon aria-hidden="true" />
+            <Heading>We hit a snag finishing your sign-in.</Heading>
+            <MessageStack>
+              <Message>{detailMessage}</Message>
+              <Message>
+                Nothing about your trip data has been lost. Start the sign-in
+                again and we&apos;ll bring you back to the app.
+              </Message>
+            </MessageStack>
+          </HeroCopy>
+          <SupportPanel>
+            <SupportTitle>What you can do next</SupportTitle>
+            <SupportList aria-label="Recovery options">
+              <SupportChip>Retry the secure handoff</SupportChip>
+              <SupportChip>Return directly to your app workspace</SupportChip>
+              <SupportChip>Use the same Google account as before</SupportChip>
+            </SupportList>
+          </SupportPanel>
+          <FooterNote>
+            Pack keeps the handoff tight so your travel context stays intact.
+          </FooterNote>
+          {onRetry ? <RetryButton onClick={onRetry}>Try Again</RetryButton> : null}
+        </Card>
+      </Shell>
+    </Container>
+  );
 };
 
 const AuthCallbackPageInstance: React.FC<{ readonly search: string }> = ({
@@ -361,85 +457,15 @@ const AuthCallbackPageInstance: React.FC<{ readonly search: string }> = ({
   });
 
   if (state === "processing") {
-    return (
-      <Container>
-        <GridVeil aria-hidden="true" />
-        <Shell>
-          <Card>
-            <Header>
-              <LogoBadge>
-                <Logo src={packLogo} alt="Pack" />
-              </LogoBadge>
-              <StatusPill $state="processing">
-                <StatusDot $state="processing" />
-                Secure sign-in
-              </StatusPill>
-            </Header>
-            <HeroCopy>
-              <Eyebrow>Pack account handoff</Eyebrow>
-              <LoadingIcon aria-hidden="true" />
-              <Heading>Welcome back. We&apos;re setting your trip space.</Heading>
-              <Message>
-                We&apos;re getting your travel profile ready so your next page
-                feels like it already knows you.
-              </Message>
-            </HeroCopy>
-            <SupportPanel>
-              <SupportTitle>{errorMessage}</SupportTitle>
-              <SupportList aria-label="Sign-in progress">
-                <SupportChip>Confirming your account</SupportChip>
-                <SupportChip>Syncing your travel profile</SupportChip>
-                <SupportChip>Preparing the app view</SupportChip>
-              </SupportList>
-            </SupportPanel>
-            <FooterNote>Built with care for travellers who hate messy travel days.</FooterNote>
-          </Card>
-        </Shell>
-      </Container>
-    );
+    return <AuthCallbackSurface state={state} detailMessage={errorMessage} />;
   }
 
   return (
-    <Container>
-      <GridVeil aria-hidden="true" />
-      <Shell>
-        <Card>
-          <Header>
-            <LogoBadge>
-              <Logo src={packLogo} alt="Pack" />
-            </LogoBadge>
-            <StatusPill $state="error">
-              <StatusDot $state="error" />
-              Sign-in interrupted
-            </StatusPill>
-          </Header>
-          <HeroCopy>
-            <Eyebrow>Pack account handoff</Eyebrow>
-            <ErrorIcon aria-hidden="true" />
-            <Heading>We hit a snag finishing your sign-in.</Heading>
-            <MessageStack>
-              <Message>{errorMessage}</Message>
-              <Message>
-                Nothing about your trip data has been lost. Start the sign-in
-                again and we&apos;ll bring you back to the app.
-              </Message>
-            </MessageStack>
-          </HeroCopy>
-          <SupportPanel>
-            <SupportTitle>What you can do next</SupportTitle>
-            <SupportList aria-label="Recovery options">
-              <SupportChip>Retry the secure handoff</SupportChip>
-              <SupportChip>Return directly to your app workspace</SupportChip>
-              <SupportChip>Use the same Google account as before</SupportChip>
-            </SupportList>
-          </SupportPanel>
-          <FooterNote>Pack keeps the handoff tight so your travel context stays intact.</FooterNote>
-          <RetryButton onClick={() => login({ redirectPath: pathFor("/app") })}>
-            Try Again
-          </RetryButton>
-        </Card>
-      </Shell>
-    </Container>
+    <AuthCallbackSurface
+      state={state}
+      detailMessage={errorMessage}
+      onRetry={() => login({ redirectPath: pathFor("/app") })}
+    />
   );
 };
 

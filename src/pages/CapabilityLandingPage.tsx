@@ -70,6 +70,10 @@ const CapabilitySection = styled.div`
   display: grid;
   gap: var(--space-3);
   margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
 `;
 
 const SectionGrid = styled.div`
@@ -194,58 +198,46 @@ const Answer = styled.p`
   line-height: 1.7;
 `;
 
-const CapabilityGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-3);
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (min-width: 1080px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+const CapabilityChipList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+  max-width: 58rem;
+  margin: 0 auto;
 `;
 
-const CapabilityTile = styled(PrefetchLink)<{ $active?: boolean }>`
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  background: ${({ $active }) =>
-    $active ? "rgba(249, 47, 96, 0.09)" : "rgba(255, 255, 255, 0.03)"};
+const CapabilityChip = styled(PrefetchLink)<{ $active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.95rem;
+  min-width: 10.5rem;
+  border-radius: 999px;
   border: 1px solid
     ${({ $active }) =>
-      $active ? "rgba(249, 47, 96, 0.26)" : "rgba(255, 255, 255, 0.05)"};
-  border-radius: var(--border-radius);
-  color: inherit;
+      $active ? "rgba(249, 47, 96, 0.34)" : "rgba(255, 255, 255, 0.08)"};
+  background: ${({ $active }) =>
+    $active ? "rgba(249, 47, 96, 0.12)" : "rgba(255, 255, 255, 0.03)"};
+  color: ${({ $active }) =>
+    $active ? "var(--color-text-primary)" : "var(--color-text-secondary)"};
   text-decoration: none;
+  font-size: var(--font-size-small);
+  line-height: 1.2;
+  text-align: center;
 
   &:hover {
     border-color: rgba(249, 47, 96, 0.3);
-    transform: translateY(-2px);
+    color: var(--color-text-primary);
   }
-`;
 
-const CapabilityTileEyebrow = styled.span`
-  color: var(--color-accent);
-  font-size: var(--font-size-small);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-`;
+  @media (max-width: 640px) {
+    min-width: calc(50% - var(--space-2));
+  }
 
-const CapabilityTileTitle = styled.h3`
-  margin: 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-medium);
-`;
-
-const CapabilityTileDescription = styled.p`
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-  line-height: 1.6;
+  @media (max-width: 420px) {
+    min-width: 100%;
+  }
 `;
 
 const CtaSection = styled.div`
@@ -396,23 +388,17 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
 
       <CapabilitySection>
         <FaqTitle>Explore more Pack capabilities</FaqTitle>
-        <CapabilityGrid>
+        <CapabilityChipList>
           {capabilityPageDefinitions.map((definition) => (
-            <CapabilityTile
+            <CapabilityChip
               key={definition.slug}
               to={pathFor(`/${definition.slug}`)}
               $active={definition.slug === slug}
             >
-              <CapabilityTileEyebrow>
-                {definition.slug === slug ? "Current capability" : "Capability"}
-              </CapabilityTileEyebrow>
-              <CapabilityTileTitle>{definition.navLabel}</CapabilityTileTitle>
-              <CapabilityTileDescription>
-                {definition.featureDescription}
-              </CapabilityTileDescription>
-            </CapabilityTile>
+              {definition.chipLabel ?? definition.navLabel}
+            </CapabilityChip>
           ))}
-        </CapabilityGrid>
+        </CapabilityChipList>
       </CapabilitySection>
 
       <CtaSection>

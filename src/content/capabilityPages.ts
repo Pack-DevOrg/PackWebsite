@@ -6,6 +6,7 @@ export interface CapabilityFaq {
 export interface CapabilityPageDefinition {
   readonly slug: string;
   readonly navLabel: string;
+  readonly chipLabel?: string;
   readonly featureTitle: string;
   readonly featureDescription: string;
   readonly pageTitle: string;
@@ -32,6 +33,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "travel-history",
     navLabel: "Travel History",
+    chipLabel: "History",
     featureTitle: "Extracts and displays past travel history",
     featureDescription:
       "Pack can help reconstruct flights, hotels, rental cars, and related trip details so past travel becomes visible and reusable.",
@@ -80,6 +82,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "travel-stats",
     navLabel: "Travel Stats",
+    chipLabel: "Stats",
     featureTitle: "Shows travel stats, maps, and trip context",
     featureDescription:
       "Travel stats, maps, and timelines help show how flights, hotels, rental cars, and trip events connect at a glance.",
@@ -128,6 +131,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "loyalty-details",
     navLabel: "Loyalty Details",
+    chipLabel: "Loyalty",
     featureTitle: "Extracts loyalty numbers and program details",
     featureDescription:
       "Pack can help organize loyalty numbers, traveler program details, and travel-account information across flights, hotels, and rental cars.",
@@ -176,6 +180,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "trip-planning-from-events",
     navLabel: "Trip Planning From Events",
+    chipLabel: "Planning",
     featureTitle: "Plans trips proactively from events and prompts",
     featureDescription:
       "Pack can plan trips from public events, private email and calendar events, and synthetic prompts in plain language.",
@@ -224,6 +229,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "trip-updates",
     navLabel: "Trip Updates",
+    chipLabel: "Updates",
     featureTitle: "Edits and updates trips from many inputs",
     featureDescription:
       "Chat, voice, photos, email, calendar, and photo metadata can all help edit, organize, and reactively update trips.",
@@ -272,6 +278,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "travel-booking",
     navLabel: "Travel Booking",
+    chipLabel: "Booking",
     featureTitle: "Searches and books flights, hotels, and rental cars",
     featureDescription:
       "Pack is designed to search and book flights, hotels, rental cars, and related travel booking workflows inside one connected experience.",
@@ -320,6 +327,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "upcoming-trip-details",
     navLabel: "Upcoming Trip Details",
+    chipLabel: "Upcoming",
     featureTitle: "Displays upcoming trip details",
     featureDescription:
       "Upcoming trips can show weather, timing, airport security waits, trip events, drive times, and transportation actions.",
@@ -368,6 +376,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "airport-security-wait-times",
     navLabel: "Airport Security Wait Times",
+    chipLabel: "Airport Waits",
     featureTitle: "Shows airport security wait times in app and web",
     featureDescription:
       "Pack can surface airport security wait times in both the app and web experience as part of broader travel-day context.",
@@ -422,6 +431,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "trip-calendar-sync",
     navLabel: "Trip Calendar Sync",
+    chipLabel: "Calendar Sync",
     featureTitle: "Syncs trip events to device calendars",
     featureDescription:
       "Pack can sync trip events back to calendars so travel timing stays visible where people already manage the rest of their schedule.",
@@ -470,6 +480,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "connected-accounts",
     navLabel: "Connected Accounts",
+    chipLabel: "Accounts",
     featureTitle: "Connects external accounts and providers",
     featureDescription:
       "Pack can connect external email, calendar, and travel providers so planning and trip organization start from richer travel context.",
@@ -518,6 +529,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "traveler-profiles",
     navLabel: "Traveler Profiles",
+    chipLabel: "Profiles",
     featureTitle: "Manages traveler profiles, preferences, and trusted traveler details",
     featureDescription:
       "Pack can organize traveler profiles, preferences, accessibility needs, loyalty details, and trusted traveler information as part of the trip.",
@@ -566,6 +578,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "trip-sharing",
     navLabel: "Trip Sharing",
+    chipLabel: "Sharing",
     featureTitle: "Supports trip sharing and group travel workflows",
     featureDescription:
       "Trips can be shared through links, invitations, linked trips, imports, copies, and group travel workflows so planning stays collaborative.",
@@ -614,6 +627,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "live-trip-views",
     navLabel: "Live Trip Views",
+    chipLabel: "Live Views",
     featureTitle: "Supports live upcoming-trip views and Live Activities",
     featureDescription:
       "Upcoming trips can stay visible with lock-screen style views, status details, and fast actions when travelers need trip context immediately.",
@@ -662,6 +676,7 @@ export const capabilityPageDefinitions = [
   {
     slug: "trip-expenses",
     navLabel: "Trip Expenses",
+    chipLabel: "Expenses",
     featureTitle: "Organizes trip expenses",
     featureDescription:
       "Pack is designed to organize travel expenses so the full cost of a trip is easier to track, review, and keep attached to the trip record.",

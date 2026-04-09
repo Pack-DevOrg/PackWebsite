@@ -16,15 +16,7 @@ const resolveViteEnv = (): ViteEnv | undefined => {
     return __APP_ENV__;
   }
 
-  try {
-    // Fallback for tooling that still expects import.meta evaluation
-    const fn = new Function(
-      'return typeof import.meta !== "undefined" && import.meta.env ? import.meta.env : undefined;',
-    );
-    return fn() as ViteEnv | undefined;
-  } catch {
-    return undefined;
-  }
+  return undefined;
 };
 
 const getEnv = (): ViteEnv => {

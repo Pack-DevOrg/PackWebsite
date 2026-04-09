@@ -1,46 +1,5 @@
 import type { Trip } from "@/api/trips";
 
-const resolveAirlineLogoModules = (): Record<string, string> => {
-  try {
-    const loadGlob = new Function(
-      'return typeof import.meta !== "undefined" && import.meta.glob ? import.meta.glob : undefined;',
-    ) as () =>
-      | ((
-          pattern: string,
-          options: { eager: boolean; import: string }
-        ) => Record<string, string>)
-      | undefined;
-
-    const glob = loadGlob();
-    if (!glob) {
-      return {};
-    }
-
-    return glob(
-      "../../../PackAesthetics/assets/airlines-shared/*.png",
-      {
-        eager: true,
-        import: "default",
-      }
-    );
-  } catch {
-    return {};
-  }
-};
-
-const airlineLogoModules = resolveAirlineLogoModules();
-
-const AIRLINE_LOGOS = Object.entries(airlineLogoModules).reduce<Record<string, string>>(
-  (logos, [modulePath, src]) => {
-    const match = modulePath.match(/\/([A-Z0-9]{2,3})\.png$/i);
-    if (match) {
-      logos[match[1].toUpperCase()] = src;
-    }
-    return logos;
-  },
-  {}
-);
-
 const buildGstaticLogoUrl = (code: string): string =>
   `https://www.gstatic.com/flights/airline_logos/70px/${encodeURIComponent(code)}.png`;
 
@@ -217,7 +176,7 @@ export function getTripAirlineBadges(trip: Trip, maxBadges = 3): TripAirlineBadg
       key: code,
       code,
       label,
-      logoSrc: AIRLINE_LOGOS[code] ?? buildGstaticLogoUrl(code),
+      logoSrc: buildGstaticLogoUrl(code),
       monogram: toMonogram(code),
     });
     seen.add(code);

@@ -35,47 +35,6 @@
     <meta name="twitter:image" content="https://trypackai.com/images/og-image.png" />
 
     <script type="text/javascript">
-      (function () {
-        var MARKETING_SW_RESET_KEY = 'pack-marketing-sw-reset-v1';
-
-        if (
-          window.location.pathname.indexOf('/app') === 0 ||
-          !('serviceWorker' in navigator)
-        ) {
-          return;
-        }
-
-        navigator.serviceWorker
-          .getRegistrations()
-          .then(function (registrations) {
-            if (!registrations.length) {
-              window.sessionStorage.removeItem(MARKETING_SW_RESET_KEY);
-              return;
-            }
-
-            return Promise.all(
-              registrations.map(function (registration) {
-                return registration.unregister();
-              })
-            ).then(function () {
-              if (
-                navigator.serviceWorker.controller &&
-                window.sessionStorage.getItem(MARKETING_SW_RESET_KEY) !== '1'
-              ) {
-                window.sessionStorage.setItem(MARKETING_SW_RESET_KEY, '1');
-                window.location.reload();
-                return;
-              }
-
-              window.sessionStorage.removeItem(MARKETING_SW_RESET_KEY);
-            });
-          })
-          .catch(function () {
-            window.sessionStorage.removeItem(MARKETING_SW_RESET_KEY);
-          });
-      })();
-    </script>
-    <script type="text/javascript">
       // Route app paths to the app origin before falling back to the SPA redirect.
       (function () {
         var l = window.location;

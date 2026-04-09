@@ -183,37 +183,29 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(response.airports).toEqual([]);
   });
 
-  it('ignores raw cloudfront board URLs in production and uses the API path instead', async () => {
+  it('ignores raw cloudfront board URLs in production and uses the stable board host instead', async () => {
     appConfig.environment = 'prod';
     env.VITE_PUBLIC_TSA_BOARD_URL =
       'https://d3063a7vb003az.cloudfront.net/airport-wait-times/public/current.json';
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: {
-          generatedAt: '2026-03-24T12:00:00.000Z',
-          refreshIntervalMinutes: 15,
-          airports: [],
-        },
-        requestId: 'req-tsa-prod-api-direct',
+        generatedAt: '2026-03-24T12:00:00.000Z',
+        refreshIntervalMinutes: 15,
+        airports: [],
       }),
     });
 
     const response = await fetchPublicAirportSecuritySummary();
 
-    expect(executeRecaptchaAction).toHaveBeenCalledWith(
-      'tsa_wait_times_public_lookup',
-      'test-site-key',
-    );
+    expect(executeRecaptchaAction).not.toHaveBeenCalled();
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://api.example.com/prod/airport-security/public-current',
+      'https://tsa-board.trypackai.com/airport-wait-times/public/current.json',
       expect.objectContaining({
         method: 'GET',
         headers: expect.objectContaining({
           Accept: 'application/json',
-          'X-Recaptcha-Token': 'test-recaptcha-token',
         }),
       }),
     );

@@ -58,3 +58,12 @@ export const generateLogoLabRun = async (
 
   return parseLogoLabResponse(response);
 };
+
+export const fetchLatestLogoLabRun = async (): Promise<LogoLabRun> => {
+  const response = await requestPublicApi<unknown>({
+    path: "/labs/logo-studio/latest",
+    method: "GET",
+  });
+
+  return parseLogoLabResponse(response);
+};

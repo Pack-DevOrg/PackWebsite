@@ -1,9 +1,9 @@
 import React from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { generateLogoLabRun } from "@/api/labs";
+import { fetchLatestLogoLabRun, generateLogoLabRun } from "@/api/labs";
 import { useI18n } from "@/i18n/I18nProvider";
 import { AuthCallbackSurface } from "@/pages/AuthCallbackPage";
 import type { LogoLabRun } from "@/schemas/labs";
@@ -1001,7 +1001,13 @@ const labsContent = {
       resultHeading: "Generated variations",
       resultHint:
         "Each image gets a fixed number so you can say which ones to keep. Internally the next run reuses the selected direction labels before generating again.",
+      latestHeading: "Latest generated round",
+      latestHint:
+        "This page loads the most recent generated set from disk automatically so you can review the icons first and only generate again when needed.",
+      generationControlsHeading: "Generate another round",
       openLocalFile: "Open local PNG",
+      selectVariantLabel: "Keep",
+      deselectVariantLabel: "Deselect",
     },
     brandAssets: {
       title: "Brand assets in one review surface.",
@@ -1172,7 +1178,13 @@ const labsContent = {
       resultHeading: "Variaciones generadas",
       resultHint:
         "Cada imagen recibe un número fijo para que puedas decir cuáles mantener. Internamente la siguiente corrida reutiliza las direcciones seleccionadas antes de volver a generar.",
+      latestHeading: "Última ronda generada",
+      latestHint:
+        "Esta página carga automáticamente desde disco el lote generado más reciente para que primero revises los iconos y solo generes otra vez cuando haga falta.",
+      generationControlsHeading: "Generar otra ronda",
       openLocalFile: "Abrir PNG local",
+      selectVariantLabel: "Conservar",
+      deselectVariantLabel: "Quitar",
     },
     brandAssets: {
       title: "Brand assets en una sola superficie de revisión.",
@@ -1385,6 +1397,12 @@ export const LabsLogoStudioPage: React.FC = () => {
   const [requestBrainCluster, setRequestBrainCluster] = React.useState(false);
   const [selectedPresetIds, setSelectedPresetIds] = React.useState<string[]>([]);
   const [currentRun, setCurrentRun] = React.useState<LogoLabRun | null>(null);
+  const latestRunQuery = useQuery({
+    queryKey: ["labs", "logo-studio", "latest-run"],
+    queryFn: fetchLatestLogoLabRun,
+    staleTime: 1000 * 30,
+    retry: false,
+  });
 
   const generateMutation = useMutation({
     mutationFn: generateLogoLabRun,
@@ -1393,6 +1411,7 @@ export const LabsLogoStudioPage: React.FC = () => {
       setSelectedPresetIds(run.selectedPresetIds);
     },
   });
+  const displayedRun = currentRun ?? latestRunQuery.data ?? null;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1417,7 +1436,7 @@ export const LabsLogoStudioPage: React.FC = () => {
   const selectedPresets = LOGO_VARIATION_PRESETS.filter((preset) =>
     selectedPresetIds.includes(preset.id),
   );
-  const selectedNumbers = (currentRun?.variants ?? [])
+  const selectedNumbers = (displayedRun?.variants ?? [])
     .filter((variant) => selectedPresetIds.includes(variant.presetId))
     .map((variant) => `#${variant.number}`);
 
@@ -1444,12 +1463,68 @@ export const LabsLogoStudioPage: React.FC = () => {
           {localizedContent.crumbs.logoStudio}
         </BreadcrumbLink>
       </BreadcrumbRow>
+      <SectionHeading>
+        <SectionTitle>{localizedContent.logoStudio.latestHeading}</SectionTitle>
+        <SectionDescription>
+          {displayedRun
+            ? `${displayedRun.companyName} · ${displayedRun.generatedAt}`
+            : localizedContent.logoStudio.latestHint}
+        </SectionDescription>
+      </SectionHeading>
+      {latestRunQuery.isError && !currentRun ? (
+        <Notice>
+          {latestRunQuery.error instanceof Error
+            ? latestRunQuery.error.message
+            : "No generated logo round is available yet."}
+        </Notice>
+      ) : null}
+      {displayedRun ? (
+        <ResultsGrid>
+          {displayedRun.variants.map((variant) => {
+            const isSelected = selectedPresetIds.includes(variant.presetId);
+            return (
+              <VariantCard key={variant.id} $selected={isSelected}>
+                <VariantImageFrame>
+                  <VariantNumber>{variant.number}</VariantNumber>
+                  <VariantImage
+                    src={variant.previewUrl}
+                    alt={`${variant.presetLabel} logo exploration`}
+                    loading="lazy"
+                  />
+                </VariantImageFrame>
+                <Meta>
+                  <Kicker>{variant.presetLabel}</Kicker>
+                  <CardTitle>{variant.direction}</CardTitle>
+                  <CardBody>{variant.prompt}</CardBody>
+                  <LinkRow>
+                    <PrimaryButton
+                      type="button"
+                      onClick={() => togglePresetSelection(variant.presetId)}
+                    >
+                      {isSelected
+                        ? localizedContent.logoStudio.deselectVariantLabel
+                        : `${localizedContent.logoStudio.selectVariantLabel} #${variant.number}`}
+                    </PrimaryButton>
+                    <SecondaryLink
+                      href={variant.fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {localizedContent.logoStudio.openLocalFile}
+                    </SecondaryLink>
+                  </LinkRow>
+                </Meta>
+              </VariantCard>
+            );
+          })}
+        </ResultsGrid>
+      ) : null}
       <StudioGrid>
         <StudioPanel>
           <SectionHeading>
-            <SectionTitle>{localizedContent.logoStudio.promptLabel}</SectionTitle>
+            <SectionTitle>{localizedContent.logoStudio.generationControlsHeading}</SectionTitle>
             <SectionDescription>
-              {localizedContent.logoStudio.promptHint}
+              {localizedContent.logoStudio.latestHint}
             </SectionDescription>
           </SectionHeading>
           <StudioForm onSubmit={handleSubmit}>
@@ -1556,53 +1631,6 @@ export const LabsLogoStudioPage: React.FC = () => {
           ) : null}
         </StudioPanel>
       </StudioGrid>
-      <SectionHeading>
-        <SectionTitle>{localizedContent.logoStudio.resultHeading}</SectionTitle>
-        <SectionDescription>
-          {currentRun
-            ? `${currentRun.companyName} · ${currentRun.generatedAt}`
-            : localizedContent.logoStudio.selectedEmpty}
-        </SectionDescription>
-      </SectionHeading>
-      {currentRun ? (
-        <ResultsGrid>
-          {currentRun.variants.map((variant) => {
-            const isSelected = selectedPresetIds.includes(variant.presetId);
-            return (
-              <VariantCard key={variant.id} $selected={isSelected}>
-                <VariantImageFrame>
-                  <VariantNumber>{variant.number}</VariantNumber>
-                  <VariantImage
-                    src={variant.previewUrl}
-                    alt={`${variant.presetLabel} logo exploration`}
-                    loading="lazy"
-                  />
-                </VariantImageFrame>
-                <Meta>
-                  <Kicker>{variant.presetLabel}</Kicker>
-                  <CardTitle>{variant.direction}</CardTitle>
-                  <CardBody>{variant.prompt}</CardBody>
-                  <LinkRow>
-                    <PrimaryButton
-                      type="button"
-                      onClick={() => togglePresetSelection(variant.presetId)}
-                    >
-                      {isSelected ? "Deselect" : `Keep #${variant.number}`}
-                    </PrimaryButton>
-                    <SecondaryLink
-                      href={variant.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {localizedContent.logoStudio.openLocalFile}
-                    </SecondaryLink>
-                  </LinkRow>
-                </Meta>
-              </VariantCard>
-            );
-          })}
-        </ResultsGrid>
-      ) : null}
     </LabsShell>
   );
 };

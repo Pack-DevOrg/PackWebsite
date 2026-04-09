@@ -124,6 +124,62 @@ const resolveLogoLabPythonCommand = (): {
 const toViteFsUrl = (absolutePath: string): string =>
   `/@fs${encodeURI(absolutePath)}`;
 
+const hydrateLogoLabManifest = (
+  manifest: Record<string, unknown>,
+): Record<string, unknown> => ({
+  ...manifest,
+  variants: Array.isArray(manifest['variants'])
+    ? manifest['variants'].map((variant) => {
+        const generatedImagePath =
+          typeof (variant as Record<string, unknown>)['generatedImagePath'] ===
+          'string'
+            ? ((variant as Record<string, unknown>)['generatedImagePath'] as string)
+            : '';
+        return {
+          ...variant,
+          previewUrl: toViteFsUrl(generatedImagePath),
+          fileUrl: encodeURI(`file://${generatedImagePath}`),
+        };
+      })
+    : [],
+});
+
+const handleLatestLogoLabRun = async (
+  _request: IncomingMessage,
+  response: ServerResponse,
+): Promise<void> => {
+  try {
+    const manifestPath = path.join(packAdsLogoLabOutputDir, 'latest-manifest.json');
+    if (!fs.existsSync(manifestPath)) {
+      writeJson(response, 404, {
+        success: false,
+        error: {
+          message: 'No generated logo round is available yet.',
+        },
+      });
+      return;
+    }
+
+    const manifest = JSON.parse(
+      fs.readFileSync(manifestPath, 'utf8'),
+    ) as Record<string, unknown>;
+    const validated = LogoLabRunSchema.parse(hydrateLogoLabManifest(manifest));
+    writeJson(response, 200, {
+      success: true,
+      data: validated,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Failed to load latest logo lab run.';
+    writeJson(response, 500, {
+      success: false,
+      error: {
+        message,
+      },
+    });
+  }
+};
+
 const handleLogoLabGenerate = async (
   request: IncomingMessage,
   response: ServerResponse,
@@ -179,25 +235,7 @@ const handleLogoLabGenerate = async (
     }
 
     const manifest = JSON.parse(stdout) as Record<string, unknown>;
-    const hydratedManifest = {
-      ...manifest,
-      variants: Array.isArray(manifest['variants'])
-        ? manifest['variants'].map((variant) => {
-            const generatedImagePath =
-              typeof (variant as Record<string, unknown>)['generatedImagePath'] ===
-              'string'
-                ? ((variant as Record<string, unknown>)['generatedImagePath'] as string)
-                : '';
-            return {
-              ...variant,
-              previewUrl: toViteFsUrl(generatedImagePath),
-              fileUrl: encodeURI(`file://${generatedImagePath}`),
-            };
-          })
-        : [],
-    };
-
-    const validated = LogoLabRunSchema.parse(hydratedManifest);
+    const validated = LogoLabRunSchema.parse(hydrateLogoLabManifest(manifest));
     writeJson(response, 200, {
       success: true,
       data: validated,
@@ -474,6 +512,17 @@ export default defineConfig(({ mode, ssrBuild }) => {
       {
         name: 'logo-lab-dev-api',
         configureServer(server) {
+          server.middlewares.use(
+            '/dev/labs/logo-studio/latest',
+            (request, response, next) => {
+              if (request.method !== 'GET') {
+                next();
+                return;
+              }
+
+              void handleLatestLogoLabRun(request, response);
+            },
+          );
           server.middlewares.use(
             '/dev/labs/logo-studio/generate',
             (request, response, next) => {

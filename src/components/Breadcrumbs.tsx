@@ -21,6 +21,7 @@ import PrefetchLink from './PrefetchLink';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import { useI18n } from '@/i18n/I18nProvider';
 import { stripLocaleFromPath } from '@/i18n/config';
+import { capabilityPageDefinitions } from '@/content/capabilityPages';
 
 /**
  * Main container for the breadcrumb navigation
@@ -129,6 +130,9 @@ const BreadcrumbsInstance: React.FC<BreadcrumbsProps> = ({ className }) => {
     '/privacy-request': t('breadcrumb.privacyRequest'),
     '/privacy-request/verify': t('breadcrumb.privacyRequestVerify'),
     '/accessibility': t('breadcrumb.accessibility'),
+    ...Object.fromEntries(
+      capabilityPageDefinitions.map((page) => [`/${page.slug}`, page.navLabel]),
+    ),
   };
 
   /**

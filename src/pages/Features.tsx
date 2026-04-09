@@ -13,10 +13,23 @@ import {
   Clock,
   Heart,
   Brain,
+  Map,
+  BadgeCheck,
+  RefreshCw,
+  Link2,
+  UserRound,
+  Share2,
+  Receipt,
 } from "lucide-react";
 import WaitlistForm from "../components/WaitlistForm";
+import PrefetchLink from "../components/PrefetchLink";
 import { useMountEffect } from "../hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import {
+  capabilityPageDefinitionMap,
+  capabilityPageDefinitions,
+  type CapabilityPageSlug,
+} from "@/content/capabilityPages";
 
 const FeaturesContainer = styled.section`
   max-width: 1200px;
@@ -137,13 +150,15 @@ const FeaturesGrid = styled.div`
   }
 `;
 
-const FeatureCard = styled.div`
+const FeatureCard = styled(PrefetchLink)`
   background: rgba(255, 255, 255, 0.03);
   border-radius: var(--border-radius);
   border: 1px solid rgba(255, 255, 255, 0.05);
   padding: var(--space-4);
   display: grid;
   gap: var(--space-3);
+  color: inherit;
+  text-decoration: none;
   transition: transform 160ms ease-out, box-shadow 160ms ease-out;
 
   &:hover {
@@ -258,7 +273,23 @@ const ComparisonItem = styled.li<{ $isPositive?: boolean }>`
 `;
 
 const Features: React.FC = () => {
-  const { locale } = useI18n();
+  const { locale, pathFor } = useI18n();
+  const capabilityIcons: Record<CapabilityPageSlug, React.ReactNode> = {
+    "travel-history": <Brain />,
+    "travel-stats": <Map />,
+    "loyalty-details": <BadgeCheck />,
+    "trip-planning-from-events": <Calendar />,
+    "trip-updates": <RefreshCw />,
+    "travel-booking": <PlaneTakeoff />,
+    "upcoming-trip-details": <Clock />,
+    "airport-security-wait-times": <Shield />,
+    "trip-calendar-sync": <Calendar />,
+    "connected-accounts": <Link2 />,
+    "traveler-profiles": <UserRound />,
+    "trip-sharing": <Share2 />,
+    "live-trip-views": <Smartphone />,
+    "trip-expenses": <Receipt />,
+  };
   const localizedContent =
     locale === "es"
       ? {
@@ -291,74 +322,42 @@ const Features: React.FC = () => {
             "Asistente inteligente de viajes que planifica viajes, coordina vuelos y hoteles mediante una experiencia de reserva integrada y crea itinerarios personalizados a través de conversación natural.",
           schemaAudience:
             "Viajeros, viajeros de negocios y personas que planifican vacaciones",
-          coreFeatures: [
-            {
-              icon: <MessageSquareText />,
-              title: "Planificador de viajes con IA por conversación",
-              description:
-                "Describe un viaje como 'una semana en España' y Pack puede convertirlo en un borrador estructurado usando conversación, contexto y preferencias.",
-            },
-            {
-              icon: <Brain />,
-              title: "Extrae y muestra viajes pasados",
-              description:
-                "Pack puede extraer historial de viaje y reconstruir vuelos, hoteles, autos y otros detalles para que tus viajes pasados queden visibles y reutilizables.",
-            },
-            {
-              icon: <Clock />,
-              title: "Muestra stats, mapas y contexto del viaje",
-              description:
-                "Stats, mapas y líneas de tiempo ayudan a entender de un vistazo cómo se conectan vuelos, hoteles, autos y eventos.",
-            },
-            {
-              icon: <Heart />,
-              title: "Guarda lealtad y preferencias del viajero",
-              description:
-                "Pack organiza números de viajero frecuente, programas de lealtad, perfiles, preferencias, necesidades de accesibilidad y detalles del viajero confiable.",
-            },
-            {
-              icon: <Calendar />,
-              title: "Planea viajes de forma proactiva",
-              description:
-                "Pack puede planear viajes desde eventos públicos, eventos privados de correo o calendario, y prompts sintéticos en lenguaje natural.",
-            },
-            {
-              icon: <MapPin />,
-              title: "Edita y actualiza viajes desde múltiples fuentes",
-              description:
-                "Chat, voz, fotos, email, calendario y metadatos de fotos pueden ayudar a editar, organizar y actualizar viajes de forma reactiva.",
-            },
-            {
-              icon: <Users />,
-              title: "Busca y reserva viajes",
-              description:
-                "Pack está diseñado para buscar y reservar vuelos, hoteles, autos y flujos relacionados de reserva dentro de una experiencia conectada.",
-            },
-            {
-              icon: <PlaneTakeoff />,
-              title: "Más utilidad antes y durante el viaje",
-              description:
-                "El viaje puede mostrar clima, tiempos, esperas de seguridad, eventos, traslados y acciones de transporte cuando se acerca la salida.",
-            },
-            {
-              icon: <Shield />,
-              title: "Esperas de seguridad y sincronización",
-              description:
-                "Pack muestra tiempos de seguridad aeroportuaria en app y web, y también puede sincronizar eventos del viaje al calendario del dispositivo.",
-            },
-            {
-              icon: <Smartphone />,
-              title: "Cuentas conectadas, colaboración y vistas en vivo",
-              description:
-                "Conecta cuentas externas, comparte viajes, colabora con grupos y mantén vistas en vivo del próximo viaje con acciones y estados útiles.",
-            },
-            {
-              icon: <Zap />,
-              title: "Organiza gastos del viaje",
-              description:
-                "Pack también está diseñado para organizar gastos relacionados con el viaje para que el costo total del viaje sea más legible.",
-            },
-          ],
+          coreFeatures: capabilityPageDefinitions.map((page) => ({
+            icon: capabilityIcons[page.slug],
+            href: page.slug,
+            title:
+              page.slug === "trip-planning-from-events"
+                ? "Planea viajes desde eventos y prompts"
+                : page.slug === "airport-security-wait-times"
+                  ? "Muestra esperas de seguridad aeroportuaria"
+                  : page.slug === "trip-calendar-sync"
+                    ? "Sincroniza eventos del viaje al calendario"
+                    : page.slug === "connected-accounts"
+                      ? "Conecta cuentas y proveedores externos"
+                      : page.slug === "trip-sharing"
+                        ? "Comparte viajes y coordina viajes en grupo"
+                        : page.slug === "live-trip-views"
+                          ? "Mantiene vistas en vivo del próximo viaje"
+                          : page.slug === "trip-expenses"
+                            ? "Organiza gastos del viaje"
+                            : capabilityPageDefinitionMap[page.slug].featureTitle,
+            description:
+              page.slug === "trip-planning-from-events"
+                ? "Pack puede partir de eventos públicos, eventos privados y prompts en lenguaje natural para armar un viaje antes de que la búsqueda se fragmente."
+                : page.slug === "airport-security-wait-times"
+                  ? "Pack puede mostrar tiempos de espera de seguridad en web y app como parte del contexto real del día de viaje."
+                  : page.slug === "trip-calendar-sync"
+                    ? "Los eventos del viaje pueden volver al calendario del dispositivo para que el horario del viaje viva donde ya miras tu día."
+                    : page.slug === "connected-accounts"
+                      ? "Pack puede conectar email, calendario y otras fuentes de viaje para arrancar desde más contexto y menos configuración manual."
+                      : page.slug === "trip-sharing"
+                        ? "Links, invitaciones, viajes vinculados, copias e importaciones ayudan a mantener el viaje colaborativo."
+                        : page.slug === "live-trip-views"
+                          ? "Las vistas del próximo viaje pueden permanecer visibles con estado, acciones y contexto rápido cuando estás en movimiento."
+                          : page.slug === "trip-expenses"
+                            ? "Los gastos pueden mantenerse unidos al viaje para que el costo total sea más legible después."
+                            : capabilityPageDefinitionMap[page.slug].featureDescription,
+          })),
         }
       : {
           pageTitle: "Why travelers use Pack as an AI travel planner",
@@ -390,74 +389,42 @@ const Features: React.FC = () => {
             "Intelligent AI travel assistant that plans trips, coordinates flights and hotels through an integrated booking experience, and creates personalized itineraries through natural conversation.",
           schemaAudience:
             "Travelers, Business Travelers, Vacation Planners",
-          coreFeatures: [
-            {
-              icon: <MessageSquareText />,
-              title: "AI travel planner by conversation",
-              description:
-                "Describe a trip like 'a week in Spain' and Pack can turn it into a structured travel draft using conversation, context, and preferences.",
-            },
-            {
-              icon: <Brain />,
-              title: "Extracts and displays past travel history",
-              description:
-                "Pack can extract travel history and reconstruct flights, hotels, cars, and related details so past trips become visible and reusable.",
-            },
-            {
-              icon: <Clock />,
-              title: "Shows travel stats, maps, and trip context",
-              description:
-                "Travel stats, maps, and timelines help show how flights, hotels, cars, and trip events connect at a glance.",
-            },
-            {
-              icon: <Heart />,
-              title: "Stores loyalty and traveler preferences",
-              description:
-                "Pack organizes loyalty numbers, program details, traveler profiles, trusted traveler details, accessibility needs, and booking preferences.",
-            },
-            {
-              icon: <Calendar />,
-              title: "Plans trips proactively",
-              description:
-                "Pack can plan trips from public events, private email and calendar events, and synthetic prompts in plain language.",
-            },
-            {
-              icon: <MapPin />,
-              title: "Edits and updates trips from many inputs",
-              description:
-                "Chat, voice, photos, email, calendar, and photo metadata can all help edit, organize, and reactively update trips.",
-            },
-            {
-              icon: <Users />,
-              title: "Searches and books travel",
-              description:
-                "Pack is designed to search and book flights, hotels, rental cars, and related travel booking workflows inside one connected experience.",
-            },
-            {
-              icon: <PlaneTakeoff />,
-              title: "Adds utility before and during the trip",
-              description:
-                "Upcoming trips can show weather, timing, airport security waits, trip events, drive times, and transportation actions.",
-            },
-            {
-              icon: <Shield />,
-              title: "Security waits and calendar sync",
-              description:
-                "Pack shows airport security wait times in the app and web experience, and can sync trip events to device calendars.",
-            },
-            {
-              icon: <Smartphone />,
-              title: "Connected accounts, sharing, and live trip views",
-              description:
-                "External accounts can be connected, trips can be shared and collaborated on, and upcoming trips can stay visible with live status and actions.",
-            },
-            {
-              icon: <Zap />,
-              title: "Organizes trip expenses",
-              description:
-                "Pack is also designed to organize travel expenses so the full cost of a trip is easier to track and review.",
-            },
-          ],
+          coreFeatures: capabilityPageDefinitions.map((page) => ({
+            icon: capabilityIcons[page.slug],
+            href: page.slug,
+            title:
+              page.slug === "trip-planning-from-events"
+                ? "Plans trips from events and prompts"
+                : page.slug === "airport-security-wait-times"
+                  ? "Shows airport security wait times"
+                  : page.slug === "trip-calendar-sync"
+                    ? "Syncs trip events to calendars"
+                    : page.slug === "connected-accounts"
+                      ? "Connects external accounts and providers"
+                      : page.slug === "trip-sharing"
+                        ? "Shares trips and supports group travel"
+                        : page.slug === "live-trip-views"
+                          ? "Keeps live upcoming-trip views visible"
+                          : page.slug === "trip-expenses"
+                            ? "Organizes trip expenses"
+                            : capabilityPageDefinitionMap[page.slug].featureTitle,
+            description:
+              page.slug === "trip-planning-from-events"
+                ? "Pack can start from public events, private timing, and plain-language prompts before search gets fragmented."
+                : page.slug === "airport-security-wait-times"
+                  ? "Pack can surface airport security waits in app and web as part of broader travel-day context."
+                  : page.slug === "trip-calendar-sync"
+                    ? "Trip events can flow back to device calendars so travel timing stays visible where you already manage your day."
+                    : page.slug === "connected-accounts"
+                      ? "Pack can connect email, calendar, and related travel sources so planning starts from richer travel context."
+                      : page.slug === "trip-sharing"
+                        ? "Links, invitations, linked trips, copies, and imports help keep collaborative travel from fragmenting."
+                        : page.slug === "live-trip-views"
+                          ? "Upcoming trips can stay visible with faster status and action surfaces when time matters."
+                          : page.slug === "trip-expenses"
+                            ? "Travel costs can stay attached to the trip record so the full cost is easier to review later."
+                            : capabilityPageDefinitionMap[page.slug].featureDescription,
+          })),
         };
   const coreFeatures = localizedContent.coreFeatures;
 
@@ -539,6 +506,7 @@ const Features: React.FC = () => {
           {coreFeatures.map((feature, index) => (
             <FeatureCard
               key={index}
+              to={pathFor(`/${feature.href}`)}
             >
               <FeatureHeader>
                 <FeatureIcon>{feature.icon}</FeatureIcon>

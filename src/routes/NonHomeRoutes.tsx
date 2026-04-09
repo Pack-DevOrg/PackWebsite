@@ -18,11 +18,15 @@ import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { lazyImportWithRetry } from "@/utils/lazyImportWithRetry";
+import { capabilityPageDefinitions } from "@/content/capabilityPages";
 import HomePage from "./HomePage";
 
 const FAQ = React.lazy(() => import("../pages/FAQ"));
 const Features = React.lazy(() => import("../pages/Features"));
 const HowItWorks = React.lazy(() => import("../pages/HowItWorks"));
+const CapabilityLandingPage = React.lazy(
+  () => import("../pages/CapabilityLandingPage")
+);
 const LiveActivityLab = React.lazy(() => import("../pages/LiveActivityLab"));
 const PrivacyRequestPage = React.lazy(() => import("../pages/PrivacyRequest"));
 const PrivacyRequestVerificationPage = React.lazy(
@@ -484,6 +488,19 @@ const NonHomeRoutes: React.FC = () => {
             </Layout>
           }
         />
+        {capabilityPageDefinitions.map((page) => (
+          <Route
+            key={page.slug}
+            path={`/${page.slug}`}
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <CapabilityLandingPage slug={page.slug} />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ))}
         {labsEnabled ? (
           <Route
             path="/lab"
@@ -786,6 +803,19 @@ const NonHomeRoutes: React.FC = () => {
               </Layout>
             }
           />
+          {capabilityPageDefinitions.map((page) => (
+            <Route
+              key={page.slug}
+              path={page.slug}
+              element={
+                <Layout>
+                  <Suspense fallback={null}>
+                    <CapabilityLandingPage slug={page.slug} />
+                  </Suspense>
+                </Layout>
+              }
+            />
+          ))}
           {labsEnabled ? (
             <Route path="lab" element={<Layout><Suspense fallback={null}><LiveActivityLab /></Suspense></Layout>} />
           ) : null}

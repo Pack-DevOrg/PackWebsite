@@ -6,7 +6,7 @@ import {
   WORLD_MAP_DIMENSIONS,
   worldPathData,
   worldProjectedPoints,
-} from "./heroJourneyData";
+} from "./heroJourneyMapData";
 
 const MapCard = styled.div`
   display: grid;

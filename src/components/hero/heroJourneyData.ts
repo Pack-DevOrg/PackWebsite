@@ -606,7 +606,7 @@ export const journeyShowcaseItems = [
     key: "plan",
     chapter: "Plan",
     eyebrow: "Plan",
-    title: "Simple\nPrompts\nBuild\nTrips",
+    title: "Simple\nprompts\nbuild\ntrips",
     meta: "A plain-language request becomes one structured outline.",
     desktopScrollSpan: "82svh",
     mobileScrollSpan: "68svh",

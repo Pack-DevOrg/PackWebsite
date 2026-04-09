@@ -1,4 +1,4 @@
-import React, { ReactNode, startTransition, useState } from "react";
+import React, { ReactNode, Suspense, startTransition, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useMountEffect } from "@/hooks/useMountEffect";
@@ -40,7 +40,6 @@ import {
   bookingSpecialRequestRows,
   journeyShowcaseItems,
   hotelOptions,
-  MAP_STYLE,
   outlineItems,
   outboundFlightOptions,
   parseDisplayAmount,
@@ -55,15 +54,13 @@ import {
   statsActivityRows,
   statsAirlineRows,
   statsPatternRows,
-  visitedCountryNames,
-  worldPathData,
-  worldProjectedPoints,
-  WORLD_MAP_DIMENSIONS,
 } from "./hero/heroJourneyData";
 import type {
   PlanFlightOption,
   PlanHotelOption,
 } from "./hero/heroJourneyData";
+
+const HeroJourneyMapCard = React.lazy(() => import("./hero/HeroJourneyMapCard"));
 
 const float = keyframes`
   0%, 100% {
@@ -1406,48 +1403,31 @@ const TravelSectionMeta = styled.p`
   line-height: 1.22;
 `;
 
-const MapCard = styled.div`
-  display: grid;
-  gap: 0.34rem;
-`;
-
-const MapCardTitle = styled.h5`
-  margin: 0;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.96);
-  font-size: 0.92rem;
-  font-weight: 700;
-`;
-
-const MapCardMeta = styled.p`
-  margin: -0.1rem 0 0;
-  text-align: center;
-  color: rgba(174, 174, 174, 0.94);
-  font-size: 0.56rem;
-`;
-
-const MiniMapFrame = styled.div`
-  padding: 0.84rem;
+const MapCardSkeleton = styled.div`
+  min-height: 11.75rem;
   border-radius: 1.06rem;
-  background: #303030;
   border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(243, 210, 122, 0.05) 0%,
+      rgba(243, 210, 122, 0.12) 42%,
+      rgba(231, 35, 64, 0.08) 58%,
+      rgba(243, 210, 122, 0.05) 100%
+    ),
+    #303030;
+  background-size: 200% 100%, auto;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
-`;
+  animation: journeyMapPlaceholderShift 1.8s ease-in-out infinite;
 
-const MiniMapNote = styled.p`
-  margin: 0;
-  text-align: center;
-  color: rgba(174, 174, 174, 0.86);
-  font-size: 0.5rem;
-  line-height: 1.12;
-`;
-
-const MiniMapSvg = styled.svg`
-  width: auto;
-  height: 6.8rem;
-  max-width: 100%;
-  display: block;
-  margin: 0 auto;
+  @keyframes journeyMapPlaceholderShift {
+    0% {
+      background-position: 100% 0, 0 0;
+    }
+    100% {
+      background-position: -100% 0, 0 0;
+    }
+  }
 `;
 
 const RecordsList = styled.div`
@@ -5267,47 +5247,9 @@ const ReviewShowcasePhone: React.FC<{
                     <TravelSectionMeta>A simple visited-countries map using the same world geometry pattern as the app stats page.</TravelSectionMeta>
                   </StatsSectionHeading>
 
-                  <MapCard>
-                    <MapCardTitle>Countries visited</MapCardTitle>
-                    <MapCardMeta>Visited countries are highlighted in yellow</MapCardMeta>
-                    <MiniMapFrame>
-                      <MiniMapSvg
-                        viewBox={`0 0 ${WORLD_MAP_DIMENSIONS.width} ${WORLD_MAP_DIMENSIONS.height}`}
-                        role="img"
-                        aria-label="World map with visited countries highlighted in yellow"
-                      >
-                        {worldPathData.map((path) => (
-                        <path
-                          key={path.id}
-                          d={path.d}
-                          fill={
-                            visitedCountryNames.has(path.name)
-                              ? MAP_STYLE.highlightFill
-                              : MAP_STYLE.baseFill
-                          }
-                            stroke={MAP_STYLE.stroke}
-                            strokeWidth={MAP_STYLE.strokeWidth}
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                          />
-                        ))}
-                        {worldProjectedPoints.map((point) => (
-                          <circle
-                            key={point.id}
-                            cx={point.x}
-                            cy={point.y}
-                            r={Math.min(5, 2 + Math.log(point.visits + 1))}
-                            fill={MAP_STYLE.dotColor}
-                            stroke={MAP_STYLE.dotStrokeColor}
-                            strokeWidth={MAP_STYLE.dotStrokeWidth}
-                          />
-                        ))}
-                      </MiniMapSvg>
-                      <MiniMapNote>
-                        Example stats card showing the countries layer from the real trips map in a simpler phone-sized view.
-                      </MiniMapNote>
-                    </MiniMapFrame>
-                  </MapCard>
+                  <Suspense fallback={<MapCardSkeleton aria-hidden="true" />}>
+                    <HeroJourneyMapCard />
+                  </Suspense>
 
 	                <StatsHighlightGrid>
 	                  <StatsHighlightCard>

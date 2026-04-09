@@ -129,7 +129,18 @@ run("aws", [
   appBucket,
   "--delete",
   "--exclude",
+  "assets/*",
+  "--exclude",
   "*.html",
+]);
+run("aws", [
+  "s3",
+  "sync",
+  `${distDir}/assets/`,
+  `${appBucket}/assets/`,
+  "--delete",
+  "--cache-control",
+  "public, max-age=31536000, immutable",
 ]);
 run("aws", [
   "s3",

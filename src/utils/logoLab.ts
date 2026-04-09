@@ -1,4 +1,4 @@
-import type { LogoLabGenerateRequest } from "@/schemas/labs";
+import type { LogoLabGenerateRequest } from "../schemas/labs";
 
 export type LogoVariationPreset = {
   readonly id: string;

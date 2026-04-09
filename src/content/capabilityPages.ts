@@ -384,7 +384,7 @@ export const capabilityPageDefinitions = [
     pageSubtitle:
       "Pack can help surface airport security wait times in app and web while keeping that signal connected to the rest of the trip.",
     intro:
-      "Airport security waits are useful on their own, but they get more valuable when they are attached to the actual trip, timing, and transport decisions around departure. That is the Pack angle.",
+      "Airport security waits are useful on their own, but they get more valuable when they are attached to the actual trip, timing, and transport decisions around departure.",
     signalsTitle: "What Pack can help surface",
     signals: [
       "Airport security wait information as one travel-day signal among several",
@@ -395,13 +395,13 @@ export const capabilityPageDefinitions = [
     helpPoints: [
       "Surface airport wait information alongside the rest of the upcoming trip",
       "Make the wait signal easier to use in context with drive times and departure timing",
-      "Provide a path from a public wait-time board into the broader Pack travel system",
+      "Keep public wait-time information connected to the rest of the trip",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
       "Airport wait information that sits closer to the trip it affects",
       "A clearer way to read wait signals alongside timing and transport plans",
-      "A path from the public wait board into the broader Pack trip view",
+      "Airport wait information that stays connected to the broader trip view",
     ],
     faqs: [
       {
@@ -425,7 +425,7 @@ export const capabilityPageDefinitions = [
       href: "/tsa",
       label: "View the public airport security board",
       description:
-        "Open Pack's live public TSA and airport security board to browse current checkpoints and airport wait signals.",
+        "Open the live public TSA and airport security board to browse current checkpoints and wait signals.",
     },
   },
   {

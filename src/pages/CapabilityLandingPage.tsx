@@ -319,7 +319,7 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
   return (
     <PageContainer>
       <Hero>
-        <Eyebrow>Pack capability</Eyebrow>
+        <Eyebrow>Pack feature</Eyebrow>
         <Title>{page.pageTitle}</Title>
         <Subtitle>{page.pageSubtitle}</Subtitle>
         <Intro>{page.intro}</Intro>
@@ -387,7 +387,7 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
       </FaqSection>
 
       <CapabilitySection>
-        <FaqTitle>Explore more Pack capabilities</FaqTitle>
+        <FaqTitle>Explore more Pack features</FaqTitle>
         <CapabilityChipList>
           {capabilityPageDefinitions.map((definition) => (
             <CapabilityChip

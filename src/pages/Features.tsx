@@ -360,13 +360,13 @@ const Features: React.FC = () => {
           })),
         }
       : {
-          pageTitle: "Why travelers use Pack as an AI travel planner",
+          pageTitle: "What Pack helps travelers do",
           pageSubtitle:
             "Pack turns travel context, past trips, confirmations, and preferences into one curated trip you can review with confidence.",
           heroTitle: "From scattered emails, photos, and plans to one finished trip",
           heroDescription:
             "Pack connects your inbox, calendar, past trips, preferences, and travel photos so planning feels curated instead of chaotic.",
-          comparisonTitle: "Search-first or itinerary-only travel apps vs. Pack",
+          comparisonTitle: "How Pack differs from search and itinerary apps",
           traditionalTitle: "Search and itinerary apps",
           packTitle: "Pack AI travel planner",
           traditionalItems: [

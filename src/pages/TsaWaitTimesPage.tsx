@@ -10,10 +10,9 @@ import {
 } from "lucide-react";
 import type { AirportWaitTimeObservation } from "@/schemas/airport-security";
 import { fetchPublicAirportSecuritySummary } from "@/api/airportSecurity";
-import { ApiRequestError, requestPublicApi } from "@/api/client";
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
-import { appConfig } from "@/config/appConfig";
+import { appConfig, isTryPackHostname } from "@/config/appConfig";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
@@ -63,8 +62,6 @@ const getGoogleButtonWidth = (mountWidth: number, viewportWidth: number): number
   return Math.floor(Math.min(resolvedMountWidth, maxWidth));
 };
 
-type GoogleCredentialSource = "one_tap" | "button";
-
 type GoogleCredentialResponse = {
   credential?: string;
   select_by?: string;
@@ -73,12 +70,14 @@ type GoogleCredentialResponse = {
 type GoogleAccountsId = {
   initialize: (options: {
     client_id: string;
-    callback: (response: GoogleCredentialResponse) => void;
+    callback?: (response: GoogleCredentialResponse) => void;
     auto_select?: boolean;
     cancel_on_tap_outside?: boolean;
     context?: "signin" | "signup" | "use";
     itp_support?: boolean;
     use_fedcm_for_prompt?: boolean;
+    ux_mode?: "popup" | "redirect";
+    login_uri?: string;
   }) => void;
   renderButton: (
     element: HTMLElement,
@@ -108,22 +107,6 @@ declare global {
     };
   }
 }
-
-type GoogleAuthBridgeResult = {
-  email: string;
-  emailVerified: boolean;
-  givenName?: string;
-  familyName?: string;
-  name?: string;
-  picture?: string;
-  cognitoSub: string;
-  cognitoUsername: string;
-  status:
-    | "created_and_linked"
-    | "linked_existing_local_user"
-    | "existing_google_user";
-  shouldContinueWithHostedLogin: true;
-};
 
 let googleGisScriptPromise: Promise<void> | null = null;
 
@@ -1709,6 +1692,23 @@ const resolveBootstrapAuthCallbackUrl = (): string | undefined => {
   return appConfig.cognitoRedirectUri;
 };
 
+const resolveGoogleGisLoginUri = (): string | undefined => {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  if (!isTryPackHostname(window.location.hostname)) {
+    return undefined;
+  }
+
+  const redirectPath = stripWaitlistModalQueryFlags(window.location.href);
+  const loginUri = new URL(`${appConfig.apiBaseUrl}/auth/google/bridge`);
+  loginUri.searchParams.set("mode", "redirect");
+  loginUri.searchParams.set("source", "tsa");
+  loginUri.searchParams.set("redirectPath", redirectPath);
+  return loginUri.toString();
+};
+
 const TsaWaitTimesPage: React.FC = () => {
   const { locale, pathFor } = useI18n();
   const acceptanceNotice = getAcceptanceNoticeLegalCopy(locale);
@@ -1720,7 +1720,6 @@ const TsaWaitTimesPage: React.FC = () => {
   const [openFaqId, setOpenFaqId] = useState<string | null>(FAQ_ITEMS[0]?.id ?? null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGoogleGisReady, setIsGoogleGisReady] = useState(false);
-  const [isGoogleBridgeLoading, setIsGoogleBridgeLoading] = useState(false);
   const [googleButtonWidth, setGoogleButtonWidth] = useState(0);
   const [googleBridgeError, setGoogleBridgeError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{
@@ -1732,16 +1731,13 @@ const TsaWaitTimesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const hasInitializedGoogleIdentityRef = useRef(false);
-  const isHandlingGoogleCredentialRef = useRef(false);
-  const handleGoogleCredentialRef = useRef<
-    ((credential: string, source: GoogleCredentialSource) => Promise<void>) | null
-  >(null);
   const resultsTopRef = useRef<HTMLElement | null>(null);
   const trimmedQuery = query.trim();
   const deferredAirportQuery = useDeferredValue(trimmedQuery.toLowerCase());
   const { trackCTAClick } = useConversionTracking();
   const bootstrapAuthCallbackUrl = resolveBootstrapAuthCallbackUrl();
   const hasGoogleGisConfigured = Boolean(appConfig.googleGisClientId);
+  const googleGisLoginUri = resolveGoogleGisLoginUri();
   const shouldShowGoogleRedirectFallback =
     !hasGoogleGisConfigured || !isGoogleGisReady || Boolean(googleBridgeError);
 
@@ -1893,72 +1889,6 @@ const TsaWaitTimesPage: React.FC = () => {
     });
   };
 
-  const handleGoogleBridgeCredential = async (
-    credential: string,
-    source: GoogleCredentialSource
-  ): Promise<void> => {
-    if (isHandlingGoogleCredentialRef.current || !credential) {
-      return;
-    }
-
-    isHandlingGoogleCredentialRef.current = true;
-    setGoogleBridgeError(null);
-    setIsGoogleBridgeLoading(true);
-
-    trackCTAClick(
-      source === "one_tap"
-        ? "TSA Waitlist Google One Tap"
-        : "TSA Waitlist GIS Button",
-      source === "one_tap"
-        ? "tsa_waits_google_one_tap"
-        : "tsa_waits_google_gis_button"
-    );
-
-    try {
-      const redirectPath =
-        typeof window === "undefined"
-          ? "/tsa"
-          : stripWaitlistModalQueryFlags(window.location.href);
-
-      const result = await requestPublicApi<
-        GoogleAuthBridgeResult,
-        { credential: string; redirectPath: string; source: "tsa" }
-      >({
-        path: "/auth/google/bridge",
-        method: "POST",
-        body: {
-          credential,
-          redirectPath,
-          source: "tsa",
-        },
-      });
-
-      if (!result.shouldContinueWithHostedLogin) {
-        throw new Error("Google bridge response did not request hosted login.");
-      }
-
-      setIsModalOpen(false);
-      startHostedGoogleLogin();
-    } catch (error) {
-      const isExpectedFallbackError =
-        error instanceof ApiRequestError ||
-        (error instanceof DOMException && error.name === "AbortError");
-
-      if (!isExpectedFallbackError && appConfig.environment !== "prod") {
-        console.warn("Failed to complete Google bridge sign-in", error);
-      }
-
-      setGoogleBridgeError(
-        "Google sign-in couldn't finish in-page. You can continue with the standard Google redirect below."
-      );
-    } finally {
-      isHandlingGoogleCredentialRef.current = false;
-      setIsGoogleBridgeLoading(false);
-    }
-  };
-
-  handleGoogleCredentialRef.current = handleGoogleBridgeCredential;
-
   const handleGoogleLogin = () => {
     trackCTAClick("TSA Waitlist Modal Google Login", "tsa_waits_modal_google_login");
     startHostedGoogleLogin();
@@ -1969,7 +1899,8 @@ const TsaWaitTimesPage: React.FC = () => {
       !isClient ||
       !isModalOpen ||
       status !== "unauthenticated" ||
-      !hasGoogleGisConfigured
+      !hasGoogleGisConfigured ||
+      !googleGisLoginUri
     ) {
       return;
     }
@@ -1990,19 +1921,12 @@ const TsaWaitTimesPage: React.FC = () => {
         if (!hasInitializedGoogleIdentityRef.current) {
           accountsId.initialize({
             client_id: appConfig.googleGisClientId,
-            callback: (response) => {
-              if (!response.credential) {
-                return;
-              }
-              void handleGoogleCredentialRef.current?.(
-                response.credential,
-                "one_tap"
-              );
-            },
             auto_select: false,
             cancel_on_tap_outside: true,
             context: "signin",
             itp_support: true,
+            ux_mode: "redirect",
+            login_uri: googleGisLoginUri,
           });
           hasInitializedGoogleIdentityRef.current = true;
         }
@@ -2578,16 +2502,11 @@ const TsaWaitTimesPage: React.FC = () => {
                     {googleBridgeError ? (
                       <GoogleBridgeErrorText>{googleBridgeError}</GoogleBridgeErrorText>
                     ) : null}
-                    {isGoogleBridgeLoading ? (
-                      <GoogleButtonStatus>
-                        Finishing Google sign-in…
-                      </GoogleButtonStatus>
-                    ) : null}
                     {shouldShowGoogleRedirectFallback ? (
                       <GoogleLoginButton
                         type="button"
                         onClick={handleGoogleLogin}
-                        disabled={status === "loading" || isGoogleBridgeLoading}
+                        disabled={status === "loading"}
                       >
                         <GoogleLogoWrap>
                           <GoogleMark />

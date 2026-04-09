@@ -55,10 +55,6 @@ export type LegalDocument = z.infer<typeof legalDocumentSchema> & {
   fallbackContent: string;
 };
 
-export function getDefaultLegalLocale(): string {
-  return legalDocumentsManifest.defaultLocale;
-}
-
 export function getLegalOverrideEnvVarName(): string {
   return legalDocumentsManifest.overrideEnvVar;
 }
@@ -85,11 +81,4 @@ export function getLegalDocumentOrThrow(
     ...document,
     fallbackContent: fallbackContentByExportName[document.fallbackExportName],
   };
-}
-
-export function getAllLegalDocuments(): LegalDocument[] {
-  return legalDocumentsManifest.documents.map((document) => ({
-    ...document,
-    fallbackContent: fallbackContentByExportName[document.fallbackExportName],
-  }));
 }

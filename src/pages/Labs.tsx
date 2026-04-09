@@ -805,6 +805,98 @@ const ResultsGrid = styled.div`
   }
 `;
 
+const IconWall = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border-radius: 24px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background:
+    radial-gradient(circle at top right, rgba(243, 210, 122, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(20, 19, 17, 0.98), rgba(8, 8, 8, 0.98));
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const IconWallHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+
+const IconWallTitle = styled.h3`
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const IconWallBody = styled.p`
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const IconWallGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 0.85rem;
+`;
+
+const IconWallItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+`;
+
+const IconWallSurface = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at top right, rgba(243, 210, 122, 0.1), transparent 42%),
+    linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(6, 6, 6, 1));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 22px rgba(0, 0, 0, 0.34);
+  overflow: hidden;
+`;
+
+const IconWallImage = styled.img`
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+`;
+
+const IconWallNumber = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.55rem;
+  height: 1.55rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: rgba(243, 210, 122, 0.95);
+  color: #14110d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.32);
+`;
+
+const IconWallLabel = styled.span`
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
 const VariantCard = styled.article<{ $selected: boolean }>`
   display: flex;
   flex-direction: column;
@@ -838,6 +930,53 @@ const VariantImage = styled.img`
   width: 100%;
   height: 100%;
   min-height: 17rem;
+  object-fit: contain;
+`;
+
+const VariantAppSizeDock = styled.div`
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.6rem 0.6rem;
+  border-radius: 16px;
+  background: rgba(8, 8, 8, 0.82);
+  border: 1px solid rgba(243, 210, 122, 0.18);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(8px);
+`;
+
+const VariantAppSizeLabel = styled.span`
+  font-size: 0.66rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 248, 236, 0.68);
+`;
+
+const VariantAppSizeSurface = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at top right, rgba(243, 210, 122, 0.1), transparent 42%),
+    linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(6, 6, 6, 1));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 20px rgba(0, 0, 0, 0.32);
+  overflow: hidden;
+`;
+
+const VariantAppSizeImage = styled.img`
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 `;
 
@@ -1479,45 +1618,84 @@ export const LabsLogoStudioPage: React.FC = () => {
         </Notice>
       ) : null}
       {displayedRun ? (
-        <ResultsGrid>
-          {displayedRun.variants.map((variant) => {
-            const isSelected = selectedPresetIds.includes(variant.presetId);
-            return (
-              <VariantCard key={variant.id} $selected={isSelected}>
-                <VariantImageFrame>
-                  <VariantNumber>{variant.number}</VariantNumber>
-                  <VariantImage
-                    src={variant.previewUrl}
-                    alt={`${variant.presetLabel} logo exploration`}
-                    loading="lazy"
-                  />
-                </VariantImageFrame>
-                <Meta>
-                  <Kicker>{variant.presetLabel}</Kicker>
-                  <CardTitle>{variant.direction}</CardTitle>
-                  <CardBody>{variant.prompt}</CardBody>
-                  <LinkRow>
-                    <PrimaryButton
-                      type="button"
-                      onClick={() => togglePresetSelection(variant.presetId)}
-                    >
-                      {isSelected
-                        ? localizedContent.logoStudio.deselectVariantLabel
-                        : `${localizedContent.logoStudio.selectVariantLabel} #${variant.number}`}
-                    </PrimaryButton>
-                    <SecondaryLink
-                      href={variant.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {localizedContent.logoStudio.openLocalFile}
-                    </SecondaryLink>
-                  </LinkRow>
-                </Meta>
-              </VariantCard>
-            );
-          })}
-        </ResultsGrid>
+        <>
+          <IconWall aria-label="App-size icon comparison">
+            <IconWallHeader>
+              <IconWallTitle>App-Size Comparison</IconWallTitle>
+              <IconWallBody>
+                This view approximates home-screen scale so you can judge what
+                actually reads as an iPhone app icon before looking at the large
+                previews.
+              </IconWallBody>
+            </IconWallHeader>
+            <IconWallGrid>
+              {displayedRun.variants.map((variant) => (
+                <IconWallItem key={`${variant.id}-app-size`}>
+                  <IconWallNumber>{variant.number}</IconWallNumber>
+                  <IconWallSurface>
+                    <IconWallImage
+                      src={variant.previewUrl}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                    />
+                  </IconWallSurface>
+                  <IconWallLabel>#{variant.number}</IconWallLabel>
+                </IconWallItem>
+              ))}
+            </IconWallGrid>
+          </IconWall>
+          <ResultsGrid>
+            {displayedRun.variants.map((variant) => {
+              const isSelected = selectedPresetIds.includes(variant.presetId);
+              return (
+                <VariantCard key={variant.id} $selected={isSelected}>
+                  <VariantImageFrame>
+                    <VariantNumber>{variant.number}</VariantNumber>
+                    <VariantImage
+                      src={variant.previewUrl}
+                      alt={`${variant.presetLabel} logo exploration`}
+                      loading="lazy"
+                    />
+                    <VariantAppSizeDock>
+                      <VariantAppSizeLabel>App Size</VariantAppSizeLabel>
+                      <VariantAppSizeSurface>
+                        <VariantAppSizeImage
+                          src={variant.previewUrl}
+                          alt=""
+                          aria-hidden="true"
+                          loading="lazy"
+                        />
+                      </VariantAppSizeSurface>
+                    </VariantAppSizeDock>
+                  </VariantImageFrame>
+                  <Meta>
+                    <Kicker>{variant.presetLabel}</Kicker>
+                    <CardTitle>{variant.direction}</CardTitle>
+                    <CardBody>{variant.prompt}</CardBody>
+                    <LinkRow>
+                      <PrimaryButton
+                        type="button"
+                        onClick={() => togglePresetSelection(variant.presetId)}
+                      >
+                        {isSelected
+                          ? localizedContent.logoStudio.deselectVariantLabel
+                          : `${localizedContent.logoStudio.selectVariantLabel} #${variant.number}`}
+                      </PrimaryButton>
+                      <SecondaryLink
+                        href={variant.fileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {localizedContent.logoStudio.openLocalFile}
+                      </SecondaryLink>
+                    </LinkRow>
+                  </Meta>
+                </VariantCard>
+              );
+            })}
+          </ResultsGrid>
+        </>
       ) : null}
       <StudioGrid>
         <StudioPanel>

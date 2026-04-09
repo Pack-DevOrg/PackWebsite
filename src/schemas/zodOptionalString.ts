@@ -22,14 +22,3 @@ export function optionalString<T extends z.ZodString>(schema: T) {
     })
     .optional();
 }
-
-/**
- * Pre-configured optional string schemas for common use cases
- */
-export const optionalStringSchemas = {
-  name: () => optionalString(z.string().min(1, "Name cannot be empty").max(100)),
-  email: () => optionalString(z.string().email("Please enter a valid email")),
-  phone: () => optionalString(z.string().min(1, "Phone number cannot be empty")),
-  text: (minLength = 1, maxLength = 1000, message = "Field cannot be empty") => 
-    optionalString(z.string().min(minLength, message).max(maxLength)),
-};

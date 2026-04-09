@@ -65,7 +65,3 @@ export function localizePath(
 
   return normalizedPath;
 }
-
-export function getLocaleLabel(_locale: SupportedLocale): string {
-  return 'English';
-}

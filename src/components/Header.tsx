@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
 import PrefetchLink from "./PrefetchLink";
+import logoPMark from "@/assets/logo.png";
 
 const StyledHeader = styled.header`
   display: flex;
@@ -45,31 +46,20 @@ const LogoLink = styled(PrefetchLink)`
   justify-self: start;
 `;
 
-const LogoWordmark = styled.span`
-  display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #feab00 0%,
-    #fd9c00 30%,
-    #fc6c01 62%,
-    #f6151d 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  font-size: 1.32rem;
-  font-weight: 800;
-  letter-spacing: 0.015em;
-  white-space: nowrap;
-  line-height: 1.05;
+const LogoMark = styled.img`
+  display: block;
+  width: 2.15rem;
+  height: 2.15rem;
+  object-fit: contain;
 
   @media (max-width: 768px) {
-    font-size: 1.18rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   @media (max-width: 430px) {
-    font-size: 1.06rem;
+    width: 1.85rem;
+    height: 1.85rem;
   }
 `;
 
@@ -143,7 +133,7 @@ const Header: React.FC = () => {
       <div className="container">
         <HeaderContainer>
           <LogoLink to={pathFor("/")} aria-label={t("common.goToHome")}>
-            <LogoWordmark>Pack.</LogoWordmark>
+            <LogoMark src={logoPMark} alt="Pack" />
           </LogoLink>
 
           <Navigation aria-label="Primary">

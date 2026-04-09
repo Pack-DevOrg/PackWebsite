@@ -52,11 +52,11 @@ export const capabilityPageDefinitions = [
       "Reuse prior travel context when planning similar trips again",
       "Keep one clearer view of your travel footprint instead of scattered records",
     ],
-    outputTitle: "What makes this page worth ranking",
+    outputTitle: "What you can do with it",
     outputPoints: [
-      "It targets a real travel job that is still poorly served by generic booking sites",
-      "It connects directly to Pack's ability to work from past travel context, not just the next search",
-      "It gives you a clean place to answer high-intent questions about reconstructing prior trips",
+      "See older trips in a form that is easier to review and reuse",
+      "Use past travel as context when a similar trip comes up again",
+      "Keep more of your travel record in one readable place",
     ],
     faqs: [
       {
@@ -70,9 +70,9 @@ export const capabilityPageDefinitions = [
           "No. Where official provider or government records apply, those remain the source of truth. Pack can help organize the travel details around them.",
       },
       {
-        question: "Why make a separate page for travel history?",
+        question: "How is travel history different from planning the next trip?",
         answer:
-          "Because travelers search for this as its own job to be done. It is a different intent from general trip planning or booking.",
+          "Travel history is about organizing and reusing what already happened. Planning the next trip is about building what comes next.",
       },
     ],
     related: ["travel-stats", "loyalty-details", "trip-planning-from-events"],
@@ -88,7 +88,7 @@ export const capabilityPageDefinitions = [
       "Pack can help turn travel records into maps, timelines, and stats across flights, hotels, and rental cars.",
     intro:
       "Travel data gets more useful when it is visible, comparable, and easy to scan. Pack is designed to turn trip records into something you can actually understand at a glance.",
-    signalsTitle: "What this page can speak to",
+    signalsTitle: "What Pack can show",
     signals: [
       "Trip maps that show where your travel has taken you",
       "Stats that summarize travel patterns instead of hiding them in separate bookings",
@@ -100,11 +100,11 @@ export const capabilityPageDefinitions = [
       "Make repeated routes, destinations, and trip patterns easier to spot",
       "Turn travel history into something more visual and memorable",
     ],
-    outputTitle: "Why this is distinct",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Search results for travel stats and maps are still fragmented",
-      "This gives Pack a differentiated page that is not just another booking page",
-      "It naturally connects past-trip data to future planning",
+      "A more visual way to understand how your trips connect",
+      "Maps and timelines that make travel patterns easier to spot",
+      "Context that can carry forward into future planning",
     ],
     faqs: [
       {
@@ -136,7 +136,7 @@ export const capabilityPageDefinitions = [
       "Pack can help organize loyalty numbers and program details across flights, hotels, and rental cars instead of leaving them scattered across bookings.",
     intro:
       "Loyalty details are easy to lose even though they matter every time you travel. Pack is designed to keep these details closer to the trip and the traveler profile they belong to.",
-    signalsTitle: "What this page is about",
+    signalsTitle: "What Pack can keep organized",
     signals: [
       "Traveler numbers and program details across multiple travel categories",
       "Travel profiles that remember recurring preferences and account context",
@@ -148,11 +148,11 @@ export const capabilityPageDefinitions = [
       "Reduce repeated searching for the same frequent traveler information",
       "Make profiles more reusable across future bookings and trip edits",
     ],
-    outputTitle: "Why this matters for SEO",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Loyalty-number organization is a real problem with weaker search competition",
-      "It connects naturally to Pack's traveler profile story",
-      "It is more specific and defensible than broad travel-planner claims",
+      "Loyalty details that stay closer to the trip instead of separate notes",
+      "Less repeated searching for the same account information",
+      "Traveler profiles that are easier to reuse later",
     ],
     faqs: [
       {
@@ -168,7 +168,7 @@ export const capabilityPageDefinitions = [
       {
         question: "Why make loyalty details a standalone page?",
         answer:
-          "Because travelers often search for this need directly, and it is a distinct problem from itinerary management or trip search.",
+          "Because loyalty details are a separate part of staying ready to travel, even before the next booking starts.",
       },
     ],
     related: ["traveler-profiles", "travel-history", "travel-booking"],
@@ -196,11 +196,11 @@ export const capabilityPageDefinitions = [
       "Reduce the work of translating meetings and events into booked travel",
       "Use time constraints and trip context before search gets fragmented",
     ],
-    outputTitle: "Why this page is valuable",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Planning from events is much less crowded than generic trip-planner SEO",
-      "It highlights one of Pack's strongest differentiated behaviors",
-      "It gives you a concrete way to explain proactive planning without overclaiming automation",
+      "A trip can take shape earlier, while the reason for travel is still clear",
+      "Meetings, events, and timing constraints stay closer to the itinerary",
+      "Less translation from schedule changes into manual trip planning work",
     ],
     faqs: [
       {
@@ -244,11 +244,11 @@ export const capabilityPageDefinitions = [
       "Reduce manual itinerary cleanup after changes happen elsewhere",
       "Make travel edits feel closer to conversation than spreadsheet maintenance",
     ],
-    outputTitle: "Why this is worth a page",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Reactive trip updates are a separate search intent from planning",
-      "Few travel sites describe this well, which makes the search surface weaker",
-      "It reinforces Pack's system-level positioning instead of only booking intent",
+      "One organized trip record that can keep up with changing plans",
+      "Less manual cleanup after updates happen in other channels",
+      "Trip changes that feel closer to conversation than admin work",
     ],
     faqs: [
       {
@@ -264,7 +264,7 @@ export const capabilityPageDefinitions = [
       {
         question: "Why does this need its own page?",
         answer:
-          "Because updating a trip after plans move is a different problem from creating the trip in the first place.",
+          "Because updating a trip after plans move is a different part of travel than creating the trip in the first place.",
       },
     ],
     related: ["trip-planning-from-events", "trip-sharing", "upcoming-trip-details"],
@@ -280,7 +280,7 @@ export const capabilityPageDefinitions = [
       "Pack is designed to search and book flights, hotels, and rental cars without losing the travel context that shaped the trip.",
     intro:
       "The booking moment is where most travel tools take over, but it is also where context often falls apart. Pack is built so search and booking stay connected to the itinerary, traveler details, and planning logic around them.",
-    signalsTitle: "What this page covers",
+    signalsTitle: "What Pack can handle",
     signals: [
       "Flight, hotel, and rental car workflows as parts of one trip",
       "A more connected relationship between planning, review, and booking",
@@ -292,11 +292,11 @@ export const capabilityPageDefinitions = [
       "Keep booking details tied to the broader itinerary view",
       "Reduce the disconnect between trip planning and trip action",
     ],
-    outputTitle: "Why this deserves its own landing page",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Booking intent is large, but this page narrows it to Pack's connected-trip angle",
-      "It gives you a clearer page for flights, hotels, and rental cars together",
-      "It complements more differentiated pages without replacing them",
+      "Search and booking that stay tied to the itinerary you already reviewed",
+      "Less disconnect between planning the trip and acting on it",
+      "A clearer view of flights, hotels, and rental cars as one trip",
     ],
     faqs: [
       {
@@ -305,9 +305,9 @@ export const capabilityPageDefinitions = [
           "Yes. Pack is designed around connected booking workflows across those core travel categories.",
       },
       {
-        question: "Is this page just another generic booking page?",
+        question: "Is this just a generic booking flow?",
         answer:
-          "No. The point is to explain Pack's booking workflow as part of a larger trip system, not as a bare search form.",
+          "No. Pack is designed to keep booking tied to the itinerary, traveler details, and trip context around it.",
       },
       {
         question: "Why separate travel booking from proactive planning?",
@@ -340,11 +340,11 @@ export const capabilityPageDefinitions = [
       "Keep more of the departure-day questions in one place",
       "Support a travel workflow that stays useful after booking",
     ],
-    outputTitle: "Why this is a strong SEO page",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Travel-day utility is a strong job to be done with weaker competition",
-      "It gives Pack a page that feels operational, not just inspirational",
-      "It links naturally into TSA waits, calendar sync, and live trip views",
+      "A quicker read on what matters before departure",
+      "More travel-day questions answered in one place",
+      "A trip workflow that stays useful after booking",
     ],
     faqs: [
       {
@@ -360,7 +360,7 @@ export const capabilityPageDefinitions = [
       {
         question: "Why make a separate upcoming-trip page?",
         answer:
-          "Because the user intent is different from planning and booking. Travelers often want fast answers about the next trip, not a full planning workflow.",
+          "Because the next-trip view is about staying ready to move, not about planning the whole trip from scratch.",
       },
     ],
     related: ["airport-security-wait-times", "trip-calendar-sync", "live-trip-views"],
@@ -376,7 +376,7 @@ export const capabilityPageDefinitions = [
       "Pack can help surface airport security wait times in app and web while keeping that signal connected to the rest of the trip.",
     intro:
       "Airport security waits are useful on their own, but they get more valuable when they are attached to the actual trip, timing, and transport decisions around departure. That is the Pack angle.",
-    signalsTitle: "What this page should explain",
+    signalsTitle: "What Pack can help surface",
     signals: [
       "Airport security wait information as one travel-day signal among several",
       "A workflow that helps travelers interpret the signal instead of just checking a number",
@@ -388,11 +388,11 @@ export const capabilityPageDefinitions = [
       "Make the wait signal easier to use in context with drive times and departure timing",
       "Provide a path from a public wait-time board into the broader Pack travel system",
     ],
-    outputTitle: "Why this page is strategically useful",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Airport-security intent is recurring and operationally valuable",
-      "This page can rank separately from the public TSA board itself",
-      "It gives you a safe place to describe Pack's role without overstating source accuracy",
+      "Airport wait information that sits closer to the trip it affects",
+      "A clearer way to read wait signals alongside timing and transport plans",
+      "A path from the public wait board into the broader Pack trip view",
     ],
     faqs: [
       {
@@ -430,7 +430,7 @@ export const capabilityPageDefinitions = [
       "Pack is designed to sync trip events to device calendars so departures, stays, and key travel timing stay visible alongside the rest of life.",
     intro:
       "Travel timing becomes much easier to trust when it shows up where people already check their day. Pack uses calendar sync as part of a larger trip system, not as a separate export afterthought.",
-    signalsTitle: "What this page covers",
+    signalsTitle: "What Pack can keep in sync",
     signals: [
       "Trip events flowing into calendars people already use every day",
       "Travel timing that stays visible without manual copying",
@@ -442,11 +442,11 @@ export const capabilityPageDefinitions = [
       "Reduce missed timing caused by disconnected itinerary details",
       "Make travel updates easier to propagate across the workflow",
     ],
-    outputTitle: "Why this is an SEO opportunity",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Trip calendar sync is a concrete, high-intent search need",
-      "Search results are still thinner than mainstream trip-planner terms",
-      "It supports Pack's story around travel staying useful outside the app too",
+      "Trip timing that stays visible where you already manage your day",
+      "Less manual copying between itineraries and calendars",
+      "Travel updates that are easier to keep in sync",
     ],
     faqs: [
       {
@@ -490,11 +490,11 @@ export const capabilityPageDefinitions = [
       "Make planning and organization more context-aware from the start",
       "Support a broader travel system instead of a standalone search session",
     ],
-    outputTitle: "Why this deserves a dedicated page",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Connected accounts are central to how Pack works, but different from planning or booking pages",
-      "It supports search intent around email and calendar-connected travel tools",
-      "It lets you explain the role of account connections without naming providers aggressively",
+      "Richer travel context from the start of planning",
+      "Less manual forwarding and setup across the workflow",
+      "A stronger base for history, profiles, and trip updates",
     ],
     faqs: [
       {
@@ -510,7 +510,7 @@ export const capabilityPageDefinitions = [
       {
         question: "Why make this a standalone page?",
         answer:
-          "Because account connection is a meaningful product behavior on its own, especially for travelers who want less manual trip setup.",
+          "Because connected accounts are one of the ways Pack reduces manual trip setup and keeps more travel context in one place.",
       },
     ],
     related: ["trip-planning-from-events", "trip-calendar-sync", "travel-history"],
@@ -538,11 +538,11 @@ export const capabilityPageDefinitions = [
       "Make future trip planning and booking more consistent",
       "Reduce friction from re-entering the same context repeatedly",
     ],
-    outputTitle: "Why this page fits Pack",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Profiles and preferences are central to Pack's differentiated story",
-      "This page speaks to a concrete user need with less crowded search results",
-      "It links naturally to loyalty details, booking, and travel history",
+      "Traveler details that are easier to reuse across future trips",
+      "More consistent planning and booking from one trip to the next",
+      "Less friction from re-entering the same context repeatedly",
     ],
     faqs: [
       {
@@ -556,9 +556,9 @@ export const capabilityPageDefinitions = [
           "Loyalty details are one subset of a broader traveler profile that can also include preferences and accessibility context.",
       },
       {
-        question: "Why does this matter for Pack's SEO?",
+        question: "Why make traveler profiles a separate page?",
         answer:
-          "Because it gives you a concrete, product-real page around reusable traveler context instead of only broad planning language.",
+          "Because traveler profiles are a real part of how Pack works, separate from trip search, booking, or travel history.",
       },
     ],
     related: ["loyalty-details", "travel-booking", "connected-accounts"],
@@ -574,7 +574,7 @@ export const capabilityPageDefinitions = [
       "Pack is designed to support sharing, invitations, linked trips, and group travel workflows so the itinerary can stay collaborative instead of fragmenting.",
     intro:
       "Group travel becomes messy fast because conversations, copies, and bookings split across too many places. Pack treats collaboration as part of the trip itself.",
-    signalsTitle: "What this page is really about",
+    signalsTitle: "What Pack can keep together",
     signals: [
       "Links and invitations that keep travelers aligned around the same trip",
       "Imports, copies, and linked-trip workflows when plans branch or expand",
@@ -586,11 +586,11 @@ export const capabilityPageDefinitions = [
       "Reduce the drift that happens when group travel fans out across channels",
       "Make linked or copied trips easier to manage when plans diverge",
     ],
-    outputTitle: "Why this page is useful",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Trip sharing is a distinct job to be done, not just a sub-point under planning",
-      "The search field is less mature than generic itinerary SEO",
-      "It makes Pack look more like a travel system and less like a solo booking tool",
+      "A cleaner shared view of the trip for multiple travelers",
+      "Less drift across messages, copies, and side conversations",
+      "More structure when one trip turns into several linked plans",
     ],
     faqs: [
       {
@@ -606,7 +606,7 @@ export const capabilityPageDefinitions = [
       {
         question: "Why does this need its own page?",
         answer:
-          "Because collaborative travel is a separate user need from solo planning or booking.",
+          "Because collaborative travel is its own part of the product, with different needs from solo planning or solo booking.",
       },
     ],
     related: ["trip-updates", "live-trip-views", "trip-expenses"],
@@ -634,11 +634,11 @@ export const capabilityPageDefinitions = [
       "Make travel-day details feel more immediate and less buried",
       "Connect operational trip context to more glanceable surfaces",
     ],
-    outputTitle: "Why this is a useful page to own",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Live trip views and lock-screen travel intent are still under-served in SEO",
-      "It gives Pack a modern product page that stands apart from generic itinerary sites",
-      "It ties cleanly into upcoming-trip details and airport-security context",
+      "Trip status and actions that are easier to check quickly",
+      "More immediate access to what matters when time is tight",
+      "A travel-day experience that stays useful outside the main itinerary screen",
     ],
     faqs: [
       {
@@ -670,7 +670,7 @@ export const capabilityPageDefinitions = [
       "Pack can help organize trip expenses so the cost of travel is easier to review in the same place as the itinerary.",
     intro:
       "Travel costs get harder to understand when they break away from the trip itself. Pack treats expenses as part of the travel record rather than an unrelated afterthought.",
-    signalsTitle: "What this page should communicate",
+    signalsTitle: "What Pack can keep attached to the trip",
     signals: [
       "Trip expenses as part of the same system as flights, hotels, and cars",
       "A clearer relationship between the itinerary and what the trip actually cost",
@@ -682,11 +682,11 @@ export const capabilityPageDefinitions = [
       "Make it easier to review the total picture of a trip later",
       "Support future planning with a better memory of what travel really cost",
     ],
-    outputTitle: "Why this is a good search page",
+    outputTitle: "What you get from it",
     outputPoints: [
-      "Trip-expense search results are still relatively fragmented",
-      "It is a concrete need that fits Pack's broader system-level story",
-      "It strengthens the link between past travel, booking, and review",
+      "Trip costs that stay attached to the itinerary instead of separate notes",
+      "An easier way to review the full cost of travel later",
+      "Better memory of what trips actually cost when planning again",
     ],
     faqs: [
       {
@@ -700,9 +700,9 @@ export const capabilityPageDefinitions = [
           "Because the cost of a trip is easier to understand when it stays attached to the itinerary and travel history around it.",
       },
       {
-        question: "Why make this its own page?",
+        question: "How are trip expenses different from itinerary planning?",
         answer:
-          "Because expense organization is a different travel need from itinerary planning, and it has its own search intent.",
+          "Itinerary planning is about shaping the trip. Trip expenses are about keeping the cost of that trip readable and connected afterward.",
       },
     ],
     related: ["travel-stats", "travel-booking", "travel-history"],
@@ -717,4 +717,3 @@ export const capabilityPageDefinitionMap: Record<
 > = Object.fromEntries(
   capabilityPageDefinitions.map((definition) => [definition.slug, definition])
 ) as Record<CapabilityPageSlug, CapabilityPageDefinition>;
-

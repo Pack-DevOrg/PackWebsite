@@ -1,7 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 import GlobalStyles from "../styles/GlobalStyles";
 import { useI18n } from "../i18n/I18nProvider";
+import { useMountEffect } from "@/hooks/useMountEffect";
 import Header from "./Header";
 import Breadcrumbs from "./Breadcrumbs";
 
@@ -61,9 +63,63 @@ const HeaderLayer = styled.div`
   z-index: 2;
 `;
 
+const TopAnchor = styled.div`
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+`;
+
 interface LayoutProps {
   children: React.ReactNode;
 }
+
+const RouteScrollResetInstance: React.FC<{
+  readonly anchorRef: React.RefObject<HTMLDivElement | null>;
+}> = ({ anchorRef }) => {
+  useMountEffect(() => {
+    if (typeof window === "undefined" || window.location.hash) {
+      return;
+    }
+
+    const scrollToHeader = () => {
+      const anchor = anchorRef.current;
+      if (anchor) {
+        anchor.scrollIntoView({ block: "start", inline: "nearest" });
+      }
+
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    scrollToHeader();
+
+    const rafId = window.requestAnimationFrame(() => {
+      scrollToHeader();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+    };
+  });
+
+  return null;
+};
+
+const RouteScrollReset: React.FC = () => {
+  const location = useLocation();
+  const routeKey = `${location.pathname}${location.search}`;
+  const anchorRef = React.useRef<HTMLDivElement | null>(null);
+
+  return (
+    <>
+      <TopAnchor ref={anchorRef} aria-hidden="true" />
+      <RouteScrollResetInstance key={routeKey} anchorRef={anchorRef} />
+    </>
+  );
+};
 
 /**
  * @component Layout
@@ -100,6 +156,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <StyledLayout>
         <AmbientGlow aria-hidden="true" />
         <AmbientGrid aria-hidden="true" />
+        <RouteScrollReset />
         <a className="skip-link" href="#main-content">
           {t("common.skipToContent")}
         </a>

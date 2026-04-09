@@ -1,11 +1,19 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { imagetools } from 'vite-imagetools';
-import {execFileSync} from 'node:child_process';
+import {execFile, execFileSync} from 'node:child_process';
 import {createHmac} from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {promisify} from 'node:util';
+import type {IncomingMessage, ServerResponse} from 'node:http';
+import {LogoLabGenerateRequestSchema, LogoLabRunSchema} from './src/schemas/labs';
+import {
+  LOGO_BRANDING_RESEARCH_PRINCIPLES,
+  createLogoVariationPlan,
+} from './src/utils/logoLab';
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
@@ -35,6 +43,15 @@ const zodModuleDir = resolveModuleDir('zod');
 const AWS_REGION = 'us-east-1';
 const LEGACY_SERVER_STACK_PREFIX = 'doneaiserver-';
 const TSA_BOARD_STACK_OUTPUT_KEY = 'AirportWaitTimePublicBoardUrl';
+const packAdsDir = path.join(repoRootDir, 'PackAds');
+const packAdsLogoLabOutputDir = path.join(
+  packAdsDir,
+  'demo_project',
+  'assets',
+  'generated_images',
+  'logo_lab',
+);
+const execFileAsync = promisify(execFile);
 
 function isUsablePublicTsaBoardUrl(
   candidateUrl: string,
@@ -66,6 +83,130 @@ const getLocalDevBypassAction = (requestPath: string): string | null => {
   }
 
   return null;
+};
+
+const readRequestBody = async (request: IncomingMessage): Promise<string> => {
+  const chunks: Buffer[] = [];
+  for await (const chunk of request) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks).toString('utf8');
+};
+
+const writeJson = (
+  response: ServerResponse,
+  statusCode: number,
+  body: unknown,
+): void => {
+  response.statusCode = statusCode;
+  response.setHeader('Content-Type', 'application/json');
+  response.end(JSON.stringify(body));
+};
+
+const resolveLogoLabPythonCommand = (): {
+  readonly command: string;
+  readonly args: string[];
+} => {
+  const venvPython = path.join(packAdsDir, '.venv311', 'bin', 'python');
+  if (fs.existsSync(venvPython)) {
+    return {
+      command: venvPython,
+      args: [path.join(packAdsDir, 'scripts', 'logo_lab_generate.py')],
+    };
+  }
+
+  return {
+    command: 'python3',
+    args: [path.join(packAdsDir, 'scripts', 'logo_lab_generate.py')],
+  };
+};
+
+const toViteFsUrl = (absolutePath: string): string =>
+  `/@fs${encodeURI(absolutePath)}`;
+
+const handleLogoLabGenerate = async (
+  request: IncomingMessage,
+  response: ServerResponse,
+): Promise<void> => {
+  try {
+    const rawBody = await readRequestBody(request);
+    const parsedBody = LogoLabGenerateRequestSchema.parse(
+      rawBody.length > 0 ? JSON.parse(rawBody) : {},
+    );
+    const runId = `logo-lab-${Date.now()}`;
+    const generatedAt = new Date().toISOString();
+    const warnings: string[] = [];
+    if (parsedBody.requestBrainCluster) {
+      warnings.push(
+        'Brain cluster routing is not wired in this workspace yet. This run used the PackAds Vertex/Imagen path only.',
+      );
+    }
+
+    const plan = createLogoVariationPlan(parsedBody);
+    fs.mkdirSync(packAdsLogoLabOutputDir, {recursive: true});
+
+    const planPayload = {
+      runId,
+      generatedAt,
+      outputDir: packAdsLogoLabOutputDir,
+      companyName: parsedBody.companyName,
+      prompt: parsedBody.prompt,
+      refinedPrompt: plan.refinedPrompt,
+      selectedPresetIds: parsedBody.selectedPresetIds,
+      warnings,
+      researchPrinciples: [...LOGO_BRANDING_RESEARCH_PRINCIPLES],
+      items: plan.items,
+    };
+
+    const tempPlanPath = path.join(os.tmpdir(), `${runId}.json`);
+    fs.writeFileSync(tempPlanPath, JSON.stringify(planPayload), 'utf8');
+
+    const python = resolveLogoLabPythonCommand();
+    const {stdout} = await execFileAsync(
+      python.command,
+      [...python.args, '--plan-json', tempPlanPath],
+      {
+        cwd: packAdsDir,
+        timeout: 1000 * 60 * 8,
+        maxBuffer: 1024 * 1024 * 10,
+      },
+    );
+    fs.rmSync(tempPlanPath, {force: true});
+
+    const manifest = JSON.parse(stdout) as Record<string, unknown>;
+    const hydratedManifest = {
+      ...manifest,
+      variants: Array.isArray(manifest['variants'])
+        ? manifest['variants'].map((variant) => {
+            const generatedImagePath =
+              typeof (variant as Record<string, unknown>)['generatedImagePath'] ===
+              'string'
+                ? ((variant as Record<string, unknown>)['generatedImagePath'] as string)
+                : '';
+            return {
+              ...variant,
+              previewUrl: toViteFsUrl(generatedImagePath),
+              fileUrl: encodeURI(`file://${generatedImagePath}`),
+            };
+          })
+        : [],
+    };
+
+    const validated = LogoLabRunSchema.parse(hydratedManifest);
+    writeJson(response, 200, {
+      success: true,
+      data: validated,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Logo studio generation failed.';
+    writeJson(response, 500, {
+      success: false,
+      error: {
+        message,
+      },
+    });
+  }
 };
 
 function inferServerEnvironment(
@@ -325,6 +466,22 @@ export default defineConfig(({ mode, ssrBuild }) => {
 
   return {
     plugins: [
+      {
+        name: 'logo-lab-dev-api',
+        configureServer(server) {
+          server.middlewares.use(
+            '/dev/labs/logo-studio/generate',
+            (request, response, next) => {
+              if (request.method !== 'POST') {
+                next();
+                return;
+              }
+
+              void handleLogoLabGenerate(request, response);
+            },
+          );
+        },
+      },
       react({
         babel: {
           plugins: babelPlugins,

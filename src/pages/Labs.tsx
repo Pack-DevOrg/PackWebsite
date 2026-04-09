@@ -1,9 +1,17 @@
 import React from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { generateLogoLabRun } from "@/api/labs";
 import { useI18n } from "@/i18n/I18nProvider";
 import { AuthCallbackSurface } from "@/pages/AuthCallbackPage";
+import type { LogoLabRun } from "@/schemas/labs";
+import {
+  LOGO_BRANDING_RESEARCH_PRINCIPLES,
+  LOGO_VARIATION_PRESETS,
+  getDefaultLogoStudioPrompt,
+} from "@/utils/logoLab";
 
 export type LabVideo = {
   slug: string;
@@ -619,6 +627,255 @@ const PathLabel = styled.code`
   line-height: 1.5;
 `;
 
+const StudioGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 1.25rem;
+
+  @media (max-width: 1080px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const StudioPanel = styled.article`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 24px;
+  padding: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const StudioForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+`;
+
+const FieldGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const FieldBlock = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+`;
+
+const FieldLabel = styled.span`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+`;
+
+const FieldHint = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.78rem;
+  line-height: 1.5;
+`;
+
+const FieldInput = styled.input`
+  width: 100%;
+  border: 1px solid ${({ theme }) => theme.colors.border.medium};
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.22);
+  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 0.8rem 0.9rem;
+  font: inherit;
+`;
+
+const FieldSelect = styled.select`
+  width: 100%;
+  border: 1px solid ${({ theme }) => theme.colors.border.medium};
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.22);
+  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 0.8rem 0.9rem;
+  font: inherit;
+`;
+
+const FieldTextArea = styled.textarea`
+  min-height: 8.5rem;
+  width: 100%;
+  resize: vertical;
+  border: 1px solid ${({ theme }) => theme.colors.border.medium};
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.22);
+  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 0.9rem 1rem;
+  font: inherit;
+  line-height: 1.6;
+`;
+
+const CheckboxRow = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.86rem;
+`;
+
+const HelperList = styled.ul`
+  margin: 0;
+  padding-left: 1.15rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.9rem;
+  line-height: 1.7;
+`;
+
+const Notice = styled.div`
+  border-radius: 18px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.05);
+  padding: 0.85rem 0.95rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.86rem;
+  line-height: 1.6;
+`;
+
+const ErrorNotice = styled(Notice)`
+  border-color: rgba(231, 35, 64, 0.45);
+  color: ${({ theme }) => theme.colors.status.error};
+  background: rgba(231, 35, 64, 0.08);
+`;
+
+const StudioActionRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+`;
+
+const ButtonLikeLink = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8.5rem;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.55;
+    transform: none;
+  }
+`;
+
+const PrimaryButton = styled(ButtonLikeLink)`
+  color: #14110d;
+  background: ${({ theme }) => theme.colors.primary.gradient};
+  box-shadow: 0 16px 34px rgba(243, 210, 122, 0.2);
+`;
+
+const SecondaryButton = styled(ButtonLikeLink)`
+  color: ${({ theme }) => theme.colors.text.primary};
+  background: rgba(255, 248, 236, 0.04);
+  border: 1px solid ${({ theme }) => theme.colors.border.medium};
+`;
+
+const ResultsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const VariantCard = styled.article<{ $selected: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  border: 1px solid
+    ${({ theme, $selected }) =>
+      $selected
+        ? theme.colors.primary.main
+        : theme.colors.border.light};
+  border-radius: 22px;
+  padding: 0.95rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const VariantImageFrame = styled.div`
+  position: relative;
+  overflow: hidden;
+  min-height: 17rem;
+  border-radius: 18px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background:
+    radial-gradient(circle at top right, rgba(243, 210, 122, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(9, 7, 6, 1));
+`;
+
+const VariantImage = styled.img`
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 17rem;
+  object-fit: contain;
+`;
+
+const VariantNumber = styled.span`
+  position: absolute;
+  top: 0.8rem;
+  left: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 999px;
+  background: rgba(20, 17, 13, 0.78);
+  border: 1px solid rgba(243, 210, 122, 0.3);
+  color: ${({ theme }) => theme.colors.primary.light};
+  font-size: 0.95rem;
+  font-weight: 800;
+`;
+
+const SelectionSummary = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+`;
+
+const SelectionChip = styled.span`
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 210, 122, 0.18);
+  background: rgba(243, 210, 122, 0.08);
+  padding: 0.35rem 0.7rem;
+  color: ${({ theme }) => theme.colors.primary.light};
+  font-size: 0.76rem;
+  font-weight: 700;
+`;
+
 const SectionHeading = styled.div`
   display: flex;
   flex-direction: column;
@@ -657,6 +914,14 @@ const labsContent = {
       description:
         "Use labs as the internal review surface for creative output. Each section is separated so you can inspect surfaces, review exports, and compare variants without mixing contexts.",
       sections: [
+        {
+          slug: "logo-studio",
+          title: "Logo Studio",
+          description:
+            "Generate numbered logo variations through the PackAds Vertex setup, then refine the next round from the options you like.",
+          href: "/labs/logo-studio",
+          kicker: "Brand exploration",
+        },
         {
           slug: "brand-assets",
           title: "Brand Assets",
@@ -711,6 +976,33 @@ const labsContent = {
         "Keep comparisons explicit. This section is for judging hooks, realism, motion, framing, and which version is closer to a scalable ad system.",
       pairs: comparisonPairs,
     },
+    logoStudio: {
+      title: "Vertex logo studio for Pack.",
+      description:
+        "Generate a batch of numbered logo explorations through the local PackAds Vertex path, then pick the numbers you like and push the next round in that direction.",
+      promptLabel: "Base prompt",
+      promptHint:
+        "Start with the outcome you want, not just the object list. The system adds mascot, palette, legibility, and premium-brand constraints automatically.",
+      companyLabel: "Company name",
+      countLabel: "Variation count",
+      refinementLabel: "Iteration note",
+      refinementHint:
+        "Use this after a round to say what to keep or change, for example: make it more emblematic, less cartoonish, or more app-icon friendly.",
+      generateLabel: "Generate variants",
+      regenerateLabel: "Push another round",
+      selectedHeading: "Selected numbers",
+      selectedEmpty:
+        "Select the variant numbers you like, then regenerate to keep pushing in that direction.",
+      selectedAction: "Use selected numbers in note",
+      brainClusterLabel: "Request brain-cluster routing",
+      brainClusterHint:
+        "This workspace only has the PackAds Vertex path wired today. Turning this on adds a warning to the run so the missing cluster hookup stays visible.",
+      researchHeading: "Brand-system rules behind the prompts",
+      resultHeading: "Generated variations",
+      resultHint:
+        "Each image gets a fixed number so you can say which ones to keep. Internally the next run reuses the selected direction labels before generating again.",
+      openLocalFile: "Open local PNG",
+    },
     brandAssets: {
       title: "Brand assets in one review surface.",
       description:
@@ -738,6 +1030,7 @@ const labsContent = {
     },
     crumbs: {
       labs: "Labs",
+      logoStudio: "Logo studio",
       videos: "Videos",
       comparisons: "Comparisons",
       brandAssets: "Brand assets",
@@ -757,6 +1050,14 @@ const labsContent = {
       description:
         "Usa labs como la superficie interna de revisión para el trabajo creativo. Cada sección está separada para que puedas inspeccionar superficies, revisar exports y comparar variantes sin mezclar contextos.",
       sections: [
+        {
+          slug: "logo-studio",
+          title: "Logo Studio",
+          description:
+            "Genera variaciones numeradas de logo con la ruta Vertex de PackAds y luego refina la siguiente ronda a partir de las opciones que más te gusten.",
+          href: "/labs/logo-studio",
+          kicker: "Exploración de marca",
+        },
         {
           slug: "brand-assets",
           title: "Brand Assets",
@@ -846,6 +1147,33 @@ const labsContent = {
         },
       ],
     },
+    logoStudio: {
+      title: "Studio de logos con Vertex para Pack.",
+      description:
+        "Genera un lote de exploraciones numeradas con la ruta local de PackAds + Vertex y luego elige los números que te gusten para empujar la siguiente ronda en esa dirección.",
+      promptLabel: "Prompt base",
+      promptHint:
+        "Empieza por el resultado que quieres, no solo por una lista de objetos. El sistema agrega automáticamente restricciones de mascota, paleta, legibilidad y marca premium.",
+      companyLabel: "Nombre de la empresa",
+      countLabel: "Cantidad de variaciones",
+      refinementLabel: "Nota de iteración",
+      refinementHint:
+        "Úsalo después de una ronda para decir qué mantener o cambiar, por ejemplo: más emblema, menos caricatura o más apto para app icon.",
+      generateLabel: "Generar variantes",
+      regenerateLabel: "Empujar otra ronda",
+      selectedHeading: "Números seleccionados",
+      selectedEmpty:
+        "Selecciona los números de variante que te gusten y luego vuelve a generar para seguir en esa dirección.",
+      selectedAction: "Usar números seleccionados en la nota",
+      brainClusterLabel: "Solicitar ruta brain-cluster",
+      brainClusterHint:
+        "En este workspace solo está conectada hoy la ruta Vertex de PackAds. Activarlo agrega una advertencia al run para dejar visible la falta del cluster.",
+      researchHeading: "Reglas de sistema de marca detrás de los prompts",
+      resultHeading: "Variaciones generadas",
+      resultHint:
+        "Cada imagen recibe un número fijo para que puedas decir cuáles mantener. Internamente la siguiente corrida reutiliza las direcciones seleccionadas antes de volver a generar.",
+      openLocalFile: "Abrir PNG local",
+    },
     brandAssets: {
       title: "Brand assets en una sola superficie de revisión.",
       description:
@@ -873,6 +1201,7 @@ const labsContent = {
     },
     crumbs: {
       labs: "Labs",
+      logoStudio: "Logo studio",
       videos: "Videos",
       comparisons: "Comparaciones",
       brandAssets: "Brand assets",

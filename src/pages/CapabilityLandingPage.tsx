@@ -6,7 +6,6 @@ import PrefetchLink from "@/components/PrefetchLink";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
 import {
-  capabilityPageDefinitions,
   capabilityPageDefinitionMap,
   type CapabilityPageSlug,
 } from "@/content/capabilityPages";
@@ -64,50 +63,6 @@ const Intro = styled.p`
   color: var(--color-text-secondary);
   font-size: var(--font-size-medium);
   line-height: 1.7;
-`;
-
-const CapabilityStrip = styled.div`
-  display: grid;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-  padding: var(--space-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius);
-`;
-
-const CapabilityStripTitle = styled.h2`
-  margin: 0;
-  font-size: var(--font-size-large);
-  color: var(--color-text-primary);
-`;
-
-const CapabilityChipList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-`;
-
-const CapabilityChip = styled(PrefetchLink)<{ $active?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 0.65rem 0.95rem;
-  border-radius: 999px;
-  border: 1px solid
-    ${({ $active }) =>
-      $active ? "rgba(249, 47, 96, 0.34)" : "rgba(255, 255, 255, 0.08)"};
-  background: ${({ $active }) =>
-    $active ? "rgba(249, 47, 96, 0.12)" : "rgba(255, 255, 255, 0.03)"};
-  color: ${({ $active }) =>
-    $active ? "var(--color-text-primary)" : "var(--color-text-secondary)"};
-  text-decoration: none;
-  font-size: var(--font-size-small);
-  line-height: 1.2;
-
-  &:hover {
-    border-color: rgba(249, 47, 96, 0.3);
-    color: var(--color-text-primary);
-  }
 `;
 
 const SectionGrid = styled.div`
@@ -306,22 +261,18 @@ interface CapabilityLandingPageProps {
 
 const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) => {
   const { pathFor } = useI18n();
+  const capabilityPages = Object.values(capabilityPageDefinitionMap);
   const page = capabilityPageDefinitionMap[slug];
-  const pageIndex = capabilityPageDefinitions.findIndex(
-    (definition) => definition.slug === slug
-  );
+  const pageIndex = capabilityPages.findIndex((definition) => definition.slug === slug);
   const previousPage =
     pageIndex >= 0
-      ? capabilityPageDefinitions[
-          (pageIndex - 1 + capabilityPageDefinitions.length) %
-            capabilityPageDefinitions.length
+      ? capabilityPages[
+          (pageIndex - 1 + capabilityPages.length) % capabilityPages.length
         ]
       : null;
   const nextPage =
     pageIndex >= 0
-      ? capabilityPageDefinitions[
-          (pageIndex + 1) % capabilityPageDefinitions.length
-        ]
+      ? capabilityPages[(pageIndex + 1) % capabilityPages.length]
       : null;
 
   useMountEffect(() => {
@@ -380,20 +331,24 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         <Intro>{page.intro}</Intro>
       </Hero>
 
-      <CapabilityStrip>
-        <CapabilityStripTitle>Explore more of what Pack can do</CapabilityStripTitle>
-        <CapabilityChipList>
-          {capabilityPageDefinitions.map((definition) => (
-            <CapabilityChip
-              key={definition.slug}
-              to={pathFor(`/${definition.slug}`)}
-              $active={definition.slug === slug}
-            >
-              {definition.navLabel}
-            </CapabilityChip>
-          ))}
-        </CapabilityChipList>
-      </CapabilityStrip>
+      {previousPage && nextPage ? (
+        <PagerSection>
+          <PagerCard to={pathFor(`/${previousPage.slug}`)}>
+            <PagerLabel>Previous capability</PagerLabel>
+            <PagerTitle>{previousPage.navLabel}</PagerTitle>
+            <PagerDescription>
+              {previousPage.featureDescription}
+            </PagerDescription>
+          </PagerCard>
+          <PagerCard to={pathFor(`/${nextPage.slug}`)}>
+            <PagerLabel>Next capability</PagerLabel>
+            <PagerTitle>{nextPage.navLabel}</PagerTitle>
+            <PagerDescription>
+              {nextPage.featureDescription}
+            </PagerDescription>
+          </PagerCard>
+        </PagerSection>
+      ) : null}
 
       <SectionGrid>
         <SectionCard>
@@ -455,25 +410,6 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
           </FaqItem>
         ))}
       </FaqSection>
-
-      {previousPage && nextPage ? (
-        <PagerSection>
-          <PagerCard to={pathFor(`/${previousPage.slug}`)}>
-            <PagerLabel>Previous capability</PagerLabel>
-            <PagerTitle>{previousPage.navLabel}</PagerTitle>
-            <PagerDescription>
-              {previousPage.featureDescription}
-            </PagerDescription>
-          </PagerCard>
-          <PagerCard to={pathFor(`/${nextPage.slug}`)}>
-            <PagerLabel>Next capability</PagerLabel>
-            <PagerTitle>{nextPage.navLabel}</PagerTitle>
-            <PagerDescription>
-              {nextPage.featureDescription}
-            </PagerDescription>
-          </PagerCard>
-        </PagerSection>
-      ) : null}
 
       <CtaSection>
         <CtaTitle>See how Pack would handle this for your next trip</CtaTitle>

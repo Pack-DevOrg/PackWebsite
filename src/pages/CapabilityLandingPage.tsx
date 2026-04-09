@@ -232,51 +232,6 @@ const Answer = styled.p`
   line-height: 1.7;
 `;
 
-const RelatedSection = styled.div`
-  display: grid;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-`;
-
-const RelatedGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-3);
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-`;
-
-const RelatedCard = styled(PrefetchLink)`
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius);
-  color: inherit;
-  text-decoration: none;
-
-  &:hover {
-    border-color: rgba(249, 47, 96, 0.3);
-    transform: translateY(-2px);
-  }
-`;
-
-const RelatedLabel = styled.h3`
-  margin: 0;
-  font-size: var(--font-size-medium);
-  color: var(--color-text-primary);
-`;
-
-const RelatedDescription = styled.p`
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-  line-height: 1.6;
-`;
-
 const PagerSection = styled.div`
   display: grid;
   grid-template-columns: 1fr;
@@ -500,25 +455,6 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
           </FaqItem>
         ))}
       </FaqSection>
-
-      <RelatedSection>
-        <FaqTitle>Related Pack pages</FaqTitle>
-        <RelatedGrid>
-          {page.related.map((relatedSlug) => {
-            const relatedPage = capabilityPageDefinitionMap[
-              relatedSlug as CapabilityPageSlug
-            ];
-            return (
-              <RelatedCard key={relatedPage.slug} to={pathFor(`/${relatedPage.slug}`)}>
-                <RelatedLabel>{relatedPage.navLabel}</RelatedLabel>
-                <RelatedDescription>
-                  {relatedPage.featureDescription}
-                </RelatedDescription>
-              </RelatedCard>
-            );
-          })}
-        </RelatedGrid>
-      </RelatedSection>
 
       {previousPage && nextPage ? (
         <PagerSection>

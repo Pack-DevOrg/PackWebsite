@@ -117,6 +117,20 @@ const fadeSequence = css`
 const generateMarketingEventId = (): string =>
   `evt_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 
+function maskEmailForDisplay(email: string): string {
+  const emailParts = email.split('@');
+  if (emailParts.length !== 2) {
+    return email;
+  }
+
+  const [localPart, domain] = emailParts;
+  if (!localPart || !domain || localPart.length <= 2) {
+    return email;
+  }
+
+  return `${localPart[0]}${'*'.repeat(localPart.length - 2)}${localPart[localPart.length - 1]}@${domain}`;
+}
+
 const getAttributionParams = () => {
   if (typeof window === 'undefined') {
     return {gclid: undefined, wbraid: undefined, gbraid: undefined, ttclid: undefined};
@@ -681,6 +695,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   } | null>(null);
   const hasTrackedFormStartRef = React.useRef(false);
   const theme = useTheme();
+  const maskedSubmittedEmail = maskEmailForDisplay(email);
   
   // Conversion tracking
   const { trackFormStart, trackFormSubmit, trackConversion } = useConversionTracking();
@@ -1079,8 +1094,8 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
             </SuccessHeading>
             <SuccessCopy>
               {submittedMarketingEmailConsent
-                ? `We'll email you at ${email} with updates.`
-                : `We'll keep your spot on the waitlist for ${email}.`}{' '}
+                ? `We'll email you at ${maskedSubmittedEmail} with updates.`
+                : `We'll keep your spot on the waitlist for ${maskedSubmittedEmail}.`}{' '}
               Follow us for more news!
             </SuccessCopy>
             <ShareContainer>

@@ -219,6 +219,44 @@ describe('WaitlistForm Component', () => {
     await screen.findByText(/you're on the list/i);
   });
 
+  test('masks the submitted email in the success copy when marketing email updates are disabled', async () => {
+    render(<WaitlistFormWrapper />);
+
+    const emailInput = screen.getByLabelText(/email address/i);
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
+    const form = submitButton.closest('form') as HTMLFormElement;
+    expect(form).not.toBeNull();
+
+    fireEvent.change(emailInput, {target: {value: 'traveler@example.com'}});
+    fireEvent.submit(form);
+
+    await screen.findByText(/you're on the list/i);
+    expect(
+      screen.getByText(/we'll keep your spot on the waitlist for t\*+\w@example\.com/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/traveler@example\.com/i)).not.toBeInTheDocument();
+  });
+
+  test('masks the submitted email in the success copy when marketing email updates are enabled', async () => {
+    render(<WaitlistFormWrapper />);
+
+    const emailInput = screen.getByLabelText(/email address/i);
+    const marketingConsentCheckbox = screen.getByLabelText(/marketing email consent/i);
+    const submitButton = screen.getByRole('button', { name: /pack it\./i });
+    const form = submitButton.closest('form') as HTMLFormElement;
+    expect(form).not.toBeNull();
+
+    fireEvent.change(emailInput, {target: {value: 'traveler@example.com'}});
+    fireEvent.click(marketingConsentCheckbox);
+    fireEvent.submit(form);
+
+    await screen.findByText(/you're on the list/i);
+    expect(
+      screen.getByText(/we'll email you at t\*+\w@example\.com with updates/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/traveler@example\.com/i)).not.toBeInTheDocument();
+  });
+
   /**
    * Test API error handling
    * Ensures that API errors are properly caught and displayed to the user

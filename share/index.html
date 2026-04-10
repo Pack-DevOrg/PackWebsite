@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
+      ((location) => {
+        if (
+          location.hostname === "itsdoneai.com" ||
+          location.hostname === "www.itsdoneai.com"
+        ) {
+          const legacyRedirectUrl = new URL(location.href);
+          legacyRedirectUrl.hostname = "www.trypackai.com";
+          window.location.replace(legacyRedirectUrl.toString());
+          return;
+        }
+        if (location.hostname === "trypackai.com") {
+          const canonicalUrl = new URL(location.href);
+          canonicalUrl.hostname = "www.trypackai.com";
+          window.location.replace(canonicalUrl.toString());
+        }
+      })(window.location);
+    </script>
+    <script>
       // Single Page Apps for GitHub Pages (inline to avoid render-blocking request)
       // MIT License - Adapted from https://github.com/rafgraph/spa-github-pages
       ((location) => {
@@ -103,7 +121,7 @@
     <!-- Critical Resource Preloading -->
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://accounts.google.com https://sentry.avs.io https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com https://accounts.google.com; form-action 'self' https://www.facebook.com;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://sentry.avs.io https://tsa-board.trypackai.com https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com; form-action 'self' https://www.facebook.com;" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     
@@ -366,13 +384,13 @@
     }
     </script>
 
-    <script type="module" crossorigin src="/assets/js/index-DR010S9z.js"></script>
+    <script type="module" crossorigin src="/assets/js/index-D_sgZmgA.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-C1c5d54_.js">
     <link rel="modulepreload" crossorigin href="/assets/js/query-vendor-Dd2uS8re.js">
     <link rel="modulepreload" crossorigin href="/assets/js/ui-vendor-BWNt4uBj.js">
-    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-JbuVyVRk.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-Ej5Cw1qy.js">
     <link rel="stylesheet" crossorigin href="/assets/css/index-G_SiVUqZ.css">
-  <title data-rh="true">Shared Travel Plan - Pack</title><meta data-rh="true" name="description" content="This shared travel plan link may have expired or is invalid."/><meta data-rh="true" property="og:type" content="website"/><meta data-rh="true" property="og:url" content="https://trypackai.com/share"/><meta data-rh="true" property="og:title" content="Shared Travel Plan"/><meta data-rh="true" property="og:description" content="This shared travel plan link may have expired or is invalid."/><meta data-rh="true" property="og:image" content="https://trypackai.com/images/share-card.png?v=20260402b"/><meta data-rh="true" property="og:image:secure_url" content="https://trypackai.com/images/share-card.png?v=20260402b"/><meta data-rh="true" property="og:image:width" content="1200"/><meta data-rh="true" property="og:image:height" content="630"/><meta data-rh="true" property="og:image:alt" content="Shared travel plan on Pack"/><meta data-rh="true" property="og:site_name" content="Pack"/><meta data-rh="true" property="og:locale" content="en_US"/><meta data-rh="true" name="twitter:card" content="summary_large_image"/><meta data-rh="true" name="twitter:url" content="https://trypackai.com/share"/><meta data-rh="true" name="twitter:title" content="Shared Travel Plan"/><meta data-rh="true" name="twitter:description" content="This shared travel plan link may have expired or is invalid."/><meta data-rh="true" name="twitter:image" content="https://trypackai.com/images/share-card.png?v=20260402b"/><meta data-rh="true" name="twitter:image:alt" content="Shared travel plan on Pack"/><link data-rh="true" rel="canonical" href="https://trypackai.com/share"/><style data-styled="true" data-styled-version="6.1.8"></style></head>
+  <title data-rh="true">Shared Travel Plan - Pack</title><meta data-rh="true" name="description" content="This shared travel plan link may have expired or is invalid."/><meta data-rh="true" property="og:type" content="website"/><meta data-rh="true" property="og:url" content="https://trypackai.com/share"/><meta data-rh="true" property="og:title" content="Shared Travel Plan"/><meta data-rh="true" property="og:description" content="This shared travel plan link may have expired or is invalid."/><meta data-rh="true" property="og:image" content="https://trypackai.com/images/share-card.png?v=20260410a"/><meta data-rh="true" property="og:image:secure_url" content="https://trypackai.com/images/share-card.png?v=20260410a"/><meta data-rh="true" property="og:image:width" content="1200"/><meta data-rh="true" property="og:image:height" content="630"/><meta data-rh="true" property="og:image:alt" content="Shared travel plan on Pack"/><meta data-rh="true" property="og:site_name" content="Pack"/><meta data-rh="true" property="og:locale" content="en_US"/><meta data-rh="true" name="twitter:card" content="summary_large_image"/><meta data-rh="true" name="twitter:url" content="https://trypackai.com/share"/><meta data-rh="true" name="twitter:title" content="Shared Travel Plan"/><meta data-rh="true" name="twitter:description" content="This shared travel plan link may have expired or is invalid."/><meta data-rh="true" name="twitter:image" content="https://trypackai.com/images/share-card.png?v=20260410a"/><meta data-rh="true" name="twitter:image:alt" content="Shared travel plan on Pack"/><link data-rh="true" rel="canonical" href="https://trypackai.com/share"/><style data-styled="true" data-styled-version="6.1.8"></style></head>
   <body>
     <div id="root" data-prerendered-path="/share"><!--$--><!--$--><!--$?--><template id="B:0"></template><!--/$--><!--/$--><!--/$--><div hidden id="S:0"><div style="min-height:100vh;background:radial-gradient(120% 140% at 20% 20%, rgba(240, 198, 45, 0.06), transparent),
       radial-gradient(120% 140% at 80% 0%, rgba(231, 35, 64, 0.08), transparent),

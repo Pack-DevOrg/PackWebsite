@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
+      ((location) => {
+        if (
+          location.hostname === "itsdoneai.com" ||
+          location.hostname === "www.itsdoneai.com"
+        ) {
+          const legacyRedirectUrl = new URL(location.href);
+          legacyRedirectUrl.hostname = "www.trypackai.com";
+          window.location.replace(legacyRedirectUrl.toString());
+          return;
+        }
+        if (location.hostname === "trypackai.com") {
+          const canonicalUrl = new URL(location.href);
+          canonicalUrl.hostname = "www.trypackai.com";
+          window.location.replace(canonicalUrl.toString());
+        }
+      })(window.location);
+    </script>
+    <script>
       // Single Page Apps for GitHub Pages (inline to avoid render-blocking request)
       // MIT License - Adapted from https://github.com/rafgraph/spa-github-pages
       ((location) => {
@@ -103,7 +121,7 @@
     <!-- Critical Resource Preloading -->
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://accounts.google.com https://sentry.avs.io https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com https://accounts.google.com; form-action 'self' https://www.facebook.com;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://sentry.avs.io https://tsa-board.trypackai.com https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com; form-action 'self' https://www.facebook.com;" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     
@@ -366,11 +384,11 @@
     }
     </script>
 
-    <script type="module" crossorigin src="/assets/js/index-DR010S9z.js"></script>
+    <script type="module" crossorigin src="/assets/js/index-D_sgZmgA.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-C1c5d54_.js">
     <link rel="modulepreload" crossorigin href="/assets/js/query-vendor-Dd2uS8re.js">
     <link rel="modulepreload" crossorigin href="/assets/js/ui-vendor-BWNt4uBj.js">
-    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-JbuVyVRk.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-Ej5Cw1qy.js">
     <link rel="stylesheet" crossorigin href="/assets/css/index-G_SiVUqZ.css">
   <title data-rh="true"></title><style data-styled="true" data-styled-version="6.1.8">:root{--color-accent:#f3d27a;--color-accent-soft:rgba(243,210,122,0.18);--color-secondary-accent:#e72340;--color-text-primary:#f7f0e3;--color-text-secondary:rgba(247,240,227,0.72);--color-text-muted:rgba(247,240,227,0.5);--color-bg-primary:#0f0d0b;--color-bg-secondary:#171310;--color-bg-tertiary:#211b16;--color-surface:rgba(255,248,236,0.05);--color-surface-strong:rgba(255,248,236,0.08);--color-success:#65b89f;--color-error:#ef4444;--color-border:rgba(243,210,122,0.14);--color-border-medium:rgba(243,210,122,0.2);--color-border-strong:rgba(243,210,122,0.34);--page-gradient:radial-gradient(circle at 10% 10%,rgba(231,35,64,0.18),transparent 26%),radial-gradient(circle at 85% 12%,rgba(243,210,122,0.16),transparent 22%),radial-gradient(circle at 50% 100%,rgba(243,210,122,0.09),transparent 28%),linear-gradient(180deg,#0f0d0b 0%,#140f0c 46%,#0d0b09 100%);--space-1:0.25rem;--space-2:0.5rem;--space-3:1rem;--space-4:1.5rem;--space-5:2.5rem;--space-6:3.5rem;--space-7:5rem;--space-xs:0.25rem;--space-s:0.5rem;--space-m:1rem;--space-l:1.5rem;--space-xl:2.5rem;--font-size-xs:0.75rem;--font-size-small:0.875rem;--font-size-base:1rem;--font-size-medium:1.125rem;--font-size-large:1.25rem;--font-size-xl:1.5rem;--font-size-2xl:1.875rem;--font-size-3xl:2.25rem;--font-heading:'Inter Variable','Inter','Segoe UI',sans-serif;--font-body:'Inter Variable','Inter','Segoe UI',sans-serif;--max-width:1240px;--border-radius:1.25rem;--border-radius-m:0.5rem;--border-radius-xl:1.5rem;--shadow-elevated:0 28px 80px rgba(0,0,0,0.35);--shadow-soft:0 12px 38px rgba(0,0,0,0.18);--transition-default:0.3s ease;}/*!sc*/
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}/*!sc*/
@@ -405,10 +423,10 @@ data-styled.g20[id="sc-139gbb3-0"]{content:"jUtKiV,"}/*!sc*/
 data-styled.g21[id="sc-139gbb3-1"]{content:"eTzIpb,"}/*!sc*/
 .Yzxgf{display:inline-flex;align-items:center;justify-self:start;}/*!sc*/
 data-styled.g22[id="sc-139gbb3-2"]{content:"Yzxgf,"}/*!sc*/
-.jegtOp{display:inline-block;background:linear-gradient( 90deg,#feab00 0%,#fd9c00 30%,#fc6c01 62%,#f6151d 100% );-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;font-size:1.32rem;font-weight:800;letter-spacing:0.015em;white-space:nowrap;line-height:1.05;}/*!sc*/
-@media (max-width:768px){.jegtOp{font-size:1.18rem;}}/*!sc*/
-@media (max-width:430px){.jegtOp{font-size:1.06rem;}}/*!sc*/
-data-styled.g23[id="sc-139gbb3-3"]{content:"jegtOp,"}/*!sc*/
+.dYxcKX{display:block;width:2.15rem;height:2.15rem;object-fit:contain;}/*!sc*/
+@media (max-width:768px){.dYxcKX{width:2rem;height:2rem;}}/*!sc*/
+@media (max-width:430px){.dYxcKX{width:1.85rem;height:1.85rem;}}/*!sc*/
+data-styled.g23[id="sc-139gbb3-3"]{content:"dYxcKX,"}/*!sc*/
 .gicKZZ{display:flex;align-items:center;justify-content:center;gap:0.52rem;flex-wrap:wrap;justify-self:center;}/*!sc*/
 @media (max-width:768px){.gicKZZ{width:100%;}}/*!sc*/
 data-styled.g24[id="sc-139gbb3-4"]{content:"gicKZZ,"}/*!sc*/
@@ -427,109 +445,110 @@ data-styled.g28[id="sc-53c7bj-2"]{content:"bVtKEI,"}/*!sc*/
 data-styled.g29[id="sc-53c7bj-3"]{content:"hJsbTx,"}/*!sc*/
 .jrIgEA{position:relative;z-index:2;}/*!sc*/
 data-styled.g30[id="sc-53c7bj-4"]{content:"jrIgEA,"}/*!sc*/
+.evBoJz{position:absolute;inset:0 auto auto 0;width:1px;height:1px;pointer-events:none;}/*!sc*/
+data-styled.g31[id="sc-53c7bj-5"]{content:"evBoJz,"}/*!sc*/
 .fDlEFq{position:relative;overflow:visible;padding:1rem 0 clamp(2.4rem,5vw,4rem);}/*!sc*/
 @media (max-width:739px){.fDlEFq{padding:0.95rem 0 1.4rem;}}/*!sc*/
-data-styled.g31[id="sc-1wl19jj-0"]{content:"fDlEFq,"}/*!sc*/
+data-styled.g32[id="sc-1wl19jj-0"]{content:"fDlEFq,"}/*!sc*/
 .eUnjeu{position:relative;isolation:isolate;border-radius:2rem;border:1px solid rgba(243,210,122,0.12);background:radial-gradient(circle at 0% 0%,rgba(231,35,64,0.16),transparent 28%),radial-gradient(circle at 100% 0%,rgba(198,165,88,0.16),transparent 46%),linear-gradient(135deg,rgba(15,11,8,0.98) 0%,rgba(19,15,11,0.98) 44%,rgba(25,20,14,0.94) 76%,rgba(22,17,11,0.98) 100%),linear-gradient(180deg,rgba(14,10,8,0.98),rgba(8,7,6,1));box-shadow:var(--shadow-elevated);overflow:hidden;}/*!sc*/
 @media (max-width:739px){.eUnjeu{border-radius:1.65rem;background:linear-gradient(135deg,rgba(15,11,8,0.98) 0%,rgba(18,14,10,0.98) 100%),linear-gradient(180deg,rgba(14,10,8,0.98),rgba(8,7,6,1));box-shadow:0 14px 32px rgba(0,0,0,0.28);}}/*!sc*/
-data-styled.g32[id="sc-1wl19jj-1"]{content:"eUnjeu,"}/*!sc*/
+data-styled.g33[id="sc-1wl19jj-1"]{content:"eUnjeu,"}/*!sc*/
 .hsxwAi{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(243,210,122,0.1),transparent 42%),linear-gradient(180deg,rgba(8,7,6,0.18),rgba(8,7,6,0));pointer-events:none;}/*!sc*/
 @media (max-width:739px){.hsxwAi{background:linear-gradient(180deg,rgba(8,7,6,0.08),rgba(8,7,6,0));}}/*!sc*/
-data-styled.g33[id="sc-1wl19jj-2"]{content:"hsxwAi,"}/*!sc*/
+data-styled.g34[id="sc-1wl19jj-2"]{content:"hsxwAi,"}/*!sc*/
 .exBaFt{position:relative;z-index:1;display:grid;gap:1.25rem;justify-items:center;padding:clamp(1rem,2.5vw,1.35rem) clamp(1.2rem,4vw,3rem) clamp(2rem,5vw,3.25rem);}/*!sc*/
 @media (max-width:739px){.exBaFt{gap:1rem;padding:0.95rem 0.95rem 1.25rem;}}/*!sc*/
-data-styled.g34[id="sc-1wl19jj-3"]{content:"exBaFt,"}/*!sc*/
+data-styled.g35[id="sc-1wl19jj-3"]{content:"exBaFt,"}/*!sc*/
 .fXRaej{display:grid;gap:1rem;width:min(100%,48rem);justify-items:center;text-align:center;}/*!sc*/
-data-styled.g35[id="sc-1wl19jj-4"]{content:"fXRaej,"}/*!sc*/
+data-styled.g36[id="sc-1wl19jj-4"]{content:"fXRaej,"}/*!sc*/
 .eItZij{display:grid;gap:0.08rem;justify-items:center;width:min(100%,46rem);min-height:2.2rem;color:rgba(255,248,236,0.98);font-size:1rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}/*!sc*/
-data-styled.g36[id="sc-1wl19jj-5"]{content:"eItZij,"}/*!sc*/
-.kSDWBt{display:block;background:linear-gradient(135deg,#f3d27a 0%,#ebbe58 62%,#e72340 100%);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1.5em;line-height:0.94;}/*!sc*/
-data-styled.g37[id="sc-1wl19jj-6"]{content:"kSDWBt,"}/*!sc*/
+data-styled.g37[id="sc-1wl19jj-5"]{content:"eItZij,"}/*!sc*/
+.ikmFCN{display:block;background:linear-gradient(135deg,#f3d27a 0%,#ebbe58 62%,#e72340 100%);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:clamp(3.5rem,12vw,9rem);font-weight:800;line-height:0.82;letter-spacing:-0.08em;text-transform:uppercase;}/*!sc*/
+data-styled.g38[id="sc-1wl19jj-6"]{content:"ikmFCN,"}/*!sc*/
 .cEaoNZ{width:100%;overflow:hidden;mask-image:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);}/*!sc*/
 @media (max-width:739px){.cEaoNZ{display:none;}}/*!sc*/
-data-styled.g38[id="sc-1wl19jj-7"]{content:"cEaoNZ,"}/*!sc*/
+data-styled.g39[id="sc-1wl19jj-7"]{content:"cEaoNZ,"}/*!sc*/
 .sgcmG{display:flex;width:max-content;animation:iaXztb 28s linear infinite;}/*!sc*/
 @media (prefers-reduced-motion:reduce){.sgcmG{animation:none;}}/*!sc*/
 .gKQRpR{display:flex;width:max-content;animation:fFNfmn 28s linear infinite;}/*!sc*/
 @media (prefers-reduced-motion:reduce){.gKQRpR{animation:none;}}/*!sc*/
-data-styled.g39[id="sc-1wl19jj-8"]{content:"sgcmG,gKQRpR,"}/*!sc*/
+data-styled.g40[id="sc-1wl19jj-8"]{content:"sgcmG,gKQRpR,"}/*!sc*/
 .fqnuHL{display:flex;flex-shrink:0;gap:0.65rem;padding-right:0.65rem;}/*!sc*/
-data-styled.g40[id="sc-1wl19jj-9"]{content:"fqnuHL,"}/*!sc*/
+data-styled.g41[id="sc-1wl19jj-9"]{content:"fqnuHL,"}/*!sc*/
 .jWYcMv{display:inline-flex;align-items:center;padding:0.6rem 0.92rem;border-radius:999px;border:1px solid rgba(243,210,122,0.18);background:rgba(243,210,122,0.09);color:rgba(255,244,214,0.94);font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;}/*!sc*/
 .jWYcMv::before{content:"•";margin-right:0.5rem;color:#f3d27a;}/*!sc*/
-data-styled.g41[id="sc-1wl19jj-10"]{content:"jWYcMv,"}/*!sc*/
+data-styled.g42[id="sc-1wl19jj-10"]{content:"jWYcMv,"}/*!sc*/
 .esxQZb{display:none;}/*!sc*/
 @media (max-width:739px){.esxQZb{display:flex;flex-wrap:wrap;justify-content:center;gap:0.55rem;width:100%;}}/*!sc*/
-data-styled.g42[id="sc-1wl19jj-11"]{content:"esxQZb,"}/*!sc*/
+data-styled.g43[id="sc-1wl19jj-11"]{content:"esxQZb,"}/*!sc*/
 .eRRtuY{display:inline-flex;align-items:center;justify-content:center;padding:0.5rem 0.78rem;border-radius:999px;border:1px solid rgba(243,210,122,0.16);background:rgba(243,210,122,0.07);color:rgba(255,244,214,0.9);font-size:0.63rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}/*!sc*/
-data-styled.g43[id="sc-1wl19jj-12"]{content:"eRRtuY,"}/*!sc*/
+data-styled.g44[id="sc-1wl19jj-12"]{content:"eRRtuY,"}/*!sc*/
 .gGKAnr{margin:0;width:min(100%,11.75ch);font-size:clamp(2.9rem,7.2vw,5.6rem);line-height:0.9;letter-spacing:-0.055em;color:rgba(255,248,236,0.98);text-shadow:0 8px 30px rgba(0,0,0,0.22);}/*!sc*/
 @media (max-width:739px){.gGKAnr{width:min(100%,9ch);font-size:clamp(2.6rem,12vw,4rem);}}/*!sc*/
-data-styled.g44[id="sc-1wl19jj-13"]{content:"gGKAnr,"}/*!sc*/
+data-styled.g45[id="sc-1wl19jj-13"]{content:"gGKAnr,"}/*!sc*/
 .LNDBZ{display:block;}/*!sc*/
-data-styled.g45[id="sc-1wl19jj-14"]{content:"LNDBZ,"}/*!sc*/
+data-styled.g46[id="sc-1wl19jj-14"]{content:"LNDBZ,"}/*!sc*/
 .bwphvY{color:#f3d27a;}/*!sc*/
-data-styled.g46[id="sc-1wl19jj-15"]{content:"bwphvY,"}/*!sc*/
+data-styled.g47[id="sc-1wl19jj-15"]{content:"bwphvY,"}/*!sc*/
 .cUXjMC{margin:0;max-width:34rem;color:rgba(247,240,227,0.74);font-size:clamp(0.98rem,1.35vw,1.1rem);line-height:1.5;text-wrap:pretty;}/*!sc*/
-data-styled.g47[id="sc-1wl19jj-16"]{content:"cUXjMC,"}/*!sc*/
+data-styled.g48[id="sc-1wl19jj-16"]{content:"cUXjMC,"}/*!sc*/
 .iCLcmp{width:min(100%,40rem);}/*!sc*/
 @media (max-width:739px){.iCLcmp{width:min(100%,24rem);}}/*!sc*/
-data-styled.g48[id="sc-1wl19jj-17"]{content:"iCLcmp,"}/*!sc*/
+data-styled.g49[id="sc-1wl19jj-17"]{content:"iCLcmp,"}/*!sc*/
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}/*!sc*/
-@keyframes skeleton{0%{background-position:-200px 0;}100%{background-position:calc(200px + 100%) 0;}}/*!sc*/
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;}}/*!sc*/
-data-styled.g49[id="sc-global-gTTtIs1"]{content:"sc-global-gTTtIs1,"}/*!sc*/
-.ksOEgp{display:flex;flex-direction:column;align-items:center;width:min(100%,640px);max-width:640px;margin:0.25rem auto 1rem;padding:1rem 1.5rem 1.5rem;border-radius:var(--border-radius);background-color:rgba(12, 12, 15, 0.85);box-shadow:0 20px 60px rgba(0, 0, 0, 0.28);border:1px solid rgba(255, 255, 255, 0.1);position:relative;overflow:hidden;backdrop-filter:blur(16px);opacity:0;transform:translateY(18px);animation:waitlistFadeUp 420ms ease-out both;}/*!sc*/
+data-styled.g50[id="sc-global-bROcxF1"]{content:"sc-global-bROcxF1,"}/*!sc*/
+.cyXVIU{display:flex;flex-direction:column;align-items:center;width:min(100%, 640px);max-width:640px;margin:0.25rem auto 1rem;padding:1rem 1.5rem 1.5rem;border-radius:var(--border-radius);background-color:rgba(12, 12, 15, 0.85);box-shadow:0 20px 60px rgba(0, 0, 0, 0.28);border:1px solid rgba(255, 255, 255, 0.1);position:relative;overflow:hidden;backdrop-filter:blur(16px);opacity:0;transform:translateY(18px);animation:waitlistFadeUp 420ms ease-out both;}/*!sc*/
 @keyframes waitlistFadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}/*!sc*/
-[data-reduce-motion='true'] .ksOEgp{animation:none;opacity:1;transform:none;}/*!sc*/
-.ksOEgp::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(135deg, #f3d27a 0%, #e72340 58%, #f8e6b3 100%);background-size:200% 200%;animation:gradientShift 4s ease infinite;opacity:0.6;}/*!sc*/
+[data-reduce-motion='true'] .cyXVIU{animation:none;opacity:1;transform:none;}/*!sc*/
+.cyXVIU::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(135deg, #f3d27a 0%, #e72340 58%, #f8e6b3 100%);background-size:200% 200%;animation:gradientShift 4s ease infinite;opacity:0.6;}/*!sc*/
 @keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}/*!sc*/
-data-styled.g51[id="sc-3cuk23-2"]{content:"ksOEgp,"}/*!sc*/
-.kpWOgU{font-size:1.5rem;margin-bottom:0.5rem;line-height:1.08;text-align:center;background:linear-gradient(135deg, #f3d27a 0%, #e72340 58%, #f8e6b3 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent;font-weight:700;padding-bottom:0.08em;opacity:0;transform:translateY(18px);animation:waitlistFadeUp 420ms ease-out both;}/*!sc*/
+data-styled.g52[id="sc-3cuk23-1"]{content:"cyXVIU,"}/*!sc*/
+.knBFCN{font-size:1.5rem;margin-bottom:0.5rem;line-height:1.08;text-align:center;background:linear-gradient(135deg, #f3d27a 0%, #e72340 58%, #f8e6b3 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent;font-weight:700;padding-bottom:0.08em;opacity:0;transform:translateY(18px);animation:waitlistFadeUp 420ms ease-out both;}/*!sc*/
 @keyframes waitlistFadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}/*!sc*/
-[data-reduce-motion='true'] .kpWOgU{animation:none;opacity:1;transform:none;}/*!sc*/
-data-styled.g52[id="sc-3cuk23-3"]{content:"kpWOgU,"}/*!sc*/
-.leClDs{display:flex;flex-direction:column;width:100%;}/*!sc*/
-data-styled.g53[id="sc-3cuk23-4"]{content:"leClDs,"}/*!sc*/
-.joFfVC{position:relative;margin-bottom:1rem;width:100%;min-width:0;}/*!sc*/
-data-styled.g54[id="sc-3cuk23-5"]{content:"joFfVC,"}/*!sc*/
-.dNFHml{display:block;width:100%;min-width:0;max-width:100%;padding:0.5rem 1rem;background-color:rgba(255, 248, 236, 0.08);border:1px solid rgba(247, 240, 227, 0.16);border-radius:var(--border-radius);color:#f7f0e3;transition:all 0.3s ease;height:50px;font-size:16px;line-height:1.2;letter-spacing:0.01em;box-shadow:rgba(0, 0, 0, 0.14);appearance:none;-webkit-appearance:none;}/*!sc*/
-.dNFHml:focus{outline:none;border-color:#f3d27a;background-color:rgba(255, 248, 236, 0.12);box-shadow:rgba(243, 210, 122, 0.24);transform:translateY(-2px);}/*!sc*/
-.dNFHml::placeholder{color:rgba(247, 240, 227, 0.38);transition:all 0.3s ease;}/*!sc*/
-.dNFHml:focus::placeholder{opacity:0.7;transform:translateX(4px);}/*!sc*/
-.dNFHml:focus-visible{outline:none;border-color:#f3d27a;box-shadow:rgba(243, 210, 122, 0.24),0 0 0 3px rgba(243,210,122,0.18);}/*!sc*/
-.dNFHml.error{border-color:#ef4444;animation:shake 0.4s ease-in-out;}/*!sc*/
+[data-reduce-motion='true'] .knBFCN{animation:none;opacity:1;transform:none;}/*!sc*/
+data-styled.g53[id="sc-3cuk23-2"]{content:"knBFCN,"}/*!sc*/
+.jzzmKu{display:flex;flex-direction:column;width:100%;max-width:none;margin:0 auto;}/*!sc*/
+data-styled.g54[id="sc-3cuk23-3"]{content:"jzzmKu,"}/*!sc*/
+.bgXbmz{position:relative;margin-bottom:1rem;width:100%;min-width:0;}/*!sc*/
+data-styled.g55[id="sc-3cuk23-4"]{content:"bgXbmz,"}/*!sc*/
+.jwJBsi{display:block;width:100%;min-width:0;max-width:100%;padding:0.5rem 1rem;background-color:rgba(255, 248, 236, 0.08);border:1px solid rgba(247, 240, 227, 0.16);border-radius:var(--border-radius);color:#f7f0e3;transition:all 0.3s ease;height:50px;font-size:16px;line-height:1.2;letter-spacing:0.01em;box-shadow:rgba(0, 0, 0, 0.14);appearance:none;-webkit-appearance:none;}/*!sc*/
+.jwJBsi:focus{outline:none;border-color:#f3d27a;background-color:rgba(255, 248, 236, 0.12);box-shadow:rgba(243, 210, 122, 0.24);transform:translateY(-2px);}/*!sc*/
+.jwJBsi::placeholder{color:rgba(255,248,236,0.78);transition:all 0.3s ease;}/*!sc*/
+.jwJBsi:focus::placeholder{opacity:0.7;transform:translateX(4px);}/*!sc*/
+.jwJBsi:focus-visible{outline:none;border-color:#f3d27a;box-shadow:rgba(243, 210, 122, 0.24),0 0 0 3px rgba(243,210,122,0.18);}/*!sc*/
+.jwJBsi.error{border-color:#ef4444;animation:shake 0.4s ease-in-out;}/*!sc*/
 @keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-5px);}40%,80%{transform:translateX(5px);}}/*!sc*/
-data-styled.g55[id="sc-3cuk23-6"]{content:"dNFHml,"}/*!sc*/
-.cXhpqd{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:0.25rem;margin-bottom:1rem;width:100%;}/*!sc*/
-data-styled.g56[id="sc-3cuk23-7"]{content:"cXhpqd,"}/*!sc*/
-.glRIoR{accent-color:#f3d27a;align-self:center;}/*!sc*/
-data-styled.g57[id="sc-3cuk23-8"]{content:"glRIoR,"}/*!sc*/
-.bZcOPF{display:block;font-size:0.875rem;color:rgba(247, 240, 227, 0.72);text-align:center;}/*!sc*/
-data-styled.g58[id="sc-3cuk23-9"]{content:"bZcOPF,"}/*!sc*/
-.ESKQd{margin:0.5rem 0 0;font-size:0.875rem;line-height:1.5;color:#f7f0e3;opacity:0.78;text-align:center;}/*!sc*/
-.ESKQd a{color:#f3d27a;text-decoration:none;}/*!sc*/
-.ESKQd a:hover,.ESKQd a:focus-visible{text-decoration:underline;}/*!sc*/
-data-styled.g59[id="sc-3cuk23-10"]{content:"ESKQd,"}/*!sc*/
-.fMSpzd{display:flex;align-items:center;justify-content:center;width:100%;padding:0.5rem;background:linear-gradient(135deg, #f3d27a 0%, #e72340 58%, #f8e6b3 100%);background-size:200% auto;color:white;border-radius:var(--border-radius);font-weight:700;letter-spacing:0.03em;transition:all 0.3s ease;height:50px;box-shadow:rgba(243, 210, 122, 0.24);position:relative;overflow:hidden;cursor:pointer;border:1px solid transparent;appearance:none;-webkit-appearance:none;outline:none;}/*!sc*/
-.fMSpzd::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient( 90deg,transparent,rgba(255,255,255,0.2),transparent );transition:all 0.6s ease;}/*!sc*/
-.fMSpzd:hover:not(:disabled){background-position:right center;transform:translateY(-2px);box-shadow:rgba(243, 210, 122, 0.34);}/*!sc*/
-.fMSpzd:hover:not(:disabled)::before{left:100%;}/*!sc*/
-.fMSpzd:active:not(:disabled){transform:translateY(1px);box-shadow:rgba(243, 210, 122, 0.28);}/*!sc*/
-.fMSpzd:focus-visible{border-color:rgba(243,210,122,0.42);box-shadow:rgba(243, 210, 122, 0.24),0 0 0 3px rgba(243,210,122,0.18);}/*!sc*/
-.fMSpzd:disabled{opacity:0.7;cursor:not-allowed;filter:grayscale(40%);}/*!sc*/
-data-styled.g60[id="sc-3cuk23-11"]{content:"fMSpzd,"}/*!sc*/
+data-styled.g56[id="sc-3cuk23-5"]{content:"jwJBsi,"}/*!sc*/
+.gsxrwQ{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:0.25rem;margin-bottom:1rem;width:100%;}/*!sc*/
+data-styled.g57[id="sc-3cuk23-6"]{content:"gsxrwQ,"}/*!sc*/
+.jwBHvD{display:block;margin:0;accent-color:#f3d27a;align-self:center;}/*!sc*/
+data-styled.g58[id="sc-3cuk23-7"]{content:"jwBHvD,"}/*!sc*/
+.iMykjE{display:block;font-size:0.875rem;color:rgba(247, 240, 227, 0.72);text-align:center;}/*!sc*/
+data-styled.g59[id="sc-3cuk23-8"]{content:"iMykjE,"}/*!sc*/
+.fFOqAR{margin:0.5rem 0 0;font-size:0.875rem;line-height:1.5;color:#f7f0e3;opacity:0.78;text-align:center;}/*!sc*/
+.fFOqAR a{color:#f3d27a;text-decoration:none;}/*!sc*/
+.fFOqAR a:hover,.fFOqAR a:focus-visible{text-decoration:underline;}/*!sc*/
+data-styled.g60[id="sc-3cuk23-9"]{content:"fFOqAR,"}/*!sc*/
+.cPLFyW{display:flex;align-items:center;justify-content:center;width:100%;padding:0.5rem;background:linear-gradient(rgba(19,19,20,0.94),rgba(19,19,20,0.94)) padding-box,linear-gradient(135deg,#ffd86f 0%,#f0c62d 34%,#f6a14f 66%,#e72340 100%) border-box;color:white;border-radius:var(--border-radius);font-weight:700;letter-spacing:0.03em;transition:all 0.3s ease;height:50px;box-shadow:0 14px 32px rgba(0,0,0,0.26),0 0 24px rgba(240,198,45,0.18),0 0 18px rgba(231,35,64,0.16),0 0 0 1px rgba(255,216,111,0.12);position:relative;overflow:hidden;cursor:pointer;border:1px solid transparent;appearance:none;-webkit-appearance:none;outline:none;}/*!sc*/
+.cPLFyW::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient( 90deg,transparent,rgba(255,255,255,0.2),transparent );transition:all 0.6s ease;}/*!sc*/
+.cPLFyW:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 18px 38px rgba(0,0,0,0.32),0 0 28px rgba(240,198,45,0.24),0 0 22px rgba(231,35,64,0.22),0 0 0 1px rgba(255,216,111,0.18);}/*!sc*/
+.cPLFyW:hover:not(:disabled)::before{left:100%;}/*!sc*/
+.cPLFyW:active:not(:disabled){transform:translateY(1px);box-shadow:0 10px 22px rgba(0,0,0,0.3),0 0 14px rgba(240,198,45,0.16),0 0 12px rgba(231,35,64,0.12);}/*!sc*/
+.cPLFyW:focus-visible{border-color:rgba(243,210,122,0.42);box-shadow:0 14px 32px rgba(0,0,0,0.26),0 0 24px rgba(240,198,45,0.18),0 0 18px rgba(231,35,64,0.16),0 0 0 3px rgba(243,210,122,0.18);}/*!sc*/
+.cPLFyW:disabled{opacity:0.7;cursor:not-allowed;filter:grayscale(40%);}/*!sc*/
+data-styled.g61[id="sc-3cuk23-10"]{content:"cPLFyW,"}/*!sc*/
 .hvzZze{width:100%;min-height:760px;border-radius:1.5rem;border:1px solid rgba(243,210,122,0.08);background:linear-gradient(180deg,rgba(20,15,11,0.48),rgba(12,9,7,0.22)),rgba(255,248,236,0.02);}/*!sc*/
 .eAeNEc{width:100%;min-height:560px;border-radius:1.5rem;border:1px solid rgba(243,210,122,0.08);background:linear-gradient(180deg,rgba(20,15,11,0.48),rgba(12,9,7,0.22)),rgba(255,248,236,0.02);}/*!sc*/
 .OzQkK{width:100%;min-height:360px;border-radius:1.5rem;border:1px solid rgba(243,210,122,0.08);background:linear-gradient(180deg,rgba(20,15,11,0.48),rgba(12,9,7,0.22)),rgba(255,248,236,0.02);}/*!sc*/
 .llfIEx{width:100%;min-height:240px;border-radius:1.5rem;border:1px solid rgba(243,210,122,0.08);background:linear-gradient(180deg,rgba(20,15,11,0.48),rgba(12,9,7,0.22)),rgba(255,248,236,0.02);}/*!sc*/
-data-styled.g73[id="sc-1x9ot1e-4"]{content:"hvzZze,eAeNEc,OzQkK,llfIEx,"}/*!sc*/
+data-styled.g74[id="sc-1x9ot1e-4"]{content:"hvzZze,eAeNEc,OzQkK,llfIEx,"}/*!sc*/
 @keyframes iaXztb{from{transform:translateX(-33.333%);}to{transform:translateX(-66.666%);}}/*!sc*/
-data-styled.g77[id="sc-keyframes-iaXztb"]{content:"iaXztb,"}/*!sc*/
+data-styled.g78[id="sc-keyframes-iaXztb"]{content:"iaXztb,"}/*!sc*/
 @keyframes fFNfmn{from{transform:translateX(-66.666%);}to{transform:translateX(-33.333%);}}/*!sc*/
-data-styled.g78[id="sc-keyframes-fFNfmn"]{content:"fFNfmn,"}/*!sc*/
+data-styled.g79[id="sc-keyframes-fFNfmn"]{content:"fFNfmn,"}/*!sc*/
 </style></head>
   <body>
-    <div id="root" data-prerendered-path="/"><div class="sc-53c7bj-0 eypQzk"><div aria-hidden="true" class="sc-53c7bj-2 bVtKEI"></div><div aria-hidden="true" class="sc-53c7bj-3 hJsbTx"></div><a class="skip-link" href="#main-content">Skip to content</a><div class="sc-53c7bj-4 jrIgEA"><header class="sc-139gbb3-0 jUtKiV"><div class="container"><div class="sc-139gbb3-1 eTzIpb"><a aria-label="Go to home" class="sc-139gbb3-2 Yzxgf" href="/" data-discover="true"><span class="sc-139gbb3-3 jegtOp">Pack.</span></a><nav aria-label="Primary" class="sc-139gbb3-4 gicKZZ"><a class="sc-139gbb3-5 fRoNzL" href="/tsa" data-discover="true">TSA Waits</a><a class="sc-139gbb3-5 fRoNzL" href="/features" data-discover="true">Features</a><a class="sc-139gbb3-5 fRoNzL" href="/how-it-works" data-discover="true">How It Works</a><a class="sc-139gbb3-5 fRoNzL" href="/faq" data-discover="true">FAQ</a><a class="sc-139gbb3-5 fRoNzL" href="/terms" data-discover="true">Terms</a><a class="sc-139gbb3-5 fRoNzL" href="/privacy" data-discover="true">Privacy</a></nav></div></div></header></div><main id="main-content" tabindex="-1" class="sc-53c7bj-1 feclfk"><div class="container"><section class="sc-1wl19jj-0 fDlEFq"><div class="sc-1wl19jj-1 eUnjeu"><div aria-hidden="true" class="sc-1wl19jj-2 hsxwAi"></div><div class="sc-1wl19jj-3 exBaFt"><div class="sc-1wl19jj-4 fXRaej"><div class="sc-1wl19jj-5 eItZij"><span>We plan, you</span><span class="sc-1wl19jj-6 kSDWBt">pack.</span></div><div class="sc-1wl19jj-7 cEaoNZ"><div class="sc-1wl19jj-8 sgcmG"><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Flight departure</span><span class="sc-1wl19jj-10 jWYcMv">Hotel check-in</span><span class="sc-1wl19jj-10 jWYcMv">Live actions</span><span class="sc-1wl19jj-10 jWYcMv">Rebooking</span><span class="sc-1wl19jj-10 jWYcMv">Approval queue</span><span class="sc-1wl19jj-10 jWYcMv">Calendar aware</span><span class="sc-1wl19jj-10 jWYcMv">Protected arrival</span><span class="sc-1wl19jj-10 jWYcMv">Group trip planning</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Flight departure</span><span class="sc-1wl19jj-10 jWYcMv">Hotel check-in</span><span class="sc-1wl19jj-10 jWYcMv">Live actions</span><span class="sc-1wl19jj-10 jWYcMv">Rebooking</span><span class="sc-1wl19jj-10 jWYcMv">Approval queue</span><span class="sc-1wl19jj-10 jWYcMv">Calendar aware</span><span class="sc-1wl19jj-10 jWYcMv">Protected arrival</span><span class="sc-1wl19jj-10 jWYcMv">Group trip planning</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Flight departure</span><span class="sc-1wl19jj-10 jWYcMv">Hotel check-in</span><span class="sc-1wl19jj-10 jWYcMv">Live actions</span><span class="sc-1wl19jj-10 jWYcMv">Rebooking</span><span class="sc-1wl19jj-10 jWYcMv">Approval queue</span><span class="sc-1wl19jj-10 jWYcMv">Calendar aware</span><span class="sc-1wl19jj-10 jWYcMv">Protected arrival</span><span class="sc-1wl19jj-10 jWYcMv">Group trip planning</span></div></div></div><div class="sc-1wl19jj-7 cEaoNZ"><div class="sc-1wl19jj-8 gKQRpR"><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Book Japan</span><span class="sc-1wl19jj-10 jWYcMv">Barcelona in May</span><span class="sc-1wl19jj-10 jWYcMv">Jazz festival</span><span class="sc-1wl19jj-10 jWYcMv">Birthday weekend</span><span class="sc-1wl19jj-10 jWYcMv">Wedding weekend</span><span class="sc-1wl19jj-10 jWYcMv">Beach escape</span><span class="sc-1wl19jj-10 jWYcMv">National parks</span><span class="sc-1wl19jj-10 jWYcMv">Team offsite</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Book Japan</span><span class="sc-1wl19jj-10 jWYcMv">Barcelona in May</span><span class="sc-1wl19jj-10 jWYcMv">Jazz festival</span><span class="sc-1wl19jj-10 jWYcMv">Birthday weekend</span><span class="sc-1wl19jj-10 jWYcMv">Wedding weekend</span><span class="sc-1wl19jj-10 jWYcMv">Beach escape</span><span class="sc-1wl19jj-10 jWYcMv">National parks</span><span class="sc-1wl19jj-10 jWYcMv">Team offsite</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Book Japan</span><span class="sc-1wl19jj-10 jWYcMv">Barcelona in May</span><span class="sc-1wl19jj-10 jWYcMv">Jazz festival</span><span class="sc-1wl19jj-10 jWYcMv">Birthday weekend</span><span class="sc-1wl19jj-10 jWYcMv">Wedding weekend</span><span class="sc-1wl19jj-10 jWYcMv">Beach escape</span><span class="sc-1wl19jj-10 jWYcMv">National parks</span><span class="sc-1wl19jj-10 jWYcMv">Team offsite</span></div></div></div><div class="sc-1wl19jj-11 esxQZb"><span class="sc-1wl19jj-12 eRRtuY">Flight + hotel</span><span class="sc-1wl19jj-12 eRRtuY">Live actions</span><span class="sc-1wl19jj-12 eRRtuY">Calendar aware</span><span class="sc-1wl19jj-12 eRRtuY">Protected arrival</span></div><h1 class="sc-1wl19jj-13 gGKAnr"><span class="sc-1wl19jj-14 LNDBZ">Past, present</span><span class="sc-1wl19jj-14 LNDBZ">and the <span class="sc-1wl19jj-15 bwphvY">future of</span></span><span class="sc-1wl19jj-14 LNDBZ"><span class="sc-1wl19jj-15 bwphvY">agentic travel</span></span></h1><p class="sc-1wl19jj-16 cUXjMC">One prompt to get the flights, hotel, and schedule you&#x27;d pick yourself.</p><div class="sc-1wl19jj-17 iCLcmp"><div id="waitlist" style="display:grid;gap:0.85rem"><section class="sc-3cuk23-2 ksOEgp"><h2 class="sc-3cuk23-3 kpWOgU">Planning a trip?</h2><form class="sc-3cuk23-4 leClDs"><div class="sc-3cuk23-5 joFfVC"><input type="email" placeholder="Your email address" aria-label="Your email address" required="" class="sc-3cuk23-6 dNFHml" value=""/></div><div class="sc-3cuk23-7 cXhpqd"><input type="checkbox" id="marketing-:R2u6ql:" aria-label="Marketing email consent" class="sc-3cuk23-8 glRIoR"/><label for="marketing-:R2u6ql:" class="sc-3cuk23-9 bZcOPF">Yes, email me Pack product updates, travel tips, and special offers.<br/>You can unsubscribe at any time.</label></div><button type="submit" class="sc-3cuk23-11 fMSpzd">Pack it.</button><p class="sc-3cuk23-10 ESKQd">By continuing, you agree to our<!-- --> <a href="/terms">Terms of Service</a> <!-- -->and acknowledge our<!-- --> <a href="/privacy">Privacy Policy</a>.<!-- --> <!-- -->See<!-- --> <a href="/privacy-request">Your Privacy Choices</a>.</p></form></section></div></div></div></div></div></section><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 hvzZze"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 eAeNEc"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 eAeNEc"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 OzQkK"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 llfIEx"></div></div></div></main></div></div>
+    <div id="root" data-prerendered-path="/"><div class="sc-53c7bj-0 eypQzk"><div aria-hidden="true" class="sc-53c7bj-2 bVtKEI"></div><div aria-hidden="true" class="sc-53c7bj-3 hJsbTx"></div><div aria-hidden="true" class="sc-53c7bj-5 evBoJz"></div><a class="skip-link" href="#main-content">Skip to content</a><div class="sc-53c7bj-4 jrIgEA"><header class="sc-139gbb3-0 jUtKiV"><div class="container"><div class="sc-139gbb3-1 eTzIpb"><a aria-label="Go to home" class="sc-139gbb3-2 Yzxgf" href="/" data-discover="true"><img src="/assets/images/logo-DGYrJsq1.png" alt="Pack" class="sc-139gbb3-3 dYxcKX"/></a><nav aria-label="Primary" class="sc-139gbb3-4 gicKZZ"><a class="sc-139gbb3-5 fRoNzL" href="/tsa" data-discover="true">TSA Waits</a><a class="sc-139gbb3-5 fRoNzL" href="/features" data-discover="true">Features</a><a class="sc-139gbb3-5 fRoNzL" href="/how-it-works" data-discover="true">How It Works</a><a class="sc-139gbb3-5 fRoNzL" href="/faq" data-discover="true">FAQ</a><a class="sc-139gbb3-5 fRoNzL" href="/terms" data-discover="true">Terms</a><a class="sc-139gbb3-5 fRoNzL" href="/privacy" data-discover="true">Privacy</a></nav></div></div></header></div><main id="main-content" tabindex="-1" class="sc-53c7bj-1 feclfk"><div class="container"><section class="sc-1wl19jj-0 fDlEFq"><div class="sc-1wl19jj-1 eUnjeu"><div aria-hidden="true" class="sc-1wl19jj-2 hsxwAi"></div><div class="sc-1wl19jj-3 exBaFt"><div class="sc-1wl19jj-4 fXRaej"><div class="sc-1wl19jj-5 eItZij"><span>Go travel with your</span><span class="sc-1wl19jj-6 ikmFCN">pack</span></div><div class="sc-1wl19jj-7 cEaoNZ"><div class="sc-1wl19jj-8 sgcmG"><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Flight departure</span><span class="sc-1wl19jj-10 jWYcMv">Hotel check-in</span><span class="sc-1wl19jj-10 jWYcMv">Live actions</span><span class="sc-1wl19jj-10 jWYcMv">Rebooking</span><span class="sc-1wl19jj-10 jWYcMv">Approval queue</span><span class="sc-1wl19jj-10 jWYcMv">Calendar aware</span><span class="sc-1wl19jj-10 jWYcMv">Protected arrival</span><span class="sc-1wl19jj-10 jWYcMv">Group trip planning</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Flight departure</span><span class="sc-1wl19jj-10 jWYcMv">Hotel check-in</span><span class="sc-1wl19jj-10 jWYcMv">Live actions</span><span class="sc-1wl19jj-10 jWYcMv">Rebooking</span><span class="sc-1wl19jj-10 jWYcMv">Approval queue</span><span class="sc-1wl19jj-10 jWYcMv">Calendar aware</span><span class="sc-1wl19jj-10 jWYcMv">Protected arrival</span><span class="sc-1wl19jj-10 jWYcMv">Group trip planning</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Flight departure</span><span class="sc-1wl19jj-10 jWYcMv">Hotel check-in</span><span class="sc-1wl19jj-10 jWYcMv">Live actions</span><span class="sc-1wl19jj-10 jWYcMv">Rebooking</span><span class="sc-1wl19jj-10 jWYcMv">Approval queue</span><span class="sc-1wl19jj-10 jWYcMv">Calendar aware</span><span class="sc-1wl19jj-10 jWYcMv">Protected arrival</span><span class="sc-1wl19jj-10 jWYcMv">Group trip planning</span></div></div></div><div class="sc-1wl19jj-7 cEaoNZ"><div class="sc-1wl19jj-8 gKQRpR"><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Book Japan</span><span class="sc-1wl19jj-10 jWYcMv">Barcelona in May</span><span class="sc-1wl19jj-10 jWYcMv">Jazz festival</span><span class="sc-1wl19jj-10 jWYcMv">Birthday weekend</span><span class="sc-1wl19jj-10 jWYcMv">Wedding weekend</span><span class="sc-1wl19jj-10 jWYcMv">Beach escape</span><span class="sc-1wl19jj-10 jWYcMv">National parks</span><span class="sc-1wl19jj-10 jWYcMv">Team offsite</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Book Japan</span><span class="sc-1wl19jj-10 jWYcMv">Barcelona in May</span><span class="sc-1wl19jj-10 jWYcMv">Jazz festival</span><span class="sc-1wl19jj-10 jWYcMv">Birthday weekend</span><span class="sc-1wl19jj-10 jWYcMv">Wedding weekend</span><span class="sc-1wl19jj-10 jWYcMv">Beach escape</span><span class="sc-1wl19jj-10 jWYcMv">National parks</span><span class="sc-1wl19jj-10 jWYcMv">Team offsite</span></div><div class="sc-1wl19jj-9 fqnuHL"><span class="sc-1wl19jj-10 jWYcMv">Book Japan</span><span class="sc-1wl19jj-10 jWYcMv">Barcelona in May</span><span class="sc-1wl19jj-10 jWYcMv">Jazz festival</span><span class="sc-1wl19jj-10 jWYcMv">Birthday weekend</span><span class="sc-1wl19jj-10 jWYcMv">Wedding weekend</span><span class="sc-1wl19jj-10 jWYcMv">Beach escape</span><span class="sc-1wl19jj-10 jWYcMv">National parks</span><span class="sc-1wl19jj-10 jWYcMv">Team offsite</span></div></div></div><div class="sc-1wl19jj-11 esxQZb"><span class="sc-1wl19jj-12 eRRtuY">Flight + hotel</span><span class="sc-1wl19jj-12 eRRtuY">Live actions</span><span class="sc-1wl19jj-12 eRRtuY">Calendar aware</span><span class="sc-1wl19jj-12 eRRtuY">Protected arrival</span></div><h1 class="sc-1wl19jj-13 gGKAnr"><span class="sc-1wl19jj-14 LNDBZ">Past, present</span><span class="sc-1wl19jj-14 LNDBZ">and the <span class="sc-1wl19jj-15 bwphvY">future of</span></span><span class="sc-1wl19jj-14 LNDBZ"><span class="sc-1wl19jj-15 bwphvY">agentic travel</span></span></h1><p class="sc-1wl19jj-16 cUXjMC">One prompt to get the flights, hotel, and schedule you&#x27;d pick yourself.</p><div class="sc-1wl19jj-17 iCLcmp"><div id="waitlist" style="display:grid;gap:0.85rem"><section class="sc-3cuk23-1 cyXVIU"><h2 class="sc-3cuk23-2 knBFCN">Planning a trip?</h2><form class="sc-3cuk23-3 jzzmKu"><div class="sc-3cuk23-4 bgXbmz"><input type="email" placeholder="Your email address" aria-label="Your email address" required="" class="sc-3cuk23-5 jwJBsi" value=""/></div><div class="sc-3cuk23-6 gsxrwQ"><input type="checkbox" id="marketing-:R2u7al:" aria-label="Marketing email consent" class="sc-3cuk23-7 jwBHvD"/><label for="marketing-:R2u7al:" class="sc-3cuk23-8 iMykjE">Yes, email me Pack product updates, travel tips, and special offers.<br/>You can unsubscribe at any time.</label></div><button type="submit" class="sc-3cuk23-10 cPLFyW">Pack it.</button><p class="sc-3cuk23-9 fFOqAR">By continuing, you agree to our<!-- --> <a href="/terms">Terms of Service</a> <!-- -->and acknowledge our<!-- --> <a href="/privacy">Privacy Policy</a>.<!-- --> <!-- -->See<!-- --> <a href="/privacy-request">Your Privacy Choices</a>.</p></form></section></div></div></div></div></div></section><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 hvzZze"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 eAeNEc"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 eAeNEc"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 OzQkK"></div></div><div style="width:100%"><div aria-hidden="true" class="sc-1x9ot1e-4 llfIEx"></div></div></div></main></div></div>
   </body>
 </html>

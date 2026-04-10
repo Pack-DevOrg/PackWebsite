@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
+      ((location) => {
+        if (
+          location.hostname === "itsdoneai.com" ||
+          location.hostname === "www.itsdoneai.com"
+        ) {
+          const legacyRedirectUrl = new URL(location.href);
+          legacyRedirectUrl.hostname = "www.trypackai.com";
+          window.location.replace(legacyRedirectUrl.toString());
+          return;
+        }
+        if (location.hostname === "trypackai.com") {
+          const canonicalUrl = new URL(location.href);
+          canonicalUrl.hostname = "www.trypackai.com";
+          window.location.replace(canonicalUrl.toString());
+        }
+      })(window.location);
+    </script>
+    <script>
       // Single Page Apps for GitHub Pages (inline to avoid render-blocking request)
       // MIT License - Adapted from https://github.com/rafgraph/spa-github-pages
       ((location) => {
@@ -103,7 +121,7 @@
     <!-- Critical Resource Preloading -->
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://accounts.google.com https://sentry.avs.io https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com https://accounts.google.com; form-action 'self' https://www.facebook.com;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://sentry.avs.io https://tsa-board.trypackai.com https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com; form-action 'self' https://www.facebook.com;" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     
@@ -366,40 +384,63 @@
     }
     </script>
 
-    <script type="module" crossorigin src="/assets/js/index-DR010S9z.js"></script>
+    <script type="module" crossorigin src="/assets/js/index-D_sgZmgA.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-C1c5d54_.js">
     <link rel="modulepreload" crossorigin href="/assets/js/query-vendor-Dd2uS8re.js">
     <link rel="modulepreload" crossorigin href="/assets/js/ui-vendor-BWNt4uBj.js">
-    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-JbuVyVRk.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-Ej5Cw1qy.js">
     <link rel="stylesheet" crossorigin href="/assets/css/index-G_SiVUqZ.css">
-  <title data-rh="true"></title><style data-styled="true" data-styled-version="6.1.8">.dxwzbH{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;color:#ffffff;text-align:center;}/*!sc*/
-data-styled.g85[id="sc-16esb44-0"]{content:"dxwzbH,"}/*!sc*/
-.htXdc{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at top,rgba(240,198,45,0.16),transparent 34%),linear-gradient(180deg,#08050e 0%,#100914 45%,#05030b 100%);color:#ffffff;padding:2rem;}/*!sc*/
-data-styled.g268[id="sc-l87e24-0"]{content:"htXdc,"}/*!sc*/
-.jeLEni{width:min(520px,100%);background:linear-gradient(180deg,rgba(23,16,30,0.9),rgba(9,7,18,0.92)),rgba(9,7,18,0.88);border:1px solid rgba(255,255,255,0.08);border-radius:28px;padding:clamp(1.9rem,5vw,3rem);display:grid;gap:1rem;box-shadow:0 32px 80px rgba(5,3,12,0.62);text-align:center;}/*!sc*/
-data-styled.g269[id="sc-l87e24-1"]{content:"jeLEni,"}/*!sc*/
-.ejUyiy{width:76px;height:76px;margin:0 auto 0.15rem;border-radius:22px;display:grid;place-items:center;background:linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.09);box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}/*!sc*/
-data-styled.g270[id="sc-l87e24-2"]{content:"ejUyiy,"}/*!sc*/
-.fnhSKI{width:46px;height:46px;object-fit:contain;}/*!sc*/
-data-styled.g271[id="sc-l87e24-3"]{content:"fnhSKI,"}/*!sc*/
-.jFGznb{margin:0;color:#f0c62d;font-size:0.76rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;}/*!sc*/
-data-styled.g272[id="sc-l87e24-4"]{content:"jFGznb,"}/*!sc*/
-.gGGAtc{width:42px;height:42px;margin:0 auto;animation:iOtnio 1.2s linear infinite;color:#f0c62d;}/*!sc*/
-data-styled.g273[id="sc-l87e24-5"]{content:"gGGAtc,"}/*!sc*/
-.tFIea{margin:0;font-size:clamp(1.4rem,3.2vw,1.9rem);font-weight:600;}/*!sc*/
-data-styled.g275[id="sc-l87e24-7"]{content:"tFIea,"}/*!sc*/
-.iDhfkW{margin:0 auto;max-width:44ch;font-size:1rem;line-height:1.6;color:#d5d6dc;}/*!sc*/
-data-styled.g276[id="sc-l87e24-8"]{content:"iDhfkW,"}/*!sc*/
-.jFrwEi{margin:0.2rem 0 0;color:rgba(213,214,220,0.62);font-size:0.9rem;line-height:1.5;}/*!sc*/
-data-styled.g277[id="sc-l87e24-9"]{content:"jFrwEi,"}/*!sc*/
+  <title data-rh="true"></title><style data-styled="true" data-styled-version="6.1.8">.fdkBHb{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;color:#ff7676;text-align:center;}/*!sc*/
+data-styled.g86[id="sc-16esb44-0"]{content:"fdkBHb,"}/*!sc*/
+.hMsZiD{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:clamp(1.25rem,4vw,2.5rem);background:var(--page-gradient);color:#f7f0e3;}/*!sc*/
+.hMsZiD::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 20%,rgba(231,35,64,0.12),transparent 24%),radial-gradient(circle at 82% 12%,rgba(243,210,122,0.16),transparent 26%),radial-gradient(circle at 50% 100%,rgba(243,210,122,0.08),transparent 30%);pointer-events:none;}/*!sc*/
+data-styled.g262[id="sc-l87e24-0"]{content:"hMsZiD,"}/*!sc*/
+.fFnfmK{position:absolute;inset:0;background-image:linear-gradient(rgba(255,248,236,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,248,236,0.03) 1px,transparent 1px);background-size:40px 40px;mask-image:linear-gradient(180deg,rgba(0,0,0,0.36),transparent 78%);pointer-events:none;}/*!sc*/
+data-styled.g263[id="sc-l87e24-1"]{content:"fFnfmK,"}/*!sc*/
+.gYCMWF{position:relative;z-index:1;width:min(760px,100%);display:grid;gap:1rem;}/*!sc*/
+data-styled.g264[id="sc-l87e24-2"]{content:"gYCMWF,"}/*!sc*/
+.exAkJx{background:linear-gradient(180deg,rgba(255,248,236,0.08),rgba(255,248,236,0.03)),radial-gradient(circle at top right,rgba(231,35,64,0.16),transparent 28%),rgba(12,9,7,0.88);border:1px solid rgba(243, 210, 122, 0.12);border-radius:28px;padding:clamp(1.4rem,4vw,2.4rem);display:grid;gap:1.4rem;box-shadow:0 30px 90px rgba(0, 0, 0, 0.38);position:relative;overflow:hidden;}/*!sc*/
+.exAkJx::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.04),transparent 28%);pointer-events:none;}/*!sc*/
+data-styled.g265[id="sc-l87e24-3"]{content:"exAkJx,"}/*!sc*/
+.dLmBIx{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}/*!sc*/
+@media (max-width:640px){.dLmBIx{flex-direction:column;}}/*!sc*/
+data-styled.g266[id="sc-l87e24-4"]{content:"dLmBIx,"}/*!sc*/
+.bRVQee{width:88px;height:88px;border-radius:28px;display:grid;place-items:center;background:radial-gradient(circle at top,rgba(243,210,122,0.2),transparent 60%),linear-gradient(180deg,rgba(255,248,236,0.12),rgba(255,248,236,0.04));border:1px solid rgba(243, 210, 122, 0.2);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 20px 40px rgba(0,0,0,0.24);}/*!sc*/
+data-styled.g267[id="sc-l87e24-5"]{content:"bRVQee,"}/*!sc*/
+.bmiTDd{width:52px;height:52px;object-fit:contain;}/*!sc*/
+data-styled.g268[id="sc-l87e24-6"]{content:"bmiTDd,"}/*!sc*/
+.crdsMM{margin:0;color:rgba(247, 240, 227, 0.72);font-size:0.76rem;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;}/*!sc*/
+data-styled.g269[id="sc-l87e24-7"]{content:"crdsMM,"}/*!sc*/
+.dHsDJA{display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 0.85rem;border-radius:999px;border:1px solid rgba(243, 210, 122, 0.2);background:linear-gradient(180deg, rgba(243, 210, 122, 0.14), rgba(243, 210, 122, 0.06));color:#f7f0e3;font-size:0.82rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;}/*!sc*/
+data-styled.g270[id="sc-l87e24-8"]{content:"dHsDJA,"}/*!sc*/
+.kyvFwT{width:0.55rem;height:0.55rem;border-radius:999px;background:#f3d27a;box-shadow:0 0 18px rgba(243, 210, 122, 0.45);}/*!sc*/
+data-styled.g271[id="sc-l87e24-9"]{content:"kyvFwT,"}/*!sc*/
+.dvxGbw{width:38px;height:38px;animation:iOtnio 1.2s linear infinite;color:#f3d27a;}/*!sc*/
+data-styled.g272[id="sc-l87e24-10"]{content:"dvxGbw,"}/*!sc*/
+.fHEtLt{margin:0;font-size:clamp(2rem,4.6vw,3.5rem);line-height:0.98;letter-spacing:-0.03em;font-weight:700;color:#f7f0e3;}/*!sc*/
+data-styled.g274[id="sc-l87e24-12"]{content:"fHEtLt,"}/*!sc*/
+.ktDKXR{margin:0;font-size:1rem;line-height:1.6;color:rgba(247, 240, 227, 0.72);}/*!sc*/
+data-styled.g275[id="sc-l87e24-13"]{content:"ktDKXR,"}/*!sc*/
+.fOShio{display:grid;gap:0.75rem;max-width:34rem;}/*!sc*/
+data-styled.g276[id="sc-l87e24-14"]{content:"fOShio,"}/*!sc*/
+.gPQxzY{display:grid;gap:0.85rem;padding:1rem 1.05rem;border-radius:20px;background:linear-gradient(180deg,rgba(255,248,236,0.05),rgba(255,248,236,0.02)),rgba(255,248,236,0.02);border:1px solid rgba(255,248,236,0.08);}/*!sc*/
+data-styled.g278[id="sc-l87e24-16"]{content:"gPQxzY,"}/*!sc*/
+.ifwAJR{margin:0;font-size:0.95rem;font-weight:600;color:#f7f0e3;}/*!sc*/
+data-styled.g279[id="sc-l87e24-17"]{content:"ifwAJR,"}/*!sc*/
+.hsfGgm{display:flex;flex-wrap:wrap;gap:0.65rem;}/*!sc*/
+data-styled.g280[id="sc-l87e24-18"]{content:"hsfGgm,"}/*!sc*/
+.kpXCLQ{display:inline-flex;align-items:center;padding:0.45rem 0.72rem;border-radius:999px;background:rgba(255,248,236,0.04);border:1px solid rgba(255,248,236,0.08);color:rgba(247, 240, 227, 0.72);font-size:0.84rem;line-height:1.2;}/*!sc*/
+data-styled.g281[id="sc-l87e24-19"]{content:"kpXCLQ,"}/*!sc*/
+.gHGxSO{margin:0;color:rgba(247, 240, 227, 0.52);font-size:0.9rem;line-height:1.5;}/*!sc*/
+data-styled.g282[id="sc-l87e24-20"]{content:"gHGxSO,"}/*!sc*/
 @keyframes iOtnio{to{transform:rotate(360deg);}}/*!sc*/
-data-styled.g279[id="sc-keyframes-iOtnio"]{content:"iOtnio,"}/*!sc*/
+data-styled.g284[id="sc-keyframes-iOtnio"]{content:"iOtnio,"}/*!sc*/
 </style></head>
   <body>
-    <div id="root" data-prerendered-path="/oauth/callback"><!--$--><!--$--><!--$?--><template id="B:0"></template><div class="sc-16esb44-0 dxwzbH"><span style="display:inline-block;width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,0.15);border-top-color:#f0c62d;animation:spin 1s linear infinite"></span><p style="margin:0;font-size:1rem;opacity:0.8">Loading page…</p><style>
+    <div id="root" data-prerendered-path="/oauth/callback"><!--$--><!--$--><!--$?--><template id="B:0"></template><div class="sc-16esb44-0 fdkBHb"><span style="display:inline-block;width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,0.15);border-top-color:#f0c62d;animation:spin 1s linear infinite"></span><p style="margin:0;font-size:1rem;opacity:0.8">Loading page…</p><style>
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
-    </style></div><!--/$--><!--/$--><!--/$--><div hidden id="S:0"><!--$?--><template id="B:1"></template><!--/$--></div><script>function $RC(a,b){a=document.getElementById(a);b=document.getElementById(b);b.parentNode.removeChild(b);if(a){a=a.previousSibling;var f=a.parentNode,c=a.nextSibling,e=0;do{if(c&&8===c.nodeType){var d=c.data;if("/$"===d)if(0===e)break;else e--;else"$"!==d&&"$?"!==d&&"$!"!==d||e++}d=c.nextSibling;f.removeChild(c);c=d}while(c);for(;b.firstChild;)f.insertBefore(b.firstChild,c);a.data="$";a._reactRetry&&a._reactRetry()}};$RC("B:0","S:0")</script><div hidden id="S:1"><div class="sc-l87e24-0 htXdc"><div class="sc-l87e24-1 jeLEni"><div class="sc-l87e24-2 ejUyiy"><img src="/assets/images/logo-DGYrJsq1.png" alt="Pack" class="sc-l87e24-3 fnhSKI"/></div><p class="sc-l87e24-4 jFGznb">Pack</p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle sc-l87e24-5 gGGAtc" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><h2 class="sc-l87e24-7 tFIea">Finalizing your sign-in…</h2><p class="sc-l87e24-8 iDhfkW">We&#x27;re getting your travel profile ready so your next page feels like it already knows you.</p><p class="sc-l87e24-8 iDhfkW">Attempting to complete your sign-in. This should only take a moment.</p><p class="sc-l87e24-9 jFrwEi">Built with ❤️ for travellers.</p></div></div></div><script>$RC("B:1","S:1")</script></div>
+    </style></div><!--/$--><!--/$--><!--/$--><div hidden id="S:0"><!--$?--><template id="B:1"></template><!--/$--></div><script>function $RC(a,b){a=document.getElementById(a);b=document.getElementById(b);b.parentNode.removeChild(b);if(a){a=a.previousSibling;var f=a.parentNode,c=a.nextSibling,e=0;do{if(c&&8===c.nodeType){var d=c.data;if("/$"===d)if(0===e)break;else e--;else"$"!==d&&"$?"!==d&&"$!"!==d||e++}d=c.nextSibling;f.removeChild(c);c=d}while(c);for(;b.firstChild;)f.insertBefore(b.firstChild,c);a.data="$";a._reactRetry&&a._reactRetry()}};$RC("B:0","S:0")</script><div hidden id="S:1"><div class="sc-l87e24-0 hMsZiD"><div aria-hidden="true" class="sc-l87e24-1 fFnfmK"></div><section class="sc-l87e24-2 gYCMWF"><div class="sc-l87e24-3 exAkJx"><div class="sc-l87e24-4 dLmBIx"><div class="sc-l87e24-5 bRVQee"><img src="/assets/images/logo-DGYrJsq1.png" alt="Pack" class="sc-l87e24-6 bmiTDd"/></div><div class="sc-l87e24-8 dHsDJA"><span class="sc-l87e24-9 kyvFwT"></span>Secure sign-in</div></div><div class="sc-l87e24-14 fOShio"><p class="sc-l87e24-7 crdsMM">Pack account handoff</p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle sc-l87e24-10 dvxGbw" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg><h1 class="sc-l87e24-12 fHEtLt">Welcome back. We&#x27;re setting your trip space.</h1><p class="sc-l87e24-13 ktDKXR">We&#x27;re getting your travel profile ready so your next page feels like it already knows you.</p></div><div class="sc-l87e24-16 gPQxzY"><p class="sc-l87e24-17 ifwAJR">Attempting to complete your sign-in. This should only take a moment.</p><div aria-label="Sign-in progress" class="sc-l87e24-18 hsfGgm"><span class="sc-l87e24-19 kpXCLQ">Confirming your account</span><span class="sc-l87e24-19 kpXCLQ">Syncing your travel profile</span><span class="sc-l87e24-19 kpXCLQ">Preparing the app view</span></div></div><p class="sc-l87e24-20 gHGxSO">Built with care for travellers who hate messy travel days.</p></div></section></div></div><script>$RC("B:1","S:1")</script></div>
   </body>
 </html>

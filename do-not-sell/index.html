@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
+      ((location) => {
+        if (
+          location.hostname === "itsdoneai.com" ||
+          location.hostname === "www.itsdoneai.com"
+        ) {
+          const legacyRedirectUrl = new URL(location.href);
+          legacyRedirectUrl.hostname = "www.trypackai.com";
+          window.location.replace(legacyRedirectUrl.toString());
+          return;
+        }
+        if (location.hostname === "trypackai.com") {
+          const canonicalUrl = new URL(location.href);
+          canonicalUrl.hostname = "www.trypackai.com";
+          window.location.replace(canonicalUrl.toString());
+        }
+      })(window.location);
+    </script>
+    <script>
       // Single Page Apps for GitHub Pages (inline to avoid render-blocking request)
       // MIT License - Adapted from https://github.com/rafgraph/spa-github-pages
       ((location) => {
@@ -103,7 +121,7 @@
     <!-- Critical Resource Preloading -->
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://accounts.google.com https://sentry.avs.io https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com https://accounts.google.com; form-action 'self' https://www.facebook.com;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net; script-src-elem 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://connect.facebook.net https://www.recaptcha.net https://www.googleadservices.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.trypackai.com https://78o58odzab.execute-api.us-east-1.amazonaws.com https://auth.trypackai.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://www.google.com https://www.recaptcha.net https://sentry.avs.io https://tsa-board.trypackai.com https://*.cloudfront.net; img-src 'self' data: https: https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com; frame-src https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://www.facebook.com; form-action 'self' https://www.facebook.com;" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     
@@ -366,11 +384,11 @@
     }
     </script>
 
-    <script type="module" crossorigin src="/assets/js/index-DR010S9z.js"></script>
+    <script type="module" crossorigin src="/assets/js/index-D_sgZmgA.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-C1c5d54_.js">
     <link rel="modulepreload" crossorigin href="/assets/js/query-vendor-Dd2uS8re.js">
     <link rel="modulepreload" crossorigin href="/assets/js/ui-vendor-BWNt4uBj.js">
-    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-JbuVyVRk.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/utils-vendor-Ej5Cw1qy.js">
     <link rel="stylesheet" crossorigin href="/assets/css/index-G_SiVUqZ.css">
   <title data-rh="true"></title><style data-styled="true" data-styled-version="6.1.8"></style></head>
   <body>

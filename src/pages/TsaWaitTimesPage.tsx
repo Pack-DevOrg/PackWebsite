@@ -486,6 +486,8 @@ const SupportLink = styled.a`
 const PaginationWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
+  margin: 0 auto;
   justify-content: center;
   align-items: center;
   gap: 0.8rem;

@@ -113,6 +113,12 @@ const LabsAuthCallbackPage = labsEnabled
       return { default: module.LabsAuthCallbackPage };
     })
   : null;
+const LabsTravelDetailReviewPage = labsEnabled
+  ? React.lazy(async () => {
+      const module = await import("../pages/Labs");
+      return { default: module.LabsTravelDetailReviewPage };
+    })
+  : null;
 const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
 
 const LoadingScreenContainer = styled.div`
@@ -603,6 +609,18 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
         ) : null}
+        {LabsTravelDetailReviewPage ? (
+          <Route
+            path="/labs/travel-detail-review"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <LabsTravelDetailReviewPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ) : null}
         {LabsPage ? (
           <Route
             path="/labs/live-activities"
@@ -857,6 +875,9 @@ const NonHomeRoutes: React.FC = () => {
           ) : null}
           {LabsAuthCallbackPage ? (
             <Route path="labs/auth-callback" element={<Layout><Suspense fallback={null}><LabsAuthCallbackPage /></Suspense></Layout>} />
+          ) : null}
+          {LabsTravelDetailReviewPage ? (
+            <Route path="labs/travel-detail-review" element={<Layout><Suspense fallback={null}><LabsTravelDetailReviewPage /></Suspense></Layout>} />
           ) : null}
           {LabsPage ? (
             <Route path="labs/live-activities" element={<Layout><Suspense fallback={null}><LiveActivityLab /></Suspense></Layout>} />

@@ -3,10 +3,18 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { fetchLatestLogoLabRun, generateLogoLabRun } from "@/api/labs";
+import {
+  fetchLatestLogoLabRun,
+  fetchTravelDetailReviewAggregate,
+  generateLogoLabRun,
+} from "@/api/labs";
 import { useI18n } from "@/i18n/I18nProvider";
 import { AuthCallbackSurface } from "@/pages/AuthCallbackPage";
-import type { LogoLabRun } from "@/schemas/labs";
+import type {
+  LogoLabRun,
+  TravelDetailReviewOutput,
+  TravelDetailReviewResult,
+} from "@/schemas/labs";
 import {
   LOGO_BRANDING_RESEARCH_PRINCIPLES,
   LOGO_VARIATION_PRESETS,
@@ -54,6 +62,18 @@ type OgConcept = {
   prompt: string;
   verdict: "closest" | "promising" | "mixed";
 };
+
+type TravelDetailVerdict = "wrong" | "ok";
+
+type TravelDetailReviewState = Record<
+  string,
+  {
+    verdict?: TravelDetailVerdict;
+    note?: string;
+  }
+>;
+
+const TRAVEL_DETAIL_REVIEW_STORAGE_KEY = "pack-labs-travel-detail-review-v1";
 
 const labVideos: LabVideo[] = [
   {
@@ -474,6 +494,153 @@ const ComparisonGrid = styled.div`
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const FilterRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+`;
+
+const ReviewStats = styled.div`
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.9rem;
+`;
+
+const ReviewPill = styled.span`
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.05);
+  padding: 0.45rem 0.75rem;
+`;
+
+const FilterButton = styled.button<{ $active?: boolean }>`
+  border: 1px solid
+    ${({ theme, $active }) =>
+      $active ? theme.colors.primary.main : theme.colors.border.light};
+  background: ${({ $active }) =>
+    $active ? "rgba(243, 210, 122, 0.14)" : "rgba(255, 248, 236, 0.05)"};
+  color: ${({ theme }) => theme.colors.text.primary};
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  cursor: pointer;
+`;
+
+const ReviewCard = styled.article`
+  grid-column: span 12;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 24px;
+  padding: 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const ReviewHeader = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+`;
+
+const ReviewMetaColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+`;
+
+const ReviewActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: flex-start;
+`;
+
+const ReviewActionButton = styled.button<{ $tone: "wrong" | "ok" | "neutral" }>`
+  border-radius: 999px;
+  padding: 0.6rem 0.95rem;
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid
+    ${({ theme, $tone }) =>
+      $tone === "wrong"
+        ? theme.colors.secondary.main
+        : $tone === "ok"
+          ? theme.colors.primary.main
+          : theme.colors.border.light};
+  background: ${({ $tone }) =>
+    $tone === "wrong"
+      ? "rgba(231, 35, 64, 0.12)"
+      : $tone === "ok"
+        ? "rgba(243, 210, 122, 0.12)"
+        : "rgba(255, 248, 236, 0.05)"};
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const PromptPanel = styled.div`
+  border-radius: 18px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.04);
+  padding: 0.95rem 1rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  line-height: 1.6;
+`;
+
+const ReviewLegGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ReviewLegCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-radius: 20px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(11, 10, 9, 0.72);
+  padding: 0.95rem;
+`;
+
+const JsonBlock = styled.pre`
+  margin: 0;
+  overflow: auto;
+  border-radius: 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(0, 0, 0, 0.28);
+  padding: 0.9rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.8rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
+
+const ReviewTextArea = styled.textarea`
+  width: 100%;
+  min-height: 5.5rem;
+  border-radius: 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.04);
+  padding: 0.85rem 0.95rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font: inherit;
+  resize: vertical;
 `;
 
 const SurfacePreviewCard = styled.article`
@@ -1110,6 +1277,14 @@ const labsContent = {
           href: "/labs/auth-callback",
           kicker: "Auth surfaces",
         },
+        {
+          slug: "travel-detail-review",
+          title: "Travel Detail Review",
+          description:
+            "Review the 78-case detail aggregate, inspect each leg payload, and mark cases that are wrong before the next prompt pass.",
+          href: "/labs/travel-detail-review",
+          kicker: "Extractor QA",
+        },
       ],
     },
     videos: {
@@ -1182,6 +1357,24 @@ const labsContent = {
       errorMessage:
         "We couldn't complete the sign-in because the callback is missing required parameters. Please try signing in again.",
     },
+    travelDetailReview: {
+      title: "Travel detail review for the 78-case corpus.",
+      description:
+        "Use this page to inspect the finished detail aggregate from PackServer, mark cases wrong, and leave short notes on why the detail payload is off.",
+      statsLabel: "Review progress",
+      wrongFilter: "Wrong",
+      okFilter: "OK",
+      unreviewedFilter: "Unreviewed",
+      allFilter: "All",
+      markWrong: "Mark wrong",
+      markOk: "Mark OK",
+      clearReview: "Clear",
+      notesLabel: "Why is it wrong?",
+      sourceLabel: "Aggregate source",
+      failedLabel: "Failed detail run",
+      promptLabel: "Prompt",
+      detailLabel: "Raw detail output",
+    },
     crumbs: {
       labs: "Labs",
       logoStudio: "Logo studio",
@@ -1189,6 +1382,7 @@ const labsContent = {
       comparisons: "Comparisons",
       brandAssets: "Brand assets",
       authCallback: "Auth callback",
+      travelDetailReview: "Travel detail review",
     },
   },
   es: {
@@ -1251,6 +1445,14 @@ const labsContent = {
             "Inspecciona la pantalla rediseñada de transición de inicio de sesión en estados de procesamiento y error.",
           href: "/labs/auth-callback",
           kicker: "Superficies de auth",
+        },
+        {
+          slug: "travel-detail-review",
+          title: "Travel Detail Review",
+          description:
+            "Revisa el aggregate de detail de 78 casos, inspecciona cada payload por leg y marca los casos incorrectos antes de la siguiente pasada de prompts.",
+          href: "/labs/travel-detail-review",
+          kicker: "QA del extractor",
         },
       ],
     },
@@ -1359,6 +1561,24 @@ const labsContent = {
       errorMessage:
         "No pudimos completar el inicio de sesión porque al callback le faltan parámetros requeridos. Intenta iniciar sesión de nuevo.",
     },
+    travelDetailReview: {
+      title: "Revisión de detail para el corpus de 78 casos.",
+      description:
+        "Usa esta página para inspeccionar el aggregate final de detail desde PackServer, marcar los casos incorrectos y dejar notas cortas sobre por qué el payload de detail está mal.",
+      statsLabel: "Progreso de revisión",
+      wrongFilter: "Incorrectos",
+      okFilter: "Correctos",
+      unreviewedFilter: "Sin revisar",
+      allFilter: "Todos",
+      markWrong: "Marcar incorrecto",
+      markOk: "Marcar correcto",
+      clearReview: "Limpiar",
+      notesLabel: "¿Por qué está mal?",
+      sourceLabel: "Fuente del aggregate",
+      failedLabel: "Falló la corrida de detail",
+      promptLabel: "Prompt",
+      detailLabel: "Salida raw de detail",
+    },
     crumbs: {
       labs: "Labs",
       logoStudio: "Logo studio",
@@ -1366,9 +1586,89 @@ const labsContent = {
       comparisons: "Comparaciones",
       brandAssets: "Brand assets",
       authCallback: "Auth callback",
+      travelDetailReview: "Travel detail review",
     },
   },
 } as const;
+
+const loadTravelDetailReviewState = (): TravelDetailReviewState => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const raw = window.localStorage.getItem(TRAVEL_DETAIL_REVIEW_STORAGE_KEY);
+    if (!raw) {
+      return {};
+    }
+
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object") {
+      return {};
+    }
+
+    return parsed as TravelDetailReviewState;
+  } catch {
+    return {};
+  }
+};
+
+const persistTravelDetailReviewState = (
+  nextState: TravelDetailReviewState,
+): void => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(
+    TRAVEL_DETAIL_REVIEW_STORAGE_KEY,
+    JSON.stringify(nextState),
+  );
+};
+
+const summarizeTravelDetailOutput = (
+  output: TravelDetailReviewOutput,
+): string[] => {
+  const lines: string[] = [];
+  lines.push(`kind: ${output.kind ?? "unknown"}`);
+
+  if (output.location) {
+    lines.push(
+      `location: ${output.location.label}${
+        output.location.cityCode ? ` (${output.location.cityCode})` : ""
+      }`,
+    );
+  } else {
+    lines.push("location: none");
+  }
+
+  if (output.timing?.startDate || output.timing?.endDate) {
+    lines.push(
+      `timing: ${output.timing?.startDate ?? "?"} -> ${output.timing?.endDate ?? "?"}`,
+    );
+  } else {
+    lines.push("timing: none");
+  }
+
+  if (output.products) {
+    const productSummary = Object.entries(output.products)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(", ");
+    lines.push(`products: ${productSummary}`);
+  }
+
+  if (output.constraintStrength) {
+    lines.push(`constraint: ${output.constraintStrength}`);
+  }
+
+  if (output.grounding) {
+    lines.push(
+      `grounding: loc=${String(output.grounding.locationGrounded ?? false)} time=${String(output.grounding.timeGrounded ?? false)}`,
+    );
+  }
+
+  return lines;
+};
 
 const LabsShell: React.FC<{
   title: string;
@@ -1926,6 +2226,247 @@ export const LabsAuthCallbackPage: React.FC = () => {
           </SurfaceFrame>
         </SurfacePreviewCard>
       </ComparisonGrid>
+    </LabsShell>
+  );
+};
+
+export const LabsTravelDetailReviewPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+  const [filter, setFilter] = React.useState<
+    "all" | "wrong" | "ok" | "unreviewed"
+  >("all");
+  const [reviewState, setReviewState] = React.useState<TravelDetailReviewState>(
+    () => loadTravelDetailReviewState(),
+  );
+
+  const detailReviewQuery = useQuery({
+    queryKey: ["labs", "travel-detail-review", "detail-aggregate"],
+    queryFn: () => fetchTravelDetailReviewAggregate(),
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const setVerdict = (
+    caseId: string,
+    verdict: TravelDetailVerdict | undefined,
+  ) => {
+    setReviewState((current) => {
+      const nextState: TravelDetailReviewState = {
+        ...current,
+        [caseId]: {
+          ...current[caseId],
+          verdict,
+        },
+      };
+      if (!nextState[caseId]?.verdict && !nextState[caseId]?.note) {
+        delete nextState[caseId];
+      }
+      persistTravelDetailReviewState(nextState);
+      return nextState;
+    });
+  };
+
+  const setNote = (caseId: string, note: string) => {
+    setReviewState((current) => {
+      const trimmed = note.trim();
+      const nextState: TravelDetailReviewState = {
+        ...current,
+        [caseId]: {
+          ...current[caseId],
+          note,
+        },
+      };
+      if (!nextState[caseId]?.verdict && !trimmed) {
+        delete nextState[caseId];
+      }
+      persistTravelDetailReviewState(nextState);
+      return nextState;
+    });
+  };
+
+  const filteredResults = React.useMemo(() => {
+    const results = detailReviewQuery.data?.results ?? [];
+    return results.filter((result) => {
+      const verdict = reviewState[result.caseId]?.verdict;
+      if (filter === "wrong") {
+        return verdict === "wrong";
+      }
+      if (filter === "ok") {
+        return verdict === "ok";
+      }
+      if (filter === "unreviewed") {
+        return !verdict;
+      }
+      return true;
+    });
+  }, [detailReviewQuery.data?.results, filter, reviewState]);
+
+  const reviewStats = React.useMemo(() => {
+    const reviews = Object.values(reviewState);
+    return {
+      wrong: reviews.filter((value) => value.verdict === "wrong").length,
+      ok: reviews.filter((value) => value.verdict === "ok").length,
+      unreviewed: Math.max(
+        (detailReviewQuery.data?.results.length ?? 0) - reviews.length,
+        0,
+      ),
+    };
+  }, [detailReviewQuery.data?.results.length, reviewState]);
+
+  return (
+    <LabsShell
+      title={localizedContent.travelDetailReview.title}
+      description={localizedContent.travelDetailReview.description}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
+        <BreadcrumbLink to={pathFor("/labs/travel-detail-review")}>
+          {localizedContent.crumbs.travelDetailReview}
+        </BreadcrumbLink>
+      </BreadcrumbRow>
+      <Stack>
+        <FilterRow>
+          <ReviewStats aria-label={localizedContent.travelDetailReview.statsLabel}>
+            <ReviewPill>
+              {localizedContent.travelDetailReview.statsLabel}:{" "}
+              {detailReviewQuery.data?.passedCount ?? 0}/{detailReviewQuery.data?.totalCases ?? 0}{" "}
+              passed
+            </ReviewPill>
+            <ReviewPill>{reviewStats.wrong} wrong</ReviewPill>
+            <ReviewPill>{reviewStats.ok} ok</ReviewPill>
+            <ReviewPill>{reviewStats.unreviewed} unreviewed</ReviewPill>
+          </ReviewStats>
+          <FilterButton
+            type="button"
+            $active={filter === "all"}
+            onClick={() => setFilter("all")}
+          >
+            {localizedContent.travelDetailReview.allFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "wrong"}
+            onClick={() => setFilter("wrong")}
+          >
+            {localizedContent.travelDetailReview.wrongFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "ok"}
+            onClick={() => setFilter("ok")}
+          >
+            {localizedContent.travelDetailReview.okFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "unreviewed"}
+            onClick={() => setFilter("unreviewed")}
+          >
+            {localizedContent.travelDetailReview.unreviewedFilter}
+          </FilterButton>
+        </FilterRow>
+        <PathLabel>
+          {localizedContent.travelDetailReview.sourceLabel}:{" "}
+          /Users/noahmitsuhashi/Code/PackAll/PackServer/tmp/travel-extraction-stage-corpus/2026-04-10T05-34-34-314Z-25a9579a/aggregate.json
+        </PathLabel>
+      </Stack>
+      {detailReviewQuery.isLoading ? (
+        <Notice>Loading detail aggregate…</Notice>
+      ) : null}
+      {detailReviewQuery.isError ? (
+        <ErrorNotice>
+          {detailReviewQuery.error instanceof Error
+            ? detailReviewQuery.error.message
+            : "Failed to load detail aggregate."}
+        </ErrorNotice>
+      ) : null}
+      {detailReviewQuery.data ? (
+        <Grid>
+          {filteredResults.map((result: TravelDetailReviewResult) => {
+            const review = reviewState[result.caseId];
+            const verdict = review?.verdict;
+            const casePrompt = result.artifact?.message ?? "";
+            const legs = result.artifact?.legs ?? [];
+
+            return (
+              <ReviewCard key={result.caseId}>
+                <ReviewHeader>
+                  <ReviewMetaColumn>
+                    <Kicker>{result.passed ? "Passed detail" : localizedContent.travelDetailReview.failedLabel}</Kicker>
+                    <CardTitle>{result.caseId}</CardTitle>
+                    <CardBody>{localizedContent.travelDetailReview.promptLabel}</CardBody>
+                  </ReviewMetaColumn>
+                  <ReviewActions>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="wrong"
+                      onClick={() => setVerdict(result.caseId, "wrong")}
+                    >
+                      {verdict === "wrong" ? "Wrong marked" : localizedContent.travelDetailReview.markWrong}
+                    </ReviewActionButton>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="ok"
+                      onClick={() => setVerdict(result.caseId, "ok")}
+                    >
+                      {verdict === "ok" ? "OK marked" : localizedContent.travelDetailReview.markOk}
+                    </ReviewActionButton>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="neutral"
+                      onClick={() => setVerdict(result.caseId, undefined)}
+                    >
+                      {localizedContent.travelDetailReview.clearReview}
+                    </ReviewActionButton>
+                  </ReviewActions>
+                </ReviewHeader>
+                <PromptPanel>{casePrompt}</PromptPanel>
+                {result.error ? <ErrorNotice>{result.error}</ErrorNotice> : null}
+                {legs.length > 0 ? (
+                  <ReviewLegGrid>
+                    {legs.map((leg) => {
+                      const detailOutput =
+                        leg.stages.find((stage) => stage.stage === "detail")
+                          ?.output as TravelDetailReviewOutput | undefined;
+
+                      return (
+                        <ReviewLegCard key={leg.legId}>
+                          <Meta>
+                            <Kicker>{leg.kind}</Kicker>
+                            <CardTitle>{leg.title}</CardTitle>
+                            {detailOutput ? (
+                              <CardBody>
+                                {summarizeTravelDetailOutput(detailOutput).join(" · ")}
+                              </CardBody>
+                            ) : (
+                              <CardBody>No detail output</CardBody>
+                            )}
+                          </Meta>
+                          <CardBody>{localizedContent.travelDetailReview.detailLabel}</CardBody>
+                          <JsonBlock>
+                            {JSON.stringify(detailOutput ?? null, null, 2)}
+                          </JsonBlock>
+                        </ReviewLegCard>
+                      );
+                    })}
+                  </ReviewLegGrid>
+                ) : null}
+                <div>
+                  <CardBody>{localizedContent.travelDetailReview.notesLabel}</CardBody>
+                  <ReviewTextArea
+                    value={review?.note ?? ""}
+                    onChange={(event) =>
+                      setNote(result.caseId, event.target.value)
+                    }
+                    placeholder="Placeholder locations, fake grounding, wrong timing, etc."
+                  />
+                </div>
+              </ReviewCard>
+            );
+          })}
+        </Grid>
+      ) : null}
     </LabsShell>
   );
 };

@@ -2,8 +2,10 @@ import { z } from "zod";
 import {
   LogoLabGenerateRequestSchema,
   LogoLabRunSchema,
+  TravelDetailReviewAggregateSchema,
   type LogoLabGenerateRequest,
   type LogoLabRun,
+  type TravelDetailReviewAggregate,
 } from "@/schemas/labs";
 import { ApiRequestError, requestPublicApi } from "@/api/client";
 
@@ -66,4 +68,31 @@ export const fetchLatestLogoLabRun = async (): Promise<LogoLabRun> => {
   });
 
   return parseLogoLabResponse(response);
+};
+
+const DEFAULT_TRAVEL_DETAIL_REVIEW_PATH =
+  "/Users/noahmitsuhashi/Code/PackAll/PackServer/tmp/travel-extraction-stage-corpus/2026-04-10T05-34-34-314Z-25a9579a/aggregate.json";
+
+export const fetchTravelDetailReviewAggregate = async (
+  filePath: string = DEFAULT_TRAVEL_DETAIL_REVIEW_PATH,
+): Promise<TravelDetailReviewAggregate> => {
+  const response = await fetch(`/@fs${encodeURI(filePath)}`);
+  if (!response.ok) {
+    throw new ApiRequestError(
+      response.status,
+      `Failed to load detail review aggregate from ${filePath}.`,
+    );
+  }
+
+  const payload: unknown = await response.json();
+  const parsed = TravelDetailReviewAggregateSchema.safeParse(payload);
+  if (!parsed.success) {
+    throw new ApiRequestError(
+      500,
+      "Unexpected travel detail review aggregate shape.",
+      parsed.error.issues,
+    );
+  }
+
+  return parsed.data;
 };

@@ -125,10 +125,10 @@ const labVideos: LabVideo[] = [
     slug: "pack-travel-podcast-two-women",
     title: "Pack Travel Podcast Two Women",
     description:
-      "Veo 3.0 generated podcast-style travel clip with spoken audio and readable burned subtitles about Pack.",
+      "Veo 3.0 generated couch-style travel podcast clip with spoken audio, refined subtitle styling, and a more photoreal premium set.",
     tags: ["Pack", "Travel", "Podcast", "Audio", "Subtitled"],
     localPath:
-      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v1_001.subtitled.mp4",
+      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v2.subtitled.mp4",
   },
 ];
 

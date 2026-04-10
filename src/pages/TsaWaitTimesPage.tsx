@@ -511,6 +511,10 @@ const PaginationButton = styled.button`
     cursor: default;
     opacity: 0.42;
   }
+
+  @media (max-width: 560px) {
+    min-width: 6.75rem;
+  }
 `;
 
 const PaginationInfo = styled.div`
@@ -1812,7 +1816,7 @@ const TsaWaitTimesPage: React.FC = () => {
                     }
                     disabled={normalizedCurrentPage === 1}
                   >
-                    Previous page
+                    Previous
                   </PaginationButton>
                   <PaginationInfo>
                     Page {normalizedCurrentPage} of {totalPages}
@@ -1824,7 +1828,7 @@ const TsaWaitTimesPage: React.FC = () => {
                     }
                     disabled={normalizedCurrentPage === totalPages}
                   >
-                    Next page
+                    Next
                   </PaginationButton>
                 </PaginationWrap>
               ) : null}
@@ -1969,7 +1973,7 @@ const TsaWaitTimesPage: React.FC = () => {
                     }
                     disabled={normalizedCurrentPage === 1}
                   >
-                    Previous page
+                    Previous
                   </PaginationButton>
                   <PaginationInfo>
                     Page {normalizedCurrentPage} of {totalPages}
@@ -1981,7 +1985,7 @@ const TsaWaitTimesPage: React.FC = () => {
                     }
                     disabled={normalizedCurrentPage === totalPages}
                   >
-                    Next page
+                    Next
                   </PaginationButton>
                 </PaginationWrap>
               ) : null}

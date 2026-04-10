@@ -379,7 +379,7 @@ export const SharedTravelPlan: React.FC = () => {
 
   const ogImage =
     travelPlan?.thumbnailUrl ||
-    `${WEBSITE_URL}/images/share-card.png?v=20260402b`;
+    `${WEBSITE_URL}/images/share-card.png?v=20260410a`;
   const ogImageAlt = travelPlan?.title ? `${travelPlan.title} - Pack` : 'Shared travel plan on Pack';
   const encodedShareId = hasShareId ? encodeURIComponent(shareId) : '';
   const ogUrl = `${WEBSITE_URL}${encodedShareId ? `/share/${encodedShareId}` : '/share'}`;

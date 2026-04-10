@@ -246,7 +246,7 @@ const labSections: LabSection[] = [
     slug: "videos",
     title: "Videos",
     description:
-      "Review exported ad renders, stream them in-browser, or open the original local files.",
+      "Review exported ad renders, stream every generated variant in-browser, and compare concepts without leaving Labs.",
     href: "/labs/videos",
     kicker: "Exports and source files",
   },
@@ -483,6 +483,43 @@ const VideoCard = styled.article`
   @media (max-width: 900px) {
     grid-column: span 1;
   }
+`;
+
+const VideoGroupCard = styled.article`
+  grid-column: span 12;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 28px;
+  padding: 1.1rem;
+  background:
+    radial-gradient(circle at top right, rgba(243, 210, 122, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const VariantGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const VideoVariantCard = styled.article`
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  border-radius: 22px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  padding: 0.95rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.05), rgba(255, 248, 236, 0.02)),
+    rgba(11, 10, 9, 0.76);
 `;
 
 const ComparisonCard = styled.article`
@@ -735,10 +772,44 @@ const SurfaceFrame = styled.div`
   box-shadow: ${({ theme }) => theme.colors.shadow.medium};
 `;
 
+const VideoFrame = styled.div`
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background:
+    radial-gradient(circle at top, rgba(243, 210, 122, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(9, 7, 6, 1));
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const InlineVideo = styled.video`
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background: #050505;
+  object-fit: cover;
+`;
+
 const Meta = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
+`;
+
+const VariantHeader = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+`;
+
+const VariantTitle = styled.h3`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 `;
 
 const Kicker = styled.span`
@@ -1795,38 +1866,54 @@ export const LabsVideosPage: React.FC = () => {
         <BreadcrumbLink to={pathFor("/labs/videos")}>{localizedContent.crumbs.videos}</BreadcrumbLink>
       </BreadcrumbRow>
       <Grid>
-        {localizedContent.videos.videos.map((video) => (
-          <VideoCard key={video.slug}>
+        {localizedContent.videos.videoGroups.map((group) => (
+          <VideoGroupCard key={group.slug}>
             <Meta>
-              <CardTitle>{video.title}</CardTitle>
-              <CardBody>{video.description}</CardBody>
+              <Kicker>{group.tags.join(" · ")}</Kicker>
+              <CardTitle>{group.title}</CardTitle>
+              <CardBody>{group.description}</CardBody>
               <TagRow>
-                {video.tags.map((tag) => (
+                {group.tags.map((tag) => (
                   <Tag key={tag}>{tag}</Tag>
                 ))}
               </TagRow>
-              <LinkRow>
-                <PrimaryLink
-                  href={toFileUrl(video.localPath)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {localizedContent.openLocalFile}
-                </PrimaryLink>
-                <SecondaryLink
-                  href={toViteFsUrl(video.localPath)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {localizedContent.openPreview}
-                </SecondaryLink>
-                <SecondaryLink href={toViteFsUrl(video.localPath)} download>
-                  {localizedContent.downloadLocalCopy}
-                </SecondaryLink>
-              </LinkRow>
-              <PathLabel>{video.localPath}</PathLabel>
             </Meta>
-          </VideoCard>
+            <VariantGrid>
+              {group.variants.map((video) => {
+                const previewUrl = toViteFsUrl(video.localPath);
+                const isFeatured = video.slug === group.featuredVideoSlug;
+
+                return (
+                  <VideoVariantCard key={video.slug}>
+                    <VideoFrame>
+                      <InlineVideo controls preload="metadata" playsInline src={previewUrl} />
+                    </VideoFrame>
+                    <Meta>
+                      <VariantHeader>
+                        <VariantTitle>{video.title}</VariantTitle>
+                        {isFeatured ? <Tag>Featured</Tag> : null}
+                      </VariantHeader>
+                      <CardBody>{video.description}</CardBody>
+                      <TagRow>
+                        {video.tags.map((tag) => (
+                          <Tag key={tag}>{tag}</Tag>
+                        ))}
+                      </TagRow>
+                      <LinkRow>
+                        <PrimaryLink href={previewUrl} target="_blank" rel="noreferrer">
+                          {localizedContent.openPreview}
+                        </PrimaryLink>
+                        <SecondaryLink href={previewUrl} download>
+                          {localizedContent.downloadLocalCopy}
+                        </SecondaryLink>
+                      </LinkRow>
+                      <PathLabel>{video.localPath}</PathLabel>
+                    </Meta>
+                  </VideoVariantCard>
+                );
+              })}
+            </VariantGrid>
+          </VideoGroupCard>
         ))}
       </Grid>
     </LabsShell>
@@ -1836,7 +1923,11 @@ export const LabsVideosPage: React.FC = () => {
 export const LabsComparisonsPage: React.FC = () => {
   const { locale, pathFor } = useI18n();
   const localizedContent = labsContent[locale];
-  const localizedVideos = new Map(localizedContent.videos.videos.map((video) => [video.slug, video]));
+  const localizedVideos = new Map(
+    localizedContent.videos.videoGroups
+      .flatMap((group) => group.variants)
+      .map((video) => [video.slug, video]),
+  );
 
   return (
     <LabsShell
@@ -1865,8 +1956,17 @@ export const LabsComparisonsPage: React.FC = () => {
               <ComparisonGrid>
                 {[leftVideo, rightVideo].map((video) => (
                   <div key={video.slug}>
+                    <VideoFrame>
+                      <InlineVideo
+                        controls
+                        preload="metadata"
+                        playsInline
+                        src={toViteFsUrl(video.localPath)}
+                      />
+                    </VideoFrame>
                     <Meta>
                       <CardTitle>{video.title}</CardTitle>
+                      <CardBody>{video.description}</CardBody>
                       <TagRow>
                         {video.tags.map((tag) => (
                           <Tag key={tag}>{tag}</Tag>
@@ -1874,13 +1974,17 @@ export const LabsComparisonsPage: React.FC = () => {
                       </TagRow>
                       <LinkRow>
                         <PrimaryLink
-                          href={toFileUrl(video.localPath)}
+                          href={toViteFsUrl(video.localPath)}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {localizedContent.openLocalFile}
+                          {localizedContent.openPreview}
                         </PrimaryLink>
+                        <SecondaryLink href={toViteFsUrl(video.localPath)} download>
+                          {localizedContent.downloadLocalCopy}
+                        </SecondaryLink>
                       </LinkRow>
+                      <PathLabel>{video.localPath}</PathLabel>
                     </Meta>
                   </div>
                 ))}

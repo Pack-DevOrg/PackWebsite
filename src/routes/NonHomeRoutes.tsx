@@ -128,7 +128,7 @@ const LoadingScreenContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  color: ${({ theme }) => theme?.colors?.neutral?.gray050 ?? "#ffffff"};
+  color: ${({ theme }) => theme?.colors?.secondary?.light ?? "#ffffff"};
   text-align: center;
 `;
 

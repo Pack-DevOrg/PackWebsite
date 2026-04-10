@@ -63,7 +63,7 @@ type OgConcept = {
   verdict: "closest" | "promising" | "mixed";
 };
 
-type TravelDetailVerdict = "wrong" | "ok";
+type TravelDetailVerdict = "wrong" | "needs_validation" | "ok";
 
 type TravelDetailReviewState = Record<
   string,
@@ -567,7 +567,9 @@ const ReviewActions = styled.div`
   align-items: flex-start;
 `;
 
-const ReviewActionButton = styled.button<{ $tone: "wrong" | "ok" | "neutral" }>`
+const ReviewActionButton = styled.button<{
+  $tone: "wrong" | "needsValidation" | "ok" | "neutral";
+}>`
   border-radius: 999px;
   padding: 0.6rem 0.95rem;
   font: inherit;
@@ -576,12 +578,16 @@ const ReviewActionButton = styled.button<{ $tone: "wrong" | "ok" | "neutral" }>`
     ${({ theme, $tone }) =>
       $tone === "wrong"
         ? theme.colors.secondary.main
-        : $tone === "ok"
-          ? theme.colors.primary.main
-          : theme.colors.border.light};
+        : $tone === "needsValidation"
+          ? theme.colors.primary.light
+          : $tone === "ok"
+            ? theme.colors.primary.main
+            : theme.colors.border.light};
   background: ${({ $tone }) =>
     $tone === "wrong"
       ? "rgba(231, 35, 64, 0.12)"
+      : $tone === "needsValidation"
+        ? "rgba(243, 210, 122, 0.16)"
       : $tone === "ok"
         ? "rgba(243, 210, 122, 0.12)"
         : "rgba(255, 248, 236, 0.05)"};
@@ -922,7 +928,7 @@ const Notice = styled.div`
 
 const ErrorNotice = styled(Notice)`
   border-color: rgba(231, 35, 64, 0.45);
-  color: ${({ theme }) => theme.colors.status.error};
+  color: ${({ theme }) => theme.colors.secondary.light};
   background: rgba(231, 35, 64, 0.08);
 `;
 
@@ -1363,10 +1369,12 @@ const labsContent = {
         "Use this page to inspect the finished detail aggregate from PackServer, mark cases wrong, and leave short notes on why the detail payload is off.",
       statsLabel: "Review progress",
       wrongFilter: "Wrong",
+      needsValidationFilter: "Needs validation",
       okFilter: "OK",
       unreviewedFilter: "Unreviewed",
       allFilter: "All",
       markWrong: "Mark wrong",
+      markNeedsValidation: "Needs validation on dates/cities",
       markOk: "Mark OK",
       clearReview: "Clear",
       notesLabel: "Why is it wrong?",
@@ -1567,10 +1575,12 @@ const labsContent = {
         "Usa esta página para inspeccionar el aggregate final de detail desde PackServer, marcar los casos incorrectos y dejar notas cortas sobre por qué el payload de detail está mal.",
       statsLabel: "Progreso de revisión",
       wrongFilter: "Incorrectos",
+      needsValidationFilter: "Necesita validación",
       okFilter: "Correctos",
       unreviewedFilter: "Sin revisar",
       allFilter: "Todos",
       markWrong: "Marcar incorrecto",
+      markNeedsValidation: "Validar fechas/ciudades",
       markOk: "Marcar correcto",
       clearReview: "Limpiar",
       notesLabel: "¿Por qué está mal?",
@@ -2234,7 +2244,7 @@ export const LabsTravelDetailReviewPage: React.FC = () => {
   const { locale, pathFor } = useI18n();
   const localizedContent = labsContent[locale];
   const [filter, setFilter] = React.useState<
-    "all" | "wrong" | "ok" | "unreviewed"
+    "all" | "wrong" | "needs_validation" | "ok" | "unreviewed"
   >("all");
   const [reviewState, setReviewState] = React.useState<TravelDetailReviewState>(
     () => loadTravelDetailReviewState(),
@@ -2295,6 +2305,9 @@ export const LabsTravelDetailReviewPage: React.FC = () => {
       if (filter === "ok") {
         return verdict === "ok";
       }
+      if (filter === "needs_validation") {
+        return verdict === "needs_validation";
+      }
       if (filter === "unreviewed") {
         return !verdict;
       }
@@ -2306,6 +2319,9 @@ export const LabsTravelDetailReviewPage: React.FC = () => {
     const reviews = Object.values(reviewState);
     return {
       wrong: reviews.filter((value) => value.verdict === "wrong").length,
+      needsValidation: reviews.filter(
+        (value) => value.verdict === "needs_validation",
+      ).length,
       ok: reviews.filter((value) => value.verdict === "ok").length,
       unreviewed: Math.max(
         (detailReviewQuery.data?.results.length ?? 0) - reviews.length,
@@ -2334,6 +2350,7 @@ export const LabsTravelDetailReviewPage: React.FC = () => {
               passed
             </ReviewPill>
             <ReviewPill>{reviewStats.wrong} wrong</ReviewPill>
+            <ReviewPill>{reviewStats.needsValidation} needs validation</ReviewPill>
             <ReviewPill>{reviewStats.ok} ok</ReviewPill>
             <ReviewPill>{reviewStats.unreviewed} unreviewed</ReviewPill>
           </ReviewStats>
@@ -2350,6 +2367,13 @@ export const LabsTravelDetailReviewPage: React.FC = () => {
             onClick={() => setFilter("wrong")}
           >
             {localizedContent.travelDetailReview.wrongFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "needs_validation"}
+            onClick={() => setFilter("needs_validation")}
+          >
+            {localizedContent.travelDetailReview.needsValidationFilter}
           </FilterButton>
           <FilterButton
             type="button"
@@ -2404,6 +2428,17 @@ export const LabsTravelDetailReviewPage: React.FC = () => {
                       onClick={() => setVerdict(result.caseId, "wrong")}
                     >
                       {verdict === "wrong" ? "Wrong marked" : localizedContent.travelDetailReview.markWrong}
+                    </ReviewActionButton>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="needsValidation"
+                      onClick={() =>
+                        setVerdict(result.caseId, "needs_validation")
+                      }
+                    >
+                      {verdict === "needs_validation"
+                        ? "Needs validation marked"
+                        : localizedContent.travelDetailReview.markNeedsValidation}
                     </ReviewActionButton>
                     <ReviewActionButton
                       type="button"

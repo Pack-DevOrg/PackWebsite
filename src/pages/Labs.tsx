@@ -101,6 +101,15 @@ const labVideos: LabVideo[] = [
     localPath:
       "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/poc_overlay_real_packdev_splash.mp4",
   },
+  {
+    slug: "pack-travel-podcast-two-women",
+    title: "Pack Travel Podcast Two Women",
+    description:
+      "Veo 3.0 generated podcast-style travel clip with spoken audio and readable burned subtitles about Pack.",
+    tags: ["Pack", "Travel", "Podcast", "Audio", "Subtitled"],
+    localPath:
+      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v1_001.subtitled.mp4",
+  },
 ];
 
 const comparisonPairs: ComparisonPair[] = [

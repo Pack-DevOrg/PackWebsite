@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
       ((location) => {
+        if (
+          location.hostname === "itsdoneai.com" ||
+          location.hostname === "www.itsdoneai.com"
+        ) {
+          const legacyRedirectUrl = new URL(location.href);
+          legacyRedirectUrl.hostname = "www.trypackai.com";
+          window.location.replace(legacyRedirectUrl.toString());
+          return;
+        }
         if (location.hostname === "trypackai.com") {
           const canonicalUrl = new URL(location.href);
           canonicalUrl.hostname = "www.trypackai.com";

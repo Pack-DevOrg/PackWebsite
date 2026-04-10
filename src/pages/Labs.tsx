@@ -173,7 +173,7 @@ const labVideoGroups: LabVideoGroup[] = [
     description:
       "Veo-generated podcast concept showing the iteration path from generic studio setup toward more credible couch-based interview coverage.",
     tags: ["Pack", "Travel", "Podcast", "Audio", "Subtitled"],
-    featuredVideoSlug: "pack-travel-podcast-two-women-v5",
+    featuredVideoSlug: "pack-travel-podcast-two-women-v6",
     variants: [
       {
         slug: "pack-travel-podcast-two-women-v1",
@@ -210,6 +210,15 @@ const labVideoGroups: LabVideoGroup[] = [
         tags: ["Featured", "Criss-cross posture", "Cute set", "Real audio"],
         localPath:
           "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v5.subtitled.mp4",
+      },
+      {
+        slug: "pack-travel-podcast-two-women-v6",
+        title: "Variant 6",
+        description:
+          "Wide master plus face-focused singles, with explicit no fan-service framing constraints and real generated audio.",
+        tags: ["Featured", "Face-focused singles", "Wide master", "Real audio"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v6.subtitled.mp4",
       },
     ],
   },

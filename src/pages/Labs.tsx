@@ -29,6 +29,15 @@ export type LabVideo = {
   localPath: string;
 };
 
+export type LabVideoGroup = {
+  slug: string;
+  title: string;
+  description: string;
+  tags: string[];
+  featuredVideoSlug: string;
+  variants: LabVideo[];
+};
+
 type ComparisonPair = {
   slug: string;
   title: string;
@@ -75,15 +84,24 @@ type TravelDetailReviewState = Record<
 
 const TRAVEL_DETAIL_REVIEW_STORAGE_KEY = "pack-labs-travel-detail-review-v1";
 
-const labVideos: LabVideo[] = [
+const labVideoGroups: LabVideoGroup[] = [
   {
     slug: "book-cabo-dachshund",
     title: "Book Cabo Dachshund POV",
     description:
       "First-person dachshund booking concept with a real Pack booking visual and a readable Book Cabo query.",
     tags: ["Cabo", "POV", "Dachshund", "Real app base"],
-    localPath:
-      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/reels_15s_book_cabo_dachshund_v1/ad_001.mp4",
+    featuredVideoSlug: "book-cabo-dachshund-v1",
+    variants: [
+      {
+        slug: "book-cabo-dachshund-v1",
+        title: "Variant 1",
+        description: "Current pipeline render for the Cabo dachshund concept.",
+        tags: ["Current"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/reels_15s_book_cabo_dachshund_v1/ad_001.mp4",
+      },
+    ],
   },
   {
     slug: "book-japan-pov-chaos",
@@ -91,8 +109,17 @@ const labVideos: LabVideo[] = [
     description:
       "Earlier POV proof built through the same template pipeline, centered on Book Japan with a cute-hand chaos setup.",
     tags: ["Japan", "POV", "Cute hand", "Chaos"],
-    localPath:
-      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/reels_15s_book_japan_pov_chaos_v1/ad_001.mp4",
+    featuredVideoSlug: "book-japan-pov-chaos-v1",
+    variants: [
+      {
+        slug: "book-japan-pov-chaos-v1",
+        title: "Variant 1",
+        description: "Earlier POV pipeline render for the Book Japan concept.",
+        tags: ["Earlier"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/reels_15s_book_japan_pov_chaos_v1/ad_001.mp4",
+      },
+    ],
   },
   {
     slug: "dog-book-japan-poc",
@@ -100,35 +127,82 @@ const labVideos: LabVideo[] = [
     description:
       "Initial proof-of-concept export used to validate the ad render path before the reusable labs pipeline was added.",
     tags: ["POC", "Japan", "Dog paw"],
-    localPath:
-      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc_dog_book_japan.mp4",
+    featuredVideoSlug: "dog-book-japan-poc-v1",
+    variants: [
+      {
+        slug: "dog-book-japan-poc-v1",
+        title: "Variant 1",
+        description: "Original proof-of-concept export.",
+        tags: ["Original POC"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc_dog_book_japan.mp4",
+      },
+    ],
   },
   {
-    slug: "overlay-dynamic-screen-poc",
-    title: "Overlay Dynamic Screen POC",
+    slug: "phone-overlay-poc",
+    title: "Phone Overlay POC",
     description:
-      "Perspective-warp proof showing a generated app flow composited onto the existing POV phone plate.",
-    tags: ["POC", "Overlay", "Dynamic screen", "Phone plate"],
-    localPath:
-      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/poc_overlay_dynamic_screen.mp4",
-  },
-  {
-    slug: "overlay-real-packdev-splash-poc",
-    title: "Overlay Real PackDev Splash POC",
-    description:
-      "Perspective-warp proof using a real PackDev simulator capture composited into the phone plate.",
-    tags: ["POC", "Overlay", "Real app asset", "PackDev"],
-    localPath:
-      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/poc_overlay_real_packdev_splash.mp4",
+      "Perspective-warp overlay proofs showing both dynamic UI insertion and a real app-owned capture inserted into the phone plane.",
+    tags: ["POC", "Overlay", "Screen replacement"],
+    featuredVideoSlug: "overlay-dynamic-screen-poc",
+    variants: [
+      {
+        slug: "overlay-dynamic-screen-poc",
+        title: "Variant 1 · Dynamic Screen",
+        description:
+          "Generated app flow composited onto the existing POV phone plate.",
+        tags: ["Dynamic screen", "Phone plate"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/poc_overlay_dynamic_screen.mp4",
+      },
+      {
+        slug: "overlay-real-packdev-splash-poc",
+        title: "Variant 2 · Real PackDev Capture",
+        description:
+          "Real PackDev simulator capture composited into the phone plate.",
+        tags: ["Real app asset", "PackDev"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/poc_overlay_real_packdev_splash.mp4",
+      },
+    ],
   },
   {
     slug: "pack-travel-podcast-two-women",
     title: "Pack Travel Podcast Two Women",
     description:
-      "Veo 3.0 generated podcast-style couch interview with feet-visible master framing, warmer premium studio coverage, and refined subtitle styling.",
+      "Veo-generated podcast concept showing the iteration path from generic studio setup toward more credible couch-based interview coverage.",
     tags: ["Pack", "Travel", "Podcast", "Audio", "Subtitled"],
-    localPath:
-      "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v3.subtitled.mp4",
+    featuredVideoSlug: "pack-travel-podcast-two-women-v3",
+    variants: [
+      {
+        slug: "pack-travel-podcast-two-women-v1",
+        title: "Variant 1",
+        description:
+          "Initial podcast render with weaker staging and rougher subtitle treatment.",
+        tags: ["Initial"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v1_001.subtitled.mp4",
+      },
+      {
+        slug: "pack-travel-podcast-two-women-v2",
+        title: "Variant 2",
+        description:
+          "Couch-based setup with improved wardrobe, subtitle treatment, and warmer premium styling.",
+        tags: ["Couch setup"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v2.subtitled.mp4",
+      },
+      {
+        slug: "pack-travel-podcast-two-women-v3",
+        title: "Variant 3",
+        description:
+          "Feet-visible wide master with stronger podcast interview coverage language and refined subtitles.",
+        tags: ["Current best", "Feet visible", "Master wide"],
+        localPath:
+          "/Users/noahmitsuhashi/Code/PackAll/PackAds/demo_project/exports/poc/pack_travel_podcast_two_women_v3.subtitled.mp4",
+      },
+    ],
   },
 ];
 
@@ -138,16 +212,16 @@ const comparisonPairs: ComparisonPair[] = [
     title: "Current Best vs Previous POV",
     description:
       "Compare the stronger Cabo dachshund execution against the earlier Book Japan POV concept.",
-    leftVideoSlug: "book-cabo-dachshund",
-    rightVideoSlug: "book-japan-pov-chaos",
+    leftVideoSlug: "book-cabo-dachshund-v1",
+    rightVideoSlug: "book-japan-pov-chaos-v1",
   },
   {
     slug: "pipeline-evolution",
     title: "POC vs Structured Pipeline",
     description:
       "See the jump from the first proof-of-concept to the later pipeline-driven ad render.",
-    leftVideoSlug: "dog-book-japan-poc",
-    rightVideoSlug: "book-cabo-dachshund",
+    leftVideoSlug: "dog-book-japan-poc-v1",
+    rightVideoSlug: "book-cabo-dachshund-v1",
   },
 ];
 
@@ -194,10 +268,8 @@ const labSections: LabSection[] = [
   },
 ];
 
+const labVideos: LabVideo[] = labVideoGroups.flatMap((group) => group.variants);
 const videoBySlug = new Map(labVideos.map((video) => [video.slug, video]));
-
-const toFileUrl = (absolutePath: string): string =>
-  encodeURI(`file://${absolutePath}`);
 
 const toViteFsUrl = (absolutePath: string): string =>
   `/@fs${encodeURI(absolutePath)}`;
@@ -1227,7 +1299,6 @@ const labsContent = {
     heroNote:
       "Labs is only available on localhost in Vite dev mode. Video pages use direct file-system paths from your local repo and are not mirrored into deployable public assets.",
     openSection: "Open section",
-    openLocalFile: "Open local file",
     openPreview: "Open preview",
     downloadLocalCopy: "Download local copy",
     home: {
@@ -1263,7 +1334,7 @@ const labsContent = {
           slug: "videos",
           title: "Videos",
           description:
-            "Review exported ad renders, stream them in-browser, or open the original local files.",
+            "Review exported ad renders, stream every generated variant in-browser, and compare concept groups without leaving Labs.",
           href: "/labs/videos",
           kicker: "Exports and source files",
         },
@@ -1294,10 +1365,10 @@ const labsContent = {
       ],
     },
     videos: {
-      title: "Video exports and original local files.",
+      title: "Video exports grouped by concept.",
       description:
-        "Review the mirrored preview, then click through to the original local export path. If your browser does not hand the file off to QuickTime automatically, the same path can still be opened directly in Finder or QuickTime.",
-      videos: labVideos,
+        "Each card groups the variants we have generated for one concept. Play them inline, open the browser preview directly, or download the local export copy when you need it.",
+      videoGroups: labVideoGroups,
     },
     comparisons: {
       title: "Side-by-side creative comparisons.",
@@ -1398,7 +1469,6 @@ const labsContent = {
     heroNote:
       "Labs solo está disponible en localhost dentro del modo de desarrollo de Vite. Las páginas de video usan rutas directas al sistema de archivos local y no se copian a assets públicos desplegables.",
     openSection: "Abrir sección",
-    openLocalFile: "Abrir archivo local",
     openPreview: "Abrir vista previa",
     downloadLocalCopy: "Descargar copia local",
     home: {
@@ -1434,7 +1504,7 @@ const labsContent = {
           slug: "videos",
           title: "Videos",
           description:
-            "Revisa los renders exportados, míralos en el navegador o abre los archivos locales originales.",
+            "Revisa los renders exportados, reproduce en el navegador cada variante generada y compara grupos de conceptos sin salir de Labs.",
           href: "/labs/videos",
           kicker: "Exports y archivos fuente",
         },
@@ -1465,32 +1535,10 @@ const labsContent = {
       ],
     },
     videos: {
-      title: "Exports de video y archivos locales originales.",
+      title: "Exports de video agrupados por concepto.",
       description:
-        "Revisa la vista previa reflejada y luego abre la ruta original del export local. Si el navegador no entrega el archivo a QuickTime automáticamente, la misma ruta se puede abrir directamente en Finder o QuickTime.",
-      videos: [
-        {
-          ...labVideos[0],
-          title: "Reserva Cabo POV Dachshund",
-          description:
-            "Concepto POV en primera persona con un dachshund, una visual real de reserva en Pack y una consulta Book Cabo legible.",
-          tags: ["Cabo", "POV", "Dachshund", "Base real de app"],
-        },
-        {
-          ...labVideos[1],
-          title: "Caos POV Book Japan",
-          description:
-            "Prueba POV anterior construida con el mismo pipeline de plantillas, centrada en Book Japan con una configuración caótica de mano tierna.",
-          tags: ["Japón", "POV", "Mano tierna", "Caos"],
-        },
-        {
-          ...labVideos[2],
-          title: "POC perro Book Japan",
-          description:
-            "Export inicial de prueba de concepto usado para validar la ruta de render del anuncio antes de agregar el pipeline reutilizable de labs.",
-          tags: ["POC", "Japón", "Pata de perro"],
-        },
-      ],
+        "Cada tarjeta agrupa las variantes que ya generamos para un concepto. Reprodúcelas en línea, abre la vista previa del navegador o descarga la copia del export local cuando la necesites.",
+      videoGroups: labVideoGroups,
     },
     comparisons: {
       title: "Comparaciones creativas lado a lado.",

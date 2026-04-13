@@ -5612,9 +5612,17 @@ const ReviewShowcasePhone: React.FC<{
                     <TravelSectionMeta>A simple visited-countries map using the same world geometry pattern as the app stats page.</TravelSectionMeta>
                   </StatsSectionHeading>
 
-                  <Suspense fallback={<MapCardSkeleton aria-hidden="true" />}>
-                    <HeroJourneyMapCard />
-                  </Suspense>
+                  <StaticStatsMap aria-hidden="true">
+                    <StaticStatsPillGrid>
+                      <StaticStatsPill $highlight>New York</StaticStatsPill>
+                      <StaticStatsPill $highlight>Barcelona</StaticStatsPill>
+                      <StaticStatsPill>London</StaticStatsPill>
+                      <StaticStatsPill>Tokyo</StaticStatsPill>
+                      <StaticStatsPill>Mexico City</StaticStatsPill>
+                      <StaticStatsPill>Singapore</StaticStatsPill>
+                    </StaticStatsPillGrid>
+                    <StaticStatsGlow />
+                  </StaticStatsMap>
 
 	                <StatsHighlightGrid>
 	                  <StatsHighlightCard>
@@ -5780,352 +5788,103 @@ const ReviewShowcasePhone: React.FC<{
   );
 };
 
+const JOURNEY_SHOWCASE_IMAGE_SRC: Record<JourneyShowcaseKey, string> = {
+  plan: "/images/hero-captures/plan-visible.png",
+  search: "/images/hero-captures/search-visible.png",
+  stats: "/images/hero-captures/stats-visible.png",
+  booking: "/images/hero-captures/booking-visible.png",
+};
+
+const JOURNEY_SHOWCASE_IMAGE_TRAVEL_DISTANCE: Record<JourneyShowcaseKey, string> = {
+  plan: JOURNEY_SCROLL_DISTANCES.plan,
+  search: JOURNEY_SCROLL_DISTANCES.search,
+  stats: JOURNEY_SCROLL_DISTANCES.stats,
+  booking: JOURNEY_SCROLL_DISTANCES.booking,
+};
+
+const JourneyStillViewport = styled.div<{ $scrollable?: boolean }>`
+  width: 100%;
+  max-width: ${JOURNEY_PHONE_STANDARD_WIDTH};
+  height: ${JOURNEY_PHONE_STANDARD_HEIGHT};
+  margin: 0 auto;
+  overflow-x: hidden;
+  overflow-y: ${({ $scrollable }) => ($scrollable ? "auto" : "hidden")};
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 979px) {
+    max-width: ${JOURNEY_PHONE_TABLET_WIDTH};
+    height: ${JOURNEY_PHONE_TABLET_HEIGHT};
+  }
+
+  @media (max-width: 739px) {
+    max-width: ${JOURNEY_PHONE_MOBILE_WIDTH};
+    height: ${JOURNEY_PHONE_MOBILE_HEIGHT};
+  }
+`;
+
+const JourneyStillContent = styled.div.attrs<{
+  $progress?: number;
+  $travelDistance?: string;
+  $scrollable?: boolean;
+}>(({ $progress = 0, $scrollable, $travelDistance = "0px" }) => ({
+  style: {
+    transform: $scrollable
+      ? "translate3d(0, 0, 0)"
+      : `translate3d(0, calc(-1 * ${$progress} * ${$travelDistance}), 0)`,
+  },
+}))<{
+  $progress?: number;
+  $travelDistance?: string;
+  $scrollable?: boolean;
+}>`
+  display: block;
+  will-change: transform;
+`;
+
+const JourneyStillImage = styled.img`
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+`;
+
 const MarketingJourneyShowcasePhone: React.FC<{
   screenKey: JourneyShowcaseKey;
-  selectedOutboundFlight: PlanFlightOption;
-  selectedHotel: PlanHotelOption;
-  selectedReturnFlight: PlanFlightOption;
-  totalTripPrice: string;
+  scrollProgress?: number;
+  scrollablePreview?: boolean;
+  initialScrollTop?: number;
 }> = ({
   screenKey,
-  selectedOutboundFlight,
-  selectedHotel,
-  selectedReturnFlight,
-  totalTripPrice,
+  scrollProgress = 0,
+  scrollablePreview = false,
+  initialScrollTop,
 }) => {
-  const isStatsScreen = screenKey === "stats";
-  const isSearchScreen = screenKey === "search";
-  const isBookingScreen = screenKey === "booking";
+  const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  usePreviewScrollSync(scrollRef, scrollProgress, scrollablePreview);
+  useInitialScrollTop(scrollRef, initialScrollTop, scrollablePreview);
 
   return (
-    <PlanPhone
-      $height={JOURNEY_PHONE_STANDARD_HEIGHT}
-      $tabletHeight={JOURNEY_PHONE_TABLET_HEIGHT}
-      $mobileHeight={JOURNEY_PHONE_MOBILE_HEIGHT}
-      $minHeight={JOURNEY_PHONE_STANDARD_HEIGHT}
-      $tabletMinHeight={JOURNEY_PHONE_TABLET_HEIGHT}
-      $mobileMinHeight={JOURNEY_PHONE_MOBILE_HEIGHT}
-      $maxWidth={JOURNEY_PHONE_STANDARD_WIDTH}
-      $tabletMaxWidth={JOURNEY_PHONE_TABLET_WIDTH}
-      $mobileMaxWidth={JOURNEY_PHONE_MOBILE_WIDTH}
-    >
-      <ReviewPhoneSwitch>
-        <PlanPhoneInner>
-          <StatusBar>
-            <StatusTime>2:47</StatusTime>
-            <StatusCenter aria-hidden="true" />
-            <StatusIcons />
-          </StatusBar>
-
-          <TripsHeader>
-            <TripsBack aria-hidden="true">
-              <ChevronDown />
-            </TripsBack>
-            <TripsTitle>{isStatsScreen ? "Trips" : "Pack"}</TripsTitle>
-            <span />
-          </TripsHeader>
-
-          <TripsTabs>
-            <Tab $active={!isStatsScreen && !isBookingScreen}>
-              <TabPill $active={!isStatsScreen && !isBookingScreen}>
-                <TabIcon>
-                  {isSearchScreen ? <Search /> : <Sparkles />}
-                </TabIcon>
-              </TabPill>
-              <span>{isSearchScreen ? "Search" : "Plan"}</span>
-            </Tab>
-            <Tab $active={isStatsScreen}>
-              <TabPill $active={isStatsScreen}>
-                <TabIcon>
-                  <BarChart3 />
-                </TabIcon>
-              </TabPill>
-              <span>Stats</span>
-            </Tab>
-            <Tab $active={isBookingScreen}>
-              <TabPill $active={isBookingScreen}>
-                <TabIcon>
-                  <CreditCard />
-                </TabIcon>
-              </TabPill>
-              <span>Book</span>
-            </Tab>
-          </TripsTabs>
-
-          <StaticShowcaseScroll>
-            <StaticShowcaseContent>
-              {screenKey === "plan" ? (
-                <>
-                  <StaticPanel>
-                    <StaticPanelHeader>
-                      <StaticPanelEyebrow>Trip prompt</StaticPanelEyebrow>
-                      <StaticPanelMeta>Barcelona · 9 nights</StaticPanelMeta>
-                    </StaticPanelHeader>
-                    <StaticSearchBar>
-                      <Sparkles aria-hidden="true" />
-                      <StaticSearchPrompt>
-                        Book Barcelona with the hotel, flights, and schedule I would pick myself.
-                      </StaticSearchPrompt>
-                      <ChevronDown aria-hidden="true" />
-                    </StaticSearchBar>
-                  </StaticPanel>
-                  <StaticPanel>
-                    <StaticPanelHeader>
-                      <StaticPanelEyebrow>Outline</StaticPanelEyebrow>
-                      <StaticPanelMeta>Held together in one trip draft</StaticPanelMeta>
-                    </StaticPanelHeader>
-                    <StaticTimeline>
-                      <StaticTimelineItem>
-                        <StaticTimelineDot />
-                        <StaticTimelineBody>
-                          <StaticTimelineTitle>
-                            {selectedOutboundFlight.origin} to {selectedOutboundFlight.destination}
-                          </StaticTimelineTitle>
-                          <StaticTimelineMeta>
-                            {selectedOutboundFlight.departureTime} departure · {selectedOutboundFlight.fareClass}
-                          </StaticTimelineMeta>
-                        </StaticTimelineBody>
-                      </StaticTimelineItem>
-                      <StaticTimelineItem>
-                        <StaticTimelineDot $tone="#e72340" />
-                        <StaticTimelineBody>
-                          <StaticTimelineTitle>{selectedHotel.name}</StaticTimelineTitle>
-                          <StaticTimelineMeta>
-                            {selectedHotel.neighborhood} · {selectedHotel.roomType}
-                          </StaticTimelineMeta>
-                        </StaticTimelineBody>
-                      </StaticTimelineItem>
-                      <StaticTimelineItem>
-                        <StaticTimelineDot $tone="#4caf50" />
-                        <StaticTimelineBody>
-                          <StaticTimelineTitle>Disfrutar tasting menu reservation</StaticTimelineTitle>
-                          <StaticTimelineMeta>Fri 9:00 PM · Eixample</StaticTimelineMeta>
-                        </StaticTimelineBody>
-                      </StaticTimelineItem>
-                    </StaticTimeline>
-                  </StaticPanel>
-                </>
-              ) : null}
-
-              {screenKey === "search" ? (
-                <>
-                  <StaticPanel>
-                    <StaticPanelHeader>
-                      <StaticPanelEyebrow>Search</StaticPanelEyebrow>
-                      <StaticPanelMeta>Results stay in trip context</StaticPanelMeta>
-                    </StaticPanelHeader>
-                    <StaticSearchBar>
-                      <Search aria-hidden="true" />
-                      <StaticSearchPrompt>Barcelona · Jun 23 to Jul 2 · 2 travelers</StaticSearchPrompt>
-                      <Sparkles aria-hidden="true" />
-                    </StaticSearchBar>
-                    <StaticChipRow>
-                      <StaticChip>Price</StaticChip>
-                      <StaticChip $active>Smart</StaticChip>
-                      <StaticChip>Nonstop</StaticChip>
-                      <StaticChip>Hotel perks</StaticChip>
-                    </StaticChipRow>
-                  </StaticPanel>
-                  <StaticResultList>
-                    <StaticResultCard $featured>
-                      <StaticResultTop>
-                        <StaticResultTitleGroup>
-                          <StaticResultTitle>{selectedOutboundFlight.carrier}</StaticResultTitle>
-                          <StaticResultSubtitle>
-                            {selectedOutboundFlight.departureTime} · {selectedOutboundFlight.arrivalTime} · {selectedOutboundFlight.stops}
-                          </StaticResultSubtitle>
-                        </StaticResultTitleGroup>
-                        <StaticResultPrice>{selectedOutboundFlight.price}</StaticResultPrice>
-                      </StaticResultTop>
-                      <StaticMiniMetricRow>
-                        <StaticMiniMetric>
-                          <StaticMiniMetricLabel>Cabin</StaticMiniMetricLabel>
-                          <StaticMiniMetricValue>{selectedOutboundFlight.fareClass}</StaticMiniMetricValue>
-                        </StaticMiniMetric>
-                        <StaticMiniMetric>
-                          <StaticMiniMetricLabel>Duration</StaticMiniMetricLabel>
-                          <StaticMiniMetricValue>{selectedOutboundFlight.duration}</StaticMiniMetricValue>
-                        </StaticMiniMetric>
-                        <StaticMiniMetric>
-                          <StaticMiniMetricLabel>Why</StaticMiniMetricLabel>
-                          <StaticMiniMetricValue>Best arrival</StaticMiniMetricValue>
-                        </StaticMiniMetric>
-                      </StaticMiniMetricRow>
-                    </StaticResultCard>
-                    <StaticResultCard>
-                      <StaticResultTop>
-                        <StaticResultTitleGroup>
-                          <StaticResultTitle>{selectedHotel.name}</StaticResultTitle>
-                          <StaticResultSubtitle>
-                            {selectedHotel.neighborhood} · {selectedHotel.roomType}
-                          </StaticResultSubtitle>
-                        </StaticResultTitleGroup>
-                        <StaticResultPrice>{selectedHotel.total}</StaticResultPrice>
-                      </StaticResultTop>
-                      <StaticChipRow>
-                        {selectedHotel.chips.slice(0, 3).map((chip) => (
-                          <StaticChip key={chip}>{chip}</StaticChip>
-                        ))}
-                      </StaticChipRow>
-                    </StaticResultCard>
-                  </StaticResultList>
-                  <StaticCallout>
-                    <StaticCalloutTitle>Why Pack chose this set</StaticCalloutTitle>
-                    <StaticCalloutBody>
-                      Nonstop arrival, clean suite check-in window, and fewer handoffs between search,
-                      timing, and booking approval.
-                    </StaticCalloutBody>
-                  </StaticCallout>
-                </>
-              ) : null}
-
-              {screenKey === "stats" ? (
-                <>
-                  <StaticSummaryGrid>
-                    <StaticSummaryCard>
-                      <StaticSummaryValue>154k</StaticSummaryValue>
-                      <StaticSummaryLabel>Miles traveled</StaticSummaryLabel>
-                    </StaticSummaryCard>
-                    <StaticSummaryCard>
-                      <StaticSummaryValue>584</StaticSummaryValue>
-                      <StaticSummaryLabel>Nights away</StaticSummaryLabel>
-                    </StaticSummaryCard>
-                    <StaticSummaryCard>
-                      <StaticSummaryValue>38</StaticSummaryValue>
-                      <StaticSummaryLabel>Cities</StaticSummaryLabel>
-                    </StaticSummaryCard>
-                  </StaticSummaryGrid>
-                  <StaticPanel>
-                    <StaticPanelHeader>
-                      <StaticPanelEyebrow>Footprint</StaticPanelEyebrow>
-                      <StaticPanelMeta>Fast screenshot, not live map code</StaticPanelMeta>
-                    </StaticPanelHeader>
-                    <StaticStatsMap>
-                      <StaticStatsPillGrid>
-                        <StaticStatsPill $highlight>New York</StaticStatsPill>
-                        <StaticStatsPill $highlight>Barcelona</StaticStatsPill>
-                        <StaticStatsPill>London</StaticStatsPill>
-                        <StaticStatsPill>Tokyo</StaticStatsPill>
-                        <StaticStatsPill>Mexico City</StaticStatsPill>
-                        <StaticStatsPill>Singapore</StaticStatsPill>
-                      </StaticStatsPillGrid>
-                      <StaticStatsGlow aria-hidden="true" />
-                    </StaticStatsMap>
-                  </StaticPanel>
-                  <StaticResultList>
-                    <StaticResultCard>
-                      <StaticResultTop>
-                        <StaticResultTitleGroup>
-                          <StaticResultTitle>Most visited places</StaticResultTitle>
-                          <StaticResultSubtitle>Reconstructed from trip history</StaticResultSubtitle>
-                        </StaticResultTitleGroup>
-                      </StaticResultTop>
-                      <StaticMiniMetricRow>
-                        <StaticMiniMetric>
-                          <StaticMiniMetricLabel>Top city</StaticMiniMetricLabel>
-                          <StaticMiniMetricValue>New York</StaticMiniMetricValue>
-                        </StaticMiniMetric>
-                        <StaticMiniMetric>
-                          <StaticMiniMetricLabel>Top country</StaticMiniMetricLabel>
-                          <StaticMiniMetricValue>United States</StaticMiniMetricValue>
-                        </StaticMiniMetric>
-                        <StaticMiniMetric>
-                          <StaticMiniMetricLabel>Trend</StaticMiniMetricLabel>
-                          <StaticMiniMetricValue>+12%</StaticMiniMetricValue>
-                        </StaticMiniMetric>
-                      </StaticMiniMetricRow>
-                    </StaticResultCard>
-                  </StaticResultList>
-                </>
-              ) : null}
-
-              {screenKey === "booking" ? (
-                <>
-                  <StaticPanel>
-                    <StaticPanelHeader>
-                      <StaticPanelEyebrow>Booking review</StaticPanelEyebrow>
-                      <StaticPanelMeta>Before you authorize payment</StaticPanelMeta>
-                    </StaticPanelHeader>
-                    <StaticTimeline>
-                      <StaticTimelineItem>
-                        <StaticTimelineDot />
-                        <StaticTimelineBody>
-                          <StaticTimelineTitle>
-                            {selectedOutboundFlight.origin} to {selectedOutboundFlight.destination}
-                          </StaticTimelineTitle>
-                          <StaticTimelineMeta>
-                            {selectedOutboundFlight.departureTime} · {selectedOutboundFlight.fareClass}
-                          </StaticTimelineMeta>
-                        </StaticTimelineBody>
-                      </StaticTimelineItem>
-                      <StaticTimelineItem>
-                        <StaticTimelineDot $tone="#e72340" />
-                        <StaticTimelineBody>
-                          <StaticTimelineTitle>{selectedHotel.name}</StaticTimelineTitle>
-                          <StaticTimelineMeta>
-                            {selectedHotel.nightlyRate} · {selectedHotel.boardType}
-                          </StaticTimelineMeta>
-                        </StaticTimelineBody>
-                      </StaticTimelineItem>
-                      <StaticTimelineItem>
-                        <StaticTimelineDot $tone="#4caf50" />
-                        <StaticTimelineBody>
-                          <StaticTimelineTitle>
-                            {selectedReturnFlight.destination} return
-                          </StaticTimelineTitle>
-                          <StaticTimelineMeta>
-                            {selectedReturnFlight.departureTime} · {selectedReturnFlight.stops}
-                          </StaticTimelineMeta>
-                        </StaticTimelineBody>
-                      </StaticTimelineItem>
-                    </StaticTimeline>
-                  </StaticPanel>
-                  <StaticPanel>
-                    <StaticPanelHeader>
-                      <StaticPanelEyebrow>Checkout</StaticPanelEyebrow>
-                      <StaticPanelMeta>Traveler and payment context intact</StaticPanelMeta>
-                    </StaticPanelHeader>
-                    <StaticCheckoutRow>
-                      <StaticCheckoutLabel>Lead traveler</StaticCheckoutLabel>
-                      <StaticCheckoutValue>Sunwoo Kim · TSA PreCheck</StaticCheckoutValue>
-                    </StaticCheckoutRow>
-                    <StaticCheckoutRow>
-                      <StaticCheckoutLabel>Payment</StaticCheckoutLabel>
-                      <StaticCheckoutValue>Visa •••• 4242</StaticCheckoutValue>
-                    </StaticCheckoutRow>
-                    <StaticCheckoutRow>
-                      <StaticCheckoutLabel>Total trip price</StaticCheckoutLabel>
-                      <StaticCheckoutValue>${totalTripPrice}</StaticCheckoutValue>
-                    </StaticCheckoutRow>
-                    <StaticCtaButton>
-                      <Lock aria-hidden="true" />
-                      Confirm in Pack
-                    </StaticCtaButton>
-                  </StaticPanel>
-                </>
-              ) : null}
-            </StaticShowcaseContent>
-          </StaticShowcaseScroll>
-
-          <AppBottomComposer aria-hidden="true">
-            <ComposerTopRow>
-              <ComposerPlaceholder>Where to next?</ComposerPlaceholder>
-              <ComposerAction>
-                <ChevronDown />
-              </ComposerAction>
-              <ComposerAction>
-                <X />
-              </ComposerAction>
-            </ComposerTopRow>
-            <ComposerToolbar>
-              <Bolt />
-              <Plus />
-              <Mic />
-            </ComposerToolbar>
-          </AppBottomComposer>
-        </PlanPhoneInner>
-      </ReviewPhoneSwitch>
-    </PlanPhone>
+    <JourneyStillViewport ref={scrollRef} $scrollable={scrollablePreview}>
+      <JourneyStillContent
+        $progress={scrollProgress}
+        $travelDistance={JOURNEY_SHOWCASE_IMAGE_TRAVEL_DISTANCE[screenKey]}
+        $scrollable={scrollablePreview}
+      >
+        <JourneyStillImage
+          src={JOURNEY_SHOWCASE_IMAGE_SRC[screenKey]}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+        />
+      </JourneyStillContent>
+    </JourneyStillViewport>
   );
 };
 
@@ -6147,13 +5906,12 @@ const JourneyShowcasePhone: React.FC<{
   selectedHotel: PlanHotelOption;
   selectedReturnFlight: PlanFlightOption;
   totalTripPrice: string;
-}> = ({ screenKey, selectedOutboundFlight, selectedHotel, selectedReturnFlight, totalTripPrice }) => (
+}> = ({ screenKey, scrollProgress = 0, scrollablePreview = false, initialScrollTop }) => (
   <MarketingJourneyShowcasePhone
     screenKey={screenKey}
-    selectedOutboundFlight={selectedOutboundFlight}
-    selectedHotel={selectedHotel}
-    selectedReturnFlight={selectedReturnFlight}
-    totalTripPrice={totalTripPrice}
+    scrollProgress={scrollProgress}
+    scrollablePreview={scrollablePreview}
+    initialScrollTop={initialScrollTop}
   />
 );
 

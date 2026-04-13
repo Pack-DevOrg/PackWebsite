@@ -14,11 +14,11 @@ import {
   CreditCard,
   DollarSign,
   History,
-  Lock,
   MapPin,
   Menu,
-  Mic,
+  Lock,
   MoonStar,
+  Mic,
   Navigation,
   PencilLine,
   Phone,
@@ -59,6 +59,8 @@ import type {
   PlanFlightOption,
   PlanHotelOption,
 } from "./hero/heroJourneyData";
+
+const HeroJourneyMapCard = React.lazy(() => import("./hero/HeroJourneyMapCard"));
 
 const float = keyframes`
   0%, 100% {
@@ -1442,344 +1444,6 @@ const MapCardSkeleton = styled.div`
       background-position: -100% 0, 0 0;
     }
   }
-`;
-
-const StaticShowcaseScroll = styled(JourneyPreviewScrollViewport).attrs({
-  $gap: "0.82rem",
-  $padding: "0.94rem 0.96rem 6.1rem",
-  $minHeight: "0",
-})``;
-
-const StaticShowcaseContent = styled(JourneyPreviewScrollContent)`
-  display: grid;
-  gap: 0.82rem;
-`;
-
-const StaticPanel = styled.section`
-  display: grid;
-  gap: 0.58rem;
-  padding: 0.86rem 0.9rem;
-  border-radius: 1.02rem;
-  background:
-    linear-gradient(180deg, rgba(54, 54, 59, 0.94), rgba(43, 43, 48, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 14px 28px rgba(0, 0, 0, 0.14);
-`;
-
-const StaticPanelHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-`;
-
-const StaticPanelEyebrow = styled.span`
-  color: rgba(243, 210, 122, 0.92);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-`;
-
-const StaticPanelMeta = styled.span`
-  color: rgba(247, 240, 227, 0.42);
-  font-size: 0.6rem;
-`;
-
-const StaticSearchBar = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.8rem 0.9rem;
-  border-radius: 0.92rem;
-  background: rgba(15, 15, 18, 0.78);
-  border: 1px solid rgba(243, 210, 122, 0.14);
-  color: rgba(247, 240, 227, 0.88);
-
-  svg {
-    width: 0.9rem;
-    height: 0.9rem;
-    color: rgba(243, 210, 122, 0.85);
-  }
-`;
-
-const StaticSearchPrompt = styled.span`
-  font-size: 0.76rem;
-  font-weight: 600;
-  line-height: 1.2;
-`;
-
-const StaticChipRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.42rem;
-`;
-
-const StaticChip = styled.span<{ $active?: boolean }>`
-  padding: 0.35rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  background: ${({ $active }) =>
-    $active ? "rgba(243, 210, 122, 0.2)" : "rgba(255, 255, 255, 0.06)"};
-  color: ${({ $active }) =>
-    $active ? "rgba(243, 210, 122, 0.96)" : "rgba(247, 240, 227, 0.68)"};
-  border: 1px solid
-    ${({ $active }) =>
-      $active ? "rgba(243, 210, 122, 0.28)" : "rgba(255, 255, 255, 0.06)"};
-`;
-
-const StaticResultList = styled.div`
-  display: grid;
-  gap: 0.56rem;
-`;
-
-const StaticResultCard = styled.div<{ $featured?: boolean }>`
-  display: grid;
-  gap: 0.48rem;
-  padding: 0.78rem 0.84rem;
-  border-radius: 0.92rem;
-  background:
-    ${({ $featured }) =>
-      $featured
-        ? "linear-gradient(180deg, rgba(243, 210, 122, 0.12), rgba(243, 210, 122, 0.04))"
-        : "rgba(255, 255, 255, 0.04)"};
-  border: 1px solid
-    ${({ $featured }) =>
-      $featured ? "rgba(243, 210, 122, 0.18)" : "rgba(255, 255, 255, 0.06)"};
-`;
-
-const StaticResultTop = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-`;
-
-const StaticResultTitleGroup = styled.div`
-  display: grid;
-  gap: 0.18rem;
-`;
-
-const StaticResultTitle = styled.span`
-  color: rgba(255, 255, 255, 0.96);
-  font-size: 0.78rem;
-  font-weight: 700;
-`;
-
-const StaticResultSubtitle = styled.span`
-  color: rgba(247, 240, 227, 0.56);
-  font-size: 0.6rem;
-  line-height: 1.2;
-`;
-
-const StaticResultPrice = styled.span`
-  color: rgba(243, 210, 122, 0.96);
-  font-size: 0.8rem;
-  font-weight: 800;
-  white-space: nowrap;
-`;
-
-const StaticMiniMetricRow = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.42rem;
-`;
-
-const StaticMiniMetric = styled.div`
-  display: grid;
-  gap: 0.18rem;
-  padding: 0.5rem 0.56rem;
-  border-radius: 0.7rem;
-  background: rgba(15, 15, 18, 0.56);
-`;
-
-const StaticMiniMetricLabel = styled.span`
-  color: rgba(247, 240, 227, 0.42);
-  font-size: 0.52rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-`;
-
-const StaticMiniMetricValue = styled.span`
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 0.68rem;
-  font-weight: 700;
-`;
-
-const StaticCallout = styled.div`
-  display: grid;
-  gap: 0.26rem;
-  padding: 0.7rem 0.76rem;
-  border-radius: 0.84rem;
-  background: rgba(231, 35, 64, 0.1);
-  border: 1px solid rgba(231, 35, 64, 0.16);
-`;
-
-const StaticCalloutTitle = styled.span`
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 0.64rem;
-  font-weight: 700;
-`;
-
-const StaticCalloutBody = styled.p`
-  margin: 0;
-  color: rgba(247, 240, 227, 0.7);
-  font-size: 0.62rem;
-  line-height: 1.35;
-`;
-
-const StaticTimeline = styled.div`
-  display: grid;
-  gap: 0.54rem;
-`;
-
-const StaticTimelineItem = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.62rem;
-  align-items: start;
-`;
-
-const StaticTimelineDot = styled.span<{ $tone?: string }>`
-  width: 0.78rem;
-  height: 0.78rem;
-  margin-top: 0.2rem;
-  border-radius: 999px;
-  background: ${({ $tone = "#f3d27a" }) => $tone};
-  box-shadow: 0 0 0 0.18rem ${({ $tone = "#f3d27a" }) => `${$tone}22`};
-`;
-
-const StaticTimelineBody = styled.div`
-  display: grid;
-  gap: 0.14rem;
-`;
-
-const StaticTimelineTitle = styled.span`
-  color: rgba(255, 255, 255, 0.96);
-  font-size: 0.76rem;
-  font-weight: 700;
-`;
-
-const StaticTimelineMeta = styled.span`
-  color: rgba(247, 240, 227, 0.54);
-  font-size: 0.6rem;
-  line-height: 1.26;
-`;
-
-const StaticStatsMap = styled.div`
-  position: relative;
-  min-height: 10.5rem;
-  padding: 0.84rem;
-  border-radius: 1rem;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 22% 28%, rgba(243, 210, 122, 0.3) 0 0.16rem, transparent 0.18rem),
-    radial-gradient(circle at 34% 52%, rgba(243, 210, 122, 0.26) 0 0.18rem, transparent 0.2rem),
-    radial-gradient(circle at 41% 34%, rgba(231, 35, 64, 0.3) 0 0.16rem, transparent 0.18rem),
-    radial-gradient(circle at 63% 38%, rgba(243, 210, 122, 0.28) 0 0.18rem, transparent 0.2rem),
-    radial-gradient(circle at 68% 62%, rgba(243, 210, 122, 0.24) 0 0.16rem, transparent 0.18rem),
-    radial-gradient(circle at 79% 72%, rgba(231, 35, 64, 0.28) 0 0.16rem, transparent 0.18rem),
-    linear-gradient(180deg, rgba(14, 14, 16, 0.94), rgba(34, 34, 38, 0.92));
-  border: 1px solid rgba(255, 255, 255, 0.06);
-`;
-
-const StaticStatsGlow = styled.div`
-  position: absolute;
-  inset: auto -12% -18% auto;
-  width: 12rem;
-  height: 12rem;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(243, 210, 122, 0.16), transparent 68%);
-  pointer-events: none;
-`;
-
-const StaticStatsPillGrid = styled.div`
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.38rem;
-  max-width: 78%;
-`;
-
-const StaticStatsPill = styled.span<{ $highlight?: boolean }>`
-  padding: 0.36rem 0.56rem;
-  border-radius: 999px;
-  background: ${({ $highlight }) =>
-    $highlight ? "rgba(243, 210, 122, 0.22)" : "rgba(255, 255, 255, 0.08)"};
-  color: ${({ $highlight }) =>
-    $highlight ? "rgba(243, 210, 122, 0.96)" : "rgba(247, 240, 227, 0.72)"};
-  font-size: 0.56rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-`;
-
-const StaticSummaryGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.44rem;
-`;
-
-const StaticSummaryCard = styled.div`
-  display: grid;
-  gap: 0.18rem;
-  padding: 0.66rem 0.7rem;
-  border-radius: 0.84rem;
-  background: rgba(255, 255, 255, 0.04);
-`;
-
-const StaticSummaryValue = styled.span`
-  color: rgba(255, 255, 255, 0.96);
-  font-size: 0.8rem;
-  font-weight: 800;
-`;
-
-const StaticSummaryLabel = styled.span`
-  color: rgba(247, 240, 227, 0.52);
-  font-size: 0.56rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-`;
-
-const StaticCheckoutRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.66rem 0.72rem;
-  border-radius: 0.82rem;
-  background: rgba(15, 15, 18, 0.56);
-`;
-
-const StaticCheckoutLabel = styled.span`
-  color: rgba(247, 240, 227, 0.64);
-  font-size: 0.64rem;
-`;
-
-const StaticCheckoutValue = styled.span`
-  color: rgba(255, 255, 255, 0.94);
-  font-size: 0.74rem;
-  font-weight: 700;
-`;
-
-const StaticCtaButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.42rem;
-  padding: 0.88rem 1rem;
-  border-radius: 0.96rem;
-  background: linear-gradient(135deg, rgba(243, 210, 122, 0.96), rgba(231, 35, 64, 0.88));
-  color: #110f0d;
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 `;
 
 const RecordsList = styled.div`
@@ -4932,9 +4596,10 @@ const PlanShowcasePhone: React.FC<{
       $maxWidth={large ? JOURNEY_PHONE_STANDARD_WIDTH : undefined}
       $tabletMaxWidth={large ? JOURNEY_PHONE_TABLET_WIDTH : undefined}
       $mobileMaxWidth={large ? JOURNEY_PHONE_MOBILE_WIDTH : undefined}
+      data-hero-phone={screenKey}
     >
       <ReviewPhoneSwitch>
-        <PlanPhoneInner>
+        <PlanPhoneInner data-hero-phone-inner={screenKey}>
           <StatusBar>
             <StatusTime>2:50</StatusTime>
             <StatusCenter aria-hidden="true" />
@@ -4956,12 +4621,15 @@ const PlanShowcasePhone: React.FC<{
               <PlanFlowScroll
                 ref={planScrollRef}
                 $scrollable={scrollablePreview}
+                data-hero-screen={screenKey}
+                data-hero-scroll="true"
               >
                 <PlanScrollContent
                   ref={planContentRef}
                   $progress={scrollProgress}
                   $travelDistance={measuredPlanTravelDistance}
                   $scrollable={scrollablePreview}
+                  data-hero-screen-content={screenKey}
                 >
                   <PlanSection>
                     <BookingModalSectionCard>
@@ -5333,12 +5001,15 @@ const PlanShowcasePhone: React.FC<{
             <PlanFlowScroll
               ref={planScrollRef}
               $scrollable={scrollablePreview}
+              data-hero-screen={screenKey}
+              data-hero-scroll="true"
             >
               <PlanScrollContent
                 ref={planContentRef}
                 $progress={scrollProgress}
                 $travelDistance={measuredPlanTravelDistance}
                 $scrollable={scrollablePreview}
+                data-hero-screen-content={screenKey}
               >
                 <PlanSection>
                   <PlanSectionHeader>
@@ -5385,12 +5056,15 @@ const PlanShowcasePhone: React.FC<{
               <PlanFlowScroll
                 ref={planScrollRef}
                 $scrollable={scrollablePreview}
+                data-hero-screen={screenKey}
+                data-hero-scroll="true"
               >
                 <PlanScrollContent
                   ref={planContentRef}
                   $progress={scrollProgress}
                   $travelDistance={measuredPlanTravelDistance}
                   $scrollable={scrollablePreview}
+                  data-hero-screen-content={screenKey}
                 >
                   <PlanSection>
                     <BookingStage>
@@ -5529,9 +5203,10 @@ const ReviewShowcasePhone: React.FC<{
       $maxWidth={large ? JOURNEY_PHONE_STANDARD_WIDTH : undefined}
       $tabletMaxWidth={large ? JOURNEY_PHONE_TABLET_WIDTH : undefined}
       $mobileMaxWidth={large ? JOURNEY_PHONE_MOBILE_WIDTH : undefined}
+      data-hero-phone={screenKey}
     >
       <ReviewPhoneSwitch>
-        <PlanPhoneInner>
+        <PlanPhoneInner data-hero-phone-inner={screenKey}>
           <StatusBar>
             <StatusTime>2:47</StatusTime>
             <StatusCenter aria-hidden="true" />
@@ -5577,12 +5252,15 @@ const ReviewShowcasePhone: React.FC<{
             <TravelScroll
               $scrollable={scrollablePreview ? true : false}
               ref={reviewScrollRef}
+              data-hero-screen={screenKey}
+              data-hero-scroll="true"
             >
               <TravelScrollContent
                 ref={reviewContentRef}
                 $progress={scrollProgress}
                 $travelDistance={measuredReviewTravelDistance}
                 $scrollable={scrollablePreview}
+                data-hero-screen-content={screenKey}
               >
                 <StatsYearRow>
                   <StatsYearChip $active>All</StatsYearChip>
@@ -5612,17 +5290,9 @@ const ReviewShowcasePhone: React.FC<{
                     <TravelSectionMeta>A simple visited-countries map using the same world geometry pattern as the app stats page.</TravelSectionMeta>
                   </StatsSectionHeading>
 
-                  <StaticStatsMap aria-hidden="true">
-                    <StaticStatsPillGrid>
-                      <StaticStatsPill $highlight>New York</StaticStatsPill>
-                      <StaticStatsPill $highlight>Barcelona</StaticStatsPill>
-                      <StaticStatsPill>London</StaticStatsPill>
-                      <StaticStatsPill>Tokyo</StaticStatsPill>
-                      <StaticStatsPill>Mexico City</StaticStatsPill>
-                      <StaticStatsPill>Singapore</StaticStatsPill>
-                    </StaticStatsPillGrid>
-                    <StaticStatsGlow />
-                  </StaticStatsMap>
+                  <Suspense fallback={<MapCardSkeleton aria-hidden="true" />}>
+                    <HeroJourneyMapCard />
+                  </Suspense>
 
 	                <StatsHighlightGrid>
 	                  <StatsHighlightCard>
@@ -5753,12 +5423,15 @@ const ReviewShowcasePhone: React.FC<{
             <TravelScroll
               $scrollable={scrollablePreview ? true : false}
               ref={reviewScrollRef}
+              data-hero-screen={screenKey}
+              data-hero-scroll="true"
             >
               <TravelScrollContent
                 ref={reviewContentRef}
                 $progress={scrollProgress}
                 $travelDistance={measuredReviewTravelDistance}
                 $scrollable={scrollablePreview}
+                data-hero-screen-content={screenKey}
               >
                 <div>
                   <TravelSectionTitle>Personal Records</TravelSectionTitle>
@@ -5788,106 +5461,6 @@ const ReviewShowcasePhone: React.FC<{
   );
 };
 
-const JOURNEY_SHOWCASE_IMAGE_SRC: Record<JourneyShowcaseKey, string> = {
-  plan: "/images/hero-captures/plan-visible.png",
-  search: "/images/hero-captures/search-visible.png",
-  stats: "/images/hero-captures/stats-visible.png",
-  booking: "/images/hero-captures/booking-visible.png",
-};
-
-const JOURNEY_SHOWCASE_IMAGE_TRAVEL_DISTANCE: Record<JourneyShowcaseKey, string> = {
-  plan: JOURNEY_SCROLL_DISTANCES.plan,
-  search: JOURNEY_SCROLL_DISTANCES.search,
-  stats: JOURNEY_SCROLL_DISTANCES.stats,
-  booking: JOURNEY_SCROLL_DISTANCES.booking,
-};
-
-const JourneyStillViewport = styled.div<{ $scrollable?: boolean }>`
-  width: 100%;
-  max-width: ${JOURNEY_PHONE_STANDARD_WIDTH};
-  height: ${JOURNEY_PHONE_STANDARD_HEIGHT};
-  margin: 0 auto;
-  overflow-x: hidden;
-  overflow-y: ${({ $scrollable }) => ($scrollable ? "auto" : "hidden")};
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @media (max-width: 979px) {
-    max-width: ${JOURNEY_PHONE_TABLET_WIDTH};
-    height: ${JOURNEY_PHONE_TABLET_HEIGHT};
-  }
-
-  @media (max-width: 739px) {
-    max-width: ${JOURNEY_PHONE_MOBILE_WIDTH};
-    height: ${JOURNEY_PHONE_MOBILE_HEIGHT};
-  }
-`;
-
-const JourneyStillContent = styled.div.attrs<{
-  $progress?: number;
-  $travelDistance?: string;
-  $scrollable?: boolean;
-}>(({ $progress = 0, $scrollable, $travelDistance = "0px" }) => ({
-  style: {
-    transform: $scrollable
-      ? "translate3d(0, 0, 0)"
-      : `translate3d(0, calc(-1 * ${$progress} * ${$travelDistance}), 0)`,
-  },
-}))<{
-  $progress?: number;
-  $travelDistance?: string;
-  $scrollable?: boolean;
-}>`
-  display: block;
-  will-change: transform;
-`;
-
-const JourneyStillImage = styled.img`
-  display: block;
-  width: 100%;
-  height: auto;
-  user-select: none;
-  pointer-events: none;
-`;
-
-const MarketingJourneyShowcasePhone: React.FC<{
-  screenKey: JourneyShowcaseKey;
-  scrollProgress?: number;
-  scrollablePreview?: boolean;
-  initialScrollTop?: number;
-}> = ({
-  screenKey,
-  scrollProgress = 0,
-  scrollablePreview = false,
-  initialScrollTop,
-}) => {
-  const scrollRef = React.useRef<HTMLDivElement | null>(null);
-  usePreviewScrollSync(scrollRef, scrollProgress, scrollablePreview);
-  useInitialScrollTop(scrollRef, initialScrollTop, scrollablePreview);
-
-  return (
-    <JourneyStillViewport ref={scrollRef} $scrollable={scrollablePreview}>
-      <JourneyStillContent
-        $progress={scrollProgress}
-        $travelDistance={JOURNEY_SHOWCASE_IMAGE_TRAVEL_DISTANCE[screenKey]}
-        $scrollable={scrollablePreview}
-      >
-        <JourneyStillImage
-          src={JOURNEY_SHOWCASE_IMAGE_SRC[screenKey]}
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          decoding="async"
-        />
-      </JourneyStillContent>
-    </JourneyStillViewport>
-  );
-};
-
 const JourneyShowcasePhone: React.FC<{
   screenKey: JourneyShowcaseKey;
   scrollProgress?: number;
@@ -5906,14 +5479,60 @@ const JourneyShowcasePhone: React.FC<{
   selectedHotel: PlanHotelOption;
   selectedReturnFlight: PlanFlightOption;
   totalTripPrice: string;
-}> = ({ screenKey, scrollProgress = 0, scrollablePreview = false, initialScrollTop }) => (
-  <MarketingJourneyShowcasePhone
-    screenKey={screenKey}
-    scrollProgress={scrollProgress}
-    scrollablePreview={scrollablePreview}
-    initialScrollTop={initialScrollTop}
-  />
-);
+}> = ({ screenKey, scrollProgress = 0, scrollablePreview = false, initialScrollTop, ...props }) => {
+  if (screenKey === "plan") {
+    return (
+      <PlanShowcasePhone
+        screenKey="outline"
+        large
+        journeyFullHeight
+        scrollProgress={scrollProgress}
+        scrollablePreview={scrollablePreview}
+        initialScrollTop={initialScrollTop}
+        {...props}
+      />
+    );
+  }
+
+  if (screenKey === "search") {
+    return (
+      <PlanShowcasePhone
+        screenKey="search"
+        large
+        journeyFullHeight
+        scrollProgress={scrollProgress}
+        scrollablePreview={scrollablePreview}
+        initialScrollTop={initialScrollTop}
+        {...props}
+      />
+    );
+  }
+
+  if (screenKey === "stats") {
+    return (
+      <ReviewShowcasePhone
+        screenKey="footprint"
+        large
+        journeyFullHeight
+        scrollProgress={scrollProgress}
+        scrollablePreview={scrollablePreview}
+        initialScrollTop={initialScrollTop}
+      />
+    );
+  }
+
+  return (
+    <PlanShowcasePhone
+      screenKey="booking"
+      large
+      journeyFullHeight
+      scrollProgress={scrollProgress}
+      scrollablePreview={scrollablePreview}
+      initialScrollTop={initialScrollTop}
+      {...props}
+    />
+  );
+};
 
 const JourneyShowcasePhoneStack: React.FC<{
   activeScreen: JourneyShowcaseKey;

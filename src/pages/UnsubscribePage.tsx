@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { useI18n } from '../i18n/I18nProvider';
@@ -143,20 +144,26 @@ const UnsubscribePageInstance: React.FC<{readonly token: string | null}> = ({
   });
 
   return (
-    <PageContainer>
-      <Card>
-        <Title>{localizedContent.title}</Title>
-        <Body>{localizedContent.body}</Body>
-        <StatusMessage
-          $status={status === 'loading' || status === 'idle' ? 'loading' : status}
-        >
-          {message || localizedContent.processing}
-        </StatusMessage>
-        <SupportLink href="mailto:support@trypackai.com">
-          {localizedContent.support}
-        </SupportLink>
-      </Card>
-    </PageContainer>
+    <>
+      <Helmet>
+        <title>{localizedContent.title} | Pack</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <PageContainer>
+        <Card>
+          <Title>{localizedContent.title}</Title>
+          <Body>{localizedContent.body}</Body>
+          <StatusMessage
+            $status={status === 'loading' || status === 'idle' ? 'loading' : status}
+          >
+            {message || localizedContent.processing}
+          </StatusMessage>
+          <SupportLink href="mailto:support@trypackai.com">
+            {localizedContent.support}
+          </SupportLink>
+        </Card>
+      </PageContainer>
+    </>
   );
 };
 

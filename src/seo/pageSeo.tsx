@@ -45,6 +45,7 @@ export function createOrganizationSchema(): Record<string, unknown> {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
     name: "Pack",
+    alternateName: ["TryPackAI", "Try Pack AI"],
     url: SITE_ORIGIN,
     logo: {
       "@type": "ImageObject",
@@ -55,6 +56,7 @@ export function createOrganizationSchema(): Record<string, unknown> {
     foundingDate: "2024",
     email: "support@trypackai.com",
     sameAs: [
+      "https://github.com/Pack-DevOrg",
       "https://x.com/trypackai",
       "https://www.linkedin.com/company/106734468/",
       "https://www.instagram.com/trypackai/",
@@ -73,7 +75,8 @@ export function createOrganizationSchema(): Record<string, unknown> {
         "@type": "ContactPoint",
         email: "support@trypackai.com",
         contactType: "customer support",
-        availableLanguage: ["en", "es"],
+        availableLanguage: ["en"],
+        url: `${SITE_ORIGIN}/support`,
       },
     ],
     knowsAbout: [
@@ -98,6 +101,7 @@ export function createWebsiteSchema(): Record<string, unknown> {
     "@id": WEBSITE_ID,
     url: SITE_ORIGIN,
     name: "Pack",
+    alternateName: "TryPackAI",
     publisher: {
       "@id": ORGANIZATION_ID,
     },
@@ -109,6 +113,7 @@ export function createWebPageSchema(
   title: string,
   description: string,
   url: string,
+  languageTag: string,
 ): Record<string, unknown> {
   return {
     "@type": "WebPage",
@@ -122,6 +127,7 @@ export function createWebPageSchema(
     about: {
       "@id": ORGANIZATION_ID,
     },
+    inLanguage: languageTag,
   };
 }
 
@@ -158,17 +164,15 @@ export default function PageSeo({
   robots = DEFAULT_ROBOTS,
   schema = [],
 }: PageSeoProps): React.ReactElement {
-  const { languageTag, pathFor, pathForLocale } = useI18n();
+  const { languageTag, pathFor } = useI18n();
   const canonicalUrl = buildAbsoluteUrl(pathFor(path));
-  const spanishUrl = buildAbsoluteUrl(pathForLocale(path, "es"));
-  const englishUrl = buildAbsoluteUrl(pathForLocale(path, "en"));
   const structuredData: JsonLd[] = [
     {
       "@context": "https://schema.org",
       "@graph": [
         createOrganizationSchema(),
         createWebsiteSchema(),
-        createWebPageSchema(title, description, canonicalUrl),
+        createWebPageSchema(title, description, canonicalUrl, languageTag),
       ],
     },
     ...schema,
@@ -181,9 +185,6 @@ export default function PageSeo({
       <meta name="author" content="Pack" />
       <meta name="robots" content={robots} />
       <link rel="canonical" href={canonicalUrl} />
-      <link rel="alternate" hrefLang="en" href={englishUrl} />
-      <link rel="alternate" hrefLang="es" href={spanishUrl} />
-      <link rel="alternate" hrefLang="x-default" href={englishUrl} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Pack" />
       <meta property="og:locale" content={languageTag} />
@@ -196,6 +197,7 @@ export default function PageSeo({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@trypackai" />
       <meta name="twitter:creator" content="@trypackai" />
+      <meta name="twitter:domain" content="www.trypackai.com" />
       <meta name="twitter:url" content={canonicalUrl} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />

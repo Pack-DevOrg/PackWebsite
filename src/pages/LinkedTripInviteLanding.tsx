@@ -219,6 +219,7 @@ export const LinkedTripInviteLanding: React.FC = () => {
           name="description"
           content={localizedContent.metaDescription}
         />
+        <meta name="robots" content="noindex, nofollow" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={universalInviteUrl} />
         <meta property="og:title" content={localizedContent.shareTitle} />
@@ -230,6 +231,7 @@ export const LinkedTripInviteLanding: React.FC = () => {
         <meta property="og:site_name" content="Pack" />
         <meta property="og:locale" content={localizedContent.ogLocale} />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:domain" content="www.trypackai.com" />
         <meta name="twitter:url" content={universalInviteUrl} />
         <meta name="twitter:title" content={localizedContent.shareTitle} />
         <meta

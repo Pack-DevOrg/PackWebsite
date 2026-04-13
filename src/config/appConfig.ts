@@ -199,7 +199,7 @@ const resolvedConfig = AppConfigSchema.parse({
   appBaseUrl: ensureProtocol(normalizeUrl(defaultAppBaseUrl)),
   publicSiteUrl: ensureProtocol(
     normalizeUrl(
-      (env.VITE_WEBSITE_URL as string | undefined) ?? "https://trypackai.com"
+      (env.VITE_WEBSITE_URL as string | undefined) ?? "https://www.trypackai.com"
     )
   ),
   supportEmail:

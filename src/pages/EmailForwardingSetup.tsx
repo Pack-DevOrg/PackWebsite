@@ -10,6 +10,7 @@ import {
 } from "../utils/privacyForwardingUtils";
 import gmailFilterImportScreenshot from "../assets/email-forwarding/gmail-filter-import.png";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo from "@/seo/pageSeo";
 
 type Provider = "gmail" | "outlook";
 
@@ -612,6 +613,16 @@ export default function EmailForwardingSetup(): React.JSX.Element {
 
   return (
     <Page>
+      <PageSeo
+        title={`${localizedContent.title} | Pack`}
+        description={
+          locale === "es"
+            ? "Guía paso a paso para reenviar solo confirmaciones de viaje a Pack desde Gmail u Outlook."
+            : "Step-by-step guide for forwarding travel confirmations only to Pack from Gmail or Outlook."
+        }
+        path="/setup/email-forwarding"
+        robots="noindex, follow"
+      />
       <Title>{localizedContent.title}</Title>
       <Lead>
         {localizedContent.leadPrefix}

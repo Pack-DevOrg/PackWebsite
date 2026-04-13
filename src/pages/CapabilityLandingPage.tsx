@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import WaitlistForm from "@/components/WaitlistForm";
 import PrefetchLink from "@/components/PrefetchLink";
-import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 import {
   capabilityPageDefinitions,
   capabilityPageDefinitionMap,
@@ -61,6 +61,48 @@ const Subtitle = styled.p`
 const Intro = styled.p`
   margin: 0;
   max-width: 52rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-medium);
+  line-height: 1.7;
+`;
+
+const NarrativeSection = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+const NarrativeCard = styled.div`
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+`;
+
+const NarrativeLabel = styled.p`
+  margin: 0;
+  color: var(--color-accent);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
+
+const NarrativeTitle = styled.h2`
+  margin: 0;
+  font-size: var(--font-size-large);
+  color: var(--color-text-primary);
+`;
+
+const NarrativeBody = styled.p`
+  margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-medium);
   line-height: 1.7;
@@ -268,56 +310,33 @@ interface CapabilityLandingPageProps {
 const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) => {
   const { pathFor } = useI18n();
   const page = capabilityPageDefinitionMap[slug];
-
-  useMountEffect(() => {
-    const schema = {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebPage",
-          name: page.pageTitle,
-          description: page.pageSubtitle,
-          url: `https://trypackai.com/${page.slug}`,
-        },
-        {
-          "@type": "FAQPage",
-          mainEntity: page.faqs.map((faq) => ({
-            "@type": "Question",
-            name: faq.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: faq.answer,
-            },
-          })),
-        },
-      ],
-    };
-
-    const existingSchema = document.querySelector(
-      `script[data-schema="capability-${page.slug}"]`
-    );
-    if (existingSchema) {
-      existingSchema.remove();
-    }
-
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.setAttribute("data-schema", `capability-${page.slug}`);
-    script.textContent = JSON.stringify(schema);
-    document.head.appendChild(script);
-
-    return () => {
-      const mountedSchema = document.querySelector(
-        `script[data-schema="capability-${page.slug}"]`
-      );
-      if (mountedSchema) {
-        mountedSchema.remove();
-      }
-    };
-  });
+  const canonicalPath = `/${page.slug}`;
+  const capabilitySchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "FAQPage",
+        "@id": `${buildAbsoluteUrl(canonicalPath)}#faq`,
+        mainEntity: page.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      },
+    ],
+  };
 
   return (
     <PageContainer>
+      <PageSeo
+        title={`${page.pageTitle} | Pack`}
+        description={page.pageSubtitle}
+        path={canonicalPath}
+        schema={[capabilitySchema]}
+      />
       <Hero>
         <Eyebrow>Pack feature</Eyebrow>
         <Title>{page.pageTitle}</Title>
@@ -325,9 +344,23 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         <Intro>{page.intro}</Intro>
       </Hero>
 
+      <NarrativeSection>
+        <NarrativeCard>
+          <NarrativeLabel>Traveler Problem</NarrativeLabel>
+          <NarrativeTitle>The problem we kept seeing as travelers</NarrativeTitle>
+          <NarrativeBody>{page.problemStatement}</NarrativeBody>
+        </NarrativeCard>
+
+        <NarrativeCard>
+          <NarrativeLabel>Pack Solution</NarrativeLabel>
+          <NarrativeTitle>How this feature solves it</NarrativeTitle>
+          <NarrativeBody>{page.solutionStatement}</NarrativeBody>
+        </NarrativeCard>
+      </NarrativeSection>
+
       <SectionGrid>
         <SectionCard>
-          <SectionTitle>{page.signalsTitle}</SectionTitle>
+          <SectionTitle>Where the friction shows up</SectionTitle>
           <BulletList>
             {page.signals.map((signal) => (
               <BulletItem key={signal}>
@@ -339,7 +372,7 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         </SectionCard>
 
         <SectionCard>
-          <SectionTitle>{page.helpTitle}</SectionTitle>
+          <SectionTitle>How Pack solves it</SectionTitle>
           <BulletList>
             {page.helpPoints.map((point) => (
               <BulletItem key={point}>
@@ -351,7 +384,7 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         </SectionCard>
 
         <SectionCard>
-          <SectionTitle>{page.outputTitle}</SectionTitle>
+          <SectionTitle>What changes for the traveler</SectionTitle>
           <BulletList>
             {page.outputPoints.map((point) => (
               <BulletItem key={point}>
@@ -377,7 +410,7 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
       ) : null}
 
       <FaqSection>
-        <FaqTitle>Frequently asked questions</FaqTitle>
+        <FaqTitle>Common travel problems this helps solve</FaqTitle>
         {page.faqs.map((faq) => (
           <FaqItem key={faq.question}>
             <Question>{faq.question}</Question>

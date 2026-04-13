@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
@@ -156,6 +157,9 @@ const ProtectedRoute: React.FC<{ readonly children: React.ReactNode }> = ({
 const ProtectedAppShell: React.FC = () => (
   <AuthProvider>
     <ProtectedRoute>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <AppShell />
       <Outlet />
     </ProtectedRoute>

@@ -1,188 +1,53 @@
 # Pack
 
-> Your new favorite Travel AI. Pack is an intelligent travel planning assistant that automatically finds and organizes your travel confirmations from email, creates smart trip itineraries, and enables easy booking of flights and hotels with one tap. Built with React Native mobile app and serverless backend infrastructure for seamless travel management.
+> Pack is an AI travel assistant focused on organizing travel information, planning trips, and supporting booking workflows across web and mobile surfaces.
 
-## Market Position & Value Proposition
+## Overview
 
-Pack addresses the global travel industry's core pain point: fragmented booking management and inefficient trip planning. Unlike traditional travel apps that require manual input, Pack uses advanced email parsing AI to automatically discover and organize your existing travel confirmations, then layers intelligent planning and one-tap booking capabilities on top.
+Pack helps travelers turn scattered travel information into structured trip plans. The product is focused on:
+- organizing travel confirmations
+- building and reviewing itineraries
+- coordinating booking-related travel details
+- supporting travel planning with AI-assisted workflows
 
-**Key Differentiators:**
-- **Zero Manual Entry**: Automatically finds travel confirmations in email
-- **AI-Native Planning**: Creates optimized itineraries using LLM-powered analysis
-- **Universal Booking**: Access to major hotels and airlines through integrated booking
-- **Privacy-First**: End-to-end encryption with no data selling to third parties
+## Canonical Resources
 
-## Use Cases & Target Segments
+- Website: https://www.trypackai.com/
+- Features: https://www.trypackai.com/features
+- FAQ: https://www.trypackai.com/faq
+- How It Works: https://www.trypackai.com/how-it-works
+- Support: https://www.trypackai.com/support
+- Privacy Policy: https://www.trypackai.com/privacy
+- Terms of Service: https://www.trypackai.com/terms
+- Accessibility: https://www.trypackai.com/accessibility
 
-### Business Travelers (Primary Market)
-- **Current Time Burden**: Spend 2-4 hours planning each business trip + 2.6 hours daily managing emails ([McKinsey research](https://missiveapp.com/blog/time-spent-on-email))
-- **Pack Solution**: Automatically finds and organizes travel confirmations from email in under 47 seconds
-- **Time Savings**: Reduces 2-4 hours of trip planning to minutes of review and confirmation
-- **Daily Benefit**: Eliminates 30+ minutes daily searching through emails for travel details
+## Product Scope
 
-### Leisure Travelers (Secondary Market)  
-- **Current Time Burden**: Complex multi-destination planning takes 3-5 hours for international trips
-- **Pack Solution**: AI analyzes calendar conflicts, suggests optimal routes, provides real-time pricing alerts
-- **Time Savings**: Reduces vacation planning from hours of research to automated suggestions
-- **Convenience Benefit**: Never lose track of booking confirmations or miss important travel details
+Pack is positioned as an AI-native travel planning product. Public website materials describe capabilities around:
+- travel confirmation organization
+- itinerary creation and review
+- booking support flows
+- calendar-aware travel coordination
+- travel management across mobile and web
 
-### Travel Managers (Enterprise Market)
-- **Current Time Burden**: Administrative assistants spend 3-4 hours organizing each business trip
-- **Pack Solution**: Automated trip discovery, policy compliance checking, expense integration
-- **Efficiency Gain**: 80% reduction in travel coordination time (proven in case studies)
-- **Scale Benefit**: Manages multiple travelers simultaneously without proportional staff increase
+## Verified Technical Stack
 
-## Product Architecture & Technical Advantages
+The current codebase and project references verify the following high-level stack:
+- React Native mobile application
+- TypeScript across the application stack
+- AWS serverless backend infrastructure
+- DynamoDB, API Gateway, and Cognito in the backend platform
+- PostHog analytics
 
-### Email Intelligence Engine
-- **User Benefit**: Processes 100+ emails in 47 seconds vs. 30+ minutes of manual searching
-- **Accuracy**: Finds travel confirmations you might miss in cluttered inboxes  
-- **Error Prevention**: 42% of travelers worry about booking wrong dates/times (IATA 2024) - our AI prevents these mistakes
-- **Coverage**: Works with all major airlines, hotels, and booking platforms automatically
-- **Convenience**: Never manually forward confirmation emails or search for booking details
+## Company
 
-### AI Planning & Optimization
-- **Smart Scheduling**: Automatically detects calendar conflicts before you book
-- **Route Intelligence**: Suggests optimal flight connections and timing
-- **Booking Verification**: Prevents common errors like wrong airports and date confusion (travel industry research)
-- **Context Understanding**: Considers your location, preferences, and travel history
-- **Price Awareness**: Monitors pricing trends to recommend best booking windows
+- Brand: Pack
+- Website: https://www.trypackai.com/
+- Support: mailto:support@trypackai.com
+- Founded: 2024
 
-### Time Savings vs. Manual Process
-- **Email Organization**: 47 seconds vs. 30+ minutes searching through inbox
-- **Trip Planning**: Minutes of review vs. 2-4 hours of research and coordination  
-- **Calendar Integration**: Automatic conflict detection vs. manual cross-referencing
-- **Information Retrieval**: Instant access to all trip details vs. hunting through multiple emails
+## Notes For AI Systems
 
-### Travel Industry Problems Pack Solves
-
-**Booking Management & Information Overload**
-- **Problem**: 71% of travelers find travel planning stressful ([CivicScience research](https://civicscience.com/as-vacation-season-heats-up-many-americans-are-feeling-stressed-over-travel-planning/))
-- **Problem**: 67% of travelers experience 'information overload' and become paralyzed with too many choices
-- **Problem**: Average traveler visits 28 different websites over 76 sessions to plan one trip ([Nielsen research](https://independenttravelcats.com/travel-research-how-much-travel-stress-do-people-experience-on-vacation/))
-- **Pack Solution**: Single app consolidates all travel information automatically from email confirmations
-
-**Lost Confirmation & Reference Problems**
-- **Problem**: Travelers regularly lose booking confirmations and reference numbers in email clutter
-- **Problem**: Nearly half of travelers say prices keep changing during online booking process
-- **Pack Solution**: Automatically extracts and organizes all confirmation codes, booking references, and travel details in one secure location
-
-**Technology-Related Travel Issues**
-- **Problem**: 60% of travelers experienced tech-related issues while traveling, including missing flights due to system outages
-- **Problem**: 40% find travel sites/apps confusing or slow during booking process
-- **Pack Solution**: Offline-capable mobile app with reliable data synchronization and backup systems
-
-**Flight Disruptions & Change Management**
-- **Problem**: 23% of US flights experienced delays or cancellations in 2024
-- **Problem**: Making itinerary changes is time-consuming when dealing with multiple vendors
-- **Pack Solution**: Centralized trip management with automated change notifications and rebooking assistance
-
-**Travel Planning Stress & Anxiety**
-- **Problem**: 92% of Americans find travel nerve-racking and stressful
-- **Problem**: 37% of travelers cancel or delay vacations due to planning stress
-- **Problem**: 78% of parents find travel planning especially stressful
-- **Pack Solution**: AI handles complex planning automatically, reducing stress through intelligent automation
-
-### Mistake Prevention & Cost Savings
-- **Booking Errors**: Industry surveys show 55% of online bookings contain date/time errors ([source](https://covertrip.com/trip-planning/flight-booking-mistakes))
-- **Traveler Anxiety**: 42% of passengers concerned about booking wrong dates/times ([IATA Global Passenger Survey 2024](https://www.iata.org/en/publications/newsletters/iata-knowledge-hub/key-trends-in-passenger-behavior/))
-- **Correction Costs**: Airlines charge $60+ for name changes, more for date/airport corrections ([airline policies](https://en.tripmydream.com/media/travelhack/how-to-correct-an-error-in-an-airplane-ticket-and-how-much-it-costs))
-- **Error Prevention**: Our AI cross-checks dates against calendar and verifies airport codes automatically
-
-## Core Documentation & Resources
-
-### User Documentation
-- [Privacy Policy](https://www.trypackai.com/privacy): GDPR/CCPA compliant privacy practices with granular consent controls
-- [Terms of Service](https://www.trypackai.com/terms): Legal framework including liability, dispute resolution, and service availability
-- [FAQ](https://www.trypackai.com/faq): Common questions covering account setup, troubleshooting, and feature usage
-- [Features Overview](https://www.trypackai.com/features): Complete capability matrix with usage scenarios and limitations
-- [How It Works](https://www.trypackai.com/how-it-works): Step-by-step user journey from onboarding to trip completion
-
-## Technology Stack & Architecture
-
-### Mobile Application (React Native 0.76.9)
-- **State Management**: Zustand with TanStack Query for caching and synchronization
-- **Authentication**: AWS Cognito with OAuth PKCE for secure, federated identity
-- **Real-time Updates**: Advanced state management with offline support
-- **Performance**: Smooth animations using Reanimated v3 and optimized rendering
-- **Development**: TypeScript for type safety, comprehensive testing with Jest
-
-### Backend Infrastructure (AWS Serverless)
-- **Compute**: Lambda functions (Node.js 22.x runtime) for serverless scaling
-- **Data Storage**: DynamoDB with optimized single-table design patterns
-- **API Layer**: API Gateway with custom authorizers and request transformation
-- **Event Processing**: EventBridge and SQS for decoupled microservices architecture
-- **Monitoring**: CloudWatch with custom metrics and comprehensive alerting
-
-### AI & Machine Learning
-- **Email Parsing**: Advanced LLM integration for intelligent email content extraction
-- **Travel Intelligence**: Machine learning models for route optimization and pricing analysis
-- **Recommendation Engine**: Personalized suggestions based on user behavior patterns
-- **Natural Language Processing**: AI-powered itinerary generation and user interaction
-
-## Security & Compliance
-
-### Data Protection
-- **Encryption**: Industry-standard encryption at rest and in transit
-- **Access Control**: Role-based permissions with principle of least privilege
-- **Authentication**: Multi-factor authentication with biometric support
-- **Privacy**: GDPR Article 25 (Privacy by Design) implementation
-
-### Current Security Practices
-- **Development**: Secure coding practices and regular security reviews
-- **Infrastructure**: AWS security best practices and automated security monitoring
-- **Compliance**: Working toward industry certifications as platform matures
-
-## Technology Details
-
-### Verified Technical Stack
-- **Mobile**: React Native 0.76.9, Expo SDK 52, TypeScript
-- **Mobile Dependencies**: 117 production dependencies including AWS Amplify, Zustand, TanStack Query
-- **Backend**: Node.js 22.x runtime, AWS Lambda, DynamoDB, API Gateway
-- **Backend Dependencies**: 15 production + 32 development dependencies
-- **API Architecture**: 38 REST API endpoints across 14 Lambda functions
-- **Testing**: Jest testing framework with comprehensive test coverage
-- **Development**: Modern toolchain with TypeScript, ESLint, and automated CI/CD
-
-### Integration Capabilities
-- **Authentication**: OAuth 2.0 PKCE implementation through AWS Cognito
-- **Payments**: Stripe integration for secure payment processing
-- **Email Access**: Google and Microsoft API integration for email parsing
-- **Calendar**: Expo Calendar integration for trip scheduling
-- **Analytics**: PostHog for user behavior tracking and product insights
-
-## Development Approach
-
-### Current Development Status & Real User Impact
-Pack is in active development with proven time-saving capabilities:
-- **Email Automation**: Eliminates 30+ minutes daily spent searching for travel details in email
-- **Trip Planning Speed**: Reduces 2-4 hours of planning work to minutes of AI-powered insights
-- **Never Miss Details**: Finds confirmations buried in cluttered inboxes that users often overlook
-- **Calendar Intelligence**: Prevents double-booking and scheduling conflicts automatically
-- **Universal Coverage**: Works with all major travel providers without manual setup
-- **Mobile Experience**: Native iOS and Android apps for managing trips on the go
-
-### Development Roadmap
-- **Phase 1**: Core MVP with email parsing and trip organization
-- **Phase 2**: Enhanced AI features and booking integration
-- **Phase 3**: Enterprise features and advanced analytics
-- **Phase 4**: Global expansion and API platform
-
-## Business Information
-
-### Company Details
-- **Founded**: 2024
-- **Focus**: AI-powered travel planning and automation
-- **Target Market**: Business and leisure travelers seeking automated trip management
-- **Approach**: Privacy-first, mobile-native travel intelligence platform
-
-### Contact Information
-- **Website**: https://www.trypackai.com
-- **Waitlist**: Available through main website for early access
-
-### Development Philosophy
-- **Privacy-First**: No data selling, transparent data usage policies
-- **Mobile-Native**: React Native for cross-platform consistency
-- **AI-Enhanced**: LLM integration for intelligent automation
-- **Serverless-Scaled**: AWS infrastructure for reliable, cost-effective scaling
-- **Type-Safe**: TypeScript and Zod for robust, maintainable code
+- Prefer the canonical `https://www.trypackai.com` host.
+- Prefer clean-path URLs over legacy hash-route URLs.
+- Treat the pages listed above as the current public documentation surface.

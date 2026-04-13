@@ -14,14 +14,15 @@
  */
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { ChevronRight, Home } from 'lucide-react';
 import PrefetchLink from './PrefetchLink';
-import { useMountEffect } from '@/hooks/useMountEffect';
 import { useI18n } from '@/i18n/I18nProvider';
 import { stripLocaleFromPath } from '@/i18n/config';
 import { capabilityPageDefinitions } from '@/content/capabilityPages';
+import { buildAbsoluteUrl } from '@/seo/pageSeo';
 
 /**
  * Main container for the breadcrumb navigation
@@ -159,82 +160,51 @@ const BreadcrumbsInstance: React.FC<BreadcrumbsProps> = ({ className }) => {
 
   const breadcrumbs = generateBreadcrumbs();
 
-  /**
-   * Effect to generate and inject SEO breadcrumb schema markup
-   * Creates JSON-LD structured data for search engines
-   */
-  useMountEffect(() => {
-    /**
-     * Generates Schema.org BreadcrumbList structured data
-     * and injects it into the document head for SEO
-     */
-    const generateBreadcrumbSchema = () => {
-      if (breadcrumbs.length <= 1) return; // Don't show schema for home page only
-
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": breadcrumbs.map((crumb, index) => ({
-          "@type": "ListItem",
-          "position": index + 1,
-          "name": crumb.label,
-          "item": `https://trypackai.com${crumb.path === '/' ? '' : '#' + crumb.path}`
-        }))
-      };
-
-      // Remove existing breadcrumb schema
-      const existingSchema = document.querySelector('script[data-schema="breadcrumb"]');
-      if (existingSchema) {
-        existingSchema.remove();
-      }
-
-      // Add new schema
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.setAttribute('data-schema', 'breadcrumb');
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    };
-
-    generateBreadcrumbSchema();
-
-    // Cleanup on unmount
-    return () => {
-      const schema = document.querySelector('script[data-schema="breadcrumb"]');
-      if (schema) {
-        schema.remove();
-      }
-    };
-  });
-
   // Don't show breadcrumbs on home page or if there's only one item
   if (breadcrumbs.length <= 1) {
     return null;
   }
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbs.map((crumb, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: crumb.label,
+      item: buildAbsoluteUrl(pathFor(crumb.path)),
+    })),
+  };
+
   return (
-    <BreadcrumbContainer className={className}>
-      <BreadcrumbList>
-        {breadcrumbs.map((crumb, index) => (
-          <BreadcrumbItem key={crumb.path}>
-            {index === breadcrumbs.length - 1 ? (
-              // Current page (no link)
-              <BreadcrumbCurrent>{crumb.label}</BreadcrumbCurrent>
-            ) : (
-              <>
+    <>
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+      </Helmet>
+      <BreadcrumbContainer className={className}>
+        <BreadcrumbList>
+          {breadcrumbs.map((crumb, index) => (
+            <BreadcrumbItem key={crumb.path}>
+              {index === breadcrumbs.length - 1 ? (
+                <BreadcrumbCurrent>{crumb.label}</BreadcrumbCurrent>
+              ) : (
+                <>
                   <BreadcrumbLink to={pathFor(crumb.path)}>
-                  {index === 0 && <Home />}
-                  {crumb.label}
-                </BreadcrumbLink>
-                <BreadcrumbSeparator>
-                  <ChevronRight />
-                </BreadcrumbSeparator>
-              </>
-            )}
-          </BreadcrumbItem>
-        ))}
-      </BreadcrumbList>
-    </BreadcrumbContainer>
+                    {index === 0 && <Home />}
+                    {crumb.label}
+                  </BreadcrumbLink>
+                  <BreadcrumbSeparator>
+                    <ChevronRight />
+                  </BreadcrumbSeparator>
+                </>
+              )}
+            </BreadcrumbItem>
+          ))}
+        </BreadcrumbList>
+      </BreadcrumbContainer>
+    </>
   );
 };
 

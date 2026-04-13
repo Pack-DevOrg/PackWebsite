@@ -17,7 +17,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import type { SupportedLocale } from '../i18n/config';
 
 // Environment variables with fallbacks
-const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL || 'https://trypackai.com';
+const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL || 'https://www.trypackai.com';
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 const SHARED_PLAN_API_BASE = import.meta.env.VITE_API_URL || appConfig.apiBaseUrl;
 
@@ -487,6 +487,7 @@ export const SharedTravelPlan: React.FC = () => {
       <Helmet>
         <title>{ogTitle} - Pack</title>
         <meta name="description" content={ogDescription} />
+        <meta name="robots" content="noindex, nofollow" />
 
         <meta property="og:type" content="website" />
         <meta property="og:url" content={ogUrl} />
@@ -501,6 +502,7 @@ export const SharedTravelPlan: React.FC = () => {
         <meta property="og:locale" content={localizedContent.ogLocale} />
 
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:domain" content="www.trypackai.com" />
         <meta name="twitter:url" content={ogUrl} />
         <meta name="twitter:title" content={ogTitle} />
         <meta name="twitter:description" content={ogDescription} />

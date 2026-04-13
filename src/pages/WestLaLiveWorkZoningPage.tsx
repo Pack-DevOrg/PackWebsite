@@ -16,8 +16,8 @@ import {
 } from "@/utils/liveWorkListingScreening";
 import {
   RESEARCHED_SHORTLIST_DATE_LABEL,
+  RESEARCHED_PRIMARY_ROWS,
   RESEARCHED_SUPPORTING_ROWS,
-  RESEARCHED_ZILLOW_ROWS,
 } from "@/utils/researchedWestsideListings";
 import {
   classifyLiveWorkCategory,
@@ -1067,8 +1067,8 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
         listingFilters,
         zoneMatches,
       ).sort((leftGroup, rightGroup) => {
-        if (leftGroup.matchesFilters !== rightGroup.matchesFilters) {
-          return leftGroup.matchesFilters ? -1 : 1;
+        if (leftGroup.fitScore !== rightGroup.fitScore) {
+          return rightGroup.fitScore - leftGroup.fitScore;
         }
 
         return (rightGroup.maxSquareFeet ?? 0) - (leftGroup.maxSquareFeet ?? 0);
@@ -1227,10 +1227,36 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
                 }))
               }
             />
+            <FilterNumberInput
+              aria-label="Maximum monthly price"
+              type="number"
+              min="0"
+              step="250"
+              value={listingFilters.maxPrice}
+              onChange={(event) =>
+                setListingFilters((currentFilters) => ({
+                  ...currentFilters,
+                  maxPrice: Number(event.target.value) || 0,
+                }))
+              }
+            />
           </FilterCard>
 
           <FilterCard>
             <ImportLabel>Required signals</ImportLabel>
+            <FilterLabel>
+              <input
+                type="checkbox"
+                checked={listingFilters.requireCurrentListingSignal}
+                onChange={(event) =>
+                  setListingFilters((currentFilters) => ({
+                    ...currentFilters,
+                    requireCurrentListingSignal: event.target.checked,
+                  }))
+                }
+              />
+              Require active listing signal
+            </FilterLabel>
             <FilterLabel>
               <input
                 type="checkbox"
@@ -1307,8 +1333,13 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
           <SecondaryButton
             type="button"
             onClick={() => {
-              setZillowImportText(RESEARCHED_ZILLOW_ROWS);
+              setZillowImportText(RESEARCHED_PRIMARY_ROWS);
               setSupportingImportText(RESEARCHED_SUPPORTING_ROWS);
+              setListingFilters((currentFilters) => ({
+                ...currentFilters,
+                requireZillow: false,
+                requireSupportingSource: false,
+              }));
               setListingStateText(
                 `Loaded the curated Westside shortlist assembled from public listing pages on ${RESEARCHED_SHORTLIST_DATE_LABEL}.`,
               );
@@ -1383,8 +1414,16 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
                         </ListingTitleRow>
 
                         <ResultMeta>
-                          <ResultChip $tone={group.matchesFilters ? "good" : "warn"}>
-                            {group.matchesFilters ? "Matches current filters" : "Needs review"}
+                          <ResultChip
+                            $tone={
+                              group.fitLabel === "strong"
+                                ? "good"
+                                : group.fitLabel === "possible"
+                                  ? "warn"
+                                  : "neutral"
+                            }
+                          >
+                            {`${group.fitLabel} fit • ${group.fitScore}/12`}
                           </ResultChip>
                           {group.maxSquareFeet ? (
                             <ResultChip>{group.maxSquareFeet.toLocaleString()} sqft</ResultChip>
@@ -1410,6 +1449,11 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
                         </ListingCopy>
 
                         <ResultMeta>
+                          {group.likelyCurrentListing ? (
+                            <ResultChip $tone="good">Current listing signal</ResultChip>
+                          ) : (
+                            <ResultChip $tone="warn">Availability unclear</ResultChip>
+                          )}
                           {group.mentionsWorkspace ? (
                             <ResultChip $tone="good">Workspace signal</ResultChip>
                           ) : null}

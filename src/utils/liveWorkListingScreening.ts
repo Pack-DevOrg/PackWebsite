@@ -112,6 +112,22 @@ const SEPARATE_SUITE_PATTERNS = [
   /\bdual primary\b/i,
 ];
 
+const ACTIVE_LISTING_PATTERNS = [
+  /\bavailable today\b/i,
+  /\bsource listing status:\s*active\b/i,
+  /\bactive (?:zillow|rental|listing)\b/i,
+  /\bfor rent\b/i,
+  /\bcurrently active\b/i,
+];
+
+const STALE_LISTING_PATTERNS = [
+  /\bnot active inventory\b/i,
+  /\bolder comp\b/i,
+  /\bhistoric\b/i,
+  /\boff market\b/i,
+  /\bformer listing\b/i,
+];
+
 const ListingSourceSchema = z.enum(LISTING_SOURCE_VALUES);
 
 const ImportedListingSchema = z.object({
@@ -149,6 +165,7 @@ const ListingGroupSchema = z.object({
   hasZillow: z.boolean(),
   hasSupportingSource: z.boolean(),
   primaryPriceText: z.string().nullable(),
+  primaryPriceValue: z.number().positive().nullable(),
   primaryPhotoUrl: z.string().url().nullable(),
   maxSquareFeet: z.number().positive().nullable(),
   bedrooms: z.number().positive().nullable(),
@@ -158,6 +175,7 @@ const ListingGroupSchema = z.object({
   mentionsEnsuite: z.boolean(),
   mentionsSeparateSuite: z.boolean(),
   likelySeparateBedroomSuite: z.boolean(),
+  likelyCurrentListing: z.boolean(),
   sourceListings: z.array(ImportedListingSchema).min(1),
 });
 
@@ -181,15 +199,19 @@ export type ScreenedListingGroup = ListingGroup & {
   readonly reasons: readonly string[];
   readonly blockers: readonly string[];
   readonly matchesFilters: boolean;
+  readonly fitScore: number;
+  readonly fitLabel: 'strong' | 'possible' | 'weak';
 };
 
 export type ListingScreenFilters = {
   readonly minSquareFeet: number;
+  readonly maxPrice: number;
   readonly requireZillow: boolean;
   readonly requireSupportingSource: boolean;
   readonly requireCandidateZone: boolean;
   readonly requireWorkspaceSignal: boolean;
   readonly requirePrivateSuiteSignal: boolean;
+  readonly requireCurrentListingSignal: boolean;
 };
 
 type ImportedRowShape = {
@@ -208,11 +230,13 @@ type ImportedRowShape = {
 
 export const DEFAULT_LISTING_FILTERS: ListingScreenFilters = {
   minSquareFeet: 1500,
+  maxPrice: 20000,
   requireZillow: true,
   requireSupportingSource: true,
   requireCandidateZone: true,
   requireWorkspaceSignal: true,
   requirePrivateSuiteSignal: true,
+  requireCurrentListingSignal: true,
 };
 
 export function getListingSourceLabel(source: ListingSource): string {
@@ -262,6 +286,14 @@ function parsePositiveNumber(input: string | null | undefined): number | null {
 
   const parsed = Number(normalized);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function inferLikelyCurrentListing(rawText: string): boolean {
+  if (STALE_LISTING_PATTERNS.some((pattern) => pattern.test(rawText))) {
+    return false;
+  }
+
+  return ACTIVE_LISTING_PATTERNS.some((pattern) => pattern.test(rawText));
 }
 
 function parseDelimitedLine(line: string, delimiter: string): string[] {
@@ -538,6 +570,10 @@ export function groupListingsByAddress(
           groupedListings,
           (listing) => listing.priceText,
         ),
+        primaryPriceValue: choosePreferredValue(
+          groupedListings,
+          (listing) => parsePositiveNumber(listing.priceText),
+        ),
         primaryPhotoUrl: choosePreferredValue(
           groupedListings,
           (listing) => listing.photoUrl,
@@ -550,6 +586,7 @@ export function groupListingsByAddress(
         mentionsEnsuite,
         mentionsSeparateSuite,
         likelySeparateBedroomSuite,
+        likelyCurrentListing: inferLikelyCurrentListing(combinedText),
         sourceListings: groupedListings,
       });
     })
@@ -603,42 +640,71 @@ export function screenListingGroups(
     const locationMatch = zoneMatchesByAddress.get(group.normalizedAddress);
     const reasons: string[] = [];
     const blockers: string[] = [];
+    let fitScore = 0;
+
+    if (group.likelyCurrentListing) {
+      reasons.push('current listing signal');
+      fitScore += 2;
+    } else if (filters.requireCurrentListingSignal) {
+      blockers.push('no current listing signal');
+    }
 
     if (group.maxSquareFeet != null && group.maxSquareFeet >= filters.minSquareFeet) {
       reasons.push(`${group.maxSquareFeet.toLocaleString()} sqft`);
+      fitScore += 2;
     } else {
       blockers.push(`below ${filters.minSquareFeet.toLocaleString()} sqft`);
     }
 
+    if (
+      group.primaryPriceValue != null &&
+      group.primaryPriceValue <= filters.maxPrice
+    ) {
+      reasons.push(`under $${filters.maxPrice.toLocaleString()}/mo`);
+      fitScore += 2;
+    } else if (group.primaryPriceValue != null) {
+      blockers.push(`over $${filters.maxPrice.toLocaleString()}/mo`);
+    } else {
+      blockers.push('missing price');
+    }
+
     if (group.hasZillow) {
       reasons.push('has Zillow listing');
+      fitScore += 1;
     } else if (filters.requireZillow) {
       blockers.push('missing Zillow listing');
     }
 
     if (group.hasSupportingSource) {
       reasons.push(`${group.sourceCount} sources matched`);
+      fitScore += 1;
     } else if (filters.requireSupportingSource) {
       blockers.push('missing supporting source');
     }
 
     if (group.mentionsWorkspace) {
       reasons.push('workspace or office language');
+      fitScore += 2;
     } else if (filters.requireWorkspaceSignal) {
       blockers.push('no office/workspace signal');
     }
 
     if (group.likelySeparateBedroomSuite) {
       reasons.push('private bedroom/ensuite signal');
+      fitScore += 2;
     } else if (filters.requirePrivateSuiteSignal) {
       blockers.push('no clear separate bedroom + ensuite signal');
     }
 
     if (locationMatch?.zoneMatch?.category) {
       reasons.push(describeZoneMatch(locationMatch.zoneMatch));
+      fitScore += 2;
     } else if (filters.requireCandidateZone) {
       blockers.push('not in current candidate zoning overlay');
     }
+
+    const fitLabel =
+      fitScore >= 10 ? 'strong' : fitScore >= 6 ? 'possible' : 'weak';
 
     return {
       ...group,
@@ -649,6 +715,8 @@ export function screenListingGroups(
       reasons,
       blockers,
       matchesFilters: blockers.length === 0,
+      fitScore,
+      fitLabel,
     };
   });
 }

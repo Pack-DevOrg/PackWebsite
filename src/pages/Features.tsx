@@ -23,8 +23,8 @@ import {
 } from "lucide-react";
 import WaitlistForm from "../components/WaitlistForm";
 import PrefetchLink from "../components/PrefetchLink";
-import { useMountEffect } from "../hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo from "@/seo/pageSeo";
 import {
   capabilityPageDefinitionMap,
   capabilityPageDefinitions,
@@ -427,63 +427,38 @@ const Features: React.FC = () => {
           })),
         };
   const coreFeatures = localizedContent.coreFeatures;
-
-  // Generate Product schema markup for Features
-  useMountEffect(() => {
-    const generateFeaturesSchema = () => {
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: localizedContent.schemaName,
-        description: localizedContent.schemaDescription,
-        brand: {
-          "@type": "Brand",
-          name: "Pack",
-        },
-        category: "Travel Software",
-        audience: {
-          "@type": "Audience",
-          audienceType: localizedContent.schemaAudience,
-        },
-        featureList: coreFeatures.map((feature) => feature.title),
-        applicationCategory: "TravelApplication",
-        operatingSystem: "iOS, Android, Web Browser",
-        offers: {
-          "@type": "Offer",
-          availability: "https://schema.org/PreOrder",
-          url: "https://trypackai.com",
-        },
-      };
-
-      // Remove existing schema
-      const existingSchema = document.querySelector(
-        'script[data-schema="features"]'
-      );
-      if (existingSchema) {
-        existingSchema.remove();
-      }
-
-      // Add new schema
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.setAttribute("data-schema", "features");
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    };
-
-    generateFeaturesSchema();
-
-    // Cleanup on unmount
-    return () => {
-      const schema = document.querySelector('script[data-schema="features"]');
-      if (schema) {
-        schema.remove();
-      }
-    };
-  });
+  const featuresSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: localizedContent.schemaName,
+    description: localizedContent.schemaDescription,
+    brand: {
+      "@type": "Brand",
+      name: "Pack",
+    },
+    category: "Travel Software",
+    audience: {
+      "@type": "Audience",
+      audienceType: localizedContent.schemaAudience,
+    },
+    featureList: coreFeatures.map((feature) => feature.title),
+    applicationCategory: "TravelApplication",
+    operatingSystem: "iOS, Android, Web Browser",
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/PreOrder",
+      url: "https://www.trypackai.com",
+    },
+  };
 
   return (
     <FeaturesContainer>
+      <PageSeo
+        title="Pack Features | AI trip planning, booking, and travel organization"
+        description="Explore Pack features for AI trip planning, booking, connected travel data, collaboration, and travel-day coordination."
+        path="/features"
+        schema={[featuresSchema]}
+      />
       <PageHeader>
         <Title>{localizedContent.pageTitle}</Title>
         <Subtitle>

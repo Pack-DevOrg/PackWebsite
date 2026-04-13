@@ -92,11 +92,11 @@ Pack addresses the global travel industry's core pain point: fragmented booking 
 ## Core Documentation & Resources
 
 ### User Documentation
-- [Privacy Policy](https://trypackai.com/#/privacy): GDPR/CCPA compliant privacy practices with granular consent controls
-- [Terms of Service](https://trypackai.com/#/terms): Legal framework including liability, dispute resolution, and service availability
-- [FAQ](https://trypackai.com/#/faq): Common questions covering account setup, troubleshooting, and feature usage
-- [Features Overview](https://trypackai.com/#/features): Complete capability matrix with usage scenarios and limitations
-- [How It Works](https://trypackai.com/#/how-it-works): Step-by-step user journey from onboarding to trip completion
+- [Privacy Policy](https://www.trypackai.com/privacy): GDPR/CCPA compliant privacy practices with granular consent controls
+- [Terms of Service](https://www.trypackai.com/terms): Legal framework including liability, dispute resolution, and service availability
+- [FAQ](https://www.trypackai.com/faq): Common questions covering account setup, troubleshooting, and feature usage
+- [Features Overview](https://www.trypackai.com/features): Complete capability matrix with usage scenarios and limitations
+- [How It Works](https://www.trypackai.com/how-it-works): Step-by-step user journey from onboarding to trip completion
 
 ## Technology Stack & Architecture
 
@@ -177,7 +177,7 @@ Pack is in active development with proven time-saving capabilities:
 - **Approach**: Privacy-first, mobile-native travel intelligence platform
 
 ### Contact Information
-- **Website**: https://trypackai.com
+- **Website**: https://www.trypackai.com
 - **Waitlist**: Available through main website for early access
 
 ### Development Philosophy

@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import HeroAboveFold from "@/components/HeroAboveFold";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo, { createSoftwareApplicationSchema } from "@/seo/pageSeo";
 import { env } from "@/utils/env";
 import { apiEndpoints } from "@/config/appConfig";
 import { useMountEffect } from "@/hooks/useMountEffect";
@@ -416,6 +417,15 @@ const HomePage: React.FC = () => {
 
   return (
     <Layout>
+      <PageSeo
+        title="Pack | AI travel assistant for personalized trip planning and booking"
+        description="Pack turns prompts, confirmation emails, calendars, and travel preferences into organized trip plans you can review and book in one place."
+        path="/"
+        schema={[createSoftwareApplicationSchema(
+          "Pack",
+          "AI travel assistant for personalized trip planning, booking, and trip organization.",
+        )]}
+      />
       <HeroAboveFold waitlistSlot={heroWaitlist} />
       <DeferredContent minHeight={760} rootMargin="960px 0px">
         <Suspense fallback={<JourneySuspenseFallback $minHeight={760} aria-hidden="true" />}>

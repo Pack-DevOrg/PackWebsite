@@ -9,8 +9,8 @@ import {
   Smartphone,
 } from "lucide-react";
 import WaitlistForm from "../components/WaitlistForm";
-import { useMountEffect } from "../hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo from "@/seo/pageSeo";
 
 const FAQContainer = styled.section`
   max-width: 800px;
@@ -152,6 +152,7 @@ const Answer = styled.div`
 `;
 
 interface FAQItemProps {
+  id: string;
   question: string;
   answer: string | JSX.Element;
   isOpen: boolean;
@@ -159,25 +160,32 @@ interface FAQItemProps {
 }
 
 const FAQItemComponent: React.FC<FAQItemProps> = ({
+  id,
   question,
   answer,
   isOpen,
   onToggle,
 }) => {
+  const answerId = `faq-answer-${id}`;
+
   return (
     <FAQItem>
-      <QuestionButton onClick={onToggle}>
+      <QuestionButton
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={answerId}
+      >
         {question}
         <ChevronIcon data-open={isOpen ? "true" : "false"}>
           <ChevronDown size={20} />
         </ChevronIcon>
       </QuestionButton>
 
-      {isOpen ? (
-        <AnswerContainer>
-          <Answer>{typeof answer === "string" ? <p>{answer}</p> : answer}</Answer>
-        </AnswerContainer>
-      ) : null}
+      <AnswerContainer id={answerId} hidden={!isOpen}>
+        <Answer aria-hidden={!isOpen}>
+          {typeof answer === "string" ? <p>{answer}</p> : answer}
+        </Answer>
+      </AnswerContainer>
     </FAQItem>
   );
 };
@@ -985,49 +993,29 @@ const FAQ: React.FC = () => {
     return "";
   };
 
-  useMountEffect(() => {
-    const generateFAQSchema = () => {
-      const faqItems = faqCategories.flatMap((category) =>
-        category.items.map((item) => ({
-          "@type": "Question",
-          name: item.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: extractTextFromJSX(item.answer),
-          },
-        }))
-      );
-
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: faqItems,
-      };
-
-      const existingSchema = document.querySelector('script[data-schema="faq"]');
-      if (existingSchema) {
-        existingSchema.remove();
-      }
-
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.setAttribute("data-schema", "faq");
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    };
-
-    generateFAQSchema();
-
-    return () => {
-      const schema = document.querySelector('script[data-schema="faq"]');
-      if (schema) {
-        schema.remove();
-      }
-    };
-  });
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqCategories.flatMap((category) =>
+      category.items.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: extractTextFromJSX(item.answer),
+        },
+      }))
+    ),
+  };
 
   return (
     <FAQContainer>
+      <PageSeo
+        title="Pack FAQ | AI travel planning, booking, privacy, and support"
+        description="Answers to common questions about Pack, including trip planning, booking flows, privacy, security, and travel-day support."
+        path="/faq"
+        schema={[faqSchema]}
+      />
       <PageHeader>
         <Title>{localizedContent.title}</Title>
         <Subtitle>{localizedContent.subtitle}</Subtitle>
@@ -1044,6 +1032,7 @@ const FAQ: React.FC = () => {
               {category.items.map((item) => (
                 <FAQItemComponent
                   key={item.id}
+                  id={item.id}
                   question={item.question}
                   answer={item.answer}
                   isOpen={openItems.has(item.id)}

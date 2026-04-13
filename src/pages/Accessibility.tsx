@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo from "@/seo/pageSeo";
 
 const Container = styled.div`
   max-width: 800px;
@@ -89,6 +90,11 @@ const AccessibilityPage = () => {
 
   return (
     <Container>
+      <PageSeo
+        title="Accessibility | Pack"
+        description="Learn how Pack supports accessible web and mobile experiences and how to report accessibility issues."
+        path="/accessibility"
+      />
       <h1>{localizedContent.title}</h1>
       <p>{localizedContent.intro}</p>
 

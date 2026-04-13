@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import {useI18n} from "@/i18n/I18nProvider";
+import PageSeo from "@/seo/pageSeo";
 
 const Container = styled.div`
   max-width: 800px;
@@ -42,6 +43,21 @@ const SupportPage = () => {
 
   return (
     <Container>
+      <PageSeo
+        title="Pack Support | Contact Pack for booking, privacy, and accessibility help"
+        description="Contact Pack support for account, booking, trip-planning, privacy, and accessibility help."
+        path="/support"
+        schema={[
+          {
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            name: "Pack Support",
+            description:
+              "Support contact page for Pack customers and travelers.",
+            url: "https://www.trypackai.com/support",
+          },
+        ]}
+      />
       <h1>{t("nav.support")}</h1>
       <p>{t("support.intro")}</p>
 

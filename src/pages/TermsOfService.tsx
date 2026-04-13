@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import PageSeo from '@/seo/pageSeo';
 import {useI18n} from '../i18n/I18nProvider';
 import {getLegalDocumentOrThrow} from '../legal/legalDocuments';
 import {useLegalMarkdown} from './useLegalMarkdown';
@@ -113,6 +114,11 @@ const TermsOfService: React.FC = () => {
   
   return (
     <DocumentContainer aria-label="Terms of Service">
+      <PageSeo
+        title="Terms of Service | Pack"
+        description="Review the terms that govern Pack, including bookings, accounts, acceptable use, and dispute resolution."
+        path="/terms"
+      />
       {state === 'loading' && !content ? (
         <Paragraph>Loading terms of service…</Paragraph>
       ) : state === 'error' && !content ? (

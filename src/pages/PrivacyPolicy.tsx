@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import PageSeo from '@/seo/pageSeo';
 import LegalMarkdownRenderer from '../components/LegalMarkdownRenderer';
 import {useI18n} from '../i18n/I18nProvider';
 import {getLegalDocumentOrThrow} from '../legal/legalDocuments';
@@ -90,6 +91,11 @@ const PrivacyPolicy: React.FC = () => {
   
   return (
     <MarkdownContainer>
+      <PageSeo
+        title="Privacy Policy | Pack"
+        description="Read how Pack collects, uses, stores, and protects travel and account data."
+        path="/privacy"
+      />
       <h1>Privacy Policy</h1>
       {state === 'loading' && !content ? (
         <p>Loading privacy policy…</p>

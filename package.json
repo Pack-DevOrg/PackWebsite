@@ -2,7 +2,7 @@
   "name": "pack-website",
   "private": true,
   "version": "1.0.0",
-  "homepage": "https://trypackai.com",
+  "homepage": "https://www.trypackai.com",
   "type": "module",
   "engines": {
     "node": ">=22.11.0"

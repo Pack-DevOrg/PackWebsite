@@ -9,8 +9,8 @@ import {
   Bell,
 } from "lucide-react";
 import WaitlistForm from "../components/WaitlistForm";
-import { useMountEffect } from "../hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 
 const HowItWorksContainer = styled.section`
   max-width: 1200px;
@@ -524,64 +524,46 @@ const HowItWorks: React.FC = () => {
   const localizedContent = howItWorksContent[locale];
   const steps = localizedContent.steps;
   const processSteps = localizedContent.processSteps;
-
-  useMountEffect(() => {
-    const generateHowToSchema = () => {
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "HowTo",
-        name: localizedContent.schemaName,
-        description: localizedContent.schemaDescription,
-        image: "https://trypackai.com/images/how-it-works.png",
-        totalTime: "PT5M",
-        estimatedCost: {
-          "@type": "MonetaryAmount",
-          currency: "USD",
-          value: "0",
-        },
-        supply: localizedContent.schemaSupply.map((item) => ({
-          "@type": "HowToSupply",
-          name: item,
-        })),
-        tool: [
-          {
-            "@type": "HowToTool",
-            name: localizedContent.schemaTool,
-          },
-        ],
-        step: steps.map((step, index) => ({
-          "@type": "HowToStep",
-          position: index + 1,
-          name: step.title,
-          text: step.description,
-          url: `https://trypackai.com/${locale === "en" ? "" : `${locale}/`}how-it-works#step-${index + 1}`,
-        })),
-      };
-
-      const existingSchema = document.querySelector('script[data-schema="howto"]');
-      if (existingSchema) {
-        existingSchema.remove();
-      }
-
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.setAttribute("data-schema", "howto");
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    };
-
-    generateHowToSchema();
-
-    return () => {
-      const schema = document.querySelector('script[data-schema="howto"]');
-      if (schema) {
-        schema.remove();
-      }
-    };
-  });
+  const localizedHowItWorksPath = locale === "en" ? "/how-it-works" : `/${locale}/how-it-works`;
+  const howItWorksSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: localizedContent.schemaName,
+    description: localizedContent.schemaDescription,
+    image: buildAbsoluteUrl("/images/og-image.png"),
+    totalTime: "PT5M",
+    estimatedCost: {
+      "@type": "MonetaryAmount",
+      currency: "USD",
+      value: "0",
+    },
+    supply: localizedContent.schemaSupply.map((item) => ({
+      "@type": "HowToSupply",
+      name: item,
+    })),
+    tool: [
+      {
+        "@type": "HowToTool",
+        name: localizedContent.schemaTool,
+      },
+    ],
+    step: steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step.title,
+      text: step.description,
+      url: buildAbsoluteUrl(`${localizedHowItWorksPath}#step-${index + 1}`),
+    })),
+  };
 
   return (
     <HowItWorksContainer>
+      <PageSeo
+        title="How Pack Works | AI travel planning from prompt to booking"
+        description="See how Pack turns travel prompts, confirmations, calendars, and preferences into organized trips you can review, update, and book."
+        path="/how-it-works"
+        schema={[howItWorksSchema]}
+      />
       <PageHeader>
         <Title>{localizedContent.pageTitle}</Title>
         <Subtitle>{localizedContent.pageSubtitle}</Subtitle>

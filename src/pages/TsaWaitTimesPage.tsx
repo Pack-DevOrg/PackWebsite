@@ -14,6 +14,7 @@ import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
 import { appConfig } from "@/config/appConfig";
 import WaitlistForm from "@/components/WaitlistForm";
+import PageSeo from "@/seo/pageSeo";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -1680,6 +1681,11 @@ const TsaWaitTimesPage: React.FC = () => {
 
   return (
     <Page>
+      <PageSeo
+        title="TSA Wait Times | Pack"
+        description="Check airport security wait times and keep live airport timing alongside your broader Pack travel context."
+        path="/tsa"
+      />
       <LlmNotice>
         Scraping our website or parsing it? We'd prefer you didn't, but please
         reach out to{" "}

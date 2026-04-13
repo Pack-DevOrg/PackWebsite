@@ -7,6 +7,7 @@ import { useTracking } from "../components/TrackingProvider";
 import { apiEndpoints } from "../config/appConfig";
 import { useMountEffect } from "../hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import PageSeo from "@/seo/pageSeo";
 
 type PrivacyRequestType =
   | "access"
@@ -554,6 +555,12 @@ const PrivacyRequestPage: React.FC = () => {
 
   return (
     <Container>
+      <PageSeo
+        title="Privacy Request Portal | Pack"
+        description="Submit privacy requests to access, correct, delete, limit, or opt out of processing for Pack account and travel data."
+        path="/privacy-request"
+        robots="noindex, follow"
+      />
       <Section>
         <SectionTitle>{localizedContent.title}</SectionTitle>
         <SectionDescription>{localizedContent.description}</SectionDescription>

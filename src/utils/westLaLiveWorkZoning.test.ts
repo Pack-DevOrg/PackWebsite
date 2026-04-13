@@ -1,6 +1,7 @@
 import {
   classifyLiveWorkCategory,
   extractBaseZone,
+  isPointInsideGeometry,
 } from './westLaLiveWorkZoning';
 
 describe('westLaLiveWorkZoning', () => {
@@ -23,5 +24,21 @@ describe('westLaLiveWorkZoning', () => {
   it('returns null for zones outside the screening lists', () => {
     expect(classifyLiveWorkCategory('R1-1')).toBeNull();
     expect(classifyLiveWorkCategory(undefined)).toBeNull();
+  });
+
+  it('detects whether an address point falls inside a polygon', () => {
+    const polygon = {
+      type: 'Polygon' as const,
+      coordinates: [[
+        [-118.5, 34.0],
+        [-118.4, 34.0],
+        [-118.4, 34.1],
+        [-118.5, 34.1],
+        [-118.5, 34.0],
+      ]],
+    };
+
+    expect(isPointInsideGeometry([-118.45, 34.05], polygon)).toBe(true);
+    expect(isPointInsideGeometry([-118.35, 34.05], polygon)).toBe(false);
   });
 });

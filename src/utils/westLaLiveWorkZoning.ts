@@ -31,6 +31,11 @@ export const ADAPTIVE_REUSE_ZONE_BASES = new Set([
 
 export type LiveWorkCategory = 'artistJointLivingWork' | 'adaptiveReuse';
 
+export type GeoJsonPoint = readonly [number, number];
+export type GeoJsonRing = readonly GeoJsonPoint[];
+export type GeoJsonPolygonCoordinates = readonly GeoJsonRing[];
+export type GeoJsonMultiPolygonCoordinates = readonly GeoJsonPolygonCoordinates[];
+
 const ZONE_PREFIX_PATTERN = /^\s*(?:\([^)]*\)|\[[^\]]*\])*\s*/;
 
 export function extractBaseZone(zoneComplete: string | null | undefined): string | null {
@@ -73,8 +78,70 @@ export function classifyLiveWorkCategory(
 
 export function getLiveWorkCategoryLabel(category: LiveWorkCategory): string {
   if (category === 'artistJointLivingWork') {
-    return 'Artist joint living/work screening';
+    return 'Specialized live/work candidate';
   }
 
-  return 'Adaptive reuse screening';
+  return 'Office-adjacent candidate';
+}
+
+function isPointInsideRing(point: GeoJsonPoint, ring: GeoJsonRing): boolean {
+  const [pointX, pointY] = point;
+  let isInside = false;
+
+  for (let currentIndex = 0, previousIndex = ring.length - 1;
+    currentIndex < ring.length;
+    previousIndex = currentIndex++) {
+    const [currentX, currentY] = ring[currentIndex];
+    const [previousX, previousY] = ring[previousIndex];
+
+    const intersects =
+      ((currentY > pointY) !== (previousY > pointY)) &&
+      (pointX <
+        ((previousX - currentX) * (pointY - currentY)) /
+          (previousY - currentY || Number.EPSILON) +
+          currentX);
+
+    if (intersects) {
+      isInside = !isInside;
+    }
+  }
+
+  return isInside;
+}
+
+export function isPointInsidePolygon(
+  point: GeoJsonPoint,
+  polygonCoordinates: GeoJsonPolygonCoordinates,
+): boolean {
+  const [outerRing, ...holes] = polygonCoordinates;
+
+  if (!outerRing || !isPointInsideRing(point, outerRing)) {
+    return false;
+  }
+
+  return !holes.some((holeRing) => isPointInsideRing(point, holeRing));
+}
+
+export function isPointInsideGeometry(
+  point: GeoJsonPoint,
+  geometry:
+    | {type: 'Polygon'; coordinates: GeoJsonPolygonCoordinates}
+    | {type: 'MultiPolygon'; coordinates: GeoJsonMultiPolygonCoordinates}
+    | null
+    | undefined,
+): boolean {
+  if (!geometry) {
+    return false;
+  }
+
+  if (geometry.type === 'Polygon') {
+    return isPointInsidePolygon(point, geometry.coordinates);
+  }
+
+  if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.some((polygonCoordinates) =>
+      isPointInsidePolygon(point, polygonCoordinates));
+  }
+
+  return false;
 }

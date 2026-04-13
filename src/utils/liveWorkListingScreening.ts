@@ -69,6 +69,11 @@ const ROW_HEADER_ALIASES: Record<string, string> = {
   notes: 'notes',
   price: 'price',
   rent: 'price',
+  photo: 'photoUrl',
+  image: 'photoUrl',
+  imageurl: 'photoUrl',
+  photourl: 'photoUrl',
+  thumbnail: 'photoUrl',
 };
 
 const WORKSPACE_PATTERNS = [
@@ -123,6 +128,7 @@ const ImportedListingSchema = z.object({
   description: z.string().nullable(),
   notes: z.string().nullable(),
   priceText: z.string().nullable(),
+  photoUrl: z.string().url().nullable(),
   rawText: z.string().min(1),
 });
 
@@ -142,6 +148,8 @@ const ListingGroupSchema = z.object({
   zillowUrl: z.string().url().nullable(),
   hasZillow: z.boolean(),
   hasSupportingSource: z.boolean(),
+  primaryPriceText: z.string().nullable(),
+  primaryPhotoUrl: z.string().url().nullable(),
   maxSquareFeet: z.number().positive().nullable(),
   bedrooms: z.number().positive().nullable(),
   bathrooms: z.number().positive().nullable(),
@@ -195,6 +203,7 @@ type ImportedRowShape = {
   readonly description?: string;
   readonly notes?: string;
   readonly price?: string;
+  readonly photoUrl?: string;
 };
 
 export const DEFAULT_LISTING_FILTERS: ListingScreenFilters = {
@@ -390,6 +399,7 @@ function buildImportedListing(
   const title = row.title?.trim() || null;
   const notes = row.notes?.trim() || null;
   const priceText = row.price?.trim() || null;
+  const photoUrl = row.photoUrl?.trim() || null;
   const url = row.url?.trim() || null;
   const rawText = [title, description, notes, priceText, address]
     .filter(Boolean)
@@ -409,6 +419,7 @@ function buildImportedListing(
     description,
     notes,
     priceText,
+    photoUrl,
     rawText,
   });
 }
@@ -440,6 +451,27 @@ export function parseListingImportText(
 function choosePreferredAddress(listings: readonly ImportedListing[]): string {
   const zillowListing = listings.find((listing) => listing.source === 'zillow');
   return zillowListing?.address ?? listings[0]?.address ?? 'Unknown address';
+}
+
+function choosePreferredValue<T>(
+  listings: readonly ImportedListing[],
+  selector: (listing: ImportedListing) => T | null,
+): T | null {
+  const zillowListing = listings.find((listing) => listing.source === 'zillow');
+  const zillowValue = zillowListing ? selector(zillowListing) : null;
+
+  if (zillowValue) {
+    return zillowValue;
+  }
+
+  for (const listing of listings) {
+    const value = selector(listing);
+    if (value) {
+      return value;
+    }
+  }
+
+  return null;
 }
 
 function getBestNumber(
@@ -502,6 +534,14 @@ export function groupListingsByAddress(
         zillowUrl: sourceUrls.zillow ?? null,
         hasZillow: dedupedSources.includes('zillow'),
         hasSupportingSource: dedupedSources.some((source) => source !== 'zillow'),
+        primaryPriceText: choosePreferredValue(
+          groupedListings,
+          (listing) => listing.priceText,
+        ),
+        primaryPhotoUrl: choosePreferredValue(
+          groupedListings,
+          (listing) => listing.photoUrl,
+        ),
         maxSquareFeet: getBestNumber(groupedListings, 'squareFeet'),
         bedrooms,
         bathrooms,

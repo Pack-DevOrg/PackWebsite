@@ -39,11 +39,7 @@ import styled, {
   useTheme,
   css,
 } from "styled-components";
-import { Loader2, Check, AlertCircle, Twitter, Shield } from "lucide-react";
-import { useConversionTracking } from "../hooks/useConversionTracking";
 import { env } from '../utils/env';
-import { submitToEncryptedWaitlist, checkEncryptedWaitlistStatus } from "../services/encryptedWaitlistService";
-import { executeRecaptchaAction, loadRecaptchaScript } from "../utils/recaptcha";
 import { getCookie } from '../utils/cookies';
 import { usePerformance } from "./PerformanceProvider";
 import {
@@ -60,6 +56,93 @@ import {
 import { apiEndpoints } from "../config/appConfig";
 import { useI18n } from "../i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "../legal/legalUiCopy";
+import { useTracking } from "./TrackingProvider";
+
+type IconProps = React.SVGProps<SVGSVGElement> & {
+  readonly size?: number;
+};
+
+const LoaderSpinnerIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" {...props}>
+    <path
+      d="M21 12a9 9 0 1 1-6.219-8.56"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const CheckIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" {...props}>
+    <path
+      d="M20 6 9 17l-5-5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const AlertCircleIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" {...props}>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+    <path
+      d="M12 8v4"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <circle cx="12" cy="16" r="1" fill="currentColor" />
+  </svg>
+);
+
+const TwitterIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" {...props}>
+    <path
+      d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+let recaptchaModulePromise:
+  | Promise<typeof import("../utils/recaptcha")>
+  | null = null;
+let encryptedWaitlistModulePromise:
+  | Promise<typeof import("../services/encryptedWaitlistService")>
+  | null = null;
+
+const getRecaptchaModule = () => {
+  recaptchaModulePromise ??= import("../utils/recaptcha");
+  return recaptchaModulePromise;
+};
+
+const getEncryptedWaitlistModule = () => {
+  encryptedWaitlistModulePromise ??= import("../services/encryptedWaitlistService");
+  return encryptedWaitlistModulePromise;
+};
+
+const getEncryptedWaitlistStatus = (): {
+  available: boolean;
+  devMode: boolean;
+  endpoint: string;
+} => {
+  const devMode = (env.VITE_DEV_MODE as string | undefined) === "true";
+  const encryptedEnabled =
+    (env.VITE_ENABLE_ENCRYPTED_WAITLIST as string | undefined) === "true";
+
+  return {
+    available: devMode && encryptedEnabled,
+    devMode,
+    endpoint: apiEndpoints.waitlistSubscribe,
+  };
+};
 
 // Add global styles for animations
 const GlobalStyle = createGlobalStyle`
@@ -82,7 +165,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 // Styled spinning loader component
-const SpinningLoader = styled(Loader2)`
+const SpinningLoader = styled(LoaderSpinnerIcon)`
   animation: spin 1.2s linear infinite;
   margin-right: 10px;
   
@@ -116,6 +199,9 @@ const fadeSequence = css`
 
 const generateMarketingEventId = (): string =>
   `evt_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+
+const generateTrackingSessionId = (): string =>
+  Date.now().toString(36) + Math.random().toString(36).slice(2);
 
 function maskEmailForDisplay(email: string): string {
   const emailParts = email.split('@');
@@ -694,14 +780,70 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
     text: string;
   } | null>(null);
   const hasTrackedFormStartRef = React.useRef(false);
+  const sessionIdRef = React.useRef(generateTrackingSessionId());
   const theme = useTheme();
   const maskedSubmittedEmail = maskEmailForDisplay(email);
-  
-  // Conversion tracking
-  const { trackFormStart, trackFormSubmit, trackConversion } = useConversionTracking();
+  const { hasConsent, trackEvent } = useTracking();
+  const hasConsentRef = React.useRef(hasConsent);
+
+  hasConsentRef.current = hasConsent;
+
+  const trackConversion = React.useCallback(
+    (eventName: string, parameters: Record<string, unknown> = {}) => {
+      if (!hasConsentRef.current || typeof window === "undefined") {
+        return;
+      }
+
+      const { event_id: eventId, email_hash: emailHash, ...restParameters } = parameters;
+      const enrichedParameters: Record<string, unknown> = {
+        ...restParameters,
+        timestamp: Date.now(),
+        page_path: window.location.pathname,
+        page_title: document.title,
+        referrer: document.referrer || "(direct)",
+        session_id: restParameters.session_id || sessionIdRef.current,
+      };
+
+      if (typeof eventId === "string") {
+        enrichedParameters.event_id = eventId;
+      }
+
+      if (typeof emailHash === "string") {
+        enrichedParameters.email_hash = emailHash;
+      }
+
+      trackEvent(eventName, enrichedParameters);
+    },
+    [trackEvent]
+  );
+
+  const trackFormStart = React.useCallback(
+    (formName: string, parameters: Record<string, unknown> = {}) => {
+      trackConversion("form_start", {
+        ...parameters,
+        form_name: formName,
+        event_category: "engagement",
+        event_label: "form_interaction",
+      });
+    },
+    [trackConversion]
+  );
+
+  const trackFormSubmit = React.useCallback(
+    (formName: string, parameters: Record<string, unknown> = {}) => {
+      trackConversion("form_submit", {
+        ...parameters,
+        form_name: formName,
+        event_category: "conversion",
+        event_label: "form_completion",
+        value: 1,
+      });
+    },
+    [trackConversion]
+  );
   
   // Check if encrypted waitlist is available
-  const encryptedStatus = checkEncryptedWaitlistStatus();
+  const encryptedStatus = getEncryptedWaitlistStatus();
 
   const trackInitialFormIntent = React.useCallback(() => {
     if (hasTrackedFormStartRef.current) {
@@ -749,7 +891,8 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
       throw new Error("reCAPTCHA site key not configured");
     }
 
-    const primePromise = loadRecaptchaScript(siteKey)
+    const primePromise = getRecaptchaModule()
+      .then(({ loadRecaptchaScript }) => loadRecaptchaScript(siteKey))
       .then(() => {
         setRecaptchaLoaded(true);
       })
@@ -779,6 +922,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
       throw new Error("reCAPTCHA site key not configured");
     }
     await primeRecaptcha();
+    const { executeRecaptchaAction } = await getRecaptchaModule();
     return executeRecaptchaAction("submit_waitlist", siteKey);
   };
 
@@ -856,6 +1000,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
         }
         
         // Use encrypted waitlist service
+        const { submitToEncryptedWaitlist } = await getEncryptedWaitlistModule();
         const encryptedResult = await submitToEncryptedWaitlist(requestData);
         
         if (!encryptedResult.success) {
@@ -1015,7 +1160,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
                 />
                 {emailError && (
                   <ErrorMessage>
-                    <AlertCircle size={14} style={{ minWidth: "14px" }} />
+                    <AlertCircleIcon size={14} style={{ minWidth: "14px" }} />
                     {emailError}
                   </ErrorMessage>
                 )}
@@ -1039,7 +1184,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
               {/* reCAPTCHA v3 is invisible - no UI element needed */}
               {captchaError && (
                 <ErrorMessage style={{ margin: theme.spacing[3] + " 0" }}>
-                  <AlertCircle size={14} style={{ minWidth: "14px" }} />
+                  <AlertCircleIcon size={14} style={{ minWidth: "14px" }} />
                   {captchaError}
                 </ErrorMessage>
               )}
@@ -1075,7 +1220,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
                     justifyContent: "center",
                   }}
                 >
-                  <AlertCircle size={14} style={{ minWidth: "14px" }} />
+                  <AlertCircleIcon size={14} style={{ minWidth: "14px" }} />
                   {submitError}
                 </ErrorMessage>
               )}
@@ -1087,7 +1232,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
         ) : (
           <SuccessMessage>
             <SuccessIconContainer>
-              <Check size={32} />
+              <CheckIcon size={32} />
             </SuccessIconContainer>
             <SuccessHeading>
               You're on the list!
@@ -1115,7 +1260,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
                   transition: "all 0.3s ease",
                 }}
               >
-                <Twitter size={16} style={{ marginRight: theme.spacing[1] }} />
+                <TwitterIcon size={16} style={{ marginRight: theme.spacing[1] }} />
                 Share the excitement
               </a>
             </ShareContainer>

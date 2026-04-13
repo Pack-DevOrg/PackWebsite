@@ -568,7 +568,7 @@ const JourneySectionHeader = styled.header`
 
 const JourneySectionEyebrow = styled.span`
   color: rgba(243, 210, 122, 0.86);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -2571,7 +2571,7 @@ const ComposerTopRow = styled.div`
 
 const ComposerPlaceholder = styled.span`
   color: rgba(168, 168, 168, 0.92);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
 `;
 
 const ComposerAction = styled.span<{ $filled?: boolean }>`
@@ -3241,7 +3241,7 @@ const BookingModalLineMeta = styled.span`
 
 const BookingModalAmount = styled.strong`
   color: rgba(255, 248, 236, 0.96);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 800;
   white-space: nowrap;
 `;
@@ -3270,7 +3270,7 @@ const BookingModalSubValue = styled.span`
 const BookingModalTotal = styled(BookingModalLine)`
   min-height: 2.84rem;
   padding: 0.88rem 0 0;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 800;
   background: transparent;
   border-bottom: 0;
@@ -3679,7 +3679,7 @@ const LiveTitle = styled.div`
 
 const LiveCountdown = styled.span`
   color: var(--color-accent);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 `;
@@ -3812,7 +3812,7 @@ const DetailLabel = styled.span`
 
 const DetailValue = styled.span`
   color: rgba(255, 248, 236, 0.92);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.2;
 `;

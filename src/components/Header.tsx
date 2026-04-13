@@ -1,10 +1,9 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
-import PrefetchLink from "./PrefetchLink";
-import logoPMark from "@/assets/logo.png";
+import logoPMark from "@/assets/optimized/logo-mark-64.webp";
 
 const StyledHeader = styled.header`
   display: flex;
@@ -40,7 +39,7 @@ const HeaderContainer = styled.div`
   }
 `;
 
-const LogoLink = styled(PrefetchLink)`
+const LogoLink = styled(Link)`
   display: inline-flex;
   align-items: center;
   justify-self: start;
@@ -76,7 +75,7 @@ const Navigation = styled.nav`
   }
 `;
 
-const NavLink = styled(PrefetchLink)<{ $isActive?: boolean }>`
+const NavLink = styled(Link)<{ $isActive?: boolean }>`
   color: ${({ $isActive }) =>
     $isActive ? "var(--color-text-primary)" : "var(--color-text-secondary)"};
   text-decoration: none;
@@ -141,8 +140,6 @@ const Header: React.FC = () => {
               <NavLink
                 key={item.href}
                 to={pathFor(item.href)}
-                prefetchOnHover
-                prefetchOnViewport
                 $isActive={location.pathname === pathFor(item.href)}
                 aria-current={location.pathname === pathFor(item.href) ? "page" : undefined}
               >

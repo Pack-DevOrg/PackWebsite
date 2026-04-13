@@ -17,22 +17,6 @@ type IdleWindowLike = Window & {
   cancelIdleCallback?: (handle: number) => void;
 };
 
-const VoiceSearchOptimization = React.lazy(
-  () => import("../components/VoiceSearchOptimization")
-);
-const ConversationalAIContent = React.lazy(
-  () => import("../components/ConversationalAIContent")
-);
-const SemanticSearchOptimization = React.lazy(
-  () => import("../components/SemanticSearchOptimization")
-);
-const AITrainingOptimization = React.lazy(
-  () => import("../components/AITrainingOptimization")
-);
-const PerformanceOptimization = React.lazy(
-  () => import("../components/PerformanceOptimization")
-);
-
 const importFooter = () => import("../components/Footer");
 const importScrollToTop = () => import("../components/ScrollToTop");
 const importValueProp = () => import("../components/ValueProp");
@@ -221,27 +205,6 @@ const DeferredContent: React.FC<{
       {shouldRender ? children : <DeferredPlaceholder $minHeight={minHeight} aria-hidden="true" />}
     </div>
   );
-};
-
-const IdleDeferredMount: React.FC<{
-  readonly children: React.ReactNode;
-  readonly delayMs?: number;
-}> = ({ children, delayMs = 1800 }) => {
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useMountEffect(() => {
-    const cancel = scheduleIdleTask(() => {
-      startTransition(() => {
-        setShouldRender(true);
-      });
-    }, delayMs);
-
-    return () => {
-      cancel();
-    };
-  });
-
-  return shouldRender ? <>{children}</> : null;
 };
 
 const LoadingScreenContainer = styled.div`
@@ -493,15 +456,6 @@ const HomePage: React.FC = () => {
           <ScrollToTop />
         </Suspense>
       </DeferredContent>
-      <IdleDeferredMount delayMs={2200}>
-        <Suspense fallback={null}>
-          <PerformanceOptimization page="home" />
-          <VoiceSearchOptimization page="home" />
-          <ConversationalAIContent page="home" />
-          <SemanticSearchOptimization page="home" />
-          <AITrainingOptimization page="home" />
-        </Suspense>
-      </IdleDeferredMount>
     </Layout>
   );
 };

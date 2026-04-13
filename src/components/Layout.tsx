@@ -110,8 +110,16 @@ const RouteScrollResetInstance: React.FC<{
 
 const RouteScrollReset: React.FC = () => {
   const location = useLocation();
+  const isInitialHomeRoute =
+    location.pathname === "/" &&
+    location.search.length === 0 &&
+    location.hash.length === 0;
   const routeKey = `${location.pathname}${location.search}`;
   const anchorRef = React.useRef<HTMLDivElement | null>(null);
+
+  if (isInitialHomeRoute) {
+    return null;
+  }
 
   return (
     <>

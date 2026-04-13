@@ -1,24 +1,18 @@
-import {z} from 'zod';
-
-export const ConsentStatusSchema = z.enum([
+export const CONSENT_STATUSES = [
   'granted',
   'partial',
   'rejected',
   'revoked',
   'gpc',
-]);
+] as const;
 
-export type ConsentStatus = z.infer<typeof ConsentStatusSchema>;
+export type ConsentStatus = (typeof CONSENT_STATUSES)[number];
 
-export const ConsentPreferencesSchema = z
-  .object({
-    analytics: z.boolean(),
-    marketing: z.boolean(),
-    functional: z.boolean(),
-  })
-  .strict();
-
-export type ConsentPreferences = z.infer<typeof ConsentPreferencesSchema>;
+export interface ConsentPreferences {
+  readonly analytics: boolean;
+  readonly marketing: boolean;
+  readonly functional: boolean;
+}
 
 export const DEFAULT_CONSENT_PREFERENCES: ConsentPreferences = {
   analytics: false,
@@ -51,8 +45,14 @@ export function parseConsentPreferences(
     return null;
   }
 
-  const validated = ConsentPreferencesSchema.safeParse(parsed);
-  return validated.success ? validated.data : null;
+  return isConsentPreferences(parsed) ? parsed : null;
+}
+
+export function isConsentStatus(value: unknown): value is ConsentStatus {
+  return (
+    typeof value === 'string' &&
+    (CONSENT_STATUSES as readonly string[]).includes(value)
+  );
 }
 
 export function deriveConsentState({
@@ -119,3 +119,25 @@ function safeJsonParse(value: string): unknown | null {
   }
 }
 
+function isConsentPreferences(value: unknown): value is ConsentPreferences {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const keys = Object.keys(candidate);
+  if (
+    keys.length !== 3 ||
+    !keys.includes('analytics') ||
+    !keys.includes('marketing') ||
+    !keys.includes('functional')
+  ) {
+    return false;
+  }
+
+  return (
+    typeof candidate.analytics === 'boolean' &&
+    typeof candidate.marketing === 'boolean' &&
+    typeof candidate.functional === 'boolean'
+  );
+}

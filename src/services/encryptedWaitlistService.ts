@@ -8,37 +8,33 @@
  */
 
 import { env } from '../utils/env';
-import {z} from 'zod';
 import { apiEndpoints } from '../config/appConfig';
 
-export const WaitlistSignupRequestSchema = z.object({
-  email: z.string().min(1),
-  source: z.string().min(1),
-  timestamp: z.string().min(1),
-  recaptchaToken: z.string().min(1).optional(),
-  marketingConsent: z.boolean().optional(),
-  marketingEmailConsent: z.boolean().optional(),
-  ageConfirmed: z.boolean().optional(),
-  eventId: z.string().min(1).optional(),
-  gclid: z.string().min(1).optional(),
-  wbraid: z.string().min(1).optional(),
-  gbraid: z.string().min(1).optional(),
-  ttclid: z.string().min(1).optional(),
-  ttp: z.string().min(1).optional(),
-  fbc: z.string().min(1).optional(),
-  fbp: z.string().min(1).optional(),
-}).strict();
+export interface WaitlistSignupRequest {
+  readonly email: string;
+  readonly source: string;
+  readonly timestamp: string;
+  readonly recaptchaToken?: string;
+  readonly marketingConsent?: boolean;
+  readonly marketingEmailConsent?: boolean;
+  readonly ageConfirmed?: boolean;
+  readonly eventId?: string;
+  readonly gclid?: string;
+  readonly wbraid?: string;
+  readonly gbraid?: string;
+  readonly ttclid?: string;
+  readonly ttp?: string;
+  readonly fbc?: string;
+  readonly fbp?: string;
+}
 
-export type WaitlistSignupRequest = z.infer<typeof WaitlistSignupRequestSchema>;
-
-export const WaitlistSignupResponseSchema = z.object({
-  success: z.boolean(),
-  message: z.string(),
-  encrypted: z.boolean().optional(),
-  ccpaCompliant: z.boolean().optional(),
-}).passthrough();
-
-export type WaitlistSignupResponse = z.infer<typeof WaitlistSignupResponseSchema>;
+export interface WaitlistSignupResponse {
+  readonly success: boolean;
+  readonly message: string;
+  readonly encrypted?: boolean;
+  readonly ccpaCompliant?: boolean;
+  readonly [key: string]: unknown;
+}
 
 /**
  * Submit email to encrypted waitlist (development mode)
@@ -47,7 +43,7 @@ export type WaitlistSignupResponse = z.infer<typeof WaitlistSignupResponseSchema
 export const submitToEncryptedWaitlist = async (
   request: WaitlistSignupRequest
 ): Promise<WaitlistSignupResponse> => {
-  const validatedRequest = WaitlistSignupRequestSchema.parse(request);
+  const validatedRequest = validateWaitlistSignupRequest(request);
   
   // Check if we're in development mode with encrypted waitlist enabled
   const devMode = (env.VITE_DEV_MODE as string | undefined) === 'true';
@@ -79,7 +75,7 @@ export const submitToEncryptedWaitlist = async (
       body: JSON.stringify(validatedRequest),
     });
 
-    const data = WaitlistSignupResponseSchema.parse(await response.json());
+    const data = validateWaitlistSignupResponse(await response.json());
 
     if (!response.ok) {
       throw new Error(data.message || 'Failed to submit to encrypted waitlist');
@@ -133,3 +129,91 @@ export const checkEncryptedWaitlistStatus = (): {
     endpoint,
   };
 };
+
+function validateWaitlistSignupRequest(
+  value: WaitlistSignupRequest,
+): WaitlistSignupRequest {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Invalid waitlist signup request');
+  }
+
+  const candidate = value as Record<string, unknown>;
+  assertStrictKeys(candidate, [
+    'email',
+    'source',
+    'timestamp',
+    'recaptchaToken',
+    'marketingConsent',
+    'marketingEmailConsent',
+    'ageConfirmed',
+    'eventId',
+    'gclid',
+    'wbraid',
+    'gbraid',
+    'ttclid',
+    'ttp',
+    'fbc',
+    'fbp',
+  ]);
+
+  assertRequiredString(candidate.email, 'email');
+  assertRequiredString(candidate.source, 'source');
+  assertRequiredString(candidate.timestamp, 'timestamp');
+  assertOptionalString(candidate.recaptchaToken, 'recaptchaToken');
+  assertOptionalBoolean(candidate.marketingConsent, 'marketingConsent');
+  assertOptionalBoolean(candidate.marketingEmailConsent, 'marketingEmailConsent');
+  assertOptionalBoolean(candidate.ageConfirmed, 'ageConfirmed');
+  assertOptionalString(candidate.eventId, 'eventId');
+  assertOptionalString(candidate.gclid, 'gclid');
+  assertOptionalString(candidate.wbraid, 'wbraid');
+  assertOptionalString(candidate.gbraid, 'gbraid');
+  assertOptionalString(candidate.ttclid, 'ttclid');
+  assertOptionalString(candidate.ttp, 'ttp');
+  assertOptionalString(candidate.fbc, 'fbc');
+  assertOptionalString(candidate.fbp, 'fbp');
+
+  return value;
+}
+
+function validateWaitlistSignupResponse(value: unknown): WaitlistSignupResponse {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Invalid waitlist signup response');
+  }
+
+  const candidate = value as Record<string, unknown>;
+  if (typeof candidate.success !== 'boolean' || typeof candidate.message !== 'string') {
+    throw new Error('Invalid waitlist signup response');
+  }
+  assertOptionalBoolean(candidate.encrypted, 'encrypted');
+  assertOptionalBoolean(candidate.ccpaCompliant, 'ccpaCompliant');
+  return candidate as WaitlistSignupResponse;
+}
+
+function assertStrictKeys(
+  candidate: Record<string, unknown>,
+  allowedKeys: readonly string[],
+): void {
+  for (const key of Object.keys(candidate)) {
+    if (!allowedKeys.includes(key)) {
+      throw new Error(`Unexpected waitlist signup field "${key}"`);
+    }
+  }
+}
+
+function assertRequiredString(value: unknown, fieldName: string): void {
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new Error(`Invalid ${fieldName}`);
+  }
+}
+
+function assertOptionalString(value: unknown, fieldName: string): void {
+  if (value !== undefined && (typeof value !== 'string' || value.length === 0)) {
+    throw new Error(`Invalid ${fieldName}`);
+  }
+}
+
+function assertOptionalBoolean(value: unknown, fieldName: string): void {
+  if (value !== undefined && typeof value !== 'boolean') {
+    throw new Error(`Invalid ${fieldName}`);
+  }
+}

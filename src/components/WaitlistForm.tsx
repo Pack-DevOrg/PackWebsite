@@ -47,8 +47,8 @@ import { executeRecaptchaAction, loadRecaptchaScript } from "../utils/recaptcha"
 import { getCookie } from '../utils/cookies';
 import { usePerformance } from "./PerformanceProvider";
 import {
-  ConsentStatusSchema,
   deriveConsentState,
+  isConsentStatus,
   parseConsentPreferences,
   type ConsentStatus,
 } from '../tracking/consent';
@@ -206,8 +206,8 @@ const readMarketingTrackingConsent = (): boolean => {
   }
 
   const parsedStatus: ConsentStatus | null = storedStatusRaw
-    ? ConsentStatusSchema.safeParse(storedStatusRaw).success
-      ? (storedStatusRaw as ConsentStatus)
+    ? isConsentStatus(storedStatusRaw)
+      ? storedStatusRaw
       : null
     : null;
 

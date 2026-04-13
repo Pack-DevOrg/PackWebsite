@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { env } from "@/utils/env";
 
 const normalizeUrl = (value: string): string =>
@@ -153,27 +152,25 @@ const scopeList = Array.from(
   )
 );
 
-const AppConfigSchema = z.object({
-  apiBaseUrl: z.string().url(),
-  cognitoDomain: z.string().url(),
-  cognitoClientId: z.string().min(1, "Missing Cognito client id"),
-  cognitoRedirectUri: z.string().url(),
-  postLogoutRedirectUri: z.string().url(),
-  appBaseUrl: z.string().url(),
-  publicSiteUrl: z.string().url(),
-  supportEmail: z.string().email(),
-  forwardingEmail: z.string().email(),
-  friendsEmail: z.string().email(),
-  apiKey: z.string().optional(),
-  oauthScopes: z
-    .array(z.string().min(1))
-    .min(1, "At least one OAuth scope is required"),
-  environment: z.enum(["prod", "dev"]),
-});
+export type AppEnvironment = "prod" | "dev";
 
-export type AppEnvironment = z.infer<typeof AppConfigSchema>["environment"];
+interface ResolvedAppConfig {
+  readonly apiBaseUrl: string;
+  readonly cognitoDomain: string;
+  readonly cognitoClientId: string;
+  readonly cognitoRedirectUri: string;
+  readonly postLogoutRedirectUri: string;
+  readonly appBaseUrl: string;
+  readonly publicSiteUrl: string;
+  readonly supportEmail: string;
+  readonly forwardingEmail: string;
+  readonly friendsEmail: string;
+  readonly apiKey?: string;
+  readonly oauthScopes: readonly string[];
+  readonly environment: AppEnvironment;
+}
 
-const resolvedConfig = AppConfigSchema.parse({
+const resolvedConfig = validateResolvedAppConfig({
   apiBaseUrl: normalizedApiBaseUrl,
   cognitoDomain: ensureProtocol(
     normalizeUrl(
@@ -295,3 +292,49 @@ export const apiEndpoints = {
   sharedTravelById: (shareId: string) =>
     `${appConfig.apiBaseUrl}/api/share/${encodeURIComponent(shareId)}`,
 };
+
+function validateResolvedAppConfig(value: ResolvedAppConfig): ResolvedAppConfig {
+  assertUrl(value.apiBaseUrl, "apiBaseUrl");
+  assertUrl(value.cognitoDomain, "cognitoDomain");
+  assertNonEmptyString(value.cognitoClientId, "cognitoClientId");
+  assertUrl(value.cognitoRedirectUri, "cognitoRedirectUri");
+  assertUrl(value.postLogoutRedirectUri, "postLogoutRedirectUri");
+  assertUrl(value.appBaseUrl, "appBaseUrl");
+  assertUrl(value.publicSiteUrl, "publicSiteUrl");
+  assertEmail(value.supportEmail, "supportEmail");
+  assertEmail(value.forwardingEmail, "forwardingEmail");
+  assertEmail(value.friendsEmail, "friendsEmail");
+  if (value.apiKey !== undefined) {
+    assertNonEmptyString(value.apiKey, "apiKey");
+  }
+  if (value.oauthScopes.length === 0) {
+    throw new Error("At least one OAuth scope is required");
+  }
+  for (const scope of value.oauthScopes) {
+    assertNonEmptyString(scope, "oauthScopes");
+  }
+  if (value.environment !== "prod" && value.environment !== "dev") {
+    throw new Error(`Invalid environment "${value.environment}"`);
+  }
+  return value;
+}
+
+function assertNonEmptyString(value: string, fieldName: string): void {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error(`Invalid ${fieldName}`);
+  }
+}
+
+function assertUrl(value: string, fieldName: string): void {
+  try {
+    void new URL(value);
+  } catch {
+    throw new Error(`Invalid ${fieldName}`);
+  }
+}
+
+function assertEmail(value: string, fieldName: string): void {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    throw new Error(`Invalid ${fieldName}`);
+  }
+}

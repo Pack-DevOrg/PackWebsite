@@ -17,9 +17,9 @@ import { env } from '../utils/env';
 import { CONSENT_COOKIE_KEY, CONSENT_TIMESTAMP_COOKIE_KEY, CONSENT_MAX_AGE_SECONDS } from '../constants/consent';
 import { logConsentEvent } from '../services/consentLogger';
 import {
-  ConsentStatusSchema,
   DEFAULT_CONSENT_PREFERENCES,
   deriveConsentState,
+  isConsentStatus,
   parseConsentPreferences,
   type ConsentPreferences,
   type ConsentStatus,
@@ -289,11 +289,8 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       }
     }
 
-    const parsedStatus = storedStatus
-      ? ConsentStatusSchema.safeParse(storedStatus).success
-        ? (storedStatus as ConsentStatus)
-        : null
-      : null;
+    const parsedStatus =
+      storedStatus && isConsentStatus(storedStatus) ? storedStatus : null;
     const parsedPreferences = parseConsentPreferences(storedPreferencesJson);
 
     return { storedStatus: parsedStatus, storedTimestamp, storedPreferences: parsedPreferences };

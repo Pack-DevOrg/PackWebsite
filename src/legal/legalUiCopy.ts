@@ -1,50 +1,46 @@
-import {z} from 'zod';
 import legalUiCopyJson from './legalUiCopy.json';
 
-const consentBannerCopySchema = z.object({
-  id: z.literal('consent-banner'),
-  locale: z.string().min(2),
-  title: z.string().min(1),
-  gpcNotice: z.string().min(1),
-  bannerPart1: z.string().min(1),
-  bannerPart2: z.string().min(1),
-  settingsTitle: z.string().min(1),
-  settingsGpcNotice: z.string().min(1),
-  functionalName: z.string().min(1),
-  functionalDescription: z.string().min(1),
-  analyticsName: z.string().min(1),
-  analyticsDescription: z.string().min(1),
-  marketingName: z.string().min(1),
-  marketingDescription: z.string().min(1),
-  cancel: z.string().min(1),
-  savePreferences: z.string().min(1),
-});
+export interface ConsentBannerLegalCopy {
+  readonly id: 'consent-banner';
+  readonly locale: string;
+  readonly title: string;
+  readonly gpcNotice: string;
+  readonly bannerPart1: string;
+  readonly bannerPart2: string;
+  readonly settingsTitle: string;
+  readonly settingsGpcNotice: string;
+  readonly functionalName: string;
+  readonly functionalDescription: string;
+  readonly analyticsName: string;
+  readonly analyticsDescription: string;
+  readonly marketingName: string;
+  readonly marketingDescription: string;
+  readonly cancel: string;
+  readonly savePreferences: string;
+}
 
-const acceptanceNoticeCopySchema = z.object({
-  id: z.literal('acceptance-notice'),
-  locale: z.string().min(2),
-  prefix: z.string().min(1),
-  termsLabel: z.string().min(1),
-  middle: z.string().min(1),
-  privacyLabel: z.string().min(1),
-  suffix: z.string().min(1),
-  privacyChoicesLabel: z.string().min(1),
-});
+export interface AcceptanceNoticeLegalCopy {
+  readonly id: 'acceptance-notice';
+  readonly locale: string;
+  readonly prefix: string;
+  readonly termsLabel: string;
+  readonly middle: string;
+  readonly privacyLabel: string;
+  readonly suffix: string;
+  readonly privacyChoicesLabel: string;
+}
 
-const legalUiCopyEntrySchema = z.union([
-  consentBannerCopySchema,
-  acceptanceNoticeCopySchema,
-]);
+type LegalUiCopyEntry = ConsentBannerLegalCopy | AcceptanceNoticeLegalCopy;
 
-const legalUiCopyManifestSchema = z.object({
-  defaultLocale: z.string().min(2),
-  entries: z.array(legalUiCopyEntrySchema).min(1),
-});
+interface LegalUiCopyManifest {
+  readonly defaultLocale: string;
+  readonly entries: readonly LegalUiCopyEntry[];
+}
 
-const legalUiCopyManifest = legalUiCopyManifestSchema.parse(legalUiCopyJson);
+const legalUiCopyManifest = validateLegalUiCopyManifest(legalUiCopyJson);
 
 function getLegalUiEntryOrThrow<
-  TEntry extends z.infer<typeof legalUiCopyEntrySchema>,
+  TEntry extends LegalUiCopyEntry,
 >(id: TEntry['id'], locale: string): TEntry {
   const exactMatch = legalUiCopyManifest.entries.find(
     (entry) => entry.id === id && entry.locale === locale,
@@ -63,11 +59,6 @@ function getLegalUiEntryOrThrow<
   return match;
 }
 
-export type ConsentBannerLegalCopy = z.infer<typeof consentBannerCopySchema>;
-export type AcceptanceNoticeLegalCopy = z.infer<
-  typeof acceptanceNoticeCopySchema
->;
-
 export function getConsentBannerLegalCopy(
   locale: string = legalUiCopyManifest.defaultLocale,
 ): ConsentBannerLegalCopy {
@@ -81,4 +72,80 @@ export function getAcceptanceNoticeLegalCopy(
     'acceptance-notice',
     locale,
   );
+}
+
+function validateLegalUiCopyManifest(value: unknown): LegalUiCopyManifest {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Invalid legal UI copy manifest');
+  }
+
+  const candidate = value as Record<string, unknown>;
+  if (
+    typeof candidate.defaultLocale !== 'string' ||
+    candidate.defaultLocale.length < 2 ||
+    !Array.isArray(candidate.entries) ||
+    candidate.entries.length === 0
+  ) {
+    throw new Error('Invalid legal UI copy manifest');
+  }
+
+  const entries = candidate.entries.map(validateLegalUiCopyEntry);
+  return {
+    defaultLocale: candidate.defaultLocale,
+    entries,
+  };
+}
+
+function validateLegalUiCopyEntry(value: unknown): LegalUiCopyEntry {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Invalid legal UI copy entry');
+  }
+
+  const candidate = value as Record<string, unknown>;
+  if (candidate.id === 'consent-banner') {
+    assertNonEmptyStrings(candidate, [
+      'locale',
+      'title',
+      'gpcNotice',
+      'bannerPart1',
+      'bannerPart2',
+      'settingsTitle',
+      'settingsGpcNotice',
+      'functionalName',
+      'functionalDescription',
+      'analyticsName',
+      'analyticsDescription',
+      'marketingName',
+      'marketingDescription',
+      'cancel',
+      'savePreferences',
+    ]);
+    return candidate as unknown as ConsentBannerLegalCopy;
+  }
+
+  if (candidate.id === 'acceptance-notice') {
+    assertNonEmptyStrings(candidate, [
+      'locale',
+      'prefix',
+      'termsLabel',
+      'middle',
+      'privacyLabel',
+      'suffix',
+      'privacyChoicesLabel',
+    ]);
+    return candidate as unknown as AcceptanceNoticeLegalCopy;
+  }
+
+  throw new Error('Invalid legal UI copy entry');
+}
+
+function assertNonEmptyStrings(
+  candidate: Record<string, unknown>,
+  keys: readonly string[],
+): void {
+  for (const key of keys) {
+    if (typeof candidate[key] !== 'string' || candidate[key]?.length === 0) {
+      throw new Error(`Invalid legal UI copy field "${key}"`);
+    }
+  }
 }

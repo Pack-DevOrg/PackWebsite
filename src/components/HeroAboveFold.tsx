@@ -224,7 +224,7 @@ const MarqueeItem = styled.span`
   border: 1px solid rgba(243, 210, 122, 0.18);
   background: rgba(243, 210, 122, 0.09);
   color: rgba(255, 244, 214, 0.94);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -257,7 +257,7 @@ const MobileHighlightChip = styled.span`
   border: 1px solid rgba(243, 210, 122, 0.16);
   background: rgba(243, 210, 122, 0.07);
   color: rgba(255, 244, 214, 0.9);
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;

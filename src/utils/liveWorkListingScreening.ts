@@ -6,6 +6,7 @@ import {z} from 'zod';
 import {
   classifyLiveWorkCategory,
   extractBaseZone,
+  getLiveWorkCategoryLabel,
   type LiveWorkCategory,
 } from './westLaLiveWorkZoning';
 
@@ -231,7 +232,7 @@ export function inferListingSource(
 export function normalizeListingAddress(address: string): string {
   return address
     .toLowerCase()
-    .replace(/\b(north|south|east|west)\b/g, (match) => match[0])
+    .replace(/\b(north|south|east|west|n|s|e|w)\b/g, '')
     .replace(/\bstreet\b/g, 'st')
     .replace(/\bavenue\b/g, 'ave')
     .replace(/\bplace\b/g, 'pl')

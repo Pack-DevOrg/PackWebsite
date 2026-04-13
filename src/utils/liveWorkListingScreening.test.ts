@@ -10,8 +10,8 @@ describe('liveWorkListingScreening', () => {
   it('parses delimited listing text with a fallback source', () => {
     const parsed = parseListingImportText(
       [
-        'address,sqft,beds,baths,title,description,url',
-        '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Creative loft","Separate office and primary suite with ensuite","https://www.zillow.com/homedetails/example"',
+        'address,sqft,beds,baths,title,description,price,photo,url',
+        '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Creative loft","Separate office and primary suite with ensuite","$9,500/mo","https://images.example.com/1315.jpg","https://www.zillow.com/homedetails/example"',
       ].join('\n'),
       'zillow',
     );
@@ -20,13 +20,14 @@ describe('liveWorkListingScreening', () => {
     expect(parsed.listings).toHaveLength(1);
     expect(parsed.listings[0]?.source).toBe('zillow');
     expect(parsed.listings[0]?.squareFeet).toBe(2200);
+    expect(parsed.listings[0]?.photoUrl).toBe('https://images.example.com/1315.jpg');
   });
 
   it('groups source rows by normalized address and derives live/work signals', () => {
     const zillowRows = parseListingImportText(
       [
-        'address,sqft,beds,baths,title,description,url',
-        '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Live/work loft","Separate office and upstairs primary suite with ensuite","https://www.zillow.com/homedetails/example"',
+        'address,sqft,beds,baths,title,description,price,photo,url',
+        '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Live/work loft","Separate office and upstairs primary suite with ensuite","$9,500/mo","https://images.example.com/1315.jpg","https://www.zillow.com/homedetails/example"',
       ].join('\n'),
       'zillow',
     );
@@ -48,13 +49,15 @@ describe('liveWorkListingScreening', () => {
     expect(grouped[0]?.hasSupportingSource).toBe(true);
     expect(grouped[0]?.mentionsWorkspace).toBe(true);
     expect(grouped[0]?.likelySeparateBedroomSuite).toBe(true);
+    expect(grouped[0]?.primaryPriceText).toBe('$9,500/mo');
+    expect(grouped[0]?.primaryPhotoUrl).toBe('https://images.example.com/1315.jpg');
   });
 
   it('screens grouped listings against zoning and private-suite filters', () => {
     const parsed = parseListingImportText(
       [
-        'address,sqft,beds,baths,title,description,url',
-        '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Live/work loft","Separate office and upstairs primary suite with ensuite","https://www.zillow.com/homedetails/example"',
+        'address,sqft,beds,baths,title,description,price,photo,url',
+        '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Live/work loft","Separate office and upstairs primary suite with ensuite","$9,500/mo","https://images.example.com/1315.jpg","https://www.zillow.com/homedetails/example"',
       ].join('\n'),
       'zillow',
     );

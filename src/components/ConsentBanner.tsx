@@ -160,7 +160,7 @@ const BannerText = styled.p`
   }
 
   @media (max-width: 430px) {
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     line-height: 1.32;
   }
 `;
@@ -270,7 +270,7 @@ const GpcNotice = styled.div`
   @media (max-width: 430px) {
     margin-bottom: 0.45rem;
     padding: 0.55rem 0.7rem;
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     line-height: 1.35;
   }
 `;

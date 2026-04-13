@@ -15,6 +15,11 @@ import {
   type ScreenedListingGroup,
 } from "@/utils/liveWorkListingScreening";
 import {
+  RESEARCHED_SHORTLIST_DATE_LABEL,
+  RESEARCHED_SUPPORTING_ROWS,
+  RESEARCHED_ZILLOW_ROWS,
+} from "@/utils/researchedWestsideListings";
+import {
   classifyLiveWorkCategory,
   extractBaseZone,
   getLiveWorkCategoryLabel,
@@ -1299,6 +1304,18 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
         </FilterGrid>
 
         <ActionRow>
+          <SecondaryButton
+            type="button"
+            onClick={() => {
+              setZillowImportText(RESEARCHED_ZILLOW_ROWS);
+              setSupportingImportText(RESEARCHED_SUPPORTING_ROWS);
+              setListingStateText(
+                `Loaded the curated Westside shortlist assembled from public listing pages on ${RESEARCHED_SHORTLIST_DATE_LABEL}.`,
+              );
+            }}
+          >
+            Load researched shortlist
+          </SecondaryButton>
           <SearchButton type="button" onClick={() => void handleScreenListings()}>
             Screen listings
           </SearchButton>

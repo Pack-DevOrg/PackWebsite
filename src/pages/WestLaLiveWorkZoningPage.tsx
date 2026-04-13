@@ -373,11 +373,50 @@ const ListingResults = styled.div`
 
 const ListingCard = styled.div`
   display: grid;
-  gap: 0.65rem;
+  gap: 0;
   padding: 1rem;
   border-radius: 1rem;
   border: 1px solid rgba(243, 210, 122, 0.12);
   background: rgba(255, 248, 236, 0.05);
+
+  @media (min-width: 840px) {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+`;
+
+const ListingImageWrap = styled.div`
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  background:
+    linear-gradient(135deg, rgba(243, 210, 122, 0.15), rgba(255, 248, 236, 0.03)),
+    rgba(255, 248, 236, 0.04);
+  aspect-ratio: 4 / 3;
+`;
+
+const ListingImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+`;
+
+const ListingImageFallback = styled.div`
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  text-align: center;
+  line-height: 1.5;
+`;
+
+const ListingBody = styled.div`
+  display: grid;
+  gap: 0.7rem;
 `;
 
 const ListingTitleRow = styled.div`
@@ -395,6 +434,17 @@ const ListingTitle = styled.strong`
 const ListingCopy = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   line-height: 1.55;
+`;
+
+const PriceTag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(243, 210, 122, 0.14);
+  border: 1px solid rgba(243, 210, 122, 0.22);
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-weight: 800;
 `;
 
 const LinkRow = styled.div`
@@ -1118,22 +1168,23 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
         </WorkspaceIntro>
 
         <ImportGrid>
-          <ImportCard>
-            <ImportLabel>Zillow rows</ImportLabel>
-            <ImportHelp>
-              Paste CSV, TSV, or JSON rows with at least an <code>address</code> column.
-              Helpful columns are <code>sqft</code>, <code>beds</code>, <code>baths</code>,
-              <code>title</code>, <code>description</code>, and <code>url</code>.
-            </ImportHelp>
-            <ImportTextarea
-              aria-label="Paste Zillow rows"
-              placeholder={[
-                'address,sqft,beds,baths,title,description,url',
-                '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Creative live/work loft","Separate office, balcony, primary suite with ensuite bath","https://www.zillow.com/..."',
-              ].join("\n")}
-              value={zillowImportText}
-              onChange={(event) => setZillowImportText(event.target.value)}
-            />
+            <ImportCard>
+              <ImportLabel>Zillow rows</ImportLabel>
+              <ImportHelp>
+                Paste CSV, TSV, or JSON rows with at least an <code>address</code> column.
+                Helpful columns are <code>sqft</code>, <code>beds</code>, <code>baths</code>,
+                <code>title</code>, <code>description</code>, <code>price</code>,{" "}
+                <code>photo</code>, and <code>url</code>.
+              </ImportHelp>
+              <ImportTextarea
+                aria-label="Paste Zillow rows"
+                placeholder={[
+                  'address,sqft,beds,baths,title,description,price,photo,url',
+                  '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Creative live/work loft","Separate office, balcony, primary suite with ensuite bath","$9,500/mo","https://images.example.com/1315.jpg","https://www.zillow.com/..."',
+                ].join("\n")}
+                value={zillowImportText}
+                onChange={(event) => setZillowImportText(event.target.value)}
+              />
           </ImportCard>
 
           <ImportCard>
@@ -1291,81 +1342,101 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
 
             <ListingResults>
               {screenedListings.map((group) => (
-                <ListingCard key={group.id}>
-                  <ListingTitleRow>
-                    <ListingTitle>{group.displayAddress}</ListingTitle>
-                    <ResultMeta>
-                      <ResultChip $tone={group.matchesFilters ? "good" : "warn"}>
-                        {group.matchesFilters ? "Matches current filters" : "Needs review"}
-                      </ResultChip>
-                      {group.maxSquareFeet ? (
-                        <ResultChip>{group.maxSquareFeet.toLocaleString()} sqft</ResultChip>
-                      ) : null}
-                      {group.bedrooms ? (
-                        <ResultChip>{group.bedrooms} bd</ResultChip>
-                      ) : null}
-                      {group.bathrooms ? (
-                        <ResultChip>{group.bathrooms} ba</ResultChip>
-                      ) : null}
-                    </ResultMeta>
-                  </ListingTitleRow>
+                    <ListingCard key={group.id}>
+                      <ListingImageWrap>
+                        {group.primaryPhotoUrl ? (
+                          <ListingImage
+                            src={group.primaryPhotoUrl}
+                            alt={group.displayAddress}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <ListingImageFallback>
+                            No photo pasted for this listing yet.
+                          </ListingImageFallback>
+                        )}
+                      </ListingImageWrap>
 
-                  <ListingCopy>
-                    {group.geocodedAddress
-                      ? `Geocoded as ${group.geocodedAddress}.`
-                      : "No geocoded match stored yet."}{" "}
-                    {group.zoneMatch
-                      ? describeZoneMatch(group.zoneMatch)
-                      : "No candidate zoning match found yet."}
-                  </ListingCopy>
+                      <ListingBody>
+                        <ListingTitleRow>
+                          <ListingTitle>{group.displayAddress}</ListingTitle>
+                          {group.primaryPriceText ? (
+                            <PriceTag>{group.primaryPriceText}</PriceTag>
+                          ) : null}
+                        </ListingTitleRow>
 
-                  <ResultMeta>
-                    {group.sourceLabels.map((label) => (
-                      <ResultChip key={label}>{label}</ResultChip>
-                    ))}
-                    {group.mentionsWorkspace ? (
-                      <ResultChip $tone="good">Workspace signal</ResultChip>
-                    ) : null}
-                    {group.likelySeparateBedroomSuite ? (
-                      <ResultChip $tone="good">Private suite signal</ResultChip>
-                    ) : null}
-                  </ResultMeta>
+                        <ResultMeta>
+                          <ResultChip $tone={group.matchesFilters ? "good" : "warn"}>
+                            {group.matchesFilters ? "Matches current filters" : "Needs review"}
+                          </ResultChip>
+                          {group.maxSquareFeet ? (
+                            <ResultChip>{group.maxSquareFeet.toLocaleString()} sqft</ResultChip>
+                          ) : null}
+                          {group.bedrooms ? (
+                            <ResultChip>{group.bedrooms} bd</ResultChip>
+                          ) : null}
+                          {group.bathrooms ? (
+                            <ResultChip>{group.bathrooms} ba</ResultChip>
+                          ) : null}
+                          {group.sourceLabels.map((label) => (
+                            <ResultChip key={label}>{label}</ResultChip>
+                          ))}
+                        </ResultMeta>
 
-                  <ListingCopy>
-                    Strong signals:{" "}
-                    {group.reasons.length > 0
-                      ? group.reasons.join(" • ")
-                      : "none yet from the imported rows."}
-                  </ListingCopy>
-                  {!group.matchesFilters && group.blockers.length > 0 ? (
-                    <ListingCopy>
-                      Missing pieces: {group.blockers.join(" • ")}
-                    </ListingCopy>
-                  ) : null}
+                        <ListingCopy>
+                          {group.geocodedAddress
+                            ? `Geocoded as ${group.geocodedAddress}.`
+                            : "No geocoded match stored yet."}{" "}
+                          {group.zoneMatch
+                            ? describeZoneMatch(group.zoneMatch)
+                            : "No candidate zoning match found yet."}
+                        </ListingCopy>
 
-                  <LinkRow>
-                    {group.zillowUrl ? (
-                      <InlineLink
-                        href={group.zillowUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Open Zillow
-                      </InlineLink>
-                    ) : null}
-                    {Object.entries(group.sourceUrls)
-                      .filter(([source]) => source !== "zillow")
-                      .map(([source, url]) => (
-                        <InlineLink
-                          key={`${group.id}-${source}`}
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Open {getListingSourceLabel(source as Parameters<typeof getListingSourceLabel>[0])}
-                        </InlineLink>
-                      ))}
-                  </LinkRow>
+                        <ResultMeta>
+                          {group.mentionsWorkspace ? (
+                            <ResultChip $tone="good">Workspace signal</ResultChip>
+                          ) : null}
+                          {group.likelySeparateBedroomSuite ? (
+                            <ResultChip $tone="good">Private suite signal</ResultChip>
+                          ) : null}
+                        </ResultMeta>
+
+                        <ListingCopy>
+                          Strong signals:{" "}
+                          {group.reasons.length > 0
+                            ? group.reasons.join(" • ")
+                            : "none yet from the imported rows."}
+                        </ListingCopy>
+                        {!group.matchesFilters && group.blockers.length > 0 ? (
+                          <ListingCopy>
+                            Missing pieces: {group.blockers.join(" • ")}
+                          </ListingCopy>
+                        ) : null}
+
+                        <LinkRow>
+                          {group.zillowUrl ? (
+                            <InlineLink
+                              href={group.zillowUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Open Zillow
+                            </InlineLink>
+                          ) : null}
+                          {Object.entries(group.sourceUrls)
+                            .filter(([source]) => source !== "zillow")
+                            .map(([source, url]) => (
+                              <InlineLink
+                                key={`${group.id}-${source}`}
+                                href={url}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Open {getListingSourceLabel(source as Parameters<typeof getListingSourceLabel>[0])}
+                              </InlineLink>
+                            ))}
+                        </LinkRow>
+                      </ListingBody>
                 </ListingCard>
               ))}
             </ListingResults>

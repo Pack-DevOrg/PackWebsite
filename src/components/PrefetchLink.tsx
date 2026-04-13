@@ -6,7 +6,6 @@
  * - Viewport-based prefetching (mobile-friendly)
  * - Idle callback scheduling to avoid blocking main thread
  * - React.lazy() component preloading
- * - React Query data prefetching support
  *
  * Usage:
  *   <PrefetchLink to="/features" prefetchOnHover prefetchOnViewport>
@@ -16,7 +15,6 @@
 
 import React, { useRef, useCallback } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import {env} from '../utils/env';
 import { useMountEffect } from '@/hooks/useMountEffect';
 
@@ -27,10 +25,6 @@ interface PrefetchLinkProps extends LinkProps {
   prefetchOnViewport?: boolean;
   /** Delay in ms before prefetching on hover (default: 50ms) */
   hoverDelay?: number;
-  /** React Query key to prefetch */
-  queryKey?: string[];
-  /** React Query prefetch function */
-  queryFn?: () => Promise<unknown>;
   /** Priority hint for prefetch timing */
   priority?: 'high' | 'low';
 }
@@ -104,8 +98,6 @@ export const PrefetchLink = React.forwardRef<HTMLAnchorElement, PrefetchLinkProp
       prefetchOnHover = false,
       prefetchOnViewport = false,
       hoverDelay = 50,
-      queryKey,
-      queryFn,
       priority = 'low',
       children,
       onMouseEnter,
@@ -113,7 +105,6 @@ export const PrefetchLink = React.forwardRef<HTMLAnchorElement, PrefetchLinkProp
     },
     ref
   ) => {
-    const queryClient = useQueryClient();
     const linkRef = useRef<HTMLAnchorElement>(null);
     const hoverTimeoutRef = useRef<number>();
     const prefetchedRef = useRef(false);
@@ -130,16 +121,7 @@ export const PrefetchLink = React.forwardRef<HTMLAnchorElement, PrefetchLinkProp
       if (routePath) {
         prefetchRoute(routePath);
       }
-
-      // Prefetch React Query data if provided
-      if (queryKey && queryFn && queryClient) {
-        queryClient.prefetchQuery({
-          queryKey,
-          queryFn,
-          staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-        });
-      }
-    }, [to, queryKey, queryFn, queryClient]);
+    }, [to]);
 
     // Hover-based prefetching
     const handleMouseEnter = useCallback(

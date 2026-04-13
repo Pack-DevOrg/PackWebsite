@@ -60,7 +60,28 @@ import type {
   PlanHotelOption,
 } from "./hero/heroJourneyData";
 
-const HeroJourneyMapCard = React.lazy(() => import("./hero/HeroJourneyMapCard"));
+const heroJourneyStillAssets = {
+  outline: {
+    src: "/images/hero-captures/plan-still.png",
+    width: 798,
+    height: 1792,
+  },
+  search: {
+    src: "/images/hero-captures/search-still.png",
+    width: 798,
+    height: 2608,
+  },
+  booking: {
+    src: "/images/hero-captures/booking-still.png",
+    width: 798,
+    height: 8494,
+  },
+  footprint: {
+    src: "/images/hero-captures/stats-still.png",
+    width: 806,
+    height: 4204,
+  },
+} as const;
 
 const float = keyframes`
   0%, 100% {
@@ -1278,6 +1299,14 @@ const TravelScroll = styled(JourneyPreviewScrollViewport).attrs<{
 }))``;
 
 const TravelScrollContent = styled(JourneyPreviewScrollContent)``;
+
+const HeroJourneyStillImage = styled.img`
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+`;
 
 const PlanPhone = styled(AppSurface)<{
   $height?: string;
@@ -4237,6 +4266,25 @@ const renderRecordIcon = (icon: (typeof recordRows)[number]["icon"]) => {
   }
 };
 
+const renderHeroJourneyStill = (
+  screenKey: keyof typeof heroJourneyStillAssets
+): ReactNode => {
+  const asset = heroJourneyStillAssets[screenKey];
+
+  return (
+    <HeroJourneyStillImage
+      src={asset.src}
+      width={asset.width}
+      height={asset.height}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+      draggable={false}
+    />
+  );
+};
+
 const StatusIcons = () => (
   <StatusRight aria-hidden="true">
     <StatusIcon>
@@ -4578,6 +4626,12 @@ const PlanShowcasePhone: React.FC<{
     contentRef: planContentRef,
     travelDistance: measuredPlanTravelDistance,
   } = useMeasuredTravelDistance(contentTravelDistance, scrollablePreview);
+  const stillScreenKey: keyof typeof heroJourneyStillAssets = isOutlineScreen
+    ? "outline"
+    : isSearchScreen
+      ? "search"
+      : "booking";
+
   usePreviewScrollSync(
     planScrollRef,
     scrollProgress,
@@ -4631,356 +4685,7 @@ const PlanShowcasePhone: React.FC<{
                   $scrollable={scrollablePreview}
                   data-hero-screen-content={screenKey}
                 >
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="blue">
-                              <Plane aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Your Trip</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                          <BookingModalSectionMeta>
-                            Flight 1, Hotel 1, and Flight 2 selected for this booking.
-                          </BookingModalSectionMeta>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <BookingModalLine>
-                        <BookingModalLineLabel>
-                          <BookingModalLineIcon $accent="blue">
-                            <Plane aria-hidden="true" />
-                          </BookingModalLineIcon>
-                          <BookingModalLineText>
-                            <BookingModalLineTitle>Flight 1</BookingModalLineTitle>
-                            <BookingModalLineMeta>
-                              {selectedOutboundFlight.carrier} • {selectedOutboundFlight.origin} → {selectedOutboundFlight.destination}
-                            </BookingModalLineMeta>
-                          </BookingModalLineText>
-                        </BookingModalLineLabel>
-                        <BookingModalAmount>{selectedOutboundFlight.price}</BookingModalAmount>
-                      </BookingModalLine>
-                      <BookingModalLine>
-                        <BookingModalLineLabel>
-                          <BookingModalLineIcon $accent="green">
-                            <BedDouble aria-hidden="true" />
-                          </BookingModalLineIcon>
-                          <BookingModalLineText>
-                            <BookingModalLineTitle>Hotel 1</BookingModalLineTitle>
-                            <BookingModalLineMeta>
-                              {selectedHotel.name} • {selectedHotel.roomType}
-                            </BookingModalLineMeta>
-                          </BookingModalLineText>
-                        </BookingModalLineLabel>
-                        <BookingModalAmount>{selectedHotel.total}</BookingModalAmount>
-                      </BookingModalLine>
-                      <BookingModalLine>
-                        <BookingModalLineLabel>
-                          <BookingModalLineIcon $accent="blue">
-                            <Plane aria-hidden="true" />
-                          </BookingModalLineIcon>
-                          <BookingModalLineText>
-                            <BookingModalLineTitle>Flight 2</BookingModalLineTitle>
-                            <BookingModalLineMeta>
-                              {selectedReturnFlight.carrier} • {selectedReturnFlight.origin} → {selectedReturnFlight.destination}
-                            </BookingModalLineMeta>
-                          </BookingModalLineText>
-                        </BookingModalLineLabel>
-                        <BookingModalAmount>{selectedReturnFlight.price}</BookingModalAmount>
-                      </BookingModalLine>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon>
-                              <UserRound aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Passenger Information</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <BookingPassengerChipRow>
-                        <BookingPassengerChip $active>
-                          <UserRound aria-hidden="true" />
-                          Marcus Aurelius
-                        </BookingPassengerChip>
-                        <BookingPassengerChip>
-                          <Plus aria-hidden="true" />
-                          Add passenger
-                        </BookingPassengerChip>
-                      </BookingPassengerChipRow>
-                      <BookingFieldStack>
-                        <BookingField><BookingFieldLabel>First Name</BookingFieldLabel><BookingFieldValue>Marcus</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Last Name</BookingFieldLabel><BookingFieldValue>Aurelius</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Date of Birth</BookingFieldLabel><BookingFieldValue>October 18, 1992</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Gender</BookingFieldLabel><BookingFieldValue>Male</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Email</BookingFieldLabel><BookingFieldValue>trips@trypackai.com</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Phone Number</BookingFieldLabel><BookingFieldValue>+12125550186</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Document Type</BookingFieldLabel><BookingFieldValue>Passport</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Document Number</BookingFieldLabel><BookingFieldValue>L9501843</BookingFieldValue></BookingField>
-                      </BookingFieldStack>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="green">
-                              <Phone aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Contact Information</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron $collapsed>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <BookingFieldStack>
-                        <BookingField><BookingFieldLabel>Email</BookingFieldLabel><BookingFieldValue>trips@trypackai.com</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Phone Number</BookingFieldLabel><BookingFieldValue>+12125550186</BookingFieldValue></BookingField>
-                      </BookingFieldStack>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="red">
-                              <CreditCard aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Payment</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron $collapsed>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <BookingPaymentHint>
-                        Demo mode: Payment is not collected yet. Tap &quot;Book Now&quot; to simulate a booking.
-                      </BookingPaymentHint>
-                      <BookingFieldStack>
-                        <BookingField><BookingFieldLabel>Cardholder</BookingFieldLabel><BookingFieldValue>Marcus Aurelius</BookingFieldValue></BookingField>
-                        <BookingField><BookingFieldLabel>Billing Address</BookingFieldLabel><BookingFieldValue>US</BookingFieldValue></BookingField>
-                      </BookingFieldStack>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="blue">
-                              <Plane aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Flight Options</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <BookingFieldGrid>
-                        {searchFlightOptionRows.map((row) => (
-                          <BookingField key={row.label}>
-                            <BookingFieldLabel>{row.label}</BookingFieldLabel>
-                            <BookingFieldValue>{row.value}</BookingFieldValue>
-                          </BookingField>
-                        ))}
-                      </BookingFieldGrid>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="gold">
-                              <Plane aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Seat Selection</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <InsightList>
-                        {bookingSeatRows.map((row) => (
-                          <InsightRow key={row.label}>
-                            <InsightLabel>{row.label}</InsightLabel>
-                            <InsightValue>{row.value}</InsightValue>
-                            <InsightMeta>{row.meta}</InsightMeta>
-                          </InsightRow>
-                        ))}
-                      </InsightList>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="green">
-                              <Award aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Hotel Options</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <BookingFieldGrid>
-                        {searchHotelOptionRows.map((row) => (
-                          <BookingField key={row.label}>
-                            <BookingFieldLabel>{row.label}</BookingFieldLabel>
-                            <BookingFieldValue>{row.value}</BookingFieldValue>
-                          </BookingField>
-                        ))}
-                      </BookingFieldGrid>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="green">
-                              <Sparkles aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Requests / Assistance</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron $collapsed>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <InsightList>
-                        {bookingSpecialRequestRows.map((row) => (
-                          <InsightRow key={row.label}>
-                            <InsightLabel>{row.label}</InsightLabel>
-                            <InsightValue>{row.value}</InsightValue>
-                            <InsightMeta>{row.meta}</InsightMeta>
-                          </InsightRow>
-                        ))}
-                      </InsightList>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalHeader>
-                        <BookingModalEyebrow>Price Breakdown</BookingModalEyebrow>
-                        <BookingModalSectionTitleRow>
-                          <BookingModalSectionIcon>
-                            <ReceiptText aria-hidden="true" />
-                          </BookingModalSectionIcon>
-                          <BookingModalTitle>Price Breakdown</BookingModalTitle>
-                        </BookingModalSectionTitleRow>
-                        <BookingModalMeta>All mandatory fees are included in total price.</BookingModalMeta>
-                      </BookingModalHeader>
-                      <BookingModalBreakdown>
-                        <BookingModalSection>
-                          <BookingModalLine>
-                            <BookingModalLineLabel>
-                              <BookingModalLineIcon $accent="blue"><Plane aria-hidden="true" /></BookingModalLineIcon>
-                              <BookingModalLineText>
-                                <BookingModalLineTitle>Flight (JFK → BCN)</BookingModalLineTitle>
-                                <BookingModalLineMeta>{selectedOutboundFlight.carrier} • {selectedOutboundFlight.fareClass}</BookingModalLineMeta>
-                              </BookingModalLineText>
-                            </BookingModalLineLabel>
-                            <BookingModalAmount>USD {parseDisplayAmount(selectedOutboundFlight.price).toFixed(2)}</BookingModalAmount>
-                          </BookingModalLine>
-                          <BookingModalSubRow><BookingModalSubLabel>Base Fare</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedOutboundFlight.priceDetails.baseFare).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                          <BookingModalSubRow><BookingModalSubLabel>Taxes & Fees</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedOutboundFlight.priceDetails.taxesAndFees).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                          <BookingModalSubRow><BookingModalSubLabel>Pack Service Fee</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedOutboundFlight.priceDetails.serviceFee).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                        </BookingModalSection>
-                        <BookingModalSection>
-                          <BookingModalLine>
-                            <BookingModalLineLabel>
-                              <BookingModalLineIcon $accent="green"><BedDouble aria-hidden="true" /></BookingModalLineIcon>
-                              <BookingModalLineText>
-                                <BookingModalLineTitle>Hotel ({selectedHotel.name})</BookingModalLineTitle>
-                                <BookingModalLineMeta>9 nights • {selectedHotel.roomType}</BookingModalLineMeta>
-                              </BookingModalLineText>
-                            </BookingModalLineLabel>
-                            <BookingModalAmount>USD {parseDisplayAmount(selectedHotel.total).toFixed(2)}</BookingModalAmount>
-                          </BookingModalLine>
-                          <BookingModalSubRow><BookingModalSubLabel>Room Rate</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedHotel.priceDetails.roomRate).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                          <BookingModalSubRow><BookingModalSubLabel>Taxes & Fees</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedHotel.priceDetails.taxesAndFees).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                          <BookingModalSubRow><BookingModalSubLabel>Pack Service Fee</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedHotel.priceDetails.serviceFee).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                        </BookingModalSection>
-                        <BookingModalSection>
-                          <BookingModalLine>
-                            <BookingModalLineLabel>
-                              <BookingModalLineIcon $accent="blue"><Plane aria-hidden="true" /></BookingModalLineIcon>
-                              <BookingModalLineText>
-                                <BookingModalLineTitle>Flight (BCN → JFK)</BookingModalLineTitle>
-                                <BookingModalLineMeta>{selectedReturnFlight.carrier} • {selectedReturnFlight.fareClass}</BookingModalLineMeta>
-                              </BookingModalLineText>
-                            </BookingModalLineLabel>
-                            <BookingModalAmount>USD {parseDisplayAmount(selectedReturnFlight.price).toFixed(2)}</BookingModalAmount>
-                          </BookingModalLine>
-                          <BookingModalSubRow><BookingModalSubLabel>Base Fare</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedReturnFlight.priceDetails.baseFare).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                          <BookingModalSubRow><BookingModalSubLabel>Taxes & Fees</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedReturnFlight.priceDetails.taxesAndFees).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                          <BookingModalSubRow><BookingModalSubLabel>Pack Service Fee</BookingModalSubLabel><BookingModalSubValue>USD {parseDisplayAmount(selectedReturnFlight.priceDetails.serviceFee).toFixed(2)}</BookingModalSubValue></BookingModalSubRow>
-                        </BookingModalSection>
-                        <BookingModalTotal>
-                          <span>Total</span>
-                          <span>USD {parseDisplayAmount(totalTripPrice).toFixed(2)}</span>
-                        </BookingModalTotal>
-                      </BookingModalBreakdown>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookingModalSectionCard>
-                      <BookingModalSectionHeader>
-                        <BookingModalSectionHeaderMain>
-                          <BookingModalSectionTitleRow>
-                            <BookingModalSectionIcon $accent="gold">
-                              <Award aria-hidden="true" />
-                            </BookingModalSectionIcon>
-                            <BookingModalSectionTitle>Passenger protections</BookingModalSectionTitle>
-                          </BookingModalSectionTitleRow>
-                        </BookingModalSectionHeaderMain>
-                        <BookingModalSectionChevron $collapsed>
-                          <ChevronDown aria-hidden="true" />
-                        </BookingModalSectionChevron>
-                      </BookingModalSectionHeader>
-                      <InsightList>
-                        {bookingProtectionRows.map((row) => (
-                          <InsightRow key={row.label}>
-                            <InsightLabel>{row.label}</InsightLabel>
-                            <InsightValue>{row.value}</InsightValue>
-                            <InsightMeta>{row.meta}</InsightMeta>
-                          </InsightRow>
-                        ))}
-                      </InsightList>
-                    </BookingModalSectionCard>
-                  </PlanSection>
-
-                  <PlanSection>
-                    <BookButton type="button">Book Now - USD {parseDisplayAmount(totalTripPrice).toFixed(2)}</BookButton>
-                  </PlanSection>
+                  {renderHeroJourneyStill(stillScreenKey)}
                 </PlanScrollContent>
               </PlanFlowScroll>
             </>
@@ -5011,45 +4716,7 @@ const PlanShowcasePhone: React.FC<{
                 $scrollable={scrollablePreview}
                 data-hero-screen-content={screenKey}
               >
-                <PlanSection>
-                  <PlanSectionHeader>
-                    <PlanSectionTitle>Travel Outline</PlanSectionTitle>
-                  </PlanSectionHeader>
-                  <PromptStack>
-                    <UserBubbleRow>
-                      <PromptBubble>
-                        <span>Book Barcelona</span>
-                      </PromptBubble>
-                    </UserBubbleRow>
-
-                    <OutlineSurface>
-                      <TimelineStack>
-                        {outlineItems.map((item) =>
-                          item.type === "flight" ? (
-                            <FlightPreviewCard key={item.id} item={item} />
-                          ) : (
-                            <HotelPreviewCard key={item.id} item={item} />
-                          )
-                        )}
-                      </TimelineStack>
-                    </OutlineSurface>
-                  </PromptStack>
-                </PlanSection>
-                <PlanSection>
-                  <OutlineActionBar>
-                    <OutlineActionButton type="button">
-                      <PencilLine aria-hidden="true" />
-                      Edit
-                    </OutlineActionButton>
-                    <OutlineActionButton type="button" $primary>
-                      Continue
-                    </OutlineActionButton>
-                    <OutlineActionButton type="button">
-                      <Share2 aria-hidden="true" />
-                      Share
-                    </OutlineActionButton>
-                  </OutlineActionBar>
-                </PlanSection>
+                {renderHeroJourneyStill(stillScreenKey)}
               </PlanScrollContent>
             </PlanFlowScroll>
               ) : (
@@ -5066,72 +4733,7 @@ const PlanShowcasePhone: React.FC<{
                   $scrollable={scrollablePreview}
                   data-hero-screen-content={screenKey}
                 >
-                  <PlanSection>
-                    <BookingStage>
-                      {isSearchScreen ? (
-                        <SearchFilterRow>
-                          <SearchSortLabel>Sort by</SearchSortLabel>
-                          <SearchSortButtons>
-                            <SearchFilterChip>Price</SearchFilterChip>
-                            <SearchFilterChip $active>Smart</SearchFilterChip>
-                          </SearchSortButtons>
-                        </SearchFilterRow>
-                      ) : null}
-
-                      <BookingCarousel
-                        index={outboundIndex}
-                        total={outboundFlightOptions.length}
-                        onPrev={onPrevOutbound}
-                        onNext={onNextOutbound}
-                      >
-                        {outboundFlightOptions.map((option) => (
-                          <CarouselSlide key={option.id}>
-                            <FlightBookingCard
-                              option={option}
-                              sectionLabel="Outbound flight"
-                              sectionMeta="Tue, Jun 23"
-                            />
-                          </CarouselSlide>
-                        ))}
-                      </BookingCarousel>
-                      {isSearchScreen ? (
-                        <SearchWhyPopover>
-                          <SearchWhyTop>
-                            <span>Why this flight</span>
-                            <X aria-hidden="true" />
-                          </SearchWhyTop>
-                          <SearchWhyBody>
-                            Nonstop Delta One flight with the shortest travel time, lounge access, and the cleanest
-                            arrival window for a same-day suite check-in in Barcelona.
-                          </SearchWhyBody>
-                        </SearchWhyPopover>
-                      ) : null}
-                      <BookingCarousel index={hotelIndex} total={hotelOptions.length} onPrev={onPrevHotel} onNext={onNextHotel}>
-                        {hotelOptions.map((option) => (
-                          <CarouselSlide key={option.id}>
-                            <HotelBookingCardPreview option={option} />
-                          </CarouselSlide>
-                        ))}
-                      </BookingCarousel>
-
-                      <BookingCarousel
-                        index={returnIndex}
-                        total={returnFlightOptions.length}
-                        onPrev={onPrevReturn}
-                        onNext={onNextReturn}
-                      >
-                        {returnFlightOptions.map((option) => (
-                          <CarouselSlide key={option.id}>
-                            <FlightBookingCard
-                              option={option}
-                              sectionLabel="Return flight"
-                              sectionMeta="Thu, Jul 2"
-                            />
-                          </CarouselSlide>
-                        ))}
-                      </BookingCarousel>
-                    </BookingStage>
-                  </PlanSection>
+                  {renderHeroJourneyStill(stillScreenKey)}
                 </PlanScrollContent>
               </PlanFlowScroll>
               )}
@@ -5262,161 +4864,7 @@ const ReviewShowcasePhone: React.FC<{
                 $scrollable={scrollablePreview}
                 data-hero-screen-content={screenKey}
               >
-                <StatsYearRow>
-                  <StatsYearChip $active>All</StatsYearChip>
-                  <StatsYearChip>2026</StatsYearChip>
-                  <StatsYearChip>2025</StatsYearChip>
-                </StatsYearRow>
-
-	                <StatsPrimaryGrid>
-	                  <StatsPrimaryCard>
-	                    <StatsMetricIcon $tone="#F0C62D">
-	                      <Navigation aria-hidden="true" />
-                    </StatsMetricIcon>
-                    <StatsPrimaryValue>154k</StatsPrimaryValue>
-                    <StatsPrimaryLabel>Miles Traveled</StatsPrimaryLabel>
-                  </StatsPrimaryCard>
-                  <StatsPrimaryCard>
-                    <StatsMetricIcon $tone="#FF9800">
-                      <CalendarDays aria-hidden="true" />
-                    </StatsMetricIcon>
-                    <StatsPrimaryValue>584</StatsPrimaryValue>
-	                    <StatsPrimaryLabel>Nights Away</StatsPrimaryLabel>
-	                  </StatsPrimaryCard>
-	                </StatsPrimaryGrid>
-
-                  <StatsSectionHeading>
-                    <TravelSectionTitle>Traveled to</TravelSectionTitle>
-                    <TravelSectionMeta>A simple visited-countries map using the same world geometry pattern as the app stats page.</TravelSectionMeta>
-                  </StatsSectionHeading>
-
-                  <Suspense fallback={<MapCardSkeleton aria-hidden="true" />}>
-                    <HeroJourneyMapCard />
-                  </Suspense>
-
-	                <StatsHighlightGrid>
-	                  <StatsHighlightCard>
-	                    <StatsRing $tone="#E72340" $progress={38}>
-	                      <StatsRingCenter $tone="#E72340">38%</StatsRingCenter>
-                    </StatsRing>
-                    <StatsHighlightValue>38</StatsHighlightValue>
-                    <StatsHighlightLabel>Cities</StatsHighlightLabel>
-                    <StatsHighlightMeta>Goal 100</StatsHighlightMeta>
-                  </StatsHighlightCard>
-                  <StatsHighlightCard>
-                    <StatsRing $tone="#4CAF50" $progress={4}>
-                      <StatsRingCenter $tone="#4CAF50">4%</StatsRingCenter>
-                    </StatsRing>
-                    <StatsHighlightValue>8</StatsHighlightValue>
-                    <StatsHighlightLabel>Countries</StatsHighlightLabel>
-                    <StatsHighlightMeta>8 / 195 visited</StatsHighlightMeta>
-                  </StatsHighlightCard>
-                  <StatsHighlightCard>
-                    <StatsRing $tone="#2196F3" $progress={29}>
-                      <StatsRingCenter $tone="#2196F3">29%</StatsRingCenter>
-                    </StatsRing>
-                    <StatsHighlightValue>2</StatsHighlightValue>
-                    <StatsHighlightLabel>Continents</StatsHighlightLabel>
-                    <StatsHighlightMeta>Europe, North America</StatsHighlightMeta>
-                  </StatsHighlightCard>
-                </StatsHighlightGrid>
-
-                  <StatsStreakCard>
-                    <StatsMetricIcon $tone="#F44336">
-                      <Bolt aria-hidden="true" />
-                    </StatsMetricIcon>
-                  <StatsStreakBody>
-                    <StatsPrimaryValue>12</StatsPrimaryValue>
-                    <StatsPrimaryLabel>Longest Month Streak</StatsPrimaryLabel>
-                    <StatsPrimaryMeta>Current streak: 4 months</StatsPrimaryMeta>
-                  </StatsStreakBody>
-                </StatsStreakCard>
-
-	                <StatsSectionHeading>
-	                  <TravelSectionTitle>Personal Records</TravelSectionTitle>
-	                  <TravelSectionMeta>Your travel milestones and achievements</TravelSectionMeta>
-	                </StatsSectionHeading>
-
-                <RecordsList>
-                  {recordRows.map((record) => (
-                    <RecordCard key={record.label}>
-                      <RecordIcon $tone={record.tone}>
-                        {renderRecordIcon(record.icon)}
-                      </RecordIcon>
-                      <RecordBody>
-                        <RecordLabel>{record.label}</RecordLabel>
-                        <RecordValue $tone={record.tone}>{record.value}</RecordValue>
-                        <RecordMeta>{record.meta}</RecordMeta>
-                      </RecordBody>
-                    </RecordCard>
-                  ))}
-                </RecordsList>
-
-                <StatsSectionHeading>
-                  <TravelSectionTitle>Places visited</TravelSectionTitle>
-                  <TravelSectionMeta>Restaurants, museums, resorts detected from your trips.</TravelSectionMeta>
-                </StatsSectionHeading>
-
-                <StatsPanelCard>
-                  <StatsPanelHeader>
-                    <StatsPanelTitle>Places visited</StatsPanelTitle>
-                    <StatsPanelAction>Show more</StatsPanelAction>
-                  </StatsPanelHeader>
-                  <TravelSectionMeta>
-                    Scanned 63 of 131 eligible trips • 196 unique places
-                  </TravelSectionMeta>
-                  <StatsPlacesGrid>
-                    {statsActivityRows.map((row) => (
-                      <StatsPlacesCard key={row.label}>
-                        <StatsPlacesLabel>{row.label}</StatsPlacesLabel>
-                        <StatsPlacesValue>{row.value}</StatsPlacesValue>
-                        <StatsPlacesMeta>{row.meta}</StatsPlacesMeta>
-                      </StatsPlacesCard>
-                    ))}
-                  </StatsPlacesGrid>
-                </StatsPanelCard>
-
-                <StatsPanelCard>
-                  <StatsPanelHeader>
-                    <StatsPanelTitle>Categories</StatsPanelTitle>
-                    <StatsPanelAction>Show more</StatsPanelAction>
-                  </StatsPanelHeader>
-                  <TravelSectionMeta>
-                    Detected place mix from saved trips and visits.
-                  </TravelSectionMeta>
-                  <StatsMiniList>
-                    {statsPatternRows.map((row) => (
-                      <StatsMiniRow key={row.label}>
-                        <StatsMiniTop>
-                          <StatsMiniLabel>{row.label}</StatsMiniLabel>
-                          <StatsMiniValue>{row.value}</StatsMiniValue>
-                        </StatsMiniTop>
-                        <StatsMiniMeta>{row.meta}</StatsMiniMeta>
-                      </StatsMiniRow>
-                    ))}
-                  </StatsMiniList>
-                </StatsPanelCard>
-
-                <StatsPanelCard>
-                  <StatsPanelHeader>
-                    <StatsPanelTitle>Most visited places</StatsPanelTitle>
-                    <StatsPanelAction>Show more</StatsPanelAction>
-                  </StatsPanelHeader>
-                  <TravelSectionMeta>
-                    Top places from your detected travel history.
-                  </TravelSectionMeta>
-                  <StatsMiniList>
-                    {statsAirlineRows.map((row) => (
-                      <StatsMiniRow key={row.label}>
-                        <StatsMiniTop>
-                          <StatsMiniLabel>{row.label}</StatsMiniLabel>
-                          <StatsMiniValue>{row.value}</StatsMiniValue>
-                        </StatsMiniTop>
-                        <StatsMiniMeta>{row.meta}</StatsMiniMeta>
-                      </StatsMiniRow>
-                    ))}
-                  </StatsMiniList>
-                </StatsPanelCard>
+                {renderHeroJourneyStill("footprint")}
               </TravelScrollContent>
             </TravelScroll>
           ) : (
@@ -5433,25 +4881,7 @@ const ReviewShowcasePhone: React.FC<{
                 $scrollable={scrollablePreview}
                 data-hero-screen-content={screenKey}
               >
-                <div>
-                  <TravelSectionTitle>Personal Records</TravelSectionTitle>
-                  <TravelSectionMeta>Your travel milestones and achievements</TravelSectionMeta>
-                </div>
-
-                <RecordsList>
-                  {recordRows.map((record) => (
-                    <RecordCard key={record.label}>
-                      <RecordIcon $tone={record.tone}>
-                        {renderRecordIcon(record.icon)}
-                      </RecordIcon>
-                      <RecordBody>
-                        <RecordLabel>{record.label}</RecordLabel>
-                        <RecordValue $tone={record.tone}>{record.value}</RecordValue>
-                        <RecordMeta>{record.meta}</RecordMeta>
-                      </RecordBody>
-                    </RecordCard>
-                  ))}
-                </RecordsList>
+                {renderHeroJourneyStill("footprint")}
               </TravelScrollContent>
             </TravelScroll>
           )}

@@ -4,6 +4,17 @@ import styled from "styled-components";
 import "leaflet/dist/leaflet.css";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import {
+  DEFAULT_LISTING_FILTERS,
+  buildZoneMatch,
+  describeZoneMatch,
+  getListingSourceLabel,
+  groupListingsByAddress,
+  parseListingImportText,
+  screenListingGroups,
+  type ListingScreenFilters,
+  type ScreenedListingGroup,
+} from "@/utils/liveWorkListingScreening";
+import {
   classifyLiveWorkCategory,
   extractBaseZone,
   getLiveWorkCategoryLabel,
@@ -55,6 +66,13 @@ type AddressSearchResult = {
   zoneDescription: string | null;
   category: LiveWorkCategory | null;
   isInsideWestLaViewport: boolean;
+};
+
+type ListingZoneLookup = {
+  geocodedAddress: string;
+  latitude: number;
+  longitude: number;
+  zoneMatch: ReturnType<typeof buildZoneMatch>;
 };
 
 type LeafletModule = typeof import("leaflet");
@@ -200,6 +218,200 @@ const SearchError = styled.div`
   border: 1px solid rgba(195, 46, 63, 0.28);
   padding: 0.75rem 0.9rem;
   border-radius: 0.9rem;
+`;
+
+const WorkspaceSection = styled.section`
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(243, 210, 122, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.05), rgba(255, 248, 236, 0.03)),
+    rgba(18, 14, 11, 0.9);
+`;
+
+const WorkspaceIntro = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  line-height: ${({ theme }) => theme.typography.lineHeights.relaxed};
+`;
+
+const ImportGrid = styled.div`
+  display: grid;
+  gap: 0.9rem;
+
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+const ImportCard = styled.div`
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.95rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(243, 210, 122, 0.1);
+  background: rgba(255, 248, 236, 0.04);
+`;
+
+const ImportLabel = styled.strong`
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const ImportHelp = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.small};
+  line-height: 1.55;
+`;
+
+const ImportTextarea = styled.textarea`
+  min-height: 200px;
+  width: 100%;
+  resize: vertical;
+  border-radius: 1rem;
+  border: 1px solid rgba(243, 210, 122, 0.2);
+  background: rgba(255, 248, 236, 0.06);
+  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 0.95rem 1rem;
+  font: inherit;
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.text.tertiary};
+  }
+`;
+
+const FilterGrid = styled.div`
+  display: grid;
+  gap: 0.8rem;
+
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+`;
+
+const FilterCard = styled.div`
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem;
+  border-radius: 1rem;
+  background: rgba(255, 248, 236, 0.04);
+  border: 1px solid rgba(243, 210, 122, 0.1);
+`;
+
+const FilterLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.small};
+`;
+
+const FilterNumberInput = styled.input`
+  width: 100%;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(243, 210, 122, 0.2);
+  background: rgba(255, 248, 236, 0.06);
+  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 0.75rem 0.85rem;
+  font: inherit;
+`;
+
+const ActionRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+`;
+
+const SecondaryButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  border: 1px solid rgba(243, 210, 122, 0.2);
+  padding: 0.95rem 1.15rem;
+  background: rgba(255, 248, 236, 0.04);
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-weight: 700;
+  cursor: pointer;
+`;
+
+const ResultMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const ResultChip = styled.span<{ $tone?: "good" | "warn" | "neutral" }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid
+    ${({ $tone }) =>
+      $tone === "good"
+        ? "rgba(111, 195, 124, 0.28)"
+        : $tone === "warn"
+          ? "rgba(243, 210, 122, 0.28)"
+          : "rgba(243, 210, 122, 0.14)"};
+  background:
+    ${({ $tone }) =>
+      $tone === "good"
+        ? "rgba(111, 195, 124, 0.12)"
+        : $tone === "warn"
+          ? "rgba(243, 210, 122, 0.12)"
+          : "rgba(255, 248, 236, 0.05)"};
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.small};
+`;
+
+const ListingResults = styled.div`
+  display: grid;
+  gap: 0.85rem;
+`;
+
+const ListingCard = styled.div`
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(243, 210, 122, 0.12);
+  background: rgba(255, 248, 236, 0.05);
+`;
+
+const ListingTitleRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.65rem;
+`;
+
+const ListingTitle = styled.strong`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.large};
+`;
+
+const ListingCopy = styled.div`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  line-height: 1.55;
+`;
+
+const LinkRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+`;
+
+const InlineLink = styled.a`
+  color: ${({ theme }) => theme.colors.primary.main};
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
 `;
 
 const InfoGrid = styled.section`
@@ -517,6 +729,14 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
   const [addressQuery, setAddressQuery] = useState("");
   const [searchStateText, setSearchStateText] = useState("");
   const [addressResult, setAddressResult] = useState<AddressSearchResult | null>(null);
+  const [zillowImportText, setZillowImportText] = useState("");
+  const [supportingImportText, setSupportingImportText] = useState("");
+  const [listingFilters, setListingFilters] =
+    useState<ListingScreenFilters>(DEFAULT_LISTING_FILTERS);
+  const [listingStateText, setListingStateText] = useState("");
+  const [listingWarnings, setListingWarnings] = useState<string[]>([]);
+  const [screenedListings, setScreenedListings] =
+    useState<ScreenedListingGroup[]>([]);
 
   useMountEffect(() => {
     let isCancelled = false;
@@ -705,6 +925,116 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
     }
   }
 
+  async function resolveListingZoneMatches(
+    normalizedAddresses: readonly string[],
+    addressLookup: ReadonlyMap<string, string>,
+  ): Promise<Map<string, ListingZoneLookup>> {
+    const zoneMatches = new Map<string, ListingZoneLookup>();
+
+    for (const normalizedAddress of normalizedAddresses) {
+      const address = addressLookup.get(normalizedAddress);
+      if (!address) {
+        continue;
+      }
+
+      try {
+        const geocodedAddress = await geocodeAddress(address);
+        const matchedFeature = findMatchingFeature(
+          zoneFeaturesRef.current,
+          geocodedAddress.latitude,
+          geocodedAddress.longitude,
+        );
+
+        zoneMatches.set(normalizedAddress, {
+          geocodedAddress: geocodedAddress.address,
+          latitude: geocodedAddress.latitude,
+          longitude: geocodedAddress.longitude,
+          zoneMatch: buildZoneMatch(
+            matchedFeature?.properties.ZONE_CMPLT,
+            matchedFeature?.properties.ZONING_DESCRIPTION,
+          ),
+        });
+      } catch {
+        zoneMatches.set(normalizedAddress, {
+          geocodedAddress: address,
+          latitude: Number.NaN,
+          longitude: Number.NaN,
+          zoneMatch: null,
+        });
+      }
+    }
+
+    return zoneMatches;
+  }
+
+  async function handleScreenListings(): Promise<void> {
+    setListingWarnings([]);
+    setScreenedListings([]);
+
+    const trimmedZillowText = zillowImportText.trim();
+    const trimmedSupportingText = supportingImportText.trim();
+
+    if (!trimmedZillowText && !trimmedSupportingText) {
+      setListingStateText("Paste Zillow rows and at least one supporting batch first.");
+      return;
+    }
+
+    if (zoneFeaturesRef.current.length === 0) {
+      setListingStateText("The zoning overlay is still loading. Try the listing screen in a moment.");
+      return;
+    }
+
+    try {
+      setListingStateText("Parsing listing rows, matching addresses, and checking zoning candidates…");
+
+      const zillowImportResult = parseListingImportText(trimmedZillowText, "zillow");
+      const supportingImportResult = parseListingImportText(trimmedSupportingText, "other");
+      const allListings = [
+        ...zillowImportResult.listings,
+        ...supportingImportResult.listings,
+      ];
+
+      if (allListings.length === 0) {
+        setListingStateText("No listings could be parsed from the pasted rows.");
+        return;
+      }
+
+      const groupedListings = groupListingsByAddress(allListings);
+      const addressLookup = new Map(
+        groupedListings.map((group) => [group.normalizedAddress, group.displayAddress]),
+      );
+      const zoneMatches = await resolveListingZoneMatches(
+        groupedListings.map((group) => group.normalizedAddress),
+        addressLookup,
+      );
+      const screenedGroups = screenListingGroups(
+        groupedListings,
+        listingFilters,
+        zoneMatches,
+      ).sort((leftGroup, rightGroup) => {
+        if (leftGroup.matchesFilters !== rightGroup.matchesFilters) {
+          return leftGroup.matchesFilters ? -1 : 1;
+        }
+
+        return (rightGroup.maxSquareFeet ?? 0) - (leftGroup.maxSquareFeet ?? 0);
+      });
+
+      setListingWarnings([
+        ...zillowImportResult.warnings,
+        ...supportingImportResult.warnings,
+      ]);
+      setScreenedListings(screenedGroups);
+      setListingStateText(
+        `Screened ${screenedGroups.length} matched address groups from ${allListings.length} imported rows.`,
+      );
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setListingStateText(`Listing screen failed: ${message}`);
+    }
+  }
+
+  const matchingListings = screenedListings.filter((group) => group.matchesFilters);
+
   return (
     <Page>
       <Helmet>
@@ -775,6 +1105,273 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
           </SearchResultCard>
         ) : null}
       </SearchSection>
+
+      <WorkspaceSection>
+        <PanelTitle>Listing screening workspace</PanelTitle>
+        <WorkspaceIntro>
+          Paste Zillow rows plus rows from Redfin, Realtor, LoopNet, or another source.
+          The tool matches them by address, keeps Zillow as the primary listing view,
+          geocodes the address, checks the zoning overlay, and filters for the live/work
+          constraints you described: roughly 1,500+ sqft, workspace language, and a
+          private bedroom with an ensuite signal. This is an intake-and-match tool, not a
+          direct website scraper.
+        </WorkspaceIntro>
+
+        <ImportGrid>
+          <ImportCard>
+            <ImportLabel>Zillow rows</ImportLabel>
+            <ImportHelp>
+              Paste CSV, TSV, or JSON rows with at least an <code>address</code> column.
+              Helpful columns are <code>sqft</code>, <code>beds</code>, <code>baths</code>,
+              <code>title</code>, <code>description</code>, and <code>url</code>.
+            </ImportHelp>
+            <ImportTextarea
+              aria-label="Paste Zillow rows"
+              placeholder={[
+                'address,sqft,beds,baths,title,description,url',
+                '"1315 Innes Pl, Venice, CA 90291",2200,2,2,"Creative live/work loft","Separate office, balcony, primary suite with ensuite bath","https://www.zillow.com/..."',
+              ].join("\n")}
+              value={zillowImportText}
+              onChange={(event) => setZillowImportText(event.target.value)}
+            />
+          </ImportCard>
+
+          <ImportCard>
+            <ImportLabel>Supporting rows</ImportLabel>
+            <ImportHelp>
+              Paste the same addresses from other sources to increase confidence and pull in
+              details Zillow may not emphasize, such as studio, office, guest suite, or
+              creative workspace language.
+            </ImportHelp>
+            <ImportTextarea
+              aria-label="Paste supporting rows"
+              placeholder={[
+                'source\taddress\tsqft\tbeds\tbaths\tdescription\turl',
+                'Redfin\t1315 S Innes Pl, Venice, CA 90291\t2100\t2\t2\tCreative live/work with private suite and office\thttps://www.redfin.com/...',
+              ].join("\n")}
+              value={supportingImportText}
+              onChange={(event) => setSupportingImportText(event.target.value)}
+            />
+          </ImportCard>
+        </ImportGrid>
+
+        <FilterGrid>
+          <FilterCard>
+            <ImportLabel>Size floor</ImportLabel>
+            <FilterNumberInput
+              aria-label="Minimum square feet"
+              type="number"
+              min="0"
+              step="50"
+              value={listingFilters.minSquareFeet}
+              onChange={(event) =>
+                setListingFilters((currentFilters) => ({
+                  ...currentFilters,
+                  minSquareFeet: Number(event.target.value) || 0,
+                }))
+              }
+            />
+          </FilterCard>
+
+          <FilterCard>
+            <ImportLabel>Required signals</ImportLabel>
+            <FilterLabel>
+              <input
+                type="checkbox"
+                checked={listingFilters.requireCandidateZone}
+                onChange={(event) =>
+                  setListingFilters((currentFilters) => ({
+                    ...currentFilters,
+                    requireCandidateZone: event.target.checked,
+                  }))
+                }
+              />
+              Require current candidate zoning overlay match
+            </FilterLabel>
+            <FilterLabel>
+              <input
+                type="checkbox"
+                checked={listingFilters.requireWorkspaceSignal}
+                onChange={(event) =>
+                  setListingFilters((currentFilters) => ({
+                    ...currentFilters,
+                    requireWorkspaceSignal: event.target.checked,
+                  }))
+                }
+              />
+              Require office or workspace language
+            </FilterLabel>
+            <FilterLabel>
+              <input
+                type="checkbox"
+                checked={listingFilters.requirePrivateSuiteSignal}
+                onChange={(event) =>
+                  setListingFilters((currentFilters) => ({
+                    ...currentFilters,
+                    requirePrivateSuiteSignal: event.target.checked,
+                  }))
+                }
+              />
+              Require separate bedroom and ensuite signal
+            </FilterLabel>
+          </FilterCard>
+
+          <FilterCard>
+            <ImportLabel>Source requirements</ImportLabel>
+            <FilterLabel>
+              <input
+                type="checkbox"
+                checked={listingFilters.requireZillow}
+                onChange={(event) =>
+                  setListingFilters((currentFilters) => ({
+                    ...currentFilters,
+                    requireZillow: event.target.checked,
+                  }))
+                }
+              />
+              Keep Zillow as the primary listing source
+            </FilterLabel>
+            <FilterLabel>
+              <input
+                type="checkbox"
+                checked={listingFilters.requireSupportingSource}
+                onChange={(event) =>
+                  setListingFilters((currentFilters) => ({
+                    ...currentFilters,
+                    requireSupportingSource: event.target.checked,
+                  }))
+                }
+              />
+              Require at least one supporting source
+            </FilterLabel>
+          </FilterCard>
+        </FilterGrid>
+
+        <ActionRow>
+          <SearchButton type="button" onClick={() => void handleScreenListings()}>
+            Screen listings
+          </SearchButton>
+          <SecondaryButton
+            type="button"
+            onClick={() => {
+              setZillowImportText("");
+              setSupportingImportText("");
+              setListingWarnings([]);
+              setScreenedListings([]);
+              setListingStateText("");
+            }}
+          >
+            Clear workspace
+          </SecondaryButton>
+        </ActionRow>
+
+        {listingStateText ? <SearchHint>{listingStateText}</SearchHint> : null}
+        {listingWarnings.length > 0 ? (
+          <SearchError>{listingWarnings.join(" ")}</SearchError>
+        ) : null}
+
+        {screenedListings.length > 0 ? (
+          <>
+            <MetricGrid>
+              <MetricCard>
+                <MetricLabel>Matched groups</MetricLabel>
+                <MetricValue>{screenedListings.length}</MetricValue>
+              </MetricCard>
+              <MetricCard>
+                <MetricLabel>Passing filters</MetricLabel>
+                <MetricValue>{matchingListings.length}</MetricValue>
+              </MetricCard>
+              <MetricCard>
+                <MetricLabel>Zillow-backed</MetricLabel>
+                <MetricValue>
+                  {screenedListings.filter((group) => group.hasZillow).length}
+                </MetricValue>
+              </MetricCard>
+            </MetricGrid>
+
+            <ListingResults>
+              {screenedListings.map((group) => (
+                <ListingCard key={group.id}>
+                  <ListingTitleRow>
+                    <ListingTitle>{group.displayAddress}</ListingTitle>
+                    <ResultMeta>
+                      <ResultChip $tone={group.matchesFilters ? "good" : "warn"}>
+                        {group.matchesFilters ? "Matches current filters" : "Needs review"}
+                      </ResultChip>
+                      {group.maxSquareFeet ? (
+                        <ResultChip>{group.maxSquareFeet.toLocaleString()} sqft</ResultChip>
+                      ) : null}
+                      {group.bedrooms ? (
+                        <ResultChip>{group.bedrooms} bd</ResultChip>
+                      ) : null}
+                      {group.bathrooms ? (
+                        <ResultChip>{group.bathrooms} ba</ResultChip>
+                      ) : null}
+                    </ResultMeta>
+                  </ListingTitleRow>
+
+                  <ListingCopy>
+                    {group.geocodedAddress
+                      ? `Geocoded as ${group.geocodedAddress}.`
+                      : "No geocoded match stored yet."}{" "}
+                    {group.zoneMatch
+                      ? describeZoneMatch(group.zoneMatch)
+                      : "No candidate zoning match found yet."}
+                  </ListingCopy>
+
+                  <ResultMeta>
+                    {group.sourceLabels.map((label) => (
+                      <ResultChip key={label}>{label}</ResultChip>
+                    ))}
+                    {group.mentionsWorkspace ? (
+                      <ResultChip $tone="good">Workspace signal</ResultChip>
+                    ) : null}
+                    {group.likelySeparateBedroomSuite ? (
+                      <ResultChip $tone="good">Private suite signal</ResultChip>
+                    ) : null}
+                  </ResultMeta>
+
+                  <ListingCopy>
+                    Strong signals:{" "}
+                    {group.reasons.length > 0
+                      ? group.reasons.join(" • ")
+                      : "none yet from the imported rows."}
+                  </ListingCopy>
+                  {!group.matchesFilters && group.blockers.length > 0 ? (
+                    <ListingCopy>
+                      Missing pieces: {group.blockers.join(" • ")}
+                    </ListingCopy>
+                  ) : null}
+
+                  <LinkRow>
+                    {group.zillowUrl ? (
+                      <InlineLink
+                        href={group.zillowUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open Zillow
+                      </InlineLink>
+                    ) : null}
+                    {Object.entries(group.sourceUrls)
+                      .filter(([source]) => source !== "zillow")
+                      .map(([source, url]) => (
+                        <InlineLink
+                          key={`${group.id}-${source}`}
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Open {getListingSourceLabel(source as Parameters<typeof getListingSourceLabel>[0])}
+                        </InlineLink>
+                      ))}
+                  </LinkRow>
+                </ListingCard>
+              ))}
+            </ListingResults>
+          </>
+        ) : null}
+      </WorkspaceSection>
 
       <InfoGrid>
         <MapCard>

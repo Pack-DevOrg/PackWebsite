@@ -158,9 +158,10 @@ export default function PageSeo({
   robots = DEFAULT_ROBOTS,
   schema = [],
 }: PageSeoProps): React.ReactElement {
-  const { languageTag, pathForLocale } = useI18n();
-  const canonicalUrl = buildAbsoluteUrl(pathForLocale(path, "en"));
+  const { languageTag, pathFor, pathForLocale } = useI18n();
+  const canonicalUrl = buildAbsoluteUrl(pathFor(path));
   const spanishUrl = buildAbsoluteUrl(pathForLocale(path, "es"));
+  const englishUrl = buildAbsoluteUrl(pathForLocale(path, "en"));
   const structuredData: JsonLd[] = [
     {
       "@context": "https://schema.org",
@@ -180,9 +181,9 @@ export default function PageSeo({
       <meta name="author" content="Pack" />
       <meta name="robots" content={robots} />
       <link rel="canonical" href={canonicalUrl} />
-      <link rel="alternate" hrefLang="en" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="en" href={englishUrl} />
       <link rel="alternate" hrefLang="es" href={spanishUrl} />
-      <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="x-default" href={englishUrl} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Pack" />
       <meta property="og:locale" content={languageTag} />

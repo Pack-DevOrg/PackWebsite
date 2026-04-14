@@ -2,6 +2,7 @@ import React, { Suspense, startTransition, useMemo, useRef, useState } from "rea
 import styled from "styled-components";
 import Layout from "@/components/Layout";
 import HeroAboveFold from "@/components/HeroAboveFold";
+import HeroJourneyShowcase from "@/components/Hero";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo, { createSoftwareApplicationSchema } from "@/seo/pageSeo";
@@ -17,20 +18,52 @@ type IdleWindowLike = Window & {
   cancelIdleCallback?: (handle: number) => void;
 };
 
+type BuildManifestEntry = {
+  readonly file?: string;
+  readonly imports?: readonly string[];
+  readonly css?: readonly string[];
+  readonly assets?: readonly string[];
+};
+
+type BuildManifest = Record<string, BuildManifestEntry>;
+
 const importFooter = () => import("../components/Footer");
 const importScrollToTop = () => import("../components/ScrollToTop");
 const importValueProp = () => import("../components/ValueProp");
-const importHeroJourneyShowcase = () => import("../components/Hero");
 const importLiveActivityStackSection = () =>
   import("../components/LiveActivityStackSection");
 const importBookingTimelineHighlight = () =>
   import("../components/BookingTimelineHighlight");
 const importTrustBanner = () => import("../components/TrustBanner");
 
+const DEFERRED_SECTION_PREFETCH_GROUPS: ReadonlyArray<{
+  readonly entries: readonly string[];
+  readonly timeoutMs: number;
+}> = [
+  {
+    entries: ["src/components/LiveActivityStackSection.tsx"],
+    timeoutMs: 2200,
+  },
+  {
+    entries: [
+      "src/components/ValueProp.tsx",
+      "src/components/BookingTimelineHighlight.tsx",
+      "src/components/TrustBanner.tsx",
+    ],
+    timeoutMs: 4200,
+  },
+  {
+    entries: ["src/components/Footer.tsx", "src/components/ScrollToTop.tsx"],
+    timeoutMs: 6200,
+  },
+] as const;
+
+const prefetchedAssetHrefs = new Set<string>();
+let buildManifestPromise: Promise<BuildManifest | null> | undefined;
+
 const Footer = React.lazy(importFooter);
 const ScrollToTop = React.lazy(importScrollToTop);
 const ValueProp = React.lazy(importValueProp);
-const HeroJourneyShowcase = React.lazy(importHeroJourneyShowcase);
 const LiveActivityStackSection = React.lazy(importLiveActivityStackSection);
 const BookingTimelineHighlight = React.lazy(importBookingTimelineHighlight);
 const TrustBanner = React.lazy(importTrustBanner);
@@ -84,35 +117,6 @@ const DeferredPlaceholder = styled.div<{ $minHeight: number }>`
     rgba(255, 248, 236, 0.02);
 `;
 
-const JourneySuspenseFallback = styled(DeferredPlaceholder)`
-  margin-top: 0.8rem;
-  border-radius: 1.8rem;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(243, 210, 122, 0.04) 0%,
-      rgba(243, 210, 122, 0.1) 42%,
-      rgba(231, 35, 64, 0.08) 58%,
-      rgba(243, 210, 122, 0.04) 100%
-    ),
-    linear-gradient(180deg, rgba(17, 13, 10, 0.86), rgba(11, 9, 7, 0.92));
-  background-size: 200% 100%, auto;
-  animation: journeyPlaceholderShift 1.6s ease-in-out infinite;
-
-  @keyframes journeyPlaceholderShift {
-    0% {
-      background-position: 100% 0, 0 0;
-    }
-    100% {
-      background-position: -100% 0, 0 0;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-`;
-
 const SectionSuspenseFallback = styled(DeferredPlaceholder)`
   border-radius: 1.8rem;
   background:
@@ -162,6 +166,164 @@ const scheduleIdleTask = (
 
   const timeoutId = window.setTimeout(callback, timeoutMs);
   return () => window.clearTimeout(timeoutId);
+};
+
+const canSpeculativelyWarmSections = (): boolean => {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  const connection = (
+    navigator as Navigator & {
+      connection?: {
+        effectiveType?: string;
+        saveData?: boolean;
+      };
+    }
+  ).connection;
+
+  if (!connection) {
+    return true;
+  }
+
+  if (connection.saveData) {
+    return false;
+  }
+
+  return (
+    connection.effectiveType !== "slow-2g" &&
+    connection.effectiveType !== "2g"
+  );
+};
+
+const appendPrefetchLink = (href: string, as?: string) => {
+  if (typeof document === "undefined" || prefetchedAssetHrefs.has(href)) {
+    return;
+  }
+
+  prefetchedAssetHrefs.add(href);
+
+  const link = document.createElement("link");
+  link.rel = "prefetch";
+  link.href = href;
+  if (as) {
+    link.as = as;
+  }
+  link.crossOrigin = "anonymous";
+  document.head.appendChild(link);
+};
+
+const resolveManifestAssetUrls = (
+  manifest: BuildManifest,
+  entryKeys: readonly string[],
+): string[] => {
+  const discoveredUrls: string[] = [];
+  const visitedEntries = new Set<string>();
+  const homepageEntryImports = new Set(manifest["index.html"]?.imports ?? []);
+
+  const visitEntry = (entryKey: string) => {
+    if (visitedEntries.has(entryKey)) {
+      return;
+    }
+
+    visitedEntries.add(entryKey);
+    const entry = manifest[entryKey];
+    if (!entry) {
+      return;
+    }
+
+    if (entry.file) {
+      discoveredUrls.push(`/${entry.file}`);
+    }
+
+    for (const cssFile of entry.css ?? []) {
+      discoveredUrls.push(`/${cssFile}`);
+    }
+
+    for (const assetFile of entry.assets ?? []) {
+      discoveredUrls.push(`/${assetFile}`);
+    }
+
+    for (const importedEntry of entry.imports ?? []) {
+      if (importedEntry !== "index.html" && !homepageEntryImports.has(importedEntry)) {
+        visitEntry(importedEntry);
+      }
+    }
+  };
+
+  for (const entryKey of entryKeys) {
+    visitEntry(entryKey);
+  }
+
+  return discoveredUrls;
+};
+
+const inferPrefetchType = (assetUrl: string): string | undefined => {
+  if (assetUrl.endsWith(".js")) {
+    return "script";
+  }
+  if (assetUrl.endsWith(".css")) {
+    return "style";
+  }
+  if (/\.(png|jpg|jpeg|gif|webp|avif|svg)$/u.test(assetUrl)) {
+    return "image";
+  }
+
+  return undefined;
+};
+
+const loadBuildManifest = async (): Promise<BuildManifest | null> => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  if (!buildManifestPromise) {
+    buildManifestPromise = fetch("/.vite/manifest.json", {
+      credentials: "same-origin",
+      cache: "force-cache",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return null;
+        }
+        return (await response.json()) as BuildManifest;
+      })
+      .catch(() => null);
+  }
+
+  return buildManifestPromise;
+};
+
+const prefetchDeferredSections = (): (() => void) => {
+  const cleanupTasks: Array<() => void> = [];
+
+  const queuePrefetchGroup = (
+    entryKeys: readonly string[],
+    timeoutMs: number,
+  ) => {
+    cleanupTasks.push(
+      scheduleIdleTask(async () => {
+        const manifest = await loadBuildManifest();
+        if (!manifest) {
+          return;
+        }
+
+        for (const assetUrl of resolveManifestAssetUrls(manifest, entryKeys)) {
+          appendPrefetchLink(assetUrl, inferPrefetchType(assetUrl));
+        }
+      }, timeoutMs)
+    );
+  };
+
+  for (const prefetchGroup of DEFERRED_SECTION_PREFETCH_GROUPS) {
+    queuePrefetchGroup(prefetchGroup.entries, prefetchGroup.timeoutMs);
+  }
+
+  return () => {
+    for (const cleanupTask of cleanupTasks) {
+      cleanupTask();
+    }
+  };
 };
 
 const DeferredContent: React.FC<{
@@ -358,6 +520,33 @@ const HomePage: React.FC = () => {
     }
   });
 
+  useMountEffect(() => {
+    if (!canSpeculativelyWarmSections()) {
+      return;
+    }
+
+    const startPrefetching = () => prefetchDeferredSections();
+    let releasePrefetches: (() => void) | undefined;
+
+    if (document.readyState === "complete") {
+      releasePrefetches = startPrefetching();
+      return () => {
+        releasePrefetches?.();
+      };
+    }
+
+    const handleLoad = () => {
+      releasePrefetches = startPrefetching();
+    };
+
+    window.addEventListener("load", handleLoad, { once: true });
+
+    return () => {
+      window.removeEventListener("load", handleLoad);
+      releasePrefetches?.();
+    };
+  });
+
   const heroWaitlist = useMemo(
     () => (
       <div id="waitlist" style={{ display: "grid", gap: "0.85rem" }}>
@@ -390,12 +579,8 @@ const HomePage: React.FC = () => {
         )]}
       />
       <HeroAboveFold waitlistSlot={heroWaitlist} />
-      <DeferredContent minHeight={760} rootMargin="960px 0px">
-        <Suspense fallback={<JourneySuspenseFallback $minHeight={760} aria-hidden="true" />}>
-          <HeroJourneyShowcase journeyOnly />
-        </Suspense>
-      </DeferredContent>
-      <DeferredContent minHeight={560} rootMargin="720px 0px">
+      <HeroJourneyShowcase journeyOnly />
+      <DeferredContent minHeight={560} rootMargin="1280px 0px">
         <Suspense fallback={<SectionSuspenseFallback $minHeight={560} aria-hidden="true" />}>
           <TightAfterLiveActivitySection>
             <SectionInner>
@@ -404,7 +589,7 @@ const HomePage: React.FC = () => {
           </TightAfterLiveActivitySection>
         </Suspense>
       </DeferredContent>
-      <DeferredContent minHeight={560} rootMargin="840px 0px">
+      <DeferredContent minHeight={560} rootMargin="1480px 0px">
         <Suspense
           fallback={
             <>
@@ -443,14 +628,14 @@ const HomePage: React.FC = () => {
           </SectionWrapper>
         </Suspense>
       </DeferredContent>
-      <DeferredContent minHeight={360} rootMargin="960px 0px">
+      <DeferredContent minHeight={360} rootMargin="1800px 0px">
         <SectionWrapper id="waitlist-bottom">
           <WaitlistSectionInner>
             <WaitlistForm />
           </WaitlistSectionInner>
         </SectionWrapper>
       </DeferredContent>
-      <DeferredContent minHeight={240} rootMargin="960px 0px">
+      <DeferredContent minHeight={240} rootMargin="2200px 0px">
         <Suspense fallback={<SectionSuspenseFallback $minHeight={240} aria-hidden="true" />}>
           <Footer />
           <ScrollToTop />

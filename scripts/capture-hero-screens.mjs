@@ -8,6 +8,12 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const outputDir = path.join(projectRoot, "public", "images", "hero-captures");
 const baseUrl = process.env.HERO_CAPTURE_BASE_URL ?? "http://127.0.0.1:4173";
+const CONSENT_COOKIE_MAX_AGE_SECONDS = 180 * 24 * 60 * 60;
+const consentPreferences = JSON.stringify({
+  analytics: true,
+  marketing: true,
+  functional: true,
+});
 
 const screenDefinitions = [
   {chapterKey: "plan", contentKey: "outline", fileName: "plan-still.png"},
@@ -18,6 +24,14 @@ const screenDefinitions = [
 
 const wait = (milliseconds) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+const removeCaptureOverlays = async (page) => {
+  await page.evaluate(() => {
+    document.querySelectorAll('[data-testid="consent-banner"]').forEach((element) => {
+      element.remove();
+    });
+  });
+};
 
 const waitForChapter = async (page, chapterKey, contentKey) => {
   if (chapterKey !== "plan") {
@@ -40,6 +54,7 @@ const waitForChapter = async (page, chapterKey, contentKey) => {
   );
 
   await wait(450);
+  await removeCaptureOverlays(page);
 };
 
 const exposeCaptureTarget = async (page, contentKey) => {
@@ -61,6 +76,13 @@ const exposeCaptureTarget = async (page, contentKey) => {
     const previousTarget = document.getElementById("__hero-capture-target");
     if (previousTarget) {
       previousTarget.removeAttribute("id");
+    }
+
+    const recursiveStill = content.querySelector('img[src*="/images/hero-captures/"]');
+    if (recursiveStill instanceof HTMLImageElement) {
+      throw new Error(
+        `Capture source for "${screen}" is recursive. The page is rendering exported hero stills instead of live showcase markup. Update the capture source before regenerating hero screenshots.`
+      );
     }
 
     content.id = "__hero-capture-target";
@@ -104,9 +126,26 @@ const main = async () => {
     deviceScaleFactor: 2,
   });
 
-  await page.addInitScript(() => {
-    window.localStorage.setItem("pack_cookie_consent_v1", "accepted");
-  });
+  const consentTimestamp = Date.now().toString();
+  await page.addInitScript(
+    ({maxAgeSeconds, preferences, timestamp}) => {
+      const setCookie = (name, value) => {
+        document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax`;
+      };
+
+      window.localStorage.setItem("tracking-consent", "granted");
+      window.localStorage.setItem("tracking-consent-timestamp", timestamp);
+      window.localStorage.setItem("tracking-preferences", preferences);
+
+      setCookie("tracking-consent", "granted");
+      setCookie("tracking-consent-timestamp", timestamp);
+    },
+    {
+      maxAgeSeconds: CONSENT_COOKIE_MAX_AGE_SECONDS,
+      preferences: consentPreferences,
+      timestamp: consentTimestamp,
+    }
+  );
 
   await page.goto(`${baseUrl}/#journey-screen-plan`, {waitUntil: "networkidle"});
   await page.addStyleTag({
@@ -118,10 +157,17 @@ const main = async () => {
         transition: none !important;
         scroll-behavior: auto !important;
       }
+
+      [data-testid="consent-banner"] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
     `,
   });
 
   await page.locator('section').first().waitFor();
+  await removeCaptureOverlays(page);
 
   for (const screen of screenDefinitions) {
     await waitForChapter(page, screen.chapterKey, screen.contentKey);

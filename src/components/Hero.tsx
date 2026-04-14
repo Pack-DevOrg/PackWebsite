@@ -62,22 +62,22 @@ import type {
 
 const heroJourneyStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-still.png",
+    src: "/images/hero-captures/plan-still.png?v=2026-04-14-2",
     width: 798,
-    height: 1792,
+    height: 1510,
   },
   search: {
-    src: "/images/hero-captures/search-still.png",
+    src: "/images/hero-captures/search-still.png?v=2026-04-14-1",
     width: 798,
     height: 2608,
   },
   booking: {
-    src: "/images/hero-captures/booking-still.png",
+    src: "/images/hero-captures/booking-still.png?v=2026-04-14-1",
     width: 798,
     height: 8494,
   },
   footprint: {
-    src: "/images/hero-captures/stats-still.png",
+    src: "/images/hero-captures/stats-still.png?v=2026-04-14-1",
     width: 806,
     height: 4204,
   },

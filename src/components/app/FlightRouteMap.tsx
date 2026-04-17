@@ -9,9 +9,11 @@ import { geoMercator, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { Topology } from "topojson-specification";
+import {
+  getAirportCatalogEntryByIata,
+  getCountryNameByCode,
+} from "@doneai/schemas/locality-catalog";
 import worldTopology from "world-atlas/countries-110m.json";
-import airportsDataset from "airports-json/data/airports.json";
-import countriesDataset from "airports-json/data/countries.json";
 import usStatesTopology from "us-atlas/states-10m.json";
 import type { Trip } from "@/api/trips";
 
@@ -69,48 +71,6 @@ const MAP_WIDTH = 960;
 const MAP_HEIGHT = 480;
 const MAP_PADDING = 24;
 
-const parseNumber = (value: unknown): number | null => {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-};
-
-const AIRPORT_LOOKUP: Map<string, AirportCoordinate> = (() => {
-  const entries = new Map<string, AirportCoordinate>();
-  (airportsDataset as Array<Record<string, unknown>>).forEach((airport) => {
-    const codeRaw = airport.iata_code ?? airport.local_code ?? airport.ident;
-    if (typeof codeRaw !== "string") {
-      return;
-    }
-
-    const code = codeRaw.trim().toUpperCase();
-    if (!code) {
-      return;
-    }
-
-    const lat = parseNumber(airport.latitude_deg);
-    const lon = parseNumber(airport.longitude_deg);
-
-    if (lat == null || lon == null) {
-      return;
-    }
-
-    entries.set(code, {
-      code,
-      lat,
-      lon,
-      country: typeof airport.iso_country === "string" ? airport.iso_country : undefined,
-      city: typeof airport.municipality === "string" ? airport.municipality : undefined,
-      name: typeof airport.name === "string" ? airport.name : undefined,
-      region: typeof airport.iso_region === "string" ? airport.iso_region : undefined,
-    });
-  });
-  return entries;
-})();
-
 const WORLD_FEATURES: Feature<Geometry>[] = (() => {
   const topology = worldTopology as unknown as Topology<{
     readonly countries: {
@@ -131,18 +91,6 @@ const US_STATE_FEATURES: Feature<Geometry>[] = (() => {
   }>;
   const collection = feature(topology, topology.objects.states) as FeatureCollection<Geometry>;
   return collection.features;
-})();
-
-const COUNTRY_NAME_BY_CODE: Map<string, string> = (() => {
-  const entries = new Map<string, string>();
-  (countriesDataset as Array<Record<string, unknown>>).forEach((country) => {
-    const code = typeof country.code === "string" ? country.code.trim().toUpperCase() : "";
-    const name = typeof country.name === "string" ? country.name.trim() : "";
-    if (code && name) {
-      entries.set(code, name);
-    }
-  });
-  return entries;
 })();
 
 const US_STATE_FIPS: Record<string, string> = {
@@ -202,7 +150,19 @@ const US_STATE_FIPS: Record<string, string> = {
 
 const getAirport = (code?: string | null): AirportCoordinate | undefined => {
   if (!code) return undefined;
-  return AIRPORT_LOOKUP.get(code.trim().toUpperCase());
+  const airport = getAirportCatalogEntryByIata(code.trim().toUpperCase());
+  if (!airport) {
+    return undefined;
+  }
+  return {
+    code: airport.iata,
+    lat: airport.latitude,
+    lon: airport.longitude,
+    country: airport.countryCode,
+    city: airport.cityName,
+    name: airport.name,
+    region: airport.regionCode,
+  };
 };
 
 const parseFlightDate = (flight: StoredFlight): number => {
@@ -272,7 +232,7 @@ const getCountryDisplayName = (country?: string | null): string | undefined => {
   if (country.toUpperCase() === "US") {
     return "US";
   }
-  return COUNTRY_NAME_BY_CODE.get(country.toUpperCase()) ?? country;
+  return getCountryNameByCode(country.toUpperCase()) ?? country;
 };
 
 const formatLocationLabel = (city?: string | null, country?: string | null): string | null => {
@@ -413,7 +373,7 @@ const FlightRouteMapComponent: React.FC<FlightRouteMapProps> = ({ flights, visit
       if (!normalized || normalized === "US") {
         return;
       }
-      const resolved = COUNTRY_NAME_BY_CODE.get(normalized) ?? normalized;
+      const resolved = getCountryNameByCode(normalized) ?? normalized;
       visitedCountryNames.add(resolved);
     });
 
@@ -422,7 +382,7 @@ const FlightRouteMapComponent: React.FC<FlightRouteMapProps> = ({ flights, visit
         return;
       }
       if (airport.country && airport.country !== "US") {
-        const resolved = COUNTRY_NAME_BY_CODE.get(airport.country) ?? airport.country;
+        const resolved = getCountryNameByCode(airport.country) ?? airport.country;
         if (resolved) {
           visitedCountryNames.add(resolved);
         }

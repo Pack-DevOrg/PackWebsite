@@ -27,7 +27,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@doneai/schemas/*": ["src/schemas/*"]
+      "@doneai/schemas": ["../PackServer/packages/schemas/src/index.ts"],
+      "@doneai/schemas/*": ["../PackServer/packages/schemas/src/*"]
     }
   },
   "include": [

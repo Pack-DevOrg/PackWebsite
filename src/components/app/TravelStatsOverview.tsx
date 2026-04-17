@@ -17,25 +17,15 @@ import {
   Zap,
 } from "lucide-react";
 import { format, parseISO, differenceInCalendarDays, differenceInDays } from "date-fns";
-import airportsDataset from "airports-json/data/airports.json";
-import countriesDataset from "airports-json/data/countries.json";
+import {
+  getAirportCatalogEntryByIata,
+  getAllCountryCatalogEntries,
+  getCountryCatalogEntryByCode,
+  resolveCountryCatalogEntry,
+} from "@doneai/schemas/locality-catalog";
 import type { Trip } from "@/api/trips";
 import { getTripDistance } from "@/utils/tripMetrics";
 import { FlightRouteMap } from "./FlightRouteMap";
-
-type AirportRecord = {
-  readonly iata_code?: string;
-  readonly name?: string;
-  readonly municipality?: string;
-  readonly iso_country?: string;
-  readonly iso_region?: string;
-};
-
-type CountryRecord = {
-  readonly code?: string;
-  readonly name?: string;
-  readonly continent?: string;
-};
 
 type CityVisit = {
   readonly city: string;
@@ -76,27 +66,7 @@ type HotelVisit = {
   readonly lastStay: string;
 };
 
-const airportByIata = (() => {
-  const map = new Map<string, AirportRecord>();
-  (airportsDataset as AirportRecord[]).forEach((airport) => {
-    const code = airport.iata_code?.trim().toUpperCase();
-    if (code) {
-      map.set(code, airport);
-    }
-  });
-  return map;
-})();
-
-const countryByCode = (() => {
-  const map = new Map<string, CountryRecord>();
-  (countriesDataset as CountryRecord[]).forEach((country) => {
-    const code = country.code?.trim().toUpperCase();
-    if (code) {
-      map.set(code, country);
-    }
-  });
-  return map;
-})();
+const countryCatalogEntries = getAllCountryCatalogEntries();
 
 const normalizeCountryName = (value: string): string =>
   value
@@ -108,11 +78,9 @@ const normalizeCountryName = (value: string): string =>
 
 const countryCodeByName = (() => {
   const map = new Map<string, string>();
-  (countriesDataset as CountryRecord[]).forEach((country) => {
-    const code = country.code?.trim().toUpperCase();
-    const name = country.name?.trim();
-    if (code && name) {
-      map.set(normalizeCountryName(name), code);
+  countryCatalogEntries.forEach((country) => {
+    if (country.code && country.name) {
+      map.set(normalizeCountryName(country.name), country.code);
     }
   });
   return map;
@@ -162,19 +130,22 @@ const resolveCountryDetails = (
 
   const trimmed = value.trim();
   const upper = trimmed.toUpperCase();
-  const code = /^[A-Z]{2}$/.test(upper)
-    ? upper
-    : countryCodeByName.get(normalizeCountryName(trimmed)) ?? null;
+  const resolvedCountry =
+    resolveCountryCatalogEntry(/^[A-Z]{2}$/.test(upper) ? upper : trimmed) ??
+    (countryCodeByName.has(normalizeCountryName(trimmed))
+      ? getCountryCatalogEntryByCode(
+          countryCodeByName.get(normalizeCountryName(trimmed)) ?? null
+        )
+      : null);
 
-  if (!code) {
+  if (!resolvedCountry) {
     return null;
   }
 
-  const country = countryByCode.get(code);
   return {
-    code,
-    name: country?.name ?? trimmed,
-    continent: country?.continent,
+    code: resolvedCountry.code,
+    name: resolvedCountry.name ?? trimmed,
+    continent: resolvedCountry.continentCode ?? undefined,
   };
 };
 
@@ -323,12 +294,12 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
           if (!normalized) {
             return;
           }
-          const airport = airportByIata.get(normalized);
-          const countryCode = airport?.iso_country?.toUpperCase() ?? "UN";
-          const country = countryByCode.get(countryCode)?.name ?? countryCode;
-          const state = airport?.iso_region?.split("-")[1] ?? "";
-          const city = airport?.municipality?.trim() ?? "";
-          const continent = countryByCode.get(countryCode)?.continent;
+          const airport = getAirportCatalogEntryByIata(normalized);
+          const countryCode = airport?.countryCode?.toUpperCase() ?? "UN";
+          const country = getCountryCatalogEntryByCode(countryCode)?.name ?? countryCode;
+          const state = airport?.regionCode?.split("-")[1] ?? "";
+          const city = airport?.cityName?.trim() ?? "";
+          const continent = getCountryCatalogEntryByCode(countryCode)?.continentCode ?? undefined;
           if (continent) {
             continentCodes.add(continent);
           }
@@ -486,12 +457,12 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
         if (tripCountryCodes.has(countryCode)) {
           return;
         }
-        const country = countryByCode.get(countryCode);
+        const country = getCountryCatalogEntryByCode(countryCode);
         if (!country) {
           return;
         }
-        if (country.continent) {
-          continentCodes.add(country.continent);
+        if (country.continentCode) {
+          continentCodes.add(country.continentCode);
         }
         countries.set(countryCode, {
           country: country.name ?? countryCode,

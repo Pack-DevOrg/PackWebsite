@@ -1,6 +1,10 @@
 import {geoAlbersUsa, geoMercator, geoPath} from "d3-geo";
 import {feature} from "topojson-client";
-import countriesDataset from "airports-json/data/countries.json";
+import {
+  getCountryCatalogEntryByCode,
+  getCountryCatalogEntryById,
+  getCountryIdByCode,
+} from "@doneai/schemas/locality-catalog";
 import usNationTopology from "us-atlas/nation-10m.json";
 import usStatesTopology from "us-atlas/states-10m.json";
 import worldTopology from "world-atlas/countries-110m.json";
@@ -16,42 +20,6 @@ export const MAP_STYLE = {
   dotStrokeColor: "#2b2b2d",
   dotStrokeWidth: 0.75,
 } as const;
-
-const countryRecords = countriesDataset as Array<Record<string, unknown>>;
-
-const COUNTRY_ID_BY_CODE = new Map(
-  countryRecords.flatMap((country) => {
-    const code =
-      typeof country.code === "string" ? country.code.trim().toUpperCase() : "";
-    const id =
-      typeof country.id === "string" || typeof country.id === "number"
-        ? String(country.id)
-        : "";
-    return code && id ? [[code, id] as const] : [];
-  }),
-);
-
-const COUNTRY_NAME_BY_CODE = new Map(
-  countryRecords.flatMap((country) => {
-    const code =
-      typeof country.code === "string" ? country.code.trim().toUpperCase() : "";
-    const name =
-      typeof country.name === "string" ? country.name.trim() : "";
-    return code && name ? [[code, name] as const] : [];
-  }),
-);
-
-const COUNTRY_NAME_BY_ID = new Map(
-  countryRecords.flatMap((country) => {
-    const id =
-      typeof country.id === "string" || typeof country.id === "number"
-        ? String(country.id)
-        : "";
-    const name =
-      typeof country.name === "string" ? country.name.trim() : "";
-    return id && name ? [[id, name] as const] : [];
-  }),
-);
 
 const COUNTRY_NAME_ALIASES: Record<string, readonly string[]> = {
   US: ["United States of America", "United States", "USA"],
@@ -79,14 +47,14 @@ const visitedCountryCodes = [
 
 export const visitedCountryIds = new Set(
   visitedCountryCodes.flatMap((code) => {
-    const id = COUNTRY_ID_BY_CODE.get(code);
+    const id = getCountryIdByCode(code);
     return id ? [id, String(Number(id))] : [];
   }),
 );
 
 export const visitedCountryNames = new Set(
   visitedCountryCodes.flatMap((code) => {
-    const name = COUNTRY_NAME_BY_CODE.get(code);
+    const name = getCountryCatalogEntryByCode(code)?.name;
     return name ? [name, ...(COUNTRY_NAME_ALIASES[code] ?? [])] : COUNTRY_NAME_ALIASES[code] ?? [];
   }),
 );
@@ -291,7 +259,7 @@ export const worldPathData = worldFeatures
         : "";
     return {
       id,
-      name: topologyName || COUNTRY_NAME_BY_ID.get(id) || "",
+      name: topologyName || getCountryCatalogEntryById(id)?.name || "",
       d,
     };
   })

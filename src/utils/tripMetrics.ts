@@ -1,43 +1,12 @@
 import { differenceInCalendarDays, formatDistanceToNowStrict } from "date-fns";
 import type { Trip } from "@/api/trips";
-import airportsDataset from "airports-json/data/airports.json";
+import { getAirportCatalogEntryByIata } from "@doneai/schemas/locality-catalog";
 import { formatLocalizedDate } from "@/i18n/format";
 
 interface AirportCoordinate {
   readonly lat: number;
   readonly lon: number;
 }
-
-const AIRPORT_COORDINATES: Map<string, AirportCoordinate> = (() => {
-  const entries = new Map<string, AirportCoordinate>();
-  (airportsDataset as Array<Record<string, unknown>>).forEach((airport) => {
-    const codeRaw = airport.iata_code ?? airport.local_code ?? airport.ident;
-    if (typeof codeRaw !== "string") {
-      return;
-    }
-    const code = codeRaw.trim().toUpperCase();
-    if (!code) {
-      return;
-    }
-    const lat =
-      typeof airport.latitude_deg === "number"
-        ? airport.latitude_deg
-        : typeof airport.latitude_deg === "string"
-          ? Number.parseFloat(airport.latitude_deg)
-          : null;
-    const lon =
-      typeof airport.longitude_deg === "number"
-        ? airport.longitude_deg
-        : typeof airport.longitude_deg === "string"
-          ? Number.parseFloat(airport.longitude_deg)
-          : null;
-    if (lat == null || lon == null || Number.isNaN(lat) || Number.isNaN(lon)) {
-      return;
-    }
-    entries.set(code, { lat, lon });
-  });
-  return entries;
-})();
 
 const toRadians = (value: number) => (value * Math.PI) / 180;
 
@@ -59,7 +28,14 @@ const getAirportCoordinate = (code?: string | null): AirportCoordinate | null =>
   if (!code) {
     return null;
   }
-  return AIRPORT_COORDINATES.get(code.trim().toUpperCase()) ?? null;
+  const airport = getAirportCatalogEntryByIata(code.trim().toUpperCase());
+  if (!airport) {
+    return null;
+  }
+  return {
+    lat: airport.latitude,
+    lon: airport.longitude,
+  };
 };
 
 const computeFlightDistanceFromAirports = (flight: Trip["flights"][number]): number => {

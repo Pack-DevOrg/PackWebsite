@@ -1,32 +1,7 @@
 import type { Trip } from "@/api/trips";
-import airportsJson from "airports-json";
+import { getAirportCatalogEntryByIata } from "@doneai/schemas/locality-catalog";
 import { differenceInCalendarDays } from "date-fns";
 import { getTripNamingDisplay } from "@/utils/tripNaming";
-
-type AirportRecord = {
-  readonly iata_code?: string;
-  readonly municipality?: string;
-  readonly name?: string;
-  readonly iso_region?: string;
-  readonly iso_country?: string;
-};
-
-type RegionRecord = {
-  readonly code?: string;
-  readonly name?: string;
-};
-
-type CountryRecord = {
-  readonly code?: string;
-  readonly name?: string;
-};
-
-type AirportDisplayInfo = {
-  readonly city?: string;
-  readonly state?: string;
-  readonly country?: string;
-  readonly name?: string;
-};
 
 interface StayCandidate {
   readonly label: string;
@@ -44,70 +19,6 @@ const normalizeCode = (value?: string | null): string | null => {
   const trimmed = value.trim();
   return trimmed ? trimmed.toUpperCase() : null;
 };
-
-const regionNameMap = new Map<string, string>();
-(airportsJson.regions as RegionRecord[]).forEach((region) => {
-  const code = normalizeCode(region?.code);
-  if (!code) {
-    return;
-  }
-  const name = region?.name?.trim();
-  if (name) {
-    regionNameMap.set(code, name);
-  }
-});
-
-const countryNameMap = new Map<string, string>();
-(airportsJson.countries as CountryRecord[]).forEach((country) => {
-  const code = normalizeCode(country?.code);
-  if (!code) {
-    return;
-  }
-  const name = country?.name?.trim();
-  if (name) {
-    countryNameMap.set(code, name);
-  }
-});
-
-const resolveRegionName = (isoRegion?: string | null): string | undefined => {
-  const code = normalizeCode(isoRegion);
-  if (!code) {
-    return undefined;
-  }
-  const resolved = regionNameMap.get(code);
-  if (resolved) {
-    return resolved;
-  }
-  const parts = code.split("-");
-  if (parts.length > 1 && parts[1]) {
-    return parts[1];
-  }
-  return undefined;
-};
-
-const resolveCountryName = (isoCountry?: string | null): string | undefined => {
-  const code = normalizeCode(isoCountry);
-  if (!code) {
-    return undefined;
-  }
-  return countryNameMap.get(code) ?? code;
-};
-
-const airportDisplayMap = new Map<string, AirportDisplayInfo>();
-
-(airportsJson.airports as AirportRecord[]).forEach((airport) => {
-  const code = normalizeCode(airport?.iata_code);
-  if (!code) {
-    return;
-  }
-
-  airportDisplayMap.set(code, {
-    city: airport.municipality?.trim() || undefined,
-    state: resolveRegionName(airport.iso_region),
-    country: resolveCountryName(airport.iso_country),
-    name: airport.name?.trim() || undefined,
-  });
-});
 
 const formatLocationParts = (
   parts: Array<string | undefined | null>
@@ -127,13 +38,13 @@ export const getAirportCityName = (iataCode: string | undefined | null): string 
     return null;
   }
 
-  const info = airportDisplayMap.get(code);
-  if (!info) {
+  const airport = getAirportCatalogEntryByIata(code);
+  if (!airport) {
     return null;
   }
 
-  const location = formatLocationParts([info.city, info.state]);
-  return location ?? info.name ?? null;
+  const location = formatLocationParts([airport.cityName, airport.regionName]);
+  return location ?? airport.name ?? null;
 };
 
 const formatHotelLocation = (

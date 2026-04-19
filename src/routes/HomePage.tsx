@@ -1,8 +1,7 @@
 import React, { Suspense, startTransition, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import Layout from "@/components/Layout";
-import HeroAboveFold from "@/components/HeroAboveFold";
-import HeroJourneyShowcase from "@/components/Hero";
+import Hero from "@/components/Hero";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo, { createSoftwareApplicationSchema } from "@/seo/pageSeo";
@@ -578,8 +577,7 @@ const HomePage: React.FC = () => {
           "AI travel assistant for personalized trip planning, booking, and trip organization.",
         )]}
       />
-      <HeroAboveFold waitlistSlot={heroWaitlist} />
-      <HeroJourneyShowcase journeyOnly />
+      <Hero waitlistSlot={heroWaitlist} />
       <DeferredContent minHeight={560} rootMargin="1280px 0px">
         <Suspense fallback={<SectionSuspenseFallback $minHeight={560} aria-hidden="true" />}>
           <TightAfterLiveActivitySection>

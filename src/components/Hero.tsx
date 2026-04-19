@@ -85,7 +85,7 @@ const heroJourneyStillAssets = {
 
 const heroJourneyMobileStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-mobile.png?v=2026-04-19-1",
+    src: "/images/hero-captures/plan-mobile.png?v=2026-04-19-4",
     width: 798,
     height: 1510,
   },
@@ -95,14 +95,14 @@ const heroJourneyMobileStillAssets = {
     height: 2608,
   },
   booking: {
-    src: "/images/hero-captures/booking-mobile.png?v=2026-04-19-1",
+    src: "/images/hero-captures/booking-mobile.png?v=2026-04-19-2",
     width: 798,
-    height: 4050,
+    height: 3850,
   },
   footprint: {
-    src: "/images/hero-captures/stats-mobile.png?v=2026-04-19-1",
+    src: "/images/hero-captures/stats-mobile.png?v=2026-04-19-2",
     width: 806,
-    height: 3880,
+    height: 3670,
   },
 } as const;
 
@@ -370,7 +370,7 @@ const HeroGrid = styled.div`
 
   @media (max-width: 739px) {
     gap: 1.45rem;
-    padding: 0.9rem 0.9rem 1.45rem;
+    padding: 0.9rem 0.45rem 1.45rem;
   }
 `;
 
@@ -409,14 +409,14 @@ const Headline = styled.h1`
   }
 
   @media (max-width: 739px) {
-    width: min(100%, 10.4ch);
+    width: min(100%, 11.2ch);
     font-size: clamp(2.9rem, 13vw, 4.15rem);
     line-height: 0.96;
     letter-spacing: -0.05em;
   }
 
   @media (max-width: 430px) {
-    width: min(100%, 9.6ch);
+    width: min(100%, 10.2ch);
     font-size: clamp(2.6rem, 11.8vw, 3.55rem);
   }
 
@@ -449,13 +449,13 @@ const SupportingCopy = styled.p`
   animation: ${reveal} 560ms ease-out 200ms both;
 
   @media (max-width: 739px) {
-    max-width: min(100%, 22.5rem);
+    max-width: min(100%, 24.25rem);
     font-size: 0.95rem;
     line-height: 1.58;
   }
 
   @media (max-width: 430px) {
-    max-width: min(100%, 20.5rem);
+    max-width: min(100%, 22.5rem);
     font-size: 0.89rem;
   }
 
@@ -470,7 +470,7 @@ const ActionSlot = styled.div`
   justify-self: center;
 
   @media (max-width: 739px) {
-    width: min(100%, 24rem);
+    width: min(100%, 25.75rem);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -594,6 +594,11 @@ const JourneySectionHeader = styled.header`
     gap: 0.9rem;
     max-width: 44rem;
   }
+
+  @media (max-width: 739px) {
+    padding-inline: 0.2rem;
+    max-width: 26rem;
+  }
 `;
 
 const JourneySectionEyebrow = styled.span`
@@ -620,6 +625,10 @@ const JourneySectionCopy = styled.p`
   font-size: clamp(0.96rem, 1.35vw, 1.08rem);
   line-height: 1.5;
   text-wrap: balance;
+
+  @media (max-width: 739px) {
+    max-width: 24.5rem;
+  }
 `;
 
 const VisualColumn = styled.div`
@@ -889,6 +898,10 @@ const MobileJourneyShowcaseLayout = styled.div`
   margin-top: 1.55rem;
   align-items: start;
 
+  @media (max-width: 739px) {
+    margin-inline: -0.2rem;
+  }
+
   @media (min-width: 980px) {
     display: none;
   }
@@ -1098,6 +1111,10 @@ const MobileJourneyInlineRail = styled.div`
   scrollbar-width: none;
   align-items: center;
   padding: 0.1rem 0.1rem 0.15rem;
+
+  @media (max-width: 739px) {
+    padding-inline: 0.25rem;
+  }
 
   &::-webkit-scrollbar {
     display: none;

@@ -83,6 +83,29 @@ const heroJourneyStillAssets = {
   },
 } as const;
 
+const heroJourneyMobileStillAssets = {
+  outline: {
+    src: "/images/hero-captures/plan-mobile.png?v=2026-04-19-1",
+    width: 798,
+    height: 1510,
+  },
+  search: {
+    src: "/images/hero-captures/search-mobile.png?v=2026-04-19-1",
+    width: 798,
+    height: 2608,
+  },
+  booking: {
+    src: "/images/hero-captures/booking-mobile.png?v=2026-04-19-1",
+    width: 798,
+    height: 4050,
+  },
+  footprint: {
+    src: "/images/hero-captures/stats-mobile.png?v=2026-04-19-1",
+    width: 806,
+    height: 3880,
+  },
+} as const;
+
 const float = keyframes`
   0%, 100% {
     transform: translateY(0px);
@@ -221,14 +244,14 @@ const TopRail = styled.div`
   width: min(100%, 70rem);
 
   @media (max-width: 739px) {
-    gap: 0.34rem;
-    padding: 0.1rem 0.3rem 0;
+    gap: 0.44rem;
+    padding: 0.16rem 0.65rem 0.08rem;
     width: 100%;
   }
 
   @media (max-width: 430px) {
-    gap: 0.28rem;
-    padding: 0.05rem 0.15rem 0;
+    gap: 0.38rem;
+    padding: 0.12rem 0.45rem 0.06rem;
   }
 `;
 
@@ -248,9 +271,10 @@ const RailStatement = styled.div`
   text-transform: uppercase;
 
   @media (max-width: 739px) {
-    min-height: 2.15rem;
-    font-size: 0.98rem;
+    min-height: 2.45rem;
+    font-size: 1rem;
     letter-spacing: 0.05em;
+    gap: 0.16rem;
   }
 `;
 
@@ -281,7 +305,7 @@ const MarqueeStack = styled.div`
   width: 100%;
 
   @media (max-width: 739px) {
-    gap: 0.3rem;
+    gap: 0.42rem;
   }
 `;
 
@@ -316,8 +340,8 @@ const MarqueeItem = styled.span`
   white-space: nowrap;
 
   @media (max-width: 739px) {
-    padding: 0.54rem 0.72rem;
-    font-size: 0.58rem;
+    padding: 0.58rem 0.76rem;
+    font-size: 0.6rem;
     letter-spacing: 0.08em;
   }
 
@@ -345,8 +369,8 @@ const HeroGrid = styled.div`
   justify-items: center;
 
   @media (max-width: 739px) {
-    gap: 1.1rem;
-    padding: 0.7rem 0.9rem 1.45rem;
+    gap: 1.45rem;
+    padding: 0.9rem 0.9rem 1.45rem;
   }
 `;
 
@@ -365,7 +389,7 @@ const CopyColumn = styled.div`
   }
 
   @media (max-width: 739px) {
-    gap: 1.35rem;
+    gap: 1.55rem;
   }
 `;
 
@@ -385,14 +409,14 @@ const Headline = styled.h1`
   }
 
   @media (max-width: 739px) {
-    width: min(100%, 9.6ch);
+    width: min(100%, 10.4ch);
     font-size: clamp(2.9rem, 13vw, 4.15rem);
-    line-height: 0.92;
+    line-height: 0.96;
     letter-spacing: -0.05em;
   }
 
   @media (max-width: 430px) {
-    width: min(100%, 8.8ch);
+    width: min(100%, 9.6ch);
     font-size: clamp(2.6rem, 11.8vw, 3.55rem);
   }
 
@@ -403,6 +427,12 @@ const Headline = styled.h1`
 
 const HeadlineLine = styled.span`
   display: block;
+
+  @media (max-width: 739px) {
+    & + & {
+      margin-top: 0.08em;
+    }
+  }
 `;
 
 const HeadlineAccent = styled.span`
@@ -421,7 +451,7 @@ const SupportingCopy = styled.p`
   @media (max-width: 739px) {
     max-width: min(100%, 22.5rem);
     font-size: 0.95rem;
-    line-height: 1.5;
+    line-height: 1.58;
   }
 
   @media (max-width: 430px) {
@@ -452,7 +482,7 @@ const OutlineStage = styled.div`
   position: relative;
   width: min(100%, 72rem);
   margin-inline: auto;
-  margin-top: 0.8rem;
+  margin-top: 1.45rem;
 
   @media (min-width: 980px) {
     clip-path: inset(0 0 0 0);
@@ -460,7 +490,7 @@ const OutlineStage = styled.div`
   }
 
   @media (max-width: 739px) {
-    margin-top: 0.18rem;
+    margin-top: 0.7rem;
   }
 `;
 
@@ -553,16 +583,16 @@ const ColumnCopy = styled.p`
 
 const JourneySectionHeader = styled.header`
   display: grid;
-  gap: 0.55rem;
-  padding: 0.2rem 0.2rem 0;
-  max-width: 34rem;
+  gap: 0.78rem;
+  padding: 0.35rem 0.4rem 0;
+  max-width: 40rem;
   margin-inline: auto;
   justify-items: center;
   text-align: center;
 
   @media (min-width: 980px) {
-    gap: 0.7rem;
-    max-width: 38rem;
+    gap: 0.9rem;
+    max-width: 44rem;
   }
 `;
 
@@ -577,8 +607,8 @@ const JourneySectionEyebrow = styled.span`
 const JourneySectionTitle = styled.h2`
   margin: 0;
   color: rgba(255, 248, 236, 0.98);
-  font-size: clamp(1.9rem, 4vw, 3.15rem);
-  line-height: 0.96;
+  font-size: clamp(2.1rem, 4.4vw, 3.5rem);
+  line-height: 1.02;
   letter-spacing: -0.05em;
   text-wrap: balance;
 `;
@@ -838,25 +868,25 @@ const MobileReviewPhoneWrap = styled.div`
 const JourneyShowcaseLayout = styled.div`
   display: none;
   gap: 0.9rem;
-  margin-top: 1.35rem;
+  margin-top: 1.7rem;
   align-items: start;
 
   @media (min-width: 980px) {
     display: grid;
     position: relative;
-    grid-template-columns: minmax(4.75rem, 5.5rem) minmax(11.25rem, 13rem) minmax(31rem, 35rem);
+    grid-template-columns: minmax(5.2rem, 6rem) minmax(12.5rem, 15.5rem) minmax(32rem, 38rem);
     justify-content: center;
-    gap: clamp(1.4rem, 2.2vw, 2.4rem);
+    gap: clamp(1.8rem, 2.8vw, 3rem);
     align-items: start;
-    margin-top: 1.7rem;
+    margin-top: 2.1rem;
   }
 `;
 
 const MobileJourneyShowcaseLayout = styled.div`
   position: relative;
   display: grid;
-  gap: 1rem;
-  margin-top: 1.35rem;
+  gap: 1.35rem;
+  margin-top: 1.55rem;
   align-items: start;
 
   @media (min-width: 980px) {
@@ -880,7 +910,7 @@ const JourneyChapterRail = styled.div`
 
 const JourneyNarrativeColumn = styled.div`
   display: grid;
-  gap: 1.6rem;
+  gap: 2rem;
 
   @media (min-width: 980px) {
     position: relative;
@@ -1002,7 +1032,7 @@ const JourneyNarrativeItem = styled(ReviewNarrativeItem)<{
 
 const JourneyNarrativeText = styled.div`
   display: grid;
-  gap: 0.4rem;
+  gap: 0.58rem;
   justify-items: center;
   text-align: center;
 
@@ -1014,8 +1044,8 @@ const JourneyNarrativeText = styled.div`
 const JourneyNarrativeTitle = styled.h3`
   margin: 0;
   color: rgba(255, 248, 236, 0.96);
-  font-size: 1.3rem;
-  line-height: 0.98;
+  font-size: 1.45rem;
+  line-height: 1.04;
   letter-spacing: -0.04em;
   text-wrap: balance;
 
@@ -1063,10 +1093,11 @@ const JourneyNarrativeTrigger = styled.div`
 
 const MobileJourneyInlineRail = styled.div`
   display: flex;
-  gap: 0.55rem;
+  gap: 0.72rem;
   overflow-x: auto;
   scrollbar-width: none;
   align-items: center;
+  padding: 0.1rem 0.1rem 0.15rem;
 
   &::-webkit-scrollbar {
     display: none;
@@ -3995,13 +4026,6 @@ const MOBILE_INLINE_CROP_SCROLL_TOP: Partial<Record<JourneyShowcaseKey, number>>
   stats: 94,
 };
 
-const MOBILE_INLINE_CROP_PROGRESS: Partial<Record<JourneyShowcaseKey, number>> = {
-  plan: 0,
-  search: (MOBILE_INLINE_CROP_SCROLL_TOP.search ?? 0) / (21 * 16),
-  booking: (MOBILE_INLINE_CROP_SCROLL_TOP.booking ?? 0) / (24 * 16),
-  stats: (MOBILE_INLINE_CROP_SCROLL_TOP.stats ?? 0) / (16 * 16),
-};
-
 const getPageScrollElement = (): HTMLElement => {
   if (typeof document === "undefined") {
     return {} as HTMLElement;
@@ -4277,9 +4301,12 @@ const renderRecordIcon = (icon: (typeof recordRows)[number]["icon"]) => {
 };
 
 const renderHeroJourneyStill = (
-  screenKey: keyof typeof heroJourneyStillAssets
+  screenKey: keyof typeof heroJourneyStillAssets,
+  assetVariant: "default" | "mobile" = "default"
 ): ReactNode => {
-  const asset = heroJourneyStillAssets[screenKey];
+  const assetSet =
+    assetVariant === "mobile" ? heroJourneyMobileStillAssets : heroJourneyStillAssets;
+  const asset = assetSet[screenKey];
 
   return (
     <HeroJourneyStillImage
@@ -4586,6 +4613,7 @@ const PlanShowcasePhone: React.FC<{
   scrollProgress?: number;
   scrollablePreview?: boolean;
   initialScrollTop?: number;
+  assetVariant?: "default" | "mobile";
   outboundIndex: number;
   hotelIndex: number;
   returnIndex: number;
@@ -4606,6 +4634,7 @@ const PlanShowcasePhone: React.FC<{
   scrollProgress = 0,
   scrollablePreview = false,
   initialScrollTop,
+  assetVariant = "default",
   outboundIndex,
   hotelIndex,
   returnIndex,
@@ -4695,7 +4724,7 @@ const PlanShowcasePhone: React.FC<{
                   $scrollable={scrollablePreview}
                   data-hero-screen-content={screenKey}
                 >
-                  {renderHeroJourneyStill(stillScreenKey)}
+                  {renderHeroJourneyStill(stillScreenKey, assetVariant)}
                 </PlanScrollContent>
               </PlanFlowScroll>
             </>
@@ -4726,7 +4755,7 @@ const PlanShowcasePhone: React.FC<{
                 $scrollable={scrollablePreview}
                 data-hero-screen-content={screenKey}
               >
-                {renderHeroJourneyStill(stillScreenKey)}
+                {renderHeroJourneyStill(stillScreenKey, assetVariant)}
               </PlanScrollContent>
             </PlanFlowScroll>
               ) : (
@@ -4743,7 +4772,7 @@ const PlanShowcasePhone: React.FC<{
                   $scrollable={scrollablePreview}
                   data-hero-screen-content={screenKey}
                 >
-                  {renderHeroJourneyStill(stillScreenKey)}
+                  {renderHeroJourneyStill(stillScreenKey, assetVariant)}
                 </PlanScrollContent>
               </PlanFlowScroll>
               )}
@@ -4778,6 +4807,7 @@ const ReviewShowcasePhone: React.FC<{
   scrollProgress?: number;
   scrollablePreview?: boolean;
   initialScrollTop?: number;
+  assetVariant?: "default" | "mobile";
 }> = ({
   screenKey,
   large = false,
@@ -4785,6 +4815,7 @@ const ReviewShowcasePhone: React.FC<{
   scrollProgress = 0,
   scrollablePreview = false,
   initialScrollTop,
+  assetVariant = "default",
 }) => {
   const activeItem =
     reviewShowcaseItems.find((item) => item.key === screenKey) ?? reviewShowcaseItems[0];
@@ -4874,7 +4905,7 @@ const ReviewShowcasePhone: React.FC<{
                 $scrollable={scrollablePreview}
                 data-hero-screen-content={screenKey}
               >
-                {renderHeroJourneyStill("footprint")}
+                {renderHeroJourneyStill("footprint", assetVariant)}
               </TravelScrollContent>
             </TravelScroll>
           ) : (
@@ -4891,7 +4922,7 @@ const ReviewShowcasePhone: React.FC<{
                 $scrollable={scrollablePreview}
                 data-hero-screen-content={screenKey}
               >
-                {renderHeroJourneyStill("footprint")}
+                {renderHeroJourneyStill("footprint", assetVariant)}
               </TravelScrollContent>
             </TravelScroll>
           )}
@@ -4906,6 +4937,7 @@ const JourneyShowcasePhone: React.FC<{
   scrollProgress?: number;
   scrollablePreview?: boolean;
   initialScrollTop?: number;
+  assetVariant?: "default" | "mobile";
   outboundIndex: number;
   hotelIndex: number;
   returnIndex: number;
@@ -4919,7 +4951,14 @@ const JourneyShowcasePhone: React.FC<{
   selectedHotel: PlanHotelOption;
   selectedReturnFlight: PlanFlightOption;
   totalTripPrice: string;
-}> = ({ screenKey, scrollProgress = 0, scrollablePreview = false, initialScrollTop, ...props }) => {
+}> = ({
+  screenKey,
+  scrollProgress = 0,
+  scrollablePreview = false,
+  initialScrollTop,
+  assetVariant = "default",
+  ...props
+}) => {
   if (screenKey === "plan") {
     return (
       <PlanShowcasePhone
@@ -4929,6 +4968,7 @@ const JourneyShowcasePhone: React.FC<{
         scrollProgress={scrollProgress}
         scrollablePreview={scrollablePreview}
         initialScrollTop={initialScrollTop}
+        assetVariant={assetVariant}
         {...props}
       />
     );
@@ -4943,6 +4983,7 @@ const JourneyShowcasePhone: React.FC<{
         scrollProgress={scrollProgress}
         scrollablePreview={scrollablePreview}
         initialScrollTop={initialScrollTop}
+        assetVariant={assetVariant}
         {...props}
       />
     );
@@ -4957,6 +4998,7 @@ const JourneyShowcasePhone: React.FC<{
         scrollProgress={scrollProgress}
         scrollablePreview={scrollablePreview}
         initialScrollTop={initialScrollTop}
+        assetVariant={assetVariant}
       />
     );
   }
@@ -4969,6 +5011,7 @@ const JourneyShowcasePhone: React.FC<{
       scrollProgress={scrollProgress}
       scrollablePreview={scrollablePreview}
       initialScrollTop={initialScrollTop}
+      assetVariant={assetVariant}
       {...props}
     />
   );
@@ -5010,8 +5053,9 @@ const renderJourneyShowcasePhone = (
 ) => (
   <JourneyShowcasePhone
     screenKey={screenKey}
-    scrollProgress={MOBILE_INLINE_CROP_PROGRESS[screenKey] ?? 0}
-    scrollablePreview={false}
+    assetVariant="mobile"
+    initialScrollTop={MOBILE_INLINE_CROP_SCROLL_TOP[screenKey]}
+    scrollablePreview
     {...props}
   />
 );

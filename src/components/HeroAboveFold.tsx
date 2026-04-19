@@ -98,10 +98,10 @@ const heroAboveFoldContent = {
 const HeroSection = styled.section`
   position: relative;
   overflow: visible;
-  padding: 1rem 0 clamp(2.4rem, 5vw, 4rem);
+  padding: 1rem 0 clamp(3rem, 6vw, 4.8rem);
 
   @media (max-width: 739px) {
-    padding: 0.95rem 0 1.4rem;
+    padding: 1rem 0 1.8rem;
   }
 `;
 
@@ -144,35 +144,45 @@ const HeroGrid = styled.div`
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 1.25rem;
+  gap: 1.55rem;
   justify-items: center;
-  padding: clamp(1rem, 2.5vw, 1.35rem) clamp(1.2rem, 4vw, 3rem) clamp(2rem, 5vw, 3.25rem);
+  padding: clamp(1.1rem, 2.8vw, 1.55rem) clamp(1.2rem, 4vw, 3rem) clamp(2.35rem, 5.5vw, 3.8rem);
 
   @media (max-width: 739px) {
-    gap: 1rem;
-    padding: 0.95rem 0.95rem 1.25rem;
+    gap: 1.45rem;
+    padding: 1.1rem 0.95rem 1.55rem;
   }
 `;
 
 const CopyColumn = styled.div`
   display: grid;
-  gap: 1rem;
-  width: min(100%, 48rem);
+  gap: 1.35rem;
+  width: min(100%, 56rem);
   justify-items: center;
   text-align: center;
+
+  @media (max-width: 739px) {
+    gap: 1.5rem;
+  }
 `;
 
 const RailStatement = styled.div`
   display: grid;
   gap: 0.08rem;
   justify-items: center;
-  width: min(100%, 46rem);
-  min-height: 2.2rem;
+  width: min(100%, 48rem);
+  min-height: 2.5rem;
   color: rgba(255, 248, 236, 0.98);
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+
+  @media (max-width: 739px) {
+    gap: 0.16rem;
+    min-height: 2.8rem;
+    font-size: 1.02rem;
+  }
 `;
 
 const RailStatementAccent = styled.span`
@@ -195,7 +205,17 @@ const MarqueeViewport = styled.div`
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
 
   @media (max-width: 739px) {
-    display: none;
+    opacity: 0.98;
+  }
+`;
+
+const MarqueeStack = styled.div`
+  display: grid;
+  gap: 0.48rem;
+  width: min(100%, 56rem);
+
+  @media (max-width: 739px) {
+    gap: 0.42rem;
   }
 `;
 
@@ -229,6 +249,12 @@ const MarqueeItem = styled.span`
   text-transform: uppercase;
   white-space: nowrap;
 
+  @media (max-width: 739px) {
+    padding: 0.56rem 0.76rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+  }
+
   &::before {
     content: "•";
     margin-right: 0.5rem;
@@ -238,14 +264,6 @@ const MarqueeItem = styled.span`
 
 const MobileHighlightGrid = styled.div`
   display: none;
-
-  @media (max-width: 739px) {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.55rem;
-    width: 100%;
-  }
 `;
 
 const MobileHighlightChip = styled.span`
@@ -266,21 +284,28 @@ const MobileHighlightChip = styled.span`
 
 const Headline = styled.h1`
   margin: 0;
-  width: min(100%, 11.75ch);
+  width: min(100%, 12.9ch);
   font-size: clamp(2.9rem, 7.2vw, 5.6rem);
-  line-height: 0.9;
+  line-height: 0.95;
   letter-spacing: -0.055em;
   color: rgba(255, 248, 236, 0.98);
   text-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
 
   @media (max-width: 739px) {
-    width: min(100%, 9ch);
-    font-size: clamp(2.6rem, 12vw, 4rem);
+    width: min(100%, 10.2ch);
+    font-size: clamp(2.75rem, 12vw, 4.15rem);
+    line-height: 0.98;
   }
 `;
 
 const HeadlineLine = styled.span`
   display: block;
+
+  @media (max-width: 739px) {
+    & + & {
+      margin-top: 0.08em;
+    }
+  }
 `;
 
 const HeadlineAccent = styled.span`
@@ -289,18 +314,23 @@ const HeadlineAccent = styled.span`
 
 const SupportingCopy = styled.p`
   margin: 0;
-  max-width: 34rem;
+  max-width: 38rem;
   color: rgba(247, 240, 227, 0.74);
   font-size: clamp(0.98rem, 1.35vw, 1.1rem);
-  line-height: 1.5;
+  line-height: 1.6;
   text-wrap: pretty;
+
+  @media (max-width: 739px) {
+    max-width: min(100%, 24rem);
+    font-size: 0.97rem;
+  }
 `;
 
 const ActionSlot = styled.div`
-  width: min(100%, 40rem);
+  width: min(100%, 42rem);
 
   @media (max-width: 739px) {
-    width: min(100%, 24rem);
+    width: min(100%, 25rem);
   }
 `;
 
@@ -344,8 +374,10 @@ const HeroAboveFold: React.FC<HeroAboveFoldProps> = ({ waitlistSlot }) => {
               <span>{content.railPrefix}</span>
               <RailStatementAccent>{content.railAccent}</RailStatementAccent>
             </RailStatement>
-            {renderMarqueeRow(content.featureMarqueeItems, "feature")}
-            {renderMarqueeRow(content.promptMarqueeItems, "prompt", true)}
+            <MarqueeStack>
+              {renderMarqueeRow(content.featureMarqueeItems, "feature")}
+              {renderMarqueeRow(content.promptMarqueeItems, "prompt", true)}
+            </MarqueeStack>
             {renderMobileHighlightGrid(content.mobileHighlightItems)}
             <Headline>
               <HeadlineLine>{content.headlineLine1}</HeadlineLine>

@@ -1,6 +1,6 @@
 import { differenceInCalendarDays, formatDistanceToNowStrict } from "date-fns";
 import type { Trip } from "@/api/trips";
-import { getAirportCatalogEntryByIata } from "@doneai/schemas/locality-catalog";
+import { getAirportCatalogEntryByIata } from "@pack/schemas/locality-catalog";
 import { formatLocalizedDate } from "@/i18n/format";
 
 interface AirportCoordinate {

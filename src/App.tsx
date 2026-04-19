@@ -14,6 +14,7 @@ import { useMountEffect } from "./hooks/useMountEffect";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { stripLocaleFromPath } from "./i18n/config";
 import HomePage from "./routes/HomePage";
+import { WebMcpRegistrar } from "./agent/webMcp";
 
 export const AppRoutes: React.FC = () => (
   <I18nProvider>
@@ -88,6 +89,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
 const App: React.FC = () => (
   <>
     <DynamicImportRecovery />
+    <WebMcpRegistrar />
     <AppProviders>
       <BrowserRouter>
         <AppRoutes />

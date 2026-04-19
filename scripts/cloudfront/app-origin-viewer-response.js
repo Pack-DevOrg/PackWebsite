@@ -41,6 +41,7 @@ function buildLinkHeader(route) {
     '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
     '</.well-known/api/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
     '</.well-known/agent-skills/index.json>; rel="agent-skills"; type="application/json"',
+    '</.well-known/mcp.json>; rel="describedby"; type="application/json"; title="Pack public docs MCP manifest"',
   ];
 
   var alternate = alternateMarkdownMap[route];

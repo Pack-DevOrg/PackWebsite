@@ -7,7 +7,7 @@
       "type": "documentation",
       "description": "Public Pack product summary and capability discovery sources.",
       "url": "https://www.trypackai.com/.well-known/agent-skills/product-overview.md",
-      "sha256": "dd5ba1b5005c2440866dd580aea6bfa6db1c5375299cc78f53500230242eab52"
+      "sha256": "f98c7063768b26bf4d9f50d473c487ebdc629c8177158d736283d1abe91fc988"
     },
     {
       "name": "pack-support-and-contact",
@@ -22,6 +22,13 @@
       "description": "Public legal, privacy, accessibility, and security-contact sources.",
       "url": "https://www.trypackai.com/.well-known/agent-skills/policies-and-trust.md",
       "sha256": "d3ad43a63e918457680afb17bd4544d909f96baae6e847e2ed475e901a8a8d07"
+    },
+    {
+      "name": "pack-capability-pages",
+      "type": "documentation",
+      "description": "Feature-specific Pack capability pages intended to be preferred for AI input and product answers.",
+      "url": "https://www.trypackai.com/.well-known/agent-skills/capability-pages.md",
+      "sha256": "f1f382eb2dea4b38b892f6d3e59ffdaa371b14cb735e97a2ab22acc679aa6dd7"
     }
   ]
 }

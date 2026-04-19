@@ -18,7 +18,7 @@ import {
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
 const repoRootDir = path.join(rootDir, '..');
-const packSchemasDir = path.join(rootDir, 'src/schemas');
+const packSchemasDir = path.join(repoRootDir, 'PackServer', 'packages', 'schemas', 'src');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
 const localNodeModules = path.join(rootDir, 'node_modules');
 const resolveModuleDir = (moduleName: string): string => {
@@ -552,7 +552,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
       dedupe: ['react', 'react-dom', 'styled-components'],
       alias: {
         '@': normalizePath(srcDir),
-        '@doneai/schemas': normalizePath(packSchemasDir),
+        '@pack/schemas': normalizePath(packSchemasDir),
         react: normalizePath(reactModuleDir),
         'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
         'react/jsx-dev-runtime': normalizePath(reactJsxDevRuntimeEntry),

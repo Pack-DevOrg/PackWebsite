@@ -1,0 +1,20 @@
+[
+  {
+    "serverInfo": {
+      "name": "Pack Public Docs",
+      "version": "1.0.0"
+    },
+    "description": "Read-only MCP server for Pack public docs, feature pages, and capability summaries.",
+    "capabilities": {
+      "tools": {
+        "listChanged": false
+      }
+    },
+    "remotes": [
+      {
+        "type": "streamable-http",
+        "url": "https://api.trypackai.com/prod/mcp"
+      }
+    ]
+  }
+]

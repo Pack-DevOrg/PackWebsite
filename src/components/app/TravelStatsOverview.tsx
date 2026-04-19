@@ -22,7 +22,7 @@ import {
   getAllCountryCatalogEntries,
   getCountryCatalogEntryByCode,
   resolveCountryCatalogEntry,
-} from "@doneai/schemas/locality-catalog";
+} from "@pack/schemas/locality-catalog";
 import type { Trip } from "@/api/trips";
 import { getTripDistance } from "@/utils/tripMetrics";
 import { FlightRouteMap } from "./FlightRouteMap";

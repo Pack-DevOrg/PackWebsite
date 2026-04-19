@@ -1,4 +1,4 @@
-// Generated from @doneai/schemas `getPrioritizedTravelDomains()` on 2026-02-04.
+// Generated from @pack/schemas `getPrioritizedTravelDomains()` on 2026-02-04.
 // Purpose: Keep the email-forwarding guide self-contained and fast to load/typecheck.
 export const PRIVACY_FORWARDING_TRAVEL_DOMAINS: readonly string[] = [
   "cbp.dhs.gov",
@@ -103,4 +103,3 @@ export const PRIVACY_FORWARDING_TRAVEL_DOMAINS: readonly string[] = [
   "capitalone.com",
   "email.capitalone.com",
 ];
-

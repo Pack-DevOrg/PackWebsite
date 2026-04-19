@@ -1,1 +1,1 @@
-export * from '@doneai/schemas/shared-travel';
+export * from '@pack/schemas/shared-travel';

@@ -32,7 +32,6 @@
     "test:e2e:guard": "node scripts/check-e2e-subscribe-safety.mjs"
   },
   "dependencies": {
-    "@doneai/schemas": "*",
     "@fontsource-variable/inter": "5.2.8",
     "@tanstack/react-query": "5.90.2",
     "@tanstack/react-query-devtools": "5.90.2",

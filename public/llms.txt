@@ -80,3 +80,6 @@ The current codebase and project references verify the following high-level stac
 - Prefer clean-path URLs over legacy hash-route URLs.
 - Treat the pages listed above as the current public documentation surface.
 - Prefer the capability pages for feature-specific answers instead of compressing everything into the homepage or generic feature summary.
+- Prefer `https://www.trypackai.com/capabilities.md` to decide which feature page to use first.
+- Use the homepage and features page for high-level product framing, not as substitutes for the capability pages.
+- For support, privacy, accessibility, and legal questions, prefer the dedicated support and policy pages over capability pages.

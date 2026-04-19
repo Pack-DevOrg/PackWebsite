@@ -24,6 +24,12 @@
           "rel": "describedby",
           "type": "application/json",
           "title": "OAuth protected resource metadata"
+        },
+        {
+          "href": "https://www.trypackai.com/.well-known/mcp.json",
+          "rel": "describedby",
+          "type": "application/json",
+          "title": "Pack public docs MCP manifest"
         }
       ]
     }

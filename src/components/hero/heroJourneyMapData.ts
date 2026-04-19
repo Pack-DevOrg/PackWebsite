@@ -4,7 +4,7 @@ import {
   getCountryCatalogEntryByCode,
   getCountryCatalogEntryById,
   getCountryIdByCode,
-} from "@doneai/schemas/locality-catalog";
+} from "@pack/schemas/locality-catalog";
 import usNationTopology from "us-atlas/nation-10m.json";
 import usStatesTopology from "us-atlas/states-10m.json";
 import worldTopology from "world-atlas/countries-110m.json";

@@ -12,7 +12,7 @@ import type { Topology } from "topojson-specification";
 import {
   getAirportCatalogEntryByIata,
   getCountryNameByCode,
-} from "@doneai/schemas/locality-catalog";
+} from "@pack/schemas/locality-catalog";
 import worldTopology from "world-atlas/countries-110m.json";
 import usStatesTopology from "us-atlas/states-10m.json";
 import type { Trip } from "@/api/trips";

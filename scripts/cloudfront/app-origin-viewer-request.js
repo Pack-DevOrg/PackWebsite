@@ -25,6 +25,10 @@ function isAppShellRoute(uri) {
   return uri === '/app' || uri.indexOf('/app/') === 0;
 }
 
+function isWellKnownRoute(uri) {
+  return uri === '/.well-known' || uri.indexOf('/.well-known/') === 0;
+}
+
 function canonicalizeUri(uri) {
   if (uri === '/') {
     return '/';
@@ -127,7 +131,7 @@ function handler(event) {
     return request;
   }
 
-  if (hasFileExtension(uri) || isAppShellRoute(uri)) {
+  if (hasFileExtension(uri) || isAppShellRoute(uri) || isWellKnownRoute(uri)) {
     return request;
   }
 

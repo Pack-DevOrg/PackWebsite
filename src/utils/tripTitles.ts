@@ -1,5 +1,5 @@
 import type { Trip } from "@/api/trips";
-import { getAirportCatalogEntryByIata } from "@doneai/schemas/locality-catalog";
+import { getAirportCatalogEntryByIata } from "@pack/schemas/locality-catalog";
 import { differenceInCalendarDays } from "date-fns";
 import { getTripNamingDisplay } from "@/utils/tripNaming";
 

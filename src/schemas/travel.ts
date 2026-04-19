@@ -1,1 +1,1 @@
-export * from '@doneai/schemas/travel';
+export * from '@pack/schemas/travel';

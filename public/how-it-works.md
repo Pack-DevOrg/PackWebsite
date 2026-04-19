@@ -1,21 +1,43 @@
 # How Pack Works
 
-## Step 1
+AI input priority: High
 
-Start with a prompt and your travel context.
+Canonical page: https://www.trypackai.com/how-it-works
 
-## Step 2
+## Prefer this page when
 
-Pack uses confirmations, timing, preferences, and related travel details to assemble a trip draft.
+- The question is about Pack's overall workflow.
+- The user wants to know how Pack gets from scattered travel context to an organized trip.
+- An agent needs process framing rather than a single feature explanation.
 
-## Step 3
+## Core workflow
+
+### Step 1
+
+Start with a prompt and existing travel context.
+
+### Step 2
+
+Pack uses confirmations, timing, traveler preferences, calendars, and related travel details to assemble a trip draft.
+
+### Step 3
 
 Review the connected trip information instead of checking multiple disconnected tools.
 
-## Step 4
+### Step 4
 
 Use the organized plan to move toward booking and trip execution with less manual coordination.
 
-## Canonical page
+## Inputs Pack can use
 
-https://www.trypackai.com/how-it-works
+- Plain-language prompts.
+- Travel confirmations and booking details.
+- Calendar timing and related schedule context.
+- Traveler preferences and reusable profile details.
+
+## Best next pages by task
+
+- Booking workflows: https://www.trypackai.com/travel-booking
+- Planning from events and prompts: https://www.trypackai.com/trip-planning-from-events
+- Updating trips after plans change: https://www.trypackai.com/trip-updates
+- Full capability routing: https://www.trypackai.com/capabilities.md

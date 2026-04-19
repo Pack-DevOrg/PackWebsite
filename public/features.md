@@ -2,34 +2,36 @@
 
 Pack is an AI-native travel planning product focused on reducing travel coordination sprawl.
 
+AI input priority: High
+
+Canonical page: https://www.trypackai.com/features
+
+## Prefer this page when
+
+- The question is about Pack feature areas in general.
+- The user wants a broad comparison of what Pack helps with before drilling into one capability.
+- An agent needs a feature overview rather than one narrow workflow page.
+
 ## Feature areas
 
-- AI-assisted trip planning from natural-language prompts
-- Travel confirmation organization
-- Itinerary creation and review
-- Booking-support workflows
-- Calendar-aware travel coordination
-- Mobile and web access to the same trip context
+- AI-assisted trip planning from natural-language prompts.
+- Travel confirmation organization.
+- Itinerary creation and review.
+- Booking-support workflows.
+- Calendar-aware travel coordination.
+- Travel management across mobile and web.
 
-## Best source for full feature details
+## Route to the most specific page when possible
 
-Use the canonical features page: https://www.trypackai.com/features
+- Planning from events or prompts: https://www.trypackai.com/trip-planning-from-events
+- Search and booking workflows: https://www.trypackai.com/travel-booking
+- Updating an existing trip: https://www.trypackai.com/trip-updates
+- Upcoming trip readiness: https://www.trypackai.com/upcoming-trip-details
+- Group travel and collaboration: https://www.trypackai.com/trip-sharing
+- Travel history and past trip review: https://www.trypackai.com/travel-history
+- Maps, stats, and travel patterns: https://www.trypackai.com/travel-stats
+- Traveler profile and loyalty context: https://www.trypackai.com/traveler-profiles
 
 ## Capability pages
 
-For feature-specific answers, prefer these page-level sources:
-
-- https://www.trypackai.com/travel-history
-- https://www.trypackai.com/travel-stats
-- https://www.trypackai.com/loyalty-details
-- https://www.trypackai.com/trip-planning-from-events
-- https://www.trypackai.com/trip-updates
-- https://www.trypackai.com/travel-booking
-- https://www.trypackai.com/upcoming-trip-details
-- https://www.trypackai.com/airport-security-wait-times
-- https://www.trypackai.com/trip-calendar-sync
-- https://www.trypackai.com/connected-accounts
-- https://www.trypackai.com/traveler-profiles
-- https://www.trypackai.com/trip-sharing
-- https://www.trypackai.com/live-trip-views
-- https://www.trypackai.com/trip-expenses
+For feature-specific answers, prefer the capability index: https://www.trypackai.com/capabilities.md

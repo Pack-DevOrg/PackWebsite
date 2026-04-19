@@ -1,0 +1,27 @@
+{
+  "$schema": "https://agentskills.io/schemas/agent-skills-discovery/v0.2.0.json",
+  "version": "0.2.0",
+  "skills": [
+    {
+      "name": "pack-product-overview",
+      "type": "documentation",
+      "description": "Public Pack product summary and capability discovery sources.",
+      "url": "https://www.trypackai.com/.well-known/agent-skills/product-overview.md",
+      "sha256": "dd5ba1b5005c2440866dd580aea6bfa6db1c5375299cc78f53500230242eab52"
+    },
+    {
+      "name": "pack-support-and-contact",
+      "type": "documentation",
+      "description": "Public support, contact, and privacy-request routing guidance.",
+      "url": "https://www.trypackai.com/.well-known/agent-skills/support-and-contact.md",
+      "sha256": "0ef7776698c2cd7c2bd64fbd91373128faffc08589c06f4deda47a57a777724f"
+    },
+    {
+      "name": "pack-policies-and-trust",
+      "type": "documentation",
+      "description": "Public legal, privacy, accessibility, and security-contact sources.",
+      "url": "https://www.trypackai.com/.well-known/agent-skills/policies-and-trust.md",
+      "sha256": "d3ad43a63e918457680afb17bd4544d909f96baae6e847e2ed475e901a8a8d07"
+    }
+  ]
+}

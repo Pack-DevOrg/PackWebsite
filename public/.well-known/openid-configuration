@@ -1,0 +1,56 @@
+{
+  "issuer": "https://auth.trypackai.com",
+  "authorization_endpoint": "https://auth.trypackai.com/oauth2/authorize",
+  "token_endpoint": "https://auth.trypackai.com/oauth2/token",
+  "revocation_endpoint": "https://auth.trypackai.com/oauth2/revoke",
+  "userinfo_endpoint": "https://auth.trypackai.com/oauth2/userInfo",
+  "jwks_uri": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_QuNk9AZqk/.well-known/jwks.json",
+  "response_types_supported": [
+    "code"
+  ],
+  "response_modes_supported": [
+    "query"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "subject_types_supported": [
+    "public"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "none"
+  ],
+  "code_challenge_methods_supported": [
+    "S256"
+  ],
+  "claims_supported": [
+    "sub",
+    "email",
+    "email_verified",
+    "name",
+    "given_name",
+    "family_name",
+    "picture"
+  ],
+  "scopes_supported": [
+    "openid",
+    "email",
+    "profile",
+    "aws.cognito.signin.user.admin",
+    "api.trypackai.com/prod/travel.plan",
+    "api.trypackai.com/prod/travel.search",
+    "api.trypackai.com/prod/travel.book",
+    "api.trypackai.com/prod/jobs.read",
+    "api.trypackai.com/prod/jobs.manage",
+    "api.trypackai.com/prod/user.accounts",
+    "api.trypackai.com/prod/user.information",
+    "api.trypackai.com/prod/user.preferences",
+    "api.trypackai.com/prod/user.trips",
+    "api.trypackai.com/prod/user.queries",
+    "api.trypackai.com/prod/user.delete"
+  ]
+}

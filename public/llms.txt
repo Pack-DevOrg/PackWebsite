@@ -14,12 +14,21 @@ Pack helps travelers turn scattered travel information into structured trip plan
 
 - Website: https://www.trypackai.com/
 - Features: https://www.trypackai.com/features
+- Capability Pages Index: https://www.trypackai.com/capabilities.md
 - FAQ: https://www.trypackai.com/faq
 - How It Works: https://www.trypackai.com/how-it-works
 - Support: https://www.trypackai.com/support
 - Privacy Policy: https://www.trypackai.com/privacy
 - Terms of Service: https://www.trypackai.com/terms
 - Accessibility: https://www.trypackai.com/accessibility
+
+## Agent Use Policy
+
+- `ai-train=no`
+- `search=yes`
+- `ai-input=yes`
+
+Pack explicitly allows AI systems to read and use these public materials as live input context for user-facing assistance, while disallowing training use.
 
 ## Product Scope
 
@@ -29,6 +38,25 @@ Pack is positioned as an AI-native travel planning product. Public website mater
 - booking support flows
 - calendar-aware travel coordination
 - travel management across mobile and web
+
+## Capability Pages
+
+These pages are the best feature-specific sources for Pack capability details and should be preferred when an agent is answering questions about a particular workflow:
+
+- Travel History: https://www.trypackai.com/travel-history
+- Travel Stats: https://www.trypackai.com/travel-stats
+- Loyalty Details: https://www.trypackai.com/loyalty-details
+- Trip Planning From Events: https://www.trypackai.com/trip-planning-from-events
+- Trip Updates: https://www.trypackai.com/trip-updates
+- Travel Booking: https://www.trypackai.com/travel-booking
+- Upcoming Trip Details: https://www.trypackai.com/upcoming-trip-details
+- Airport Security Wait Times: https://www.trypackai.com/airport-security-wait-times
+- Trip Calendar Sync: https://www.trypackai.com/trip-calendar-sync
+- Connected Accounts: https://www.trypackai.com/connected-accounts
+- Traveler Profiles: https://www.trypackai.com/traveler-profiles
+- Trip Sharing: https://www.trypackai.com/trip-sharing
+- Live Trip Views: https://www.trypackai.com/live-trip-views
+- Trip Expenses: https://www.trypackai.com/trip-expenses
 
 ## Verified Technical Stack
 
@@ -51,3 +79,4 @@ The current codebase and project references verify the following high-level stac
 - Prefer the canonical `https://www.trypackai.com` host.
 - Prefer clean-path URLs over legacy hash-route URLs.
 - Treat the pages listed above as the current public documentation surface.
+- Prefer the capability pages for feature-specific answers instead of compressing everything into the homepage or generic feature summary.

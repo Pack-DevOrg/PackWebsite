@@ -1,0 +1,205 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pack API",
+    "version": "2026-04-19",
+    "description": "High-level public description of Pack's authenticated travel-planning API surface for agent and client discovery."
+  },
+  "servers": [
+    {
+      "url": "https://api.trypackai.com/prod",
+      "description": "Production API"
+    }
+  ],
+  "security": [
+    {
+      "packOAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "packOAuth": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 authorization code with PKCE against Pack's Cognito-backed identity domain.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://auth.trypackai.com/oauth2/authorize",
+            "tokenUrl": "https://auth.trypackai.com/oauth2/token",
+            "scopes": {
+              "api.trypackai.com/prod/travel.plan": "Create and manage travel plans.",
+              "api.trypackai.com/prod/travel.search": "Search flight and hotel options.",
+              "api.trypackai.com/prod/travel.book": "Initiate supported booking flows.",
+              "api.trypackai.com/prod/jobs.read": "Read asynchronous job status and results.",
+              "api.trypackai.com/prod/jobs.manage": "Submit and manage asynchronous jobs.",
+              "api.trypackai.com/prod/user.accounts": "Access connected account data.",
+              "api.trypackai.com/prod/user.information": "Read and update user profile data.",
+              "api.trypackai.com/prod/user.preferences": "Read and update travel preferences.",
+              "api.trypackai.com/prod/user.trips": "Access stored trip data.",
+              "api.trypackai.com/prod/user.queries": "Access saved user query history.",
+              "api.trypackai.com/prod/user.delete": "Delete user account data."
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/messages/submit": {
+      "post": {
+        "summary": "Submit an asynchronous Pack job",
+        "description": "Queues an authenticated Pack workflow such as trip planning or search.",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/jobs.manage"
+            ]
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job accepted"
+          },
+          "401": {
+            "description": "Authentication required"
+          }
+        }
+      }
+    },
+    "/jobs/list": {
+      "get": {
+        "summary": "List user jobs",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/jobs.read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of jobs for the authenticated user"
+          }
+        }
+      }
+    },
+    "/travel/search": {
+      "post": {
+        "summary": "Search travel options",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/travel.search"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results"
+          }
+        }
+      }
+    },
+    "/travel/plan": {
+      "post": {
+        "summary": "Plan a trip",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/travel.plan"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Planned trip result"
+          }
+        }
+      }
+    },
+    "/travel/book": {
+      "post": {
+        "summary": "Start a booking workflow",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/travel.book"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking workflow response"
+          }
+        }
+      }
+    },
+    "/user/accounts": {
+      "get": {
+        "summary": "Read connected accounts",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/user.accounts"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connected accounts"
+          }
+        }
+      }
+    },
+    "/user/information": {
+      "get": {
+        "summary": "Read user profile data",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/user.information"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile payload"
+          }
+        }
+      }
+    },
+    "/user/preferences": {
+      "get": {
+        "summary": "Read travel preferences",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/user.preferences"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User preference payload"
+          }
+        }
+      }
+    },
+    "/user/trips": {
+      "get": {
+        "summary": "Read trips for the authenticated user",
+        "security": [
+          {
+            "packOAuth": [
+              "api.trypackai.com/prod/user.trips"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trip list"
+          }
+        }
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@
 # Allow all search engines and AI crawlers
 User-agent: *
 Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=yes
 
 # Specific rules for AI training crawlers
 User-agent: ChatGPT-User

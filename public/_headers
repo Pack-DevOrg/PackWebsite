@@ -7,6 +7,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </.well-known/api/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json", </.well-known/agent-skills/index.json>; rel="agent-skills"; type="application/json", </index.md>; rel="alternate"; type="text/markdown"
   
   # Cache headers for static assets
 /*.css
@@ -22,4 +23,93 @@
   Cache-Control: public, max-age=31536000, immutable
 
 /
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/
+  Link: </index.md>; rel="alternate"; type="text/markdown"
+
+/features
+  Link: </features.md>; rel="alternate"; type="text/markdown"
+
+/how-it-works
+  Link: </how-it-works.md>; rel="alternate"; type="text/markdown"
+
+/faq
+  Link: </faq.md>; rel="alternate"; type="text/markdown"
+
+/support
+  Link: </support.md>; rel="alternate"; type="text/markdown"
+
+/travel-history
+  Link: </travel-history.md>; rel="alternate"; type="text/markdown"
+
+/travel-stats
+  Link: </travel-stats.md>; rel="alternate"; type="text/markdown"
+
+/loyalty-details
+  Link: </loyalty-details.md>; rel="alternate"; type="text/markdown"
+
+/trip-planning-from-events
+  Link: </trip-planning-from-events.md>; rel="alternate"; type="text/markdown"
+
+/trip-updates
+  Link: </trip-updates.md>; rel="alternate"; type="text/markdown"
+
+/travel-booking
+  Link: </travel-booking.md>; rel="alternate"; type="text/markdown"
+
+/upcoming-trip-details
+  Link: </upcoming-trip-details.md>; rel="alternate"; type="text/markdown"
+
+/airport-security-wait-times
+  Link: </airport-security-wait-times.md>; rel="alternate"; type="text/markdown"
+
+/trip-calendar-sync
+  Link: </trip-calendar-sync.md>; rel="alternate"; type="text/markdown"
+
+/connected-accounts
+  Link: </connected-accounts.md>; rel="alternate"; type="text/markdown"
+
+/traveler-profiles
+  Link: </traveler-profiles.md>; rel="alternate"; type="text/markdown"
+
+/trip-sharing
+  Link: </trip-sharing.md>; rel="alternate"; type="text/markdown"
+
+/live-trip-views
+  Link: </live-trip-views.md>; rel="alternate"; type="text/markdown"
+
+/trip-expenses
+  Link: </trip-expenses.md>; rel="alternate"; type="text/markdown"
+
+/.well-known/api-catalog
+  Content-Type: application/linkset+json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/.well-known/openid-configuration
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/.well-known/oauth-authorization-server
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/.well-known/oauth-protected-resource
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/.well-known/agent-skills/index.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/.well-known/agent-skills/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/.well-known/api/*.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=3600
+
+/*.md
+  Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=3600

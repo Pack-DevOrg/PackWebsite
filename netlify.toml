@@ -27,6 +27,149 @@
     Content-Type = "application/json"
     Cache-Control = "public, max-age=3600"
 
+[[headers]]
+  for = "/.well-known/api-catalog"
+  [headers.values]
+    Content-Type = "application/linkset+json; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/.well-known/openid-configuration"
+  [headers.values]
+    Content-Type = "application/json; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/.well-known/oauth-authorization-server"
+  [headers.values]
+    Content-Type = "application/json; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/.well-known/oauth-protected-resource"
+  [headers.values]
+    Content-Type = "application/json; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/.well-known/agent-skills/index.json"
+  [headers.values]
+    Content-Type = "application/json; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/.well-known/agent-skills/*.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/.well-known/api/*.json"
+  [headers.values]
+    Content-Type = "application/json; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Link = "</.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", </.well-known/api/openapi.json>; rel=\"service-desc\"; type=\"application/vnd.oai.openapi+json\", </.well-known/agent-skills/index.json>; rel=\"agent-skills\"; type=\"application/json\", </index.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/features"
+  [headers.values]
+    Link = "</features.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/how-it-works"
+  [headers.values]
+    Link = "</how-it-works.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/faq"
+  [headers.values]
+    Link = "</faq.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/support"
+  [headers.values]
+    Link = "</support.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/travel-history"
+  [headers.values]
+    Link = "</travel-history.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/travel-stats"
+  [headers.values]
+    Link = "</travel-stats.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/loyalty-details"
+  [headers.values]
+    Link = "</loyalty-details.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/trip-planning-from-events"
+  [headers.values]
+    Link = "</trip-planning-from-events.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/trip-updates"
+  [headers.values]
+    Link = "</trip-updates.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/travel-booking"
+  [headers.values]
+    Link = "</travel-booking.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/upcoming-trip-details"
+  [headers.values]
+    Link = "</upcoming-trip-details.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/airport-security-wait-times"
+  [headers.values]
+    Link = "</airport-security-wait-times.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/trip-calendar-sync"
+  [headers.values]
+    Link = "</trip-calendar-sync.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/connected-accounts"
+  [headers.values]
+    Link = "</connected-accounts.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/traveler-profiles"
+  [headers.values]
+    Link = "</traveler-profiles.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/trip-sharing"
+  [headers.values]
+    Link = "</trip-sharing.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/live-trip-views"
+  [headers.values]
+    Link = "</live-trip-views.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/trip-expenses"
+  [headers.values]
+    Link = "</trip-expenses.md>; rel=\"alternate\"; type=\"text/markdown\""
+
+[[headers]]
+  for = "/*.md"
+  [headers.values]
+    Content-Type = "text/markdown; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
 # Handle SPA routing (but don't redirect .well-known paths)
 [[redirects]]
   from = "/.well-known/*"

@@ -117,6 +117,7 @@ console.log(
 );
 
 run("npm", ["run", "legal:check"]);
+run("node", ["scripts/sync-app-cloudfront-functions.mjs"]);
 run("npm", ["run", "build:app-origin"]);
 
 rmSync(resolve(distDir, "app"), { recursive: true, force: true });

@@ -9,13 +9,10 @@ import { geoMercator, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { Topology } from "topojson-specification";
-import {
-  getAirportCatalogEntryByIata,
-  getCountryNameByCode,
-} from "@pack/schemas/locality-catalog";
 import worldTopology from "world-atlas/countries-110m.json";
 import usStatesTopology from "us-atlas/states-10m.json";
 import type { Trip } from "@/api/trips";
+import { getAirportByIata, getCountryNameByCode } from "@/utils/airportCatalog";
 
 type StoredFlight = NonNullable<Trip["flights"]>[number];
 
@@ -150,7 +147,7 @@ const US_STATE_FIPS: Record<string, string> = {
 
 const getAirport = (code?: string | null): AirportCoordinate | undefined => {
   if (!code) return undefined;
-  const airport = getAirportCatalogEntryByIata(code.trim().toUpperCase());
+  const airport = getAirportByIata(code.trim().toUpperCase());
   if (!airport) {
     return undefined;
   }

@@ -283,10 +283,6 @@ const RouteLoadingState = styled.div`
   font-size: 0.95rem;
 `;
 
-const preloadTripsPage = async (): Promise<void> => {
-  await import("@/pages/EnhancedTripsPage");
-};
-
 export const AppShell: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -378,12 +374,6 @@ export const AppShell: React.FC = () => {
                   to={tab.to}
                   end={tab.end}
                   $active={isActive}
-                  onMouseEnter={
-                    tab.id === "trips" ? () => { void preloadTripsPage(); } : undefined
-                  }
-                  onFocus={
-                    tab.id === "trips" ? () => { void preloadTripsPage(); } : undefined
-                  }
                   ref={(node) => {
                     tabRefs.current[tab.id] = node;
                   }}

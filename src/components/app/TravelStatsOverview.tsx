@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { Suspense, lazy, useMemo } from "react";
 import styled from "styled-components";
 import {
   Activity,
@@ -18,14 +18,12 @@ import {
 } from "lucide-react";
 import { format, parseISO, differenceInCalendarDays, differenceInDays } from "date-fns";
 import {
-  getAirportCatalogEntryByIata,
-  getAllCountryCatalogEntries,
-  getCountryCatalogEntryByCode,
-  resolveCountryCatalogEntry,
-} from "@pack/schemas/locality-catalog";
+  getAirportByIata,
+  getCountryEntryByCode,
+  resolveCountryEntry,
+} from "@/utils/airportCatalog";
 import type { Trip } from "@/api/trips";
 import { getTripDistance } from "@/utils/tripMetrics";
-import { FlightRouteMap } from "./FlightRouteMap";
 
 type CityVisit = {
   readonly city: string;
@@ -66,8 +64,6 @@ type HotelVisit = {
   readonly lastStay: string;
 };
 
-const countryCatalogEntries = getAllCountryCatalogEntries();
-
 const normalizeCountryName = (value: string): string =>
   value
     .toLowerCase()
@@ -75,26 +71,6 @@ const normalizeCountryName = (value: string): string =>
     .replace(/[^\w\s]/g, "")
     .replace(/\s+/g, " ")
     .trim();
-
-const countryCodeByName = (() => {
-  const map = new Map<string, string>();
-  countryCatalogEntries.forEach((country) => {
-    if (country.code && country.name) {
-      map.set(normalizeCountryName(country.name), country.code);
-    }
-  });
-  return map;
-})();
-
-const COUNTRY_TEXT_ALIASES: Record<string, string> = {
-  equador: "EC",
-  ecuador: "EC",
-  peru: "PE",
-  usa: "US",
-  unitedstates: "US",
-  unitedstatesofamerica: "US",
-  uk: "GB",
-};
 
 const CONTINENT_LABEL: Record<string, string> = {
   AF: "Africa",
@@ -131,12 +107,7 @@ const resolveCountryDetails = (
   const trimmed = value.trim();
   const upper = trimmed.toUpperCase();
   const resolvedCountry =
-    resolveCountryCatalogEntry(/^[A-Z]{2}$/.test(upper) ? upper : trimmed) ??
-    (countryCodeByName.has(normalizeCountryName(trimmed))
-      ? getCountryCatalogEntryByCode(
-          countryCodeByName.get(normalizeCountryName(trimmed)) ?? null
-        )
-      : null);
+    resolveCountryEntry(/^[A-Z]{2}$/.test(upper) ? upper : trimmed);
 
   if (!resolvedCountry) {
     return null;
@@ -162,18 +133,21 @@ const extractCountryCodesFromText = (value?: string | null): string[] => {
   const compact = normalized.replace(/\s+/g, "");
   const matches = new Set<string>();
 
-  Object.entries(COUNTRY_TEXT_ALIASES).forEach(([alias, code]) => {
-    if (normalized.includes(alias) || compact.includes(alias.replace(/\s+/g, ""))) {
-      matches.add(code);
+  const tokenCandidates = normalized.split(" ");
+  for (let start = 0; start < tokenCandidates.length; start++) {
+    for (let end = start + 1; end <= tokenCandidates.length; end++) {
+      const candidate = tokenCandidates.slice(start, end).join(" ");
+      const resolved = resolveCountryEntry(candidate);
+      if (resolved) {
+        matches.add(resolved.code);
+      }
     }
-  });
+  }
 
-  countryCodeByName.forEach((code, name) => {
-    const compactName = name.replace(/\s+/g, "");
-    if (normalized.includes(name) || compact.includes(compactName)) {
-      matches.add(code);
-    }
-  });
+  const compactResolved = resolveCountryEntry(compact);
+  if (compactResolved) {
+    matches.add(compactResolved.code);
+  }
 
   return Array.from(matches);
 };
@@ -209,6 +183,11 @@ const formatMonthYear = (value?: string): string => {
 interface TravelStatsOverviewProps {
   readonly trips: Trip[];
 }
+
+const LazyFlightRouteMap = lazy(async () => {
+  const module = await import("./FlightRouteMap");
+  return {default: module.FlightRouteMap};
+});
 
 export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips }) => {
   const stats = useMemo(() => {
@@ -294,12 +273,12 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
           if (!normalized) {
             return;
           }
-          const airport = getAirportCatalogEntryByIata(normalized);
+          const airport = getAirportByIata(normalized);
           const countryCode = airport?.countryCode?.toUpperCase() ?? "UN";
-          const country = getCountryCatalogEntryByCode(countryCode)?.name ?? countryCode;
+          const country = getCountryEntryByCode(countryCode)?.name ?? countryCode;
           const state = airport?.regionCode?.split("-")[1] ?? "";
           const city = airport?.cityName?.trim() ?? "";
-          const continent = getCountryCatalogEntryByCode(countryCode)?.continentCode ?? undefined;
+          const continent = getCountryEntryByCode(countryCode)?.continentCode ?? undefined;
           if (continent) {
             continentCodes.add(continent);
           }
@@ -457,7 +436,7 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
         if (tripCountryCodes.has(countryCode)) {
           return;
         }
-        const country = getCountryCatalogEntryByCode(countryCode);
+        const country = getCountryEntryByCode(countryCode);
         if (!country) {
           return;
         }
@@ -763,10 +742,12 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
 
       <Section>
         <SectionTitle>Travel Maps</SectionTitle>
-        <FlightRouteMap
-          flights={trips.flatMap((trip) => trip.flights ?? [])}
-          visitedCountryCodes={stats.destinations.countries.map((country) => country.countryCode)}
-        />
+        <Suspense fallback={<MapLoadingFrame aria-hidden="true" />}>
+          <LazyFlightRouteMap
+            flights={trips.flatMap((trip) => trip.flights ?? [])}
+            visitedCountryCodes={stats.destinations.countries.map((country) => country.countryCode)}
+          />
+        </Suspense>
       </Section>
 
       <Section>
@@ -1018,6 +999,15 @@ const SectionTitle = styled.h3`
   margin: 0;
   font-size: 1rem;
   color: #f8fafc;
+`;
+
+const MapLoadingFrame = styled.div`
+  min-height: 360px;
+  border-radius: 18px;
+  border: 1px solid rgba(243, 210, 122, 0.12);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(243, 210, 122, 0.08), transparent 26%),
+    linear-gradient(135deg, rgba(255, 248, 236, 0.04), rgba(255, 248, 236, 0.02));
 `;
 
 const HeroGrid = styled.div`

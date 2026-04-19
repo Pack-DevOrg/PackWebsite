@@ -1,7 +1,7 @@
 import type { Trip } from "@/api/trips";
-import { getAirportCatalogEntryByIata } from "@pack/schemas/locality-catalog";
 import { differenceInCalendarDays } from "date-fns";
 import { getTripNamingDisplay } from "@/utils/tripNaming";
+import { getAirportByIata } from "@/utils/airportCatalog";
 
 interface StayCandidate {
   readonly label: string;
@@ -38,7 +38,7 @@ export const getAirportCityName = (iataCode: string | undefined | null): string 
     return null;
   }
 
-  const airport = getAirportCatalogEntryByIata(code);
+  const airport = getAirportByIata(code);
   if (!airport) {
     return null;
   }

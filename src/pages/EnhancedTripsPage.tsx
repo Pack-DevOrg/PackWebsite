@@ -5,13 +5,22 @@ import { Sparkles, Wand2, Plane, Loader2, Search, TrendingUp, Clock } from "luci
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/auth/AuthContext";
 import { useApiClient } from "@/api/useApiClient";
-import { deleteTrip, fetchTrips, Trip } from "@/api/trips";
-import { EnhancedTripCard } from "@/components/app/EnhancedTripCard";
-import { UpcomingTripCard } from "@/components/app/UpcomingTripCard";
+import { deleteTrip, fetchTrips } from "@/api/trips";
+import type { Trip } from "@/api/trips";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
 import { dedupeTripsById, uniquePastTripsByTitle } from "@/utils/tripDedup";
+
+const LazyUpcomingTripCard = lazy(async () => {
+  const module = await import("@/components/app/UpcomingTripCard");
+  return {default: module.UpcomingTripCard};
+});
+
+const LazyEnhancedTripCard = lazy(async () => {
+  const module = await import("@/components/app/EnhancedTripCard");
+  return {default: module.EnhancedTripCard};
+});
 
 const LazyTravelStatsOverview = lazy(async () => {
   const module = await import("@/components/app/TravelStatsOverview");
@@ -374,6 +383,15 @@ const StatsFallback = styled(EmptyState)`
   margin-top: 2rem;
 `;
 
+const CardGridFallback = styled(TripGrid)`
+  margin-top: 0;
+`;
+
+const CardLoadingShell = styled(EmptyState)`
+  width: 100%;
+  min-height: 320px;
+`;
+
 const spin = keyframes`
   to { transform: rotate(360deg); }
 `;
@@ -645,17 +663,32 @@ export const EnhancedTripsPage: React.FC = () => {
               </span>
             </EmptyState>
           ) : (
-            <TripGrid $columns={3}>
-              {upcomingTrips.map((trip) => (
-                <TripGridItem key={trip.tripId}>
-                  <UpcomingTripCard
-                    trip={trip}
-                    onClick={() => {}}
-                    onDelete={(tripId) => deleteTripMutation.mutate(tripId)}
-                  />
-                </TripGridItem>
-              ))}
-            </TripGrid>
+            <Suspense
+              fallback={
+                <CardGridFallback $columns={3}>
+                  {upcomingTrips.slice(0, 6).map((trip) => (
+                    <TripGridItem key={trip.tripId}>
+                      <CardLoadingShell>
+                        <LoadingIcon />
+                        <span>Loading trip details…</span>
+                      </CardLoadingShell>
+                    </TripGridItem>
+                  ))}
+                </CardGridFallback>
+              }
+            >
+              <TripGrid $columns={3}>
+                {upcomingTrips.map((trip) => (
+                  <TripGridItem key={trip.tripId}>
+                    <LazyUpcomingTripCard
+                      trip={trip}
+                      onClick={() => {}}
+                      onDelete={(tripId) => deleteTripMutation.mutate(tripId)}
+                    />
+                  </TripGridItem>
+                ))}
+              </TripGrid>
+            </Suspense>
           )}
         </section>
       )}
@@ -738,23 +771,38 @@ export const EnhancedTripsPage: React.FC = () => {
               </span>
             </EmptyState>
           ) : (
-            <TripGrid $columns={3}>
-              {pastTrips.map((trip) => (
-                <TripGridItem key={trip.tripId}>
-                  <EnhancedTripCard
-                    trip={trip}
-                    onClick={() => {}}
-                    isPast
-                    expandedRowKey={expandedPastRow}
-                    onToggleRow={(rowKey) =>
-                      setExpandedPastRow((prev) =>
-                        prev === rowKey ? null : rowKey
-                      )
-                    }
-                  />
-                </TripGridItem>
-              ))}
-            </TripGrid>
+            <Suspense
+              fallback={
+                <CardGridFallback $columns={3}>
+                  {pastTrips.slice(0, 6).map((trip) => (
+                    <TripGridItem key={trip.tripId}>
+                      <CardLoadingShell>
+                        <LoadingIcon />
+                        <span>Loading trip details…</span>
+                      </CardLoadingShell>
+                    </TripGridItem>
+                  ))}
+                </CardGridFallback>
+              }
+            >
+              <TripGrid $columns={3}>
+                {pastTrips.map((trip) => (
+                  <TripGridItem key={trip.tripId}>
+                    <LazyEnhancedTripCard
+                      trip={trip}
+                      onClick={() => {}}
+                      isPast
+                      expandedRowKey={expandedPastRow}
+                      onToggleRow={(rowKey) =>
+                        setExpandedPastRow((prev) =>
+                          prev === rowKey ? null : rowKey
+                        )
+                      }
+                    />
+                  </TripGridItem>
+                ))}
+              </TripGrid>
+            </Suspense>
           )}
         </section>
       )}

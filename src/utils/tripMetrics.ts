@@ -1,7 +1,7 @@
 import { differenceInCalendarDays, formatDistanceToNowStrict } from "date-fns";
 import type { Trip } from "@/api/trips";
-import { getAirportCatalogEntryByIata } from "@pack/schemas/locality-catalog";
 import { formatLocalizedDate } from "@/i18n/format";
+import { getAirportByIata } from "@/utils/airportCatalog";
 
 interface AirportCoordinate {
   readonly lat: number;
@@ -28,7 +28,7 @@ const getAirportCoordinate = (code?: string | null): AirportCoordinate | null =>
   if (!code) {
     return null;
   }
-  const airport = getAirportCatalogEntryByIata(code.trim().toUpperCase());
+  const airport = getAirportByIata(code.trim().toUpperCase());
   if (!airport) {
     return null;
   }

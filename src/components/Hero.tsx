@@ -1260,6 +1260,9 @@ const JourneyPreviewScrollViewport = styled.div<{
   background: #121212;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
+  touch-action: ${({ $scrollable }) => ($scrollable ? "pan-y" : "auto")};
+  pointer-events: auto;
 
   &::-webkit-scrollbar {
     display: none;
@@ -3985,11 +3988,18 @@ const JOURNEY_SCROLL_DISTANCES = {
   statsRecords: "8rem",
 } as const;
 
-const MOBILE_INLINE_INITIAL_SCROLL_TOP: Partial<Record<JourneyShowcaseKey, number>> = {
+const MOBILE_INLINE_CROP_SCROLL_TOP: Partial<Record<JourneyShowcaseKey, number>> = {
   plan: 0,
   search: 200,
   booking: 170,
   stats: 94,
+};
+
+const MOBILE_INLINE_CROP_PROGRESS: Partial<Record<JourneyShowcaseKey, number>> = {
+  plan: 0,
+  search: (MOBILE_INLINE_CROP_SCROLL_TOP.search ?? 0) / (21 * 16),
+  booking: (MOBILE_INLINE_CROP_SCROLL_TOP.booking ?? 0) / (24 * 16),
+  stats: (MOBILE_INLINE_CROP_SCROLL_TOP.stats ?? 0) / (16 * 16),
 };
 
 const getPageScrollElement = (): HTMLElement => {
@@ -5000,9 +5010,8 @@ const renderJourneyShowcasePhone = (
 ) => (
   <JourneyShowcasePhone
     screenKey={screenKey}
-    scrollProgress={0}
-    scrollablePreview
-    initialScrollTop={MOBILE_INLINE_INITIAL_SCROLL_TOP[screenKey]}
+    scrollProgress={MOBILE_INLINE_CROP_PROGRESS[screenKey] ?? 0}
+    scrollablePreview={false}
     {...props}
   />
 );

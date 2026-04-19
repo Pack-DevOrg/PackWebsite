@@ -419,8 +419,11 @@ export default defineConfig(({ mode, ssrBuild }) => {
           return 'date-vendor';
         }
 
+        if (id.includes('node_modules/airports-json/')) {
+          return 'airport-vendor';
+        }
+
         if (
-          id.includes('node_modules/airports-json/') ||
           id.includes('node_modules/world-atlas/') ||
           id.includes('node_modules/us-atlas/') ||
           id.includes('node_modules/topojson-client/') ||

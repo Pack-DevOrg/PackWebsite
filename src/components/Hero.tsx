@@ -4321,6 +4321,27 @@ const renderHeroJourneyStill = (
   screenKey: keyof typeof heroJourneyStillAssets,
   assetVariant: "default" | "mobile" = "default"
 ): ReactNode => {
+  const shouldRenderLiveOutline =
+    screenKey === "outline" &&
+    assetVariant === "mobile" &&
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("hero-capture") ===
+      "live-outline-mobile";
+
+  if (shouldRenderLiveOutline) {
+    return (
+      <>
+        {outlineItems.map((item) =>
+          item.type === "flight" ? (
+            <FlightPreviewCard key={item.id} item={item} />
+          ) : (
+            <HotelPreviewCard key={item.id} item={item} />
+          )
+        )}
+      </>
+    );
+  }
+
   const assetSet =
     assetVariant === "mobile" ? heroJourneyMobileStillAssets : heroJourneyStillAssets;
   const asset = assetSet[screenKey];

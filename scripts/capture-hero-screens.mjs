@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const outputDir = path.join(projectRoot, "public", "images", "hero-captures");
 const baseUrl = process.env.HERO_CAPTURE_BASE_URL ?? "http://127.0.0.1:4173";
+const captureVariant = process.env.HERO_CAPTURE_VARIANT ?? "desktop";
 const CONSENT_COOKIE_MAX_AGE_SECONDS = 180 * 24 * 60 * 60;
 const consentPreferences = JSON.stringify({
   analytics: true,
@@ -15,12 +16,33 @@ const consentPreferences = JSON.stringify({
   functional: true,
 });
 
-const screenDefinitions = [
-  {chapterKey: "plan", contentKey: "outline", fileName: "plan-still.png"},
-  {chapterKey: "search", contentKey: "search", fileName: "search-still.png"},
-  {chapterKey: "booking", contentKey: "booking", fileName: "booking-still.png"},
-  {chapterKey: "stats", contentKey: "footprint", fileName: "stats-still.png"},
-];
+const screenDefinitionsByVariant = {
+  desktop: [
+    {chapterKey: "plan", contentKey: "outline", fileName: "plan-still.png"},
+    {chapterKey: "search", contentKey: "search", fileName: "search-still.png"},
+    {chapterKey: "booking", contentKey: "booking", fileName: "booking-still.png"},
+    {chapterKey: "stats", contentKey: "footprint", fileName: "stats-still.png"},
+  ],
+  mobileOutline: [
+    {chapterKey: "plan", contentKey: "outline", fileName: "plan-mobile.png"},
+  ],
+};
+
+const screenDefinitions = screenDefinitionsByVariant[captureVariant];
+
+if (!screenDefinitions) {
+  throw new Error(`Unsupported HERO_CAPTURE_VARIANT "${captureVariant}".`);
+}
+
+const viewportByVariant = {
+  desktop: {width: 1440, height: 2200},
+  mobileOutline: {width: 390, height: 844},
+};
+
+const pageUrlByVariant = {
+  desktop: `${baseUrl}/#journey-screen-plan`,
+  mobileOutline: `${baseUrl}/?hero-capture=live-outline-mobile#journey`,
+};
 
 const wait = (milliseconds) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -122,8 +144,9 @@ const main = async () => {
 
   const browser = await chromium.launch({headless: true});
   const page = await browser.newPage({
-    viewport: {width: 1440, height: 2200},
+    viewport: viewportByVariant[captureVariant],
     deviceScaleFactor: 2,
+    isMobile: captureVariant === "mobileOutline",
   });
 
   const consentTimestamp = Date.now().toString();
@@ -147,7 +170,7 @@ const main = async () => {
     }
   );
 
-  await page.goto(`${baseUrl}/#journey-screen-plan`, {waitUntil: "networkidle"});
+  await page.goto(pageUrlByVariant[captureVariant], {waitUntil: "networkidle"});
   await page.addStyleTag({
     content: `
       *,

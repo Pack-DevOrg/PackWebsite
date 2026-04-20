@@ -1726,13 +1726,7 @@ const OutlineSurface = styled.div`
   border: 0;
 `;
 
-const CaptureOutlineSurface = styled(OutlineSurface)`
-  padding-top: 0.8rem;
-`;
-
-const CaptureTopSpacer = styled.div`
-  height: 2.8rem;
-`;
+const CaptureOutlineSurface = styled(OutlineSurface)``;
 
 const UserBubbleRow = styled.div`
   display: flex;
@@ -4495,8 +4489,6 @@ const HotelPreviewCard: React.FC<{ item: HotelPreviewItem }> = ({ item }) => (
 
 const PlanOutlineCaptureContent = () => (
   <CaptureOutlineSurface>
-    <CaptureTopSpacer aria-hidden="true" />
-
     <PlanSection>
       <PlanSectionHeader>
         <PlanSectionEyebrow>Travel outline</PlanSectionEyebrow>

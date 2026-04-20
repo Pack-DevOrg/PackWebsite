@@ -95,6 +95,11 @@ const exposeCaptureTarget = async (page, contentKey) => {
       throw new Error(`No visible content found for screen "${screen}".`);
     }
 
+    const previousClone = document.getElementById("__hero-capture-clone");
+    if (previousClone) {
+      previousClone.remove();
+    }
+
     const previousTarget = document.getElementById("__hero-capture-target");
     if (previousTarget) {
       previousTarget.removeAttribute("id");
@@ -106,8 +111,6 @@ const exposeCaptureTarget = async (page, contentKey) => {
         `Capture source for "${screen}" is recursive. The page is rendering exported hero stills instead of live showcase markup. Update the capture source before regenerating hero screenshots.`
       );
     }
-
-    content.id = "__hero-capture-target";
 
     const scroll = content.closest('[data-hero-scroll="true"]');
     const phoneInner = content.closest(`[data-hero-phone-inner="${screen}"]`);
@@ -136,6 +139,60 @@ const exposeCaptureTarget = async (page, contentKey) => {
     content.style.paddingBottom = "0px";
     content.style.minHeight = "auto";
     content.style.willChange = "auto";
+
+    const rect = content.getBoundingClientRect();
+    const cloneHost = document.createElement("div");
+    cloneHost.id = "__hero-capture-clone";
+    cloneHost.style.position = "absolute";
+    cloneHost.style.left = "0";
+    cloneHost.style.top = "0";
+    cloneHost.style.zIndex = "2147483647";
+    cloneHost.style.width = `${Math.ceil(rect.width)}px`;
+    cloneHost.style.padding = "0";
+    cloneHost.style.margin = "0";
+    cloneHost.style.background = "#121212";
+    cloneHost.style.pointerEvents = "none";
+
+    const clone = content.cloneNode(true);
+    if (!(clone instanceof HTMLElement)) {
+      throw new Error(`Unable to clone capture content for screen "${screen}".`);
+    }
+
+    clone.removeAttribute("id");
+    clone.style.transform = "none";
+    clone.style.paddingBottom = "0px";
+    clone.style.minHeight = "auto";
+    clone.style.willChange = "auto";
+
+    clone.querySelectorAll("*").forEach((node) => {
+      if (!(node instanceof HTMLElement)) {
+        return;
+      }
+
+      if (node.dataset.heroScroll === "true") {
+        node.style.overflow = "visible";
+        node.style.overflowY = "visible";
+        node.style.minHeight = "auto";
+        node.style.height = "auto";
+      }
+
+      if (node.dataset.heroPhoneInner === screen) {
+        node.style.height = "auto";
+        node.style.overflow = "visible";
+        node.style.gridTemplateRows = "auto auto auto auto";
+      }
+
+      if (node.dataset.heroScreenContent === screen) {
+        node.style.transform = "none";
+        node.style.paddingBottom = "0px";
+        node.style.minHeight = "auto";
+        node.style.willChange = "auto";
+      }
+    });
+
+    clone.id = "__hero-capture-target";
+    cloneHost.appendChild(clone);
+    document.body.appendChild(cloneHost);
   }, {screen: contentKey});
 };
 

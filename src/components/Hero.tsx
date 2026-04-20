@@ -63,8 +63,8 @@ import type {
 const heroJourneyStillAssets = {
   outline: {
     src: "/images/hero-captures/plan-still.png?v=2026-04-20-4",
-    width: 798,
-    height: 1510,
+    width: 738,
+    height: 1824,
   },
   search: {
     src: "/images/hero-captures/search-still.png?v=2026-04-14-1",
@@ -87,7 +87,7 @@ const heroJourneyMobileStillAssets = {
   outline: {
     src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-4",
     width: 576,
-    height: 2086,
+    height: 1930,
   },
   search: {
     src: "/images/hero-captures/search-mobile.png?v=2026-04-19-1",

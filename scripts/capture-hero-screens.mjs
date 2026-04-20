@@ -40,7 +40,7 @@ const viewportByVariant = {
 };
 
 const pageUrlByVariant = {
-  desktop: `${baseUrl}/#journey-screen-plan`,
+  desktop: `${baseUrl}/?hero-capture=live-outline-desktop#journey-screen-plan`,
   mobileOutline: `${baseUrl}/?hero-capture=live-outline-mobile#journey`,
 };
 

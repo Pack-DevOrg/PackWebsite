@@ -62,9 +62,9 @@ import type {
 
 const heroJourneyStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-still.png?v=2026-04-20-4",
-    width: 738,
-    height: 1824,
+    src: "/images/hero-captures/plan-still.png?v=2026-04-20-5",
+    width: 788,
+    height: 1604,
   },
   search: {
     src: "/images/hero-captures/search-still.png?v=2026-04-14-1",
@@ -85,9 +85,9 @@ const heroJourneyStillAssets = {
 
 const heroJourneyMobileStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-4",
+    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-5",
     width: 576,
-    height: 1930,
+    height: 1646,
   },
   search: {
     src: "/images/hero-captures/search-mobile.png?v=2026-04-19-1",
@@ -1714,12 +1714,12 @@ const PromptBubble = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.42rem;
-  padding: 0.72rem 0.9rem;
+  padding: 0.8rem 1rem;
   border-radius: 1.1rem 1.1rem 0.36rem 1.1rem;
   background: linear-gradient(135deg, #f3d27a 0%, #ebbe58 100%);
   color: #120d08;
   font-weight: 700;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
   line-height: 1;
   box-shadow: 0 18px 30px rgba(243, 210, 122, 0.14);
 `;
@@ -1743,13 +1743,13 @@ const UserBubbleRow = styled.div`
 
 const TimelineStack = styled.div`
   display: grid;
-  gap: 0.72rem;
+  gap: 0.84rem;
 `;
 
 const OutlineCardShell = styled.div<{ $expanded?: boolean }>`
   display: grid;
-  gap: 0.54rem;
-  padding: 0.84rem 0.92rem;
+  gap: 0.66rem;
+  padding: 1rem 1.02rem;
   border-radius: 0.98rem;
   background: #171717;
   border: 2px solid transparent;
@@ -1768,13 +1768,13 @@ const OutlineCardShell = styled.div<{ $expanded?: boolean }>`
 const CardTopRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 1.8rem;
+  gap: 0.56rem;
+  min-height: 1.95rem;
 `;
 
 const CardLabelIcon = styled.div`
-  width: 1.82rem;
-  height: 1.82rem;
+  width: 1.96rem;
+  height: 1.96rem;
   border-radius: 999px;
   background: rgba(99, 184, 205, 0.12);
   display: inline-flex;
@@ -1786,7 +1786,7 @@ const CardLabelIcon = styled.div`
 
 const CardLabel = styled.span`
   color: #f0c62d;
-  font-size: 0.88rem;
+  font-size: 0.94rem;
   font-weight: 700;
 `;
 
@@ -1810,7 +1810,7 @@ const CalendarBadge = styled.div`
 
 const DateText = styled.div`
   color: #f7f0e3;
-  font-size: 0.9rem;
+  font-size: 0.96rem;
   line-height: 1.25;
 `;
 
@@ -1821,8 +1821,8 @@ const DateAccent = styled.span`
 
 const FlightRouteRow = styled.div`
   display: grid;
-  grid-template-columns: 5rem minmax(0, 1fr) 5rem;
-  gap: 0.55rem;
+  grid-template-columns: 5.4rem minmax(0, 1fr) 5.4rem;
+  gap: 0.6rem;
   align-items: center;
 `;
 
@@ -1835,13 +1835,13 @@ const AirportBlock = styled.div`
 
 const AirportCode = styled.span`
   color: #f7f0e3;
-  font-size: 0.94rem;
+  font-size: 1.02rem;
   font-weight: 700;
 `;
 
 const AirportCity = styled.span`
   color: rgba(247, 240, 227, 0.58);
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   font-weight: 500;
   line-height: 1.2;
 `;
@@ -1860,7 +1860,7 @@ const RouteLine = styled.span`
 
 const HotelTitle = styled.div`
   color: #f7f0e3;
-  font-size: 0.94rem;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.3;
 `;
@@ -1883,14 +1883,14 @@ const NightsPill = styled.div`
   align-items: center;
   gap: 0.35rem;
   color: #f7f0e3;
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 600;
 `;
 
 const EventList = styled.div`
   display: grid;
-  gap: 0.42rem;
-  padding: 0.15rem 0 0.15rem;
+  gap: 0.48rem;
+  padding: 0.2rem 0 0.2rem;
 `;
 
 const EventItem = styled.div`
@@ -1900,13 +1900,13 @@ const EventItem = styled.div`
 
 const EventTitle = styled.span`
   color: rgba(255, 248, 236, 0.88);
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   line-height: 1.28;
 `;
 
 const EventMeta = styled.span`
   color: rgba(247, 240, 227, 0.54);
-  font-size: 0.6rem;
+  font-size: 0.64rem;
   line-height: 1.28;
 `;
 
@@ -4497,31 +4497,9 @@ const HotelPreviewCard: React.FC<{ item: HotelPreviewItem }> = ({ item }) => (
 
 const PlanOutlineCaptureContent = () => (
   <CaptureOutlineSurface>
-    <PlanSection>
-      <UserBubbleRow>
-        <PromptBubble>Book Barcelona</PromptBubble>
-      </UserBubbleRow>
-      <PlanSectionHeader>
-        <PlanSectionMeta>
-          Flights, hotel, and timing organized in one view.
-        </PlanSectionMeta>
-      </PlanSectionHeader>
-
-      <CaptureChipRow>
-        {planPreferenceChips.map((chip) => (
-          <CaptureChip key={chip}>{chip}</CaptureChip>
-        ))}
-      </CaptureChipRow>
-
-      <CaptureSummaryGrid>
-        {planDetailRows.map((row) => (
-          <CaptureSummaryRow key={row.label}>
-            <CaptureSummaryLabel>{row.label}</CaptureSummaryLabel>
-            <CaptureSummaryValue>{row.value}</CaptureSummaryValue>
-          </CaptureSummaryRow>
-        ))}
-      </CaptureSummaryGrid>
-    </PlanSection>
+    <UserBubbleRow>
+      <PromptBubble>Book Barcelona</PromptBubble>
+    </UserBubbleRow>
 
     <TimelineStack>
       {outlineItems.map((item) =>

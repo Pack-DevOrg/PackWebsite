@@ -85,9 +85,9 @@ const heroJourneyStillAssets = {
 
 const heroJourneyMobileStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-2",
-    width: 660,
-    height: 1510,
+    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-3",
+    width: 576,
+    height: 2086,
   },
   search: {
     src: "/images/hero-captures/search-mobile.png?v=2026-04-19-1",
@@ -1724,6 +1724,14 @@ const OutlineSurface = styled.div`
   border-radius: 1.1rem;
   background: transparent;
   border: 0;
+`;
+
+const CaptureOutlineSurface = styled(OutlineSurface)`
+  padding-top: 0.8rem;
+`;
+
+const CaptureTopSpacer = styled.div`
+  height: 2.8rem;
 `;
 
 const UserBubbleRow = styled.div`
@@ -4486,10 +4494,8 @@ const HotelPreviewCard: React.FC<{ item: HotelPreviewItem }> = ({ item }) => (
 );
 
 const PlanOutlineCaptureContent = () => (
-  <OutlineSurface>
-    <UserBubbleRow>
-      <PromptBubble>Book Barcelona</PromptBubble>
-    </UserBubbleRow>
+  <CaptureOutlineSurface>
+    <CaptureTopSpacer aria-hidden="true" />
 
     <PlanSection>
       <PlanSectionHeader>
@@ -4525,7 +4531,7 @@ const PlanOutlineCaptureContent = () => (
         )
       )}
     </TimelineStack>
-  </OutlineSurface>
+  </CaptureOutlineSurface>
 );
 
 const getDateBadgeParts = (value: string): { day: string; number: string } => {

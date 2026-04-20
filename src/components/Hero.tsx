@@ -1351,10 +1351,17 @@ const TravelScroll = styled(JourneyPreviewScrollViewport).attrs<{
 
 const TravelScrollContent = styled(JourneyPreviewScrollContent)``;
 
+const HeroJourneyStillFrame = styled.div<{ $aspectRatio: number }>`
+  display: block;
+  width: 100%;
+  aspect-ratio: ${({ $aspectRatio }) => $aspectRatio};
+`;
+
 const HeroJourneyStillImage = styled.img`
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   user-select: none;
   pointer-events: none;
 `;
@@ -4386,16 +4393,18 @@ const renderHeroJourneyStill = (
   const asset = assetSet[screenKey];
 
   return (
-    <HeroJourneyStillImage
-      src={asset.src}
-      width={asset.width}
-      height={asset.height}
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-      draggable={false}
-    />
+    <HeroJourneyStillFrame $aspectRatio={asset.width / asset.height}>
+      <HeroJourneyStillImage
+        src={asset.src}
+        width={asset.width}
+        height={asset.height}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+      />
+    </HeroJourneyStillFrame>
   );
 };
 
@@ -4491,10 +4500,10 @@ const PlanOutlineCaptureContent = () => (
   <CaptureOutlineSurface>
     <PlanSection>
       <PlanSectionHeader>
-        <PlanSectionEyebrow>Travel outline</PlanSectionEyebrow>
-        <PlanSectionTitle>Flights, hotel, and timing in one place</PlanSectionTitle>
+        <PlanSectionEyebrow>Trip plan</PlanSectionEyebrow>
+        <PlanSectionTitle>Plan Barcelona</PlanSectionTitle>
         <PlanSectionMeta>
-          The planner keeps the same trip structure the rest of the Pack previews build on.
+          Flights, hotel, and timing organized in one view.
         </PlanSectionMeta>
       </PlanSectionHeader>
 

@@ -62,7 +62,7 @@ import type {
 
 const heroJourneyStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-still.png?v=2026-04-14-2",
+    src: "/images/hero-captures/plan-still.png?v=2026-04-20-4",
     width: 798,
     height: 1510,
   },
@@ -85,7 +85,7 @@ const heroJourneyStillAssets = {
 
 const heroJourneyMobileStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-3",
+    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-4",
     width: 576,
     height: 2086,
   },
@@ -4379,10 +4379,9 @@ const renderHeroJourneyStill = (
 ): ReactNode => {
   const shouldRenderLiveOutline =
     screenKey === "outline" &&
-    assetVariant === "mobile" &&
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("hero-capture") ===
-      "live-outline-mobile";
+      (assetVariant === "mobile" ? "live-outline-mobile" : "live-outline-desktop");
 
   if (shouldRenderLiveOutline) {
     return <PlanOutlineCaptureContent />;
@@ -4499,9 +4498,10 @@ const HotelPreviewCard: React.FC<{ item: HotelPreviewItem }> = ({ item }) => (
 const PlanOutlineCaptureContent = () => (
   <CaptureOutlineSurface>
     <PlanSection>
+      <UserBubbleRow>
+        <PromptBubble>Book Barcelona</PromptBubble>
+      </UserBubbleRow>
       <PlanSectionHeader>
-        <PlanSectionEyebrow>Trip plan</PlanSectionEyebrow>
-        <PlanSectionTitle>Plan Barcelona</PlanSectionTitle>
         <PlanSectionMeta>
           Flights, hotel, and timing organized in one view.
         </PlanSectionMeta>

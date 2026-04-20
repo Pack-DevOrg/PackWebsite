@@ -1901,6 +1901,53 @@ const EventMeta = styled.span`
   line-height: 1.28;
 `;
 
+const CaptureSummaryGrid = styled.div`
+  display: grid;
+  gap: 0.48rem;
+`;
+
+const CaptureSummaryRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 6rem) minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+`;
+
+const CaptureSummaryLabel = styled.span`
+  color: rgba(247, 240, 227, 0.56);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+`;
+
+const CaptureSummaryValue = styled.span`
+  color: rgba(255, 248, 236, 0.92);
+  font-size: 0.7rem;
+  line-height: 1.35;
+  font-weight: 600;
+`;
+
+const CaptureChipRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+`;
+
+const CaptureChip = styled.span`
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.72rem;
+  padding: 0.2rem 0.68rem;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 210, 122, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 248, 236, 0.82);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+`;
+
 const TrustInline = styled.div`
   display: flex;
   align-items: flex-start;
@@ -4329,17 +4376,7 @@ const renderHeroJourneyStill = (
       "live-outline-mobile";
 
   if (shouldRenderLiveOutline) {
-    return (
-      <>
-        {outlineItems.map((item) =>
-          item.type === "flight" ? (
-            <FlightPreviewCard key={item.id} item={item} />
-          ) : (
-            <HotelPreviewCard key={item.id} item={item} />
-          )
-        )}
-      </>
-    );
+    return <PlanOutlineCaptureContent />;
   }
 
   const assetSet =
@@ -4446,6 +4483,49 @@ const HotelPreviewCard: React.FC<{ item: HotelPreviewItem }> = ({ item }) => (
       {renderDateLabel(item.checkOut)}
     </CalendarRow>
   </OutlineCardShell>
+);
+
+const PlanOutlineCaptureContent = () => (
+  <OutlineSurface>
+    <UserBubbleRow>
+      <PromptBubble>Book Barcelona</PromptBubble>
+    </UserBubbleRow>
+
+    <PlanSection>
+      <PlanSectionHeader>
+        <PlanSectionEyebrow>Travel outline</PlanSectionEyebrow>
+        <PlanSectionTitle>Flights, hotel, and timing in one place</PlanSectionTitle>
+        <PlanSectionMeta>
+          The planner keeps the same trip structure the rest of the Pack previews build on.
+        </PlanSectionMeta>
+      </PlanSectionHeader>
+
+      <CaptureChipRow>
+        {planPreferenceChips.map((chip) => (
+          <CaptureChip key={chip}>{chip}</CaptureChip>
+        ))}
+      </CaptureChipRow>
+
+      <CaptureSummaryGrid>
+        {planDetailRows.map((row) => (
+          <CaptureSummaryRow key={row.label}>
+            <CaptureSummaryLabel>{row.label}</CaptureSummaryLabel>
+            <CaptureSummaryValue>{row.value}</CaptureSummaryValue>
+          </CaptureSummaryRow>
+        ))}
+      </CaptureSummaryGrid>
+    </PlanSection>
+
+    <TimelineStack>
+      {outlineItems.map((item) =>
+        item.type === "flight" ? (
+          <FlightPreviewCard key={item.id} item={item} />
+        ) : (
+          <HotelPreviewCard key={item.id} item={item} />
+        )
+      )}
+    </TimelineStack>
+  </OutlineSurface>
 );
 
 const getDateBadgeParts = (value: string): { day: string; number: string } => {

@@ -85,8 +85,8 @@ const heroJourneyStillAssets = {
 
 const heroJourneyMobileStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-mobile.png?v=2026-04-19-4",
-    width: 798,
+    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-2",
+    width: 660,
     height: 1510,
   },
   search: {

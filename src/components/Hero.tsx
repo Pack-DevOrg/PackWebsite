@@ -95,14 +95,14 @@ const heroJourneyMobileStillAssets = {
     height: 2608,
   },
   booking: {
-    src: "/images/hero-captures/booking-mobile.png?v=2026-04-19-2",
+    src: "/images/hero-captures/booking-mobile.png?v=2026-04-20-1",
     width: 798,
-    height: 3850,
+    height: 3700,
   },
   footprint: {
-    src: "/images/hero-captures/stats-mobile.png?v=2026-04-19-2",
+    src: "/images/hero-captures/stats-mobile.png?v=2026-04-20-1",
     width: 806,
-    height: 3670,
+    height: 3560,
   },
 } as const;
 

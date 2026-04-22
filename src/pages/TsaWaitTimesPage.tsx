@@ -1331,6 +1331,19 @@ const FAQ_ITEMS = [
   },
 ];
 
+const TSA_FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+} as const;
+
 const WAITLIST_MODAL_COMPLETED_KEY = "tsa-waits-email-modal-completed";
 const WAITLIST_MODAL_HANDOFF_QUERY_KEY = "packStartLogin";
 const WAITLIST_MODAL_HANDOFF_REDIRECT_QUERY_KEY = "packRedirectPath";
@@ -1530,40 +1543,6 @@ const TsaWaitTimesPage: React.FC = () => {
     });
   }, [bootstrapAuthCallbackUrl, login, status]);
 
-  useMountEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-
-    const schema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: FAQ_ITEMS.map((item) => ({
-        "@type": "Question",
-        name: item.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: item.answer,
-        },
-      })),
-    };
-
-    const existingSchema = document.querySelector('script[data-schema="tsa-faq"]');
-    if (existingSchema) {
-      existingSchema.remove();
-    }
-
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.setAttribute("data-schema", "tsa-faq");
-    script.textContent = JSON.stringify(schema);
-    document.head.appendChild(script);
-
-    return () => {
-      script.remove();
-    };
-  });
-
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -1685,6 +1664,7 @@ const TsaWaitTimesPage: React.FC = () => {
         title="TSA Wait Times | Pack"
         description="Check airport security wait times and keep live airport timing alongside your broader Pack travel context."
         path="/tsa"
+        schema={[TSA_FAQ_SCHEMA]}
       />
       <LlmNotice>
         Scraping our website or parsing it? We'd prefer you didn't, but please

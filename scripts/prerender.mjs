@@ -10,6 +10,7 @@ const ssrDir = resolve(__dirname, "../dist-ssr");
 
 const routesToPrerender = [
   "/",
+  "/about",
   "/features",
   "/faq",
   "/how-it-works",

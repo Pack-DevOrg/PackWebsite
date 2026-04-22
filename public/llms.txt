@@ -13,6 +13,7 @@ Pack helps travelers turn scattered travel information into structured trip plan
 ## Canonical Resources
 
 - Website: https://www.trypackai.com/
+- About: https://www.trypackai.com/about
 - [Crunchbase Profile](https://www.crunchbase.com/organization/pack-56e8): Company profile, founding details, and team
 - Features: https://www.trypackai.com/features
 - Capability Pages Index: https://www.trypackai.com/capabilities.md

@@ -33,6 +33,7 @@ const PrivacyRequestVerificationPage = React.lazy(
   () => import("../pages/PrivacyRequestVerificationPage"),
 );
 const AccessibilityPage = React.lazy(() => import("../pages/Accessibility"));
+const AboutPage = React.lazy(() => import("../pages/About"));
 const SupportPage = React.lazy(() => import("../pages/Support"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const EmailForwardingSetupPage = React.lazy(
@@ -355,6 +356,20 @@ const NonHomeRoutes: React.FC = () => {
             <LocalizedRouteGuard>
               <Navigate to={pathFor("/privacy-request/opt-out")} replace />
             </LocalizedRouteGuard>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <Layout>
+              <Suspense fallback={null}>
+                <AboutPage />
+              </Suspense>
+              <Suspense fallback={null}>
+                <Footer />
+                <ScrollToTop />
+              </Suspense>
+            </Layout>
           }
         />
         <Route
@@ -732,6 +747,20 @@ const NonHomeRoutes: React.FC = () => {
             path="do-not-sell"
             element={
               <Navigate to={pathFor("/privacy-request/opt-out")} replace />
+            }
+          />
+          <Route
+            path="about"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <AboutPage />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <Footer />
+                  <ScrollToTop />
+                </Suspense>
+              </Layout>
             }
           />
           <Route

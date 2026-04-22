@@ -9,6 +9,39 @@ const DEFAULT_ROBOTS =
   "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
 const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
 const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
+const NOAH_MITSUHASHI_ID = `${SITE_ORIGIN}/#noah-mitsuhashi`;
+const MATTHEW_GLEIN_ID = `${SITE_ORIGIN}/#matthew-glein`;
+
+export interface TeamMemberProfile {
+  readonly id: string;
+  readonly name: string;
+  readonly jobTitle: string;
+  readonly description: string;
+  readonly sameAs: readonly string[];
+}
+
+export const TEAM_MEMBER_PROFILES: readonly TeamMemberProfile[] = [
+  {
+    id: NOAH_MITSUHASHI_ID,
+    name: "Noah Mitsuhashi",
+    jobTitle: "Co-Founder",
+    description:
+      "Noah Mitsuhashi co-founded Pack and works on the product direction behind Pack's AI-native travel planning and trip organization workflows.",
+    sameAs: [
+      "https://www.linkedin.com/in/nmits/?skipRedirect=true",
+    ],
+  },
+  {
+    id: MATTHEW_GLEIN_ID,
+    name: "Matthew Glein",
+    jobTitle: "Co-Founder",
+    description:
+      "Matthew Glein co-founded Pack after previous product work at Ring, helping shape the travel product and execution layer behind Pack.",
+    sameAs: [
+      "https://www.linkedin.com/in/matthew-glein-ab9290107/",
+    ],
+  },
+] as const;
 
 export type JsonLd =
   | Record<string, unknown>
@@ -56,12 +89,16 @@ export function createOrganizationSchema(): Record<string, unknown> {
     foundingDate: "2024",
     email: "support@trypackai.com",
     sameAs: [
+      "https://www.crunchbase.com/organization/pack-56e8",
       "https://github.com/Pack-DevOrg",
       "https://x.com/trypackai",
       "https://www.linkedin.com/company/106734468/",
       "https://www.instagram.com/trypackai/",
       "https://www.tiktok.com/@trypackai_",
     ],
+    founder: TEAM_MEMBER_PROFILES.map((member) => ({
+      "@id": member.id,
+    })),
     address: {
       "@type": "PostalAddress",
       streetAddress: "584 Castro St, Suite #4036",
@@ -92,6 +129,22 @@ export function createOrganizationSchema(): Record<string, unknown> {
       "@type": "Place",
       name: "Worldwide",
     },
+  };
+}
+
+export function createPersonSchema(
+  member: TeamMemberProfile,
+): Record<string, unknown> {
+  return {
+    "@type": "Person",
+    "@id": member.id,
+    name: member.name,
+    jobTitle: member.jobTitle,
+    description: member.description,
+    worksFor: {
+      "@id": ORGANIZATION_ID,
+    },
+    sameAs: [...member.sameAs],
   };
 }
 

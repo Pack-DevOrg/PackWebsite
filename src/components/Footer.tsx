@@ -176,6 +176,7 @@ const Footer = () => {
 
         <BottomRow>
           <FooterLinks>
+            <FooterLink to={pathFor("/about")}>{t("nav.about")}</FooterLink>
             <FooterLink to={pathFor("/terms")}>{t("nav.terms")}</FooterLink>
             <FooterLink to={pathFor("/privacy")}>{t("nav.privacy")}</FooterLink>
             <FooterLink to={pathFor("/accessibility")}>{t("nav.accessibility")}</FooterLink>

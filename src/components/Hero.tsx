@@ -72,14 +72,14 @@ const heroJourneyStillAssets = {
     height: 2608,
   },
   booking: {
-    src: "/images/hero-captures/booking-still.png?v=2026-04-14-1",
+    src: "/images/hero-captures/booking-still.png?v=2026-04-22-1",
     width: 798,
-    height: 8494,
+    height: 3756,
   },
   footprint: {
-    src: "/images/hero-captures/stats-still.png?v=2026-04-14-1",
+    src: "/images/hero-captures/stats-still.png?v=2026-04-22-1",
     width: 806,
-    height: 4204,
+    height: 3600,
   },
 } as const;
 

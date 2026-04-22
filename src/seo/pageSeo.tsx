@@ -24,11 +24,11 @@ export const TEAM_MEMBER_PROFILES: readonly TeamMemberProfile[] = [
   {
     id: NOAH_MITSUHASHI_ID,
     name: "Noah Mitsuhashi",
-    jobTitle: "Co-Founder",
+    jobTitle: "Co-Founder & CEO",
     description:
-      "Noah Mitsuhashi co-founded Pack and works on the product direction behind Pack's AI-native travel planning and trip organization workflows.",
+      "Noah Mitsuhashi is the Co-Founder and CEO of Pack. Before Pack, he worked on ads and AI at Meta and Google, bringing a product and machine-learning background to Pack's travel planning and trip organization workflows.",
     sameAs: [
-      "https://www.linkedin.com/in/nmits/?skipRedirect=true",
+      "https://www.linkedin.com/in/nmits/",
     ],
   },
   {
@@ -36,7 +36,7 @@ export const TEAM_MEMBER_PROFILES: readonly TeamMemberProfile[] = [
     name: "Matthew Glein",
     jobTitle: "Co-Founder",
     description:
-      "Matthew Glein co-founded Pack after previous product work at Ring, helping shape the travel product and execution layer behind Pack.",
+      "Matthew Glein is a Co-Founder of Pack. Before Pack, he spent several years on Ring's product team, including product apprentice and product manager roles, which informs Pack's focus on operational product design and reliable execution.",
     sameAs: [
       "https://www.linkedin.com/in/matthew-glein-ab9290107/",
     ],

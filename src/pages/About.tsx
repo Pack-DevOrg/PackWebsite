@@ -65,8 +65,10 @@ const AboutPage = () => {
           teamTitle: "Equipo",
           companyBody:
             "Construimos Pack para reducir el trabajo manual alrededor de la planificación, la reserva y la coordinación de viajes. El objetivo es que un viajero pueda entender y actuar sobre su viaje completo sin rearmarlo desde cero cada vez.",
+          noahBody:
+            "Noah Mitsuhashi es cofundador y CEO de Pack. Antes de Pack, trabajó en anuncios e IA en Meta y Google, y ahora dirige la dirección del producto y el enfoque de IA detrás de la experiencia de viaje de Pack.",
           matthewBody:
-            "Matthew Glein cofundó Pack después de trabajar en producto en Ring. En Pack ayuda a convertir flujos de viaje complejos en una experiencia más clara y operable.",
+            "Matthew Glein es cofundador de Pack. Antes de Pack, pasó varios años en el equipo de producto de Ring, incluidas funciones de Product Apprentice y Product Manager, experiencia que hoy influye en el diseño operativo y la ejecución del producto en Pack.",
         }
       : {
           title: "About Pack",
@@ -75,8 +77,10 @@ const AboutPage = () => {
           teamTitle: "Team",
           companyBody:
             "We built Pack to reduce the manual work around travel planning, booking, and coordination. The goal is for a traveler to understand and act on the full trip without rebuilding context from scratch every time.",
+          noahBody:
+            "Noah Mitsuhashi is the Co-Founder and CEO of Pack. Before Pack, he worked on ads and AI at Meta and Google, and now leads the product direction and AI focus behind Pack's travel experience.",
           matthewBody:
-            "Matthew Glein co-founded Pack after working in product at Ring. At Pack he helps turn complex travel workflows into a clearer, more operational product experience.",
+            "Matthew Glein is a Co-Founder of Pack. Before Pack, he spent several years on Ring's product team, including Product Apprentice and Product Manager roles, experience that now shapes Pack's operational product design and execution.",
         };
 
   const noah = TEAM_MEMBER_PROFILES[0];
@@ -99,7 +103,7 @@ const AboutPage = () => {
         <TeamCard>
           <Role>{noah.jobTitle}</Role>
           <h2>{noah.name}</h2>
-          <p>{noah.description}</p>
+          <p>{localizedContent.noahBody}</p>
           <p>
             <a href={noah.sameAs[0]} target="_blank" rel="noopener noreferrer">
               LinkedIn

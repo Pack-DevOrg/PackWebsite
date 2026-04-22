@@ -95,6 +95,8 @@ export function createOrganizationSchema(): Record<string, unknown> {
       "https://www.linkedin.com/company/106734468/",
       "https://www.instagram.com/trypackai/",
       "https://www.tiktok.com/@trypackai_",
+      "https://www.crunchbase.com/organization/pack-56e8",
+      "https://www.wikidata.org/wiki/Q139504185",
     ],
     founder: TEAM_MEMBER_PROFILES.map((member) => ({
       "@id": member.id,

@@ -2654,6 +2654,9 @@ function watchTimerText(state: LiveActivityMock): string {
   if (state.relativeCountdown === "Now") {
     return "Now";
   }
+  if (state.key === "flight_arrival" && state.statusBar.countdownCaption === "Lands in") {
+    return state.statusBar.countdownToken;
+  }
   if (state.statusBar.countdownCaption) {
     return `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`;
   }

@@ -626,7 +626,7 @@ export const journeyShowcaseItems = [
     eyebrow: "Book",
     title: "Approve the plan and book your trip",
     meta: "Details, totals, and booking stay in one approval flow.",
-    desktopScrollSpan: "102svh",
+    desktopScrollSpan: "84svh",
     mobileScrollSpan: "84svh",
   },
   {
@@ -635,7 +635,7 @@ export const journeyShowcaseItems = [
     eyebrow: "Stats",
     title: "See your travel history",
     meta: "Your travel patterns stay visible after booking.",
-    desktopScrollSpan: "176svh",
+    desktopScrollSpan: "92svh",
     mobileScrollSpan: "92svh",
   },
 ] as const;

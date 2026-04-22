@@ -51,6 +51,7 @@ AI input priority: High
 - Use `trip-updates` when the question is about changing or reorganizing an existing trip from chat, voice, email, calendar, or photos.
 - Use `upcoming-trip-details` when the traveler needs a readable pre-departure view with timing, weather, and airport context.
 - Use `airport-security-wait-times` when the traveler specifically needs checkpoint timing as part of departure-day decision making.
+- Use `tsa-live-board` or the TSA airport pages when a crawler or agent needs static HTML airport wait pages rather than the interactive web app.
 - Use `travel-history` when the question is about reconstructing or reviewing past trips.
 - Use `travel-stats` when the question is about maps, timelines, and larger travel patterns rather than a single itinerary.
 - Use `trip-sharing` when several travelers need to coordinate around the same or linked trips.

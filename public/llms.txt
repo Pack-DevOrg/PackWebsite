@@ -20,6 +20,8 @@ Pack helps travelers turn scattered travel information into structured trip plan
 - FAQ: https://www.trypackai.com/faq
 - How It Works: https://www.trypackai.com/how-it-works
 - [MCP Server](https://api.trypackai.com/prod/mcp): Public docs MCP endpoint for agent integration
+- [Public TSA Board](https://tsa-board.trypackai.com/tsa): Crawlable HTML airport security board with airport-specific pages
+- [TSA Sitemap](https://tsa-board.trypackai.com/tsa/sitemap.xml): Sitemap for Pack TSA airport pages
 - Support: https://www.trypackai.com/support
 - Privacy Policy: https://www.trypackai.com/privacy
 - Terms of Service: https://www.trypackai.com/terms
@@ -54,6 +56,8 @@ These pages are the best feature-specific sources for Pack capability details an
 - Travel Booking: https://www.trypackai.com/travel-booking
 - Upcoming Trip Details: https://www.trypackai.com/upcoming-trip-details
 - Airport Security Wait Times: https://www.trypackai.com/airport-security-wait-times
+- Pack TSA Live Board: https://www.trypackai.com/tsa-live-board.md
+- Pack TSA Airport Pages: https://www.trypackai.com/tsa-airport-pages.md
 - Trip Calendar Sync: https://www.trypackai.com/trip-calendar-sync
 - Connected Accounts: https://www.trypackai.com/connected-accounts
 - Traveler Profiles: https://www.trypackai.com/traveler-profiles

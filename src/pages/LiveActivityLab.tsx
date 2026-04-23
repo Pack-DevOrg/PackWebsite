@@ -89,6 +89,7 @@ type LiveActivityMock = {
   shownMetrics: MetricCard[];
   hiddenMetrics?: MetricCard[];
   nextItem?: string;
+  nextEventCountdown?: string;
   actionRows: ActionRow[];
   lockScreen: {
     fullMetricLimit: number;
@@ -116,6 +117,13 @@ type ScreenshotSurface = {
   swiftAlt: string;
   websiteImageSrc: string;
   websiteAlt: string;
+};
+
+type ScreenshotGroup = {
+  key: string;
+  label: string;
+  title: string;
+  surfaces: ScreenshotSurface[];
 };
 
 type LiveActivityLabContent = {
@@ -390,6 +398,109 @@ const Intro = styled.p`
   line-height: 1.55;
 `;
 
+const ReviewLayout = styled.div`
+  display: grid;
+  gap: 1.15rem;
+
+  @media (min-width: 1100px) {
+    grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+    align-items: start;
+  }
+`;
+
+const ActivityDirectory = styled.nav`
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0.15rem 0.05rem 0.35rem;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    position: sticky;
+    top: clamp(1rem, 4svh, 2.5rem);
+    z-index: 3;
+    display: grid;
+    gap: 0.35rem;
+    overflow: visible;
+    padding: 0.55rem 0;
+  }
+`;
+
+const ActivityDirectoryItem = styled.a`
+  position: relative;
+  display: grid;
+  gap: 0.18rem;
+  min-width: 10.75rem;
+  padding: 0.65rem 0.78rem 0.65rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.025)),
+    rgba(12, 12, 12, 0.72);
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.16);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0.48rem;
+    top: 50%;
+    width: 0.28rem;
+    height: 0.28rem;
+    border-radius: 999px;
+    background: rgba(240, 198, 45, 0.72);
+    transform: translateY(-50%);
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(240, 198, 45, 0.32);
+    background:
+      radial-gradient(circle at top right, rgba(240, 198, 45, 0.14), transparent 42%),
+      rgba(18, 18, 18, 0.92);
+    outline: none;
+  }
+
+  @media (min-width: 1100px) {
+    min-width: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    opacity: 0.72;
+
+    &:hover,
+    &:focus-visible {
+      background: transparent;
+      opacity: 1;
+    }
+  }
+`;
+
+const ActivityDirectoryTitle = styled.span`
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.18;
+`;
+
+const ActivityDirectoryMeta = styled.span`
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+`;
+
+const ScreenshotGroups = styled.div`
+  display: grid;
+  gap: 1.1rem;
+  min-width: 0;
+`;
+
 const Grid = styled.section`
   display: grid;
   grid-template-columns: 1fr;
@@ -499,6 +610,34 @@ const ScreenshotSection = styled.section`
   max-width: 100%;
 `;
 
+const ScreenshotStateSection = styled.section`
+  display: grid;
+  gap: 0.78rem;
+  min-width: 0;
+  scroll-margin-top: 1.2rem;
+`;
+
+const ScreenshotStateHeader = styled.div`
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.15rem 0.45rem 0;
+`;
+
+const ScreenshotStateTitle = styled.h2`
+  margin: 0;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: clamp(1.35rem, 2.1vw, 2rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+`;
+
+const ScreenshotStateMeta = styled.p`
+  margin: 0;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.74rem;
+  font-weight: 700;
+`;
+
 const ScreenshotSectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -528,6 +667,11 @@ const ScreenshotGrid = styled.div`
   gap: 0.75rem;
   align-items: start;
   width: 100%;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
 `;
 
 const ScreenshotHeader = styled.div`
@@ -538,6 +682,10 @@ const ScreenshotHeader = styled.div`
   color: rgba(255, 255, 255, 0.8);
   padding: 0.35rem 0.45rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+
+  @media (max-width: 860px) {
+    display: none;
+  }
 `;
 
 const ScreenshotImage = styled.img`
@@ -554,6 +702,12 @@ const ScreenshotLabelCell = styled.div`
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
   padding: 0.35rem 0.45rem;
+
+  @media (max-width: 860px) {
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 0.85rem;
+  }
 `;
 
 const ScreenshotImageCell = styled.div`
@@ -1554,6 +1708,19 @@ function formatMinimalMinuteToken(minutes: number): string {
   return `${Math.floor(minutes / 60)}h`;
 }
 
+function dynamicIslandExpandedTrailingText(state: LiveActivityMock): string | null {
+  if (state.nextEventCountdown) {
+    return state.nextEventCountdown;
+  }
+  if (state.dynamicIsland.expandedTrailingText) {
+    return state.dynamicIsland.expandedTrailingText;
+  }
+  if (state.dynamicIsland.showsCountdown) {
+    return state.statusBar.countdownToken;
+  }
+  return null;
+}
+
 function buildDepartureStatusBarSpec(
   minutesUntilLeave: number,
   driveMinutes: number,
@@ -2018,6 +2185,7 @@ const states: LiveActivityMock[] = [
     title: "Scrubber: ViewThatFits",
     supportingText: "1 Infinite Loop, Cupertino, CA",
     relativeCountdown: "1m away",
+    nextEventCountdown: "1h20m",
     icon: "calendar",
     statusBar: {
       leadingText: undefined,
@@ -2112,6 +2280,7 @@ const states: LiveActivityMock[] = [
     title: "Scrubber: Driven Rail",
     supportingText: "1 Idlewild Dr, Queens, NY 11430",
     relativeCountdown: "1m away",
+    nextEventCountdown: "1h20m",
     icon: "plane-landing",
     statusBar: {
       leadingText: undefined,
@@ -2566,13 +2735,16 @@ function getScreenshotSurfaces(
   ];
 }
 
-function getScreenshotItems(
+function getScreenshotGroups(
   localizedStates: LiveActivityMock[],
   localizedContent: LiveActivityLabContent
-): ScreenshotSurface[] {
-  return localizedStates.flatMap((state) =>
-    getScreenshotSurfaces(state, localizedContent)
-  );
+): ScreenshotGroup[] {
+  return localizedStates.map((state) => ({
+    key: state.key,
+    label: state.label,
+    title: state.title,
+    surfaces: getScreenshotSurfaces(state, localizedContent),
+  }));
 }
 
 function markerFraction(statusBar: StatusBarSpec): number {
@@ -3111,6 +3283,8 @@ function renderLockScreenSurface(
 }
 
 function renderExpandedIsland(state: LiveActivityMock) {
+  const trailingText = dynamicIslandExpandedTrailingText(state);
+
   return (
     <IslandExpanded data-capture-target="dynamic-island-expanded-raw">
       <IslandRegion>
@@ -3125,11 +3299,7 @@ function renderExpandedIsland(state: LiveActivityMock) {
         <IslandText>{state.dynamicIsland.expandedText ?? state.title}</IslandText>
       </IslandRegion>
       <IslandRegion $align="end">
-        {state.dynamicIsland.expandedTrailingText ? (
-          <IslandText>{state.dynamicIsland.expandedTrailingText}</IslandText>
-        ) : state.dynamicIsland.showsCountdown ? (
-          <IslandText>{state.statusBar.countdownToken}</IslandText>
-        ) : null}
+        {trailingText ? <IslandText>{trailingText}</IslandText> : null}
       </IslandRegion>
     </IslandExpanded>
   );
@@ -3273,7 +3443,7 @@ const LiveActivityLab: React.FC = () => {
   );
   const localizedContent = LIVE_ACTIVITY_LAB_CONTENT[locale];
   const localizedStates = getLocalizedLiveActivityStates(locale);
-  const screenshotItems = getScreenshotItems(localizedStates, localizedContent);
+  const screenshotGroups = getScreenshotGroups(localizedStates, localizedContent);
   const captureMode =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("capture") === "1";
@@ -3304,37 +3474,70 @@ const LiveActivityLab: React.FC = () => {
         </Header>
 
         <ScreenshotSection data-lab-root="live-activity">
-          <ScreenshotGrid>
-            <ScreenshotHeader>{localizedContent.screenshotHeaders.label}</ScreenshotHeader>
-            <ScreenshotHeader>{localizedContent.screenshotHeaders.swift}</ScreenshotHeader>
-            <ScreenshotHeader>{localizedContent.screenshotHeaders.website}</ScreenshotHeader>
+          <ReviewLayout>
+            <ActivityDirectory aria-label="Live Activity states">
+              {screenshotGroups.map((group) => (
+                <ActivityDirectoryItem
+                  key={group.key}
+                  href={`#live-activity-${group.key}`}
+                >
+                  <ActivityDirectoryTitle>{group.title}</ActivityDirectoryTitle>
+                  <ActivityDirectoryMeta>{group.label}</ActivityDirectoryMeta>
+                </ActivityDirectoryItem>
+              ))}
+            </ActivityDirectory>
 
-            {screenshotItems.map((surface) => (
-              <React.Fragment key={surface.key}>
-                <ScreenshotLabelCell>{surface.label}</ScreenshotLabelCell>
-                <ScreenshotImageCell>
-                  <ScreenshotImageMeta>
-                    {localizedContent.screenshotMeta.swift}
-                  </ScreenshotImageMeta>
-                  <ScreenshotImage
-                    src={`${surface.swiftImageSrc}#v=${nativeReviewVersion}`}
-                    alt={surface.swiftAlt}
-                    loading="lazy"
-                  />
-                </ScreenshotImageCell>
-                <ScreenshotImageCell>
-                  <ScreenshotImageMeta>
-                    {localizedContent.screenshotMeta.website}
-                  </ScreenshotImageMeta>
-                  <ScreenshotImage
-                    src={surface.websiteImageSrc}
-                    alt={surface.websiteAlt}
-                    loading="lazy"
-                  />
-                </ScreenshotImageCell>
-              </React.Fragment>
-            ))}
-          </ScreenshotGrid>
+            <ScreenshotGroups>
+              {screenshotGroups.map((group) => (
+                <ScreenshotStateSection
+                  key={group.key}
+                  id={`live-activity-${group.key}`}
+                >
+                  <ScreenshotStateHeader>
+                    <ScreenshotStateTitle>{group.title}</ScreenshotStateTitle>
+                    <ScreenshotStateMeta>{group.label}</ScreenshotStateMeta>
+                  </ScreenshotStateHeader>
+                  <ScreenshotGrid>
+                    <ScreenshotHeader>
+                      {localizedContent.screenshotHeaders.label}
+                    </ScreenshotHeader>
+                    <ScreenshotHeader>
+                      {localizedContent.screenshotHeaders.swift}
+                    </ScreenshotHeader>
+                    <ScreenshotHeader>
+                      {localizedContent.screenshotHeaders.website}
+                    </ScreenshotHeader>
+
+                    {group.surfaces.map((surface) => (
+                      <React.Fragment key={surface.key}>
+                        <ScreenshotLabelCell>{surface.label}</ScreenshotLabelCell>
+                        <ScreenshotImageCell>
+                          <ScreenshotImageMeta>
+                            {localizedContent.screenshotMeta.swift}
+                          </ScreenshotImageMeta>
+                          <ScreenshotImage
+                            src={`${surface.swiftImageSrc}#v=${nativeReviewVersion}`}
+                            alt={surface.swiftAlt}
+                            loading="lazy"
+                          />
+                        </ScreenshotImageCell>
+                        <ScreenshotImageCell>
+                          <ScreenshotImageMeta>
+                            {localizedContent.screenshotMeta.website}
+                          </ScreenshotImageMeta>
+                          <ScreenshotImage
+                            src={surface.websiteImageSrc}
+                            alt={surface.websiteAlt}
+                            loading="lazy"
+                          />
+                        </ScreenshotImageCell>
+                      </React.Fragment>
+                    ))}
+                  </ScreenshotGrid>
+                </ScreenshotStateSection>
+              ))}
+            </ScreenshotGroups>
+          </ReviewLayout>
         </ScreenshotSection>
       </Shell>
     </Page>

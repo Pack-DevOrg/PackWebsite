@@ -1963,7 +1963,7 @@ const states: LiveActivityMock[] = [
       compactLeadingText: formatCompactMinuteToken(activityMinutesUntilLeave),
       compactTrailingText: "Dinner",
       minimalIcon: undefined,
-      minimalText: formatMinimalMinuteToken(activityMinutesUntilLeave),
+      minimalText: "2h50",
       showsCountdown: false,
     },
   },

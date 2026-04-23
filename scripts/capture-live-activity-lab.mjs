@@ -86,6 +86,16 @@ async function captureStateSurfaces(page, outputDir) {
   }
 }
 
+async function captureFeaturedStateCard(page, outputDir) {
+  const featuredCard = page.locator("[data-state-key]").first();
+  await featuredCard.waitFor({ state: "visible", timeout: 15_000 });
+  await featuredCard.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(100);
+  await featuredCard.screenshot({
+    path: path.join(outputDir, "full-page.png"),
+  });
+}
+
 async function main() {
   const targetUrl = process.env.LIVE_ACTIVITY_LAB_URL ?? DEFAULT_URL;
   const outputDir = path.resolve(
@@ -130,10 +140,7 @@ async function main() {
       })
       .catch(() => {});
 
-    await page.screenshot({
-      path: path.join(outputDir, "full-page.png"),
-      fullPage: true,
-    });
+    await captureFeaturedStateCard(page, outputDir);
 
     await captureStateSurfaces(page, outputDir);
 

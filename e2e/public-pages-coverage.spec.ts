@@ -93,7 +93,7 @@ test.describe("Additional public page coverage", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("link", {name: /learn more about pack/i}),
-    ).toHaveAttribute("href", /itsdoneai\.com/);
+    ).toHaveAttribute("href", "https://www.trypackai.com");
     await assertNoHorizontalOverflow(page);
   });
 });

@@ -1656,7 +1656,7 @@ const TsaWaitTimesPage: React.FC = () => {
     suggestedAirports.length > 0;
 
   const currentPageUrl =
-    typeof window === "undefined" ? "https://trypackai.com/tsa/" : window.location.href;
+    typeof window === "undefined" ? "https://www.trypackai.com/tsa/" : window.location.href;
 
   return (
     <Page>

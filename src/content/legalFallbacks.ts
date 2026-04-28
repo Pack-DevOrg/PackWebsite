@@ -150,7 +150,7 @@ Mailing Address: DoneAI, 584 Castro St, Suite #4036, San Francisco, CA 94114
 
 export const PRIVACY_POLICY_FALLBACK = String.raw`# Privacy Policy
 
-**Effective Date:** April 2, 2026
+**Effective Date:** April 28, 2026
 
 ## Introduction
 
@@ -170,7 +170,7 @@ Depending on how you use the Services, we may collect:
 - **Connected travel and profile information:** information you choose to provide or connect through the Services, such as government-issued ID (e.g., passport, driver’s license, Social Security number), travel confirmations, itineraries, traveler details, contents of emails, calendar data, uploaded screenshots or documents, notes, contacts, photos, gender, or location signals you enable (including precise geolocation).
 - **Communications and submissions:** messages, feedback, support requests, survey responses, form submissions, and other information you choose to send us.
 - **Search, booking-interest, and marketing information:** airport searches, travel preferences, booking inquiries, attribution parameters, and your preferences regarding newsletters, promotions, and similar communications.
-- **Third-party login information:** if you choose to sign in using Google, we and our identity or authentication providers may receive information made available through that login flow, such as your Google account identifier, name, email address, profile image, and authentication and session metadata needed to maintain your login.
+- **Third-party login and connected-account information:** if you choose to sign in with, connect, or import from Google, Microsoft, Apple, or another account provider, we and our identity or authentication providers may receive information made available through that flow, such as account identifiers, name, email address, profile image, authentication and session metadata, connected email content, calendar data, forwarding settings, and permissions needed to provide the features you request.
 
 ### Information Collected Automatically
 
@@ -193,6 +193,10 @@ We may receive information from:
 ### Sensitive Information
 
 Some information you provide or connect may be considered sensitive under certain laws, such as connected email content, travel documents, traveler identity details, or precise geolocation if you enable it. We use this information only to provide, secure, support, and improve the Services, or as otherwise permitted by law. Please provide only the information necessary for your use of the Services or your request to us.
+
+### Google API Data
+
+If you connect a Google account, DoneAI's use and transfer of information received from Google APIs will adhere to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements. We use Google user data only to provide and secure the connected features you request, such as sign-in, travel email import, calendar import, travel forwarding setup, and related support. We do not use Google user data for advertising, retargeting, personalized ads, or sale to data brokers.
 
 ## How We Use Information
 
@@ -230,6 +234,8 @@ We use cookies, pixels, and other tracking technologies for several purposes:
 - **Advertising or conversion measurement technologies:** to market to you and measure marketing and signup performance where you have consented or where otherwise permitted by law.
 
 Depending on your location, settings, and marketing practices, providers may include analytics, attribution, advertising, remarketing, social-media, affiliate, audience, and conversion-measurement services, and we may change or add providers over time.
+
+The current iOS mobile app build does not enable mobile app ad-platform sharing or request Apple's App Tracking Transparency permission. Website, waitlist, and other web marketing or conversion-measurement activity remains consent-based as described in this policy and on our privacy choices page.
 
 Some forms or public endpoints may use Google reCAPTCHA or similar anti-abuse technology to help protect the Services from spam, bots, and abuse. Use of reCAPTCHA is subject to the Google Privacy Policy (https://policies.google.com/privacy) and Google Terms of Service (https://policies.google.com/terms).
 

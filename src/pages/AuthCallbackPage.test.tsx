@@ -73,7 +73,7 @@ describe("AuthCallbackPage", () => {
       text: async () => "",
     });
 
-    renderPage();
+    renderPage("/oauth/callback?code=off-domain-code&state=off-domain-state");
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -86,6 +86,25 @@ describe("AuthCallbackPage", () => {
         }),
       );
     });
+
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith("/app", { replace: true });
+    });
+  });
+
+  it("falls back to the app route for off-domain callback redirects", async () => {
+    completeLoginMock.mockResolvedValue({
+      redirectPath: "https://attacker.example/app",
+      accessToken: "access-token-value",
+      idToken: "id-token-value",
+      tokenType: "Bearer",
+    });
+    fetchMock.mockResolvedValue({
+      ok: true,
+      text: async () => "",
+    });
+
+    renderPage();
 
     await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith("/app", { replace: true });

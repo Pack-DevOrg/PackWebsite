@@ -621,7 +621,12 @@ export default defineConfig(({ mode, ssrBuild }) => {
       fs: {
         allow: [
           normalizePath(rootDir),
-          normalizePath(repoRootDir),
+          normalizePath(packSchemasDir),
+          normalizePath(packAdsLogoLabOutputDir),
+          normalizePath(reactModuleDir),
+          normalizePath(reactDomModuleDir),
+          normalizePath(styledComponentsModuleDir),
+          normalizePath(zodModuleDir),
         ],
       },
       proxy: devProxy,

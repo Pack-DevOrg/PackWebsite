@@ -63,7 +63,7 @@ function handler(event) {
   };
   headers['content-security-policy'] = {
     value:
-      "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https: https://tsa-board.trypackai.com; frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com; font-src 'self' data: https:;",
+      "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ 'unsafe-inline'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; connect-src 'self' https: https://tsa-board.trypackai.com; frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com; font-src 'self' data: https:; worker-src 'self'; manifest-src 'self'; media-src 'self';",
   };
   headers['x-content-type-options'] = { value: 'nosniff' };
   headers['x-frame-options'] = { value: 'DENY' };

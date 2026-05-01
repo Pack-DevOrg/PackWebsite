@@ -51,6 +51,12 @@ const packAdsLogoLabOutputDir = path.join(
   'generated_images',
   'logo_lab',
 );
+const packAppDir = path.join(repoRootDir, 'PackApp');
+const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
+const packAppLiveActivityReviewDir = path.join(
+  packAppDir,
+  'manual-live-activity-review',
+);
 const execFileAsync = promisify(execFile);
 
 function isUsablePublicTsaBoardUrl(
@@ -623,6 +629,8 @@ export default defineConfig(({ mode, ssrBuild }) => {
           normalizePath(rootDir),
           normalizePath(packSchemasDir),
           normalizePath(packAdsLogoLabOutputDir),
+          normalizePath(packAppAssetImagesDir),
+          normalizePath(packAppLiveActivityReviewDir),
           normalizePath(reactModuleDir),
           normalizePath(reactDomModuleDir),
           normalizePath(styledComponentsModuleDir),

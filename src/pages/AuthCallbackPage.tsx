@@ -266,8 +266,50 @@ type AuthCallbackSurfaceProps = {
 
 const processedCallbackKeys = new Set<string>();
 
-const isAbsoluteRedirectUrl = (value: string): boolean =>
-  /^https?:\/\//i.test(value);
+const isLocalhostOrigin = (origin: string): boolean =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(?::\d+)?$/i.test(origin);
+
+const getAllowedAbsoluteRedirectUrl = (value: string): string | null => {
+  try {
+    const redirectUrl = new URL(value);
+    const appUrl = new URL(appConfig.appBaseUrl);
+    if (
+      redirectUrl.origin === appUrl.origin ||
+      (isLocalhostOrigin(redirectUrl.origin) && isLocalhostOrigin(window.location.origin))
+    ) {
+      return redirectUrl.toString();
+    }
+  } catch {
+    return null;
+  }
+  return null;
+};
+
+const getSafeRelativeRedirectPath = (value: string): string | null => {
+  if (!value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
+    return null;
+  }
+  return value;
+};
+
+const resolvePostLoginRedirect = (redirectPath: string | null | undefined): {
+  readonly absoluteUrl: string | null;
+  readonly relativePath: string;
+} => {
+  if (!redirectPath) {
+    return { absoluteUrl: null, relativePath: "/app" };
+  }
+
+  const absoluteUrl = getAllowedAbsoluteRedirectUrl(redirectPath);
+  if (absoluteUrl) {
+    return { absoluteUrl, relativePath: "/app" };
+  }
+
+  return {
+    absoluteUrl: null,
+    relativePath: getSafeRelativeRedirectPath(redirectPath) ?? "/app",
+  };
+};
 
 const bootstrapAuthenticatedUser = async (
   accessToken: string,
@@ -439,11 +481,12 @@ const AuthCallbackPageInstance: React.FC<{ readonly search: string }> = ({
           event_label: 'oauth_callback_success',
         });
         window.history.replaceState({}, document.title, location.pathname);
-        if (redirectPath && isAbsoluteRedirectUrl(redirectPath)) {
-          window.location.replace(redirectPath);
+        const resolvedRedirect = resolvePostLoginRedirect(redirectPath);
+        if (resolvedRedirect.absoluteUrl) {
+          window.location.replace(resolvedRedirect.absoluteUrl);
           return;
         }
-        navigate(redirectPath ?? pathFor("/app"), { replace: true });
+        navigate(pathFor(resolvedRedirect.relativePath), { replace: true });
       })
       .catch((errorCause) => {
         window.history.replaceState({}, document.title, location.pathname);

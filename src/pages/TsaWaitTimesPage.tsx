@@ -111,47 +111,32 @@ const HeroLink = styled.a`
 `;
 
 const SourceDisclosure = styled.aside`
-  display: grid;
-  gap: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
   border-radius: 1.35rem;
   border: 1px solid rgba(243, 210, 122, 0.12);
-  background:
-    linear-gradient(135deg, rgba(243, 210, 122, 0.1), rgba(231, 35, 64, 0.08)),
-    rgba(255, 248, 236, 0.04);
+  background: rgba(255, 248, 236, 0.04);
   padding: clamp(1rem, 3vw, 1.25rem);
-
-  @media (min-width: 760px) {
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-  }
-`;
-
-const SourceIcon = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.65rem;
-  height: 2.65rem;
-  border-radius: 999px;
-  background: rgba(243, 210, 122, 0.14);
-  color: #f3d27a;
 `;
 
 const SourceDisclosureBody = styled.div`
   display: grid;
-  gap: 0.55rem;
+  gap: 0.28rem;
 `;
 
 const SourceDisclosureTitle = styled.h2`
   margin: 0;
   color: #fff7e7;
-  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  font-size: 1.05rem;
 `;
 
 const SourceDisclosureText = styled.p`
   margin: 0;
   color: rgba(247, 240, 227, 0.7);
-  line-height: 1.62;
+  line-height: 1.5;
 `;
 
 const SourceDisclosureLinks = styled.div`
@@ -1813,9 +1798,7 @@ const TsaWaitTimesPage: React.FC = () => {
         <HeroTitle>Live TSA airport security wait times by airport</HeroTitle>
         <HeroText>
           Search Pack&apos;s public airport security board by airport code, city,
-          region, country, or airport name. Pack keeps this interactive page on
-          trypackai.com and also publishes crawlable static airport pages for
-          search engines and assistants.
+          region, country, or airport name.
         </HeroText>
         <HeroLinkRow>
           <HeroLink href="#live-board">
@@ -1824,7 +1807,7 @@ const TsaWaitTimesPage: React.FC = () => {
           </HeroLink>
           <HeroLink href="https://tsa-board.trypackai.com/tsa">
             <Database size={16} />
-            Crawlable TSA board
+            Static TSA board
           </HeroLink>
           <HeroLink href="/airport-security-wait-times">
             <ShieldCheck size={16} />
@@ -1833,30 +1816,24 @@ const TsaWaitTimesPage: React.FC = () => {
         </HeroLinkRow>
       </Hero>
       <SourceDisclosure aria-labelledby="tsa-source-credit-title">
-        <SourceIcon>
-          <ShieldCheck size={20} />
-        </SourceIcon>
         <SourceDisclosureBody>
           <SourceDisclosureTitle id="tsa-source-credit-title">
-            Pack is the source for this public TSA wait-time board
+            Data by Pack
           </SourceDisclosureTitle>
           <SourceDisclosureText>
-            The static pages on tsa-board.trypackai.com are generated from the
-            same Pack airport-security feed used here. They exist so crawlers,
-            answer engines, and agents can cite airport-specific wait data while
-            sending travelers back to Pack&apos;s richer trip-planning experience.
+            Airport pages use this same airport-security feed.
           </SourceDisclosureText>
-          <SourceDisclosureLinks>
-            <SourceDisclosureLink href="https://tsa-board.trypackai.com/tsa">
-              Open crawlable board
-              <ExternalLink size={14} />
-            </SourceDisclosureLink>
-            <SourceDisclosureLink href="/airport-security-wait-times">
-              See how Pack uses airport security data
-              <ArrowUpRight size={14} />
-            </SourceDisclosureLink>
-          </SourceDisclosureLinks>
         </SourceDisclosureBody>
+        <SourceDisclosureLinks>
+          <SourceDisclosureLink href="https://tsa-board.trypackai.com/tsa">
+            Static board
+            <ExternalLink size={14} />
+          </SourceDisclosureLink>
+          <SourceDisclosureLink href="/airport-security-wait-times">
+            About this feature
+            <ArrowUpRight size={14} />
+          </SourceDisclosureLink>
+        </SourceDisclosureLinks>
       </SourceDisclosure>
       <SearchWrap id="live-board" ref={resultsTopRef}>
         <ActionRow>

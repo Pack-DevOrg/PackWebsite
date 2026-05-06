@@ -269,7 +269,7 @@ describe("TsaWaitTimesPage", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "Pack is the source for this public TSA wait-time board",
+        name: "Data by Pack",
       })
     ).toBeInTheDocument();
     expect(

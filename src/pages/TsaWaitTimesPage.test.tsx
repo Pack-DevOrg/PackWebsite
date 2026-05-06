@@ -273,7 +273,7 @@ describe("TsaWaitTimesPage", () => {
       })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /Crawlable TSA board/i })
+      screen.getByRole("link", { name: /Static TSA board/i })
     ).toHaveAttribute("href", "https://tsa-board.trypackai.com/tsa");
     expect(screen.getByText("Terminal 4")).toBeInTheDocument();
     expect(screen.getByText("8 min")).toBeInTheDocument();

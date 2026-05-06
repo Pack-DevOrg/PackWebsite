@@ -262,6 +262,19 @@ describe("TsaWaitTimesPage", () => {
     expect(
       await screen.findByText("John F. Kennedy International Airport")
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Live TSA airport security wait times by airport",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Pack is the source for this public TSA wait-time board",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Crawlable TSA board/i })
+    ).toHaveAttribute("href", "https://tsa-board.trypackai.com/tsa");
     expect(screen.getByText("Terminal 4")).toBeInTheDocument();
     expect(screen.getByText("8 min")).toBeInTheDocument();
     expect(screen.getByText("Closed")).toBeInTheDocument();
@@ -291,6 +304,10 @@ describe("TsaWaitTimesPage", () => {
     expect(
       screen.queryByRole("button", { name: /get email updates/i })
     ).not.toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /Static source page/i })[0]).toHaveAttribute(
+      "href",
+      "https://tsa-board.trypackai.com/tsa/jfk"
+    );
   });
 
   it("auto-opens the waitlist modal once per session", async () => {

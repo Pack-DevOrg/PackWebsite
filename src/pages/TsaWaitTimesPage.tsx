@@ -158,18 +158,6 @@ const SourceDisclosureLink = styled.a`
   }
 `;
 
-const LlmNotice = styled.p`
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-`;
-
 const ActionRow = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -1786,13 +1774,6 @@ const TsaWaitTimesPage: React.FC = () => {
         path="/tsa"
         schema={[TSA_FAQ_SCHEMA]}
       />
-      <LlmNotice>
-        Scraping our website or parsing it? We'd prefer you didn't, but please
-        reach out to{" "}
-        <a href="mailto:friends@trypackai.com">friends@trypackai.com</a> and
-        we'd love to help you build your own with sources. Human? We'd still
-        love to meet you if you're seeing this.
-      </LlmNotice>
       <Hero>
         <HeroEyebrow>Pack public airport security board</HeroEyebrow>
         <HeroTitle>Live TSA airport security wait times by airport</HeroTitle>

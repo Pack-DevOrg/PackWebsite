@@ -169,9 +169,11 @@ export function createWebPageSchema(
   url: string,
   languageTag: string,
 ): Record<string, unknown> {
+  const webPageIdUrl = url === SITE_ORIGIN ? `${SITE_ORIGIN}/` : url;
+
   return {
     "@type": "WebPage",
-    "@id": `${url}#webpage`,
+    "@id": `${webPageIdUrl}#webpage`,
     name: title,
     description,
     url,
@@ -183,6 +185,23 @@ export function createWebPageSchema(
     },
     inLanguage: languageTag,
   };
+}
+
+function stripSchemaContext(node: Record<string, unknown>): Record<string, unknown> {
+  const {"@context": _context, ...schemaNode} = node;
+  return schemaNode;
+}
+
+function extractSchemaNodes(schema: readonly JsonLd[]): readonly Record<string, unknown>[] {
+  return schema.flatMap((entry) => {
+    const graph = entry["@graph"];
+
+    if (Array.isArray(graph)) {
+      return graph.map(stripSchemaContext);
+    }
+
+    return [stripSchemaContext(entry)];
+  });
 }
 
 export function createSoftwareApplicationSchema(
@@ -220,17 +239,15 @@ export default function PageSeo({
 }: PageSeoProps): React.ReactElement {
   const { languageTag, pathFor } = useI18n();
   const canonicalUrl = buildAbsoluteUrl(pathFor(path));
-  const structuredData: JsonLd[] = [
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        createOrganizationSchema(),
-        createWebsiteSchema(),
-        createWebPageSchema(title, description, canonicalUrl, languageTag),
-      ],
-    },
-    ...schema,
-  ];
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      createOrganizationSchema(),
+      createWebsiteSchema(),
+      createWebPageSchema(title, description, canonicalUrl, languageTag),
+      ...extractSchemaNodes(schema),
+    ],
+  };
 
   return (
     <Helmet>
@@ -256,11 +273,9 @@ export default function PageSeo({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={twitterImageUrl} />
-      {structuredData.map((entry, index) => (
-        <script key={`${canonicalUrl}-jsonld-${index}`} type="application/ld+json">
-          {JSON.stringify(entry)}
-        </script>
-      ))}
+      <script key={`${canonicalUrl}-jsonld`} type="application/ld+json">
+        {JSON.stringify(structuredData)}
+      </script>
     </Helmet>
   );
 }

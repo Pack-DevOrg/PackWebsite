@@ -14,6 +14,7 @@ const routesToPrerender = [
   "/features",
   "/faq",
   "/how-it-works",
+  "/benchmark/travel-context",
   "/travel-history",
   "/travel-stats",
   "/loyalty-details",

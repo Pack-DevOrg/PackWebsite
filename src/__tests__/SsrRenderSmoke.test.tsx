@@ -14,6 +14,7 @@ import Footer from "../components/Footer";
 import Features from "../pages/Features";
 import FAQ from "../pages/FAQ";
 import HowItWorks from "../pages/HowItWorks";
+import TravelContextBenchmark from "../pages/TravelContextBenchmark";
 
 const renderShell = (ui: React.ReactNode, initialEntries: string[]) => (
   <MemoryRouter initialEntries={initialEntries}>
@@ -102,6 +103,19 @@ describe("SSR-like render smoke", () => {
             <HowItWorks />
           </Layout>,
           ["/how-it-works"],
+        )
+      )
+    ).not.toThrow();
+  });
+
+  it("renders travel-context benchmark for SSR", () => {
+    expect(() =>
+      renderToString(
+        renderShell(
+          <Layout>
+            <TravelContextBenchmark />
+          </Layout>,
+          ["/benchmark/travel-context"],
         )
       )
     ).not.toThrow();

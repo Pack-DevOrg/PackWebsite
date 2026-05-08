@@ -2,6 +2,9 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
+    '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
+    '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/src/__mocks__/fileMock.js',
     '^@/(.*)$': '<rootDir>/src/$1',
     // PackWebsite is part of a workspace and some deps may be hoisted to the repo root.
     // Prefer the website-local React copy so React + renderer resolve consistently (avoids invalid hook calls when the
@@ -14,9 +17,6 @@ export default {
     '^react-dom/server$': '<rootDir>/node_modules/react-dom/server.js',
     '^react-dom/test-utils$': '<rootDir>/node_modules/react-dom/test-utils.js',
     '^react-dom/(.*)$': '<rootDir>/node_modules/react-dom/$1',
-    '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
-    '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
-    '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/src/__mocks__/fileMock.js',
   },
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': ['ts-jest', {

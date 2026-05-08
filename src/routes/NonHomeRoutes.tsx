@@ -35,6 +35,9 @@ const PrivacyRequestVerificationPage = React.lazy(
 const AccessibilityPage = React.lazy(() => import("../pages/Accessibility"));
 const AboutPage = React.lazy(() => import("../pages/About"));
 const SupportPage = React.lazy(() => import("../pages/Support"));
+const TravelContextBenchmarkPage = React.lazy(
+  () => import("../pages/TravelContextBenchmark")
+);
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const EmailForwardingSetupPage = React.lazy(
   () => import("../pages/EmailForwardingSetup")
@@ -378,6 +381,20 @@ const NonHomeRoutes: React.FC = () => {
             <Layout>
               <Suspense fallback={null}>
                 <AccessibilityPage />
+              </Suspense>
+              <Suspense fallback={null}>
+                <Footer />
+                <ScrollToTop />
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/benchmark/travel-context"
+          element={
+            <Layout>
+              <Suspense fallback={null}>
+                <TravelContextBenchmarkPage />
               </Suspense>
               <Suspense fallback={null}>
                 <Footer />
@@ -769,6 +786,20 @@ const NonHomeRoutes: React.FC = () => {
               <Layout>
                 <Suspense fallback={null}>
                   <AccessibilityPage />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <Footer />
+                  <ScrollToTop />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="benchmark/travel-context"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <TravelContextBenchmarkPage />
                 </Suspense>
                 <Suspense fallback={null}>
                   <Footer />

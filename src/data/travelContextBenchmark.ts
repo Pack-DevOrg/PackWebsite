@@ -13,7 +13,7 @@ export const benchmarkOverview = {
   version: "travel-context-scaffold-v0",
   officialRunStatus: "Full 100-case Pack run pending",
   corpus: {
-    household: "Hartwell household",
+    household: "Fakerson household",
     people: 4,
     emailsPerPerson: "10,000",
     totalEmails: "40,000",

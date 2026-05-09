@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import styled from "styled-components";
+import { z } from "zod";
 import "leaflet/dist/leaflet.css";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import {
@@ -83,6 +84,14 @@ type ListingZoneLookup = {
 type LeafletModule = typeof import("leaflet");
 type LeafletMap = import("leaflet").Map;
 type LeafletMarker = import("leaflet").Marker;
+
+const NominatimGeocoderResponseSchema = z.array(
+  z.object({
+    display_name: z.string().min(1),
+    lat: z.string().min(1),
+    lon: z.string().min(1),
+  }).passthrough(),
+);
 
 const ZONING_LAYER_URL =
   "https://maps.lacity.org/lahub/rest/services/City_Planning_Department/MapServer/8";
@@ -634,24 +643,70 @@ function getCategoryStyle(category: LiveWorkCategory): {
   };
 }
 
-function formatPopupHtml(properties: ZoneFeatureProperties): string {
+function appendPopupLine(
+  container: HTMLElement,
+  label: string,
+  value: string,
+): void {
+  const line = window.document.createElement("div");
+  const labelElement = window.document.createElement("strong");
+  labelElement.textContent = label;
+  line.append(labelElement, ` ${value}`);
+  container.appendChild(line);
+}
+
+function buildZonePopupContent(properties: ZoneFeatureProperties): HTMLElement {
   const zoneComplete = properties.ZONE_CMPLT ?? "Unknown zone";
   const category = classifyLiveWorkCategory(zoneComplete);
   const baseZone = extractBaseZone(zoneComplete) ?? "Unknown";
 
-  return `
-    <div style="display:grid;gap:0.45rem;">
-      <strong style="font-size:1rem;">${zoneComplete}</strong>
-      <div><strong>Base zone:</strong> ${baseZone}</div>
-      <div><strong>Candidate strength:</strong> ${
-        category ? getLiveWorkCategoryLabel(category) : "Not classified"
-      }</div>
-      <div><strong>City zoning family:</strong> ${properties.ZONING_DESCRIPTION ?? "Unavailable"}</div>
-      <div style="color:rgba(247,240,227,0.72);font-size:0.9rem;">
-        This is a screening label, not approval. Confirm the parcel in ZIMAS and with City Planning before relying on it.
-      </div>
-    </div>
-  `;
+  const container = window.document.createElement("div");
+  container.style.display = "grid";
+  container.style.gap = "0.45rem";
+
+  const title = window.document.createElement("strong");
+  title.style.fontSize = "1rem";
+  title.textContent = zoneComplete;
+  container.appendChild(title);
+
+  appendPopupLine(container, "Base zone:", baseZone);
+  appendPopupLine(
+    container,
+    "Candidate strength:",
+    category ? getLiveWorkCategoryLabel(category) : "Not classified",
+  );
+  appendPopupLine(
+    container,
+    "City zoning family:",
+    properties.ZONING_DESCRIPTION ?? "Unavailable",
+  );
+
+  const notice = window.document.createElement("div");
+  notice.style.color = "rgba(247,240,227,0.72)";
+  notice.style.fontSize = "0.9rem";
+  notice.textContent =
+    "This is a screening label, not approval. Confirm the parcel in ZIMAS and with City Planning before relying on it.";
+  container.appendChild(notice);
+
+  return container;
+}
+
+function buildAddressPopupContent(address: string, zoneComplete: string | null): HTMLElement {
+  const container = window.document.createElement("div");
+  container.style.display = "grid";
+  container.style.gap = "0.4rem";
+
+  const addressLine = window.document.createElement("strong");
+  addressLine.textContent = address;
+  container.appendChild(addressLine);
+
+  const zoneLine = window.document.createElement("div");
+  zoneLine.textContent = zoneComplete
+    ? `Candidate polygon: ${zoneComplete}`
+    : "No candidate polygon found at this point";
+  container.appendChild(zoneLine);
+
+  return container;
 }
 
 function buildSummary(features: GeoJsonFeature[]): MapSummary {
@@ -711,34 +766,6 @@ function findMatchingFeature(
   return null;
 }
 
-function loadJsonp<T>(url: string, callbackParam: string = "callback"): Promise<T> {
-  return new Promise((resolve, reject) => {
-    if (typeof window === "undefined") {
-      reject(new Error("JSONP lookup is only available in the browser"));
-      return;
-    }
-
-    const callbackName = `packGeocodeCallback_${Math.random().toString(36).slice(2)}`;
-    const script = window.document.createElement("script");
-    const cleanup = () => {
-      delete (window as Window & Record<string, unknown>)[callbackName];
-      script.remove();
-    };
-
-    (window as Window & Record<string, unknown>)[callbackName] = (payload: T) => {
-      cleanup();
-      resolve(payload);
-    };
-
-    script.onerror = () => {
-      cleanup();
-      reject(new Error("Geocoder script failed to load"));
-    };
-    script.src = `${url}&${callbackParam}=${callbackName}`;
-    window.document.body.appendChild(script);
-  });
-}
-
 async function geocodeAddress(addressQuery: string): Promise<{
   address: string;
   latitude: number;
@@ -750,13 +777,17 @@ async function geocodeAddress(addressQuery: string): Promise<{
     limit: "1",
   });
 
-  const payload = await loadJsonp<
-    Array<{
-      display_name: string;
-      lat: string;
-      lon: string;
-    }>
-  >(`${WORLD_GEOCODER_URL}?${params.toString()}`, "json_callback");
+  const response = await fetch(`${WORLD_GEOCODER_URL}?${params.toString()}`, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Address lookup returned ${response.status}`);
+  }
+
+  const payload = NominatimGeocoderResponseSchema.parse(await response.json());
 
   const candidate = payload[0];
 
@@ -764,10 +795,17 @@ async function geocodeAddress(addressQuery: string): Promise<{
     throw new Error("No matching address found");
   }
 
+  const latitude = Number(candidate.lat);
+  const longitude = Number(candidate.lon);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    throw new Error("Geocoder returned invalid coordinates");
+  }
+
   return {
     address: candidate.display_name,
-    longitude: Number(candidate.lon),
-    latitude: Number(candidate.lat),
+    longitude,
+    latitude,
   };
 }
 
@@ -870,7 +908,7 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
           },
           onEachFeature: (feature, layer) => {
             layer.bindPopup(
-              formatPopupHtml((feature.properties ?? {}) as ZoneFeatureProperties),
+              buildZonePopupContent((feature.properties ?? {}) as ZoneFeatureProperties),
             );
           },
         },
@@ -940,18 +978,7 @@ const WestLaLiveWorkZoningPage: React.FC = () => {
       markerRef.current = leafletRef.current
         .marker([geocodedAddress.latitude, geocodedAddress.longitude])
         .addTo(mapRef.current)
-        .bindPopup(
-          `
-            <div style="display:grid;gap:0.4rem;">
-              <strong>${geocodedAddress.address}</strong>
-              <div>${
-                zoneComplete
-                  ? `Candidate polygon: ${zoneComplete}`
-                  : "No candidate polygon found at this point"
-              }</div>
-            </div>
-          `,
-        );
+        .bindPopup(buildAddressPopupContent(geocodedAddress.address, zoneComplete));
 
       markerRef.current.openPopup();
       mapRef.current.setView([geocodedAddress.latitude, geocodedAddress.longitude], 15, {

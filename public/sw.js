@@ -12,9 +12,9 @@
  */
 
 // Bump versions to flush old caches after deploys
-const CACHE_NAME = 'pack-v1.0.10';
-const STATIC_CACHE = 'pack-static-v1.0.10';
-const DYNAMIC_CACHE = 'pack-dynamic-v1.0.10';
+const CACHE_NAME = 'pack-v1.0.11';
+const STATIC_CACHE = 'pack-static-v1.0.11';
+const DYNAMIC_CACHE = 'pack-dynamic-v1.0.11';
 
 // Static assets that change rarely
 const STATIC_ASSETS = [
@@ -153,6 +153,10 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') {
     return;
   }
+
+  if (shouldBypassServiceWorker(request)) {
+    return;
+  }
   
   // Handle different types of requests
   if (isStaticAsset(request)) {
@@ -267,7 +271,7 @@ async function handleAPIRequest(request) {
     
     // Start network request (don't await)
     const networkPromise = fetch(request).then(async (response) => {
-      if (response.ok) {
+      if (response.ok && !shouldBypassCaching(request, response)) {
         const responseClone = response.clone();
         await cache.put(request, responseClone);
         console.log('[SW] Updated API cache:', request.url);
@@ -393,8 +397,8 @@ async function handleGenericRequest(request) {
   try {
     const networkResponse = await fetch(request);
     
-    if (networkResponse.ok) {
-      // Cache successful responses
+    if (networkResponse.ok && !shouldBypassCaching(request, networkResponse)) {
+      // Cache successful non-sensitive responses only
       const cache = await caches.open(DYNAMIC_CACHE);
       const responseClone = networkResponse.clone();
       await cache.put(request, responseClone);
@@ -403,6 +407,13 @@ async function handleGenericRequest(request) {
     return networkResponse;
     
   } catch (error) {
+    if (shouldBypassCaching(request)) {
+      return new Response('Content not available offline', {
+        status: 503,
+        statusText: 'Service Unavailable'
+      });
+    }
+
     // Try cache fallback
     const cache = await caches.open(DYNAMIC_CACHE);
     const cachedResponse = await cache.match(request);
@@ -421,6 +432,41 @@ async function handleGenericRequest(request) {
 /**
  * Utility Functions
  */
+
+function shouldBypassServiceWorker(request) {
+  return hasAuthorizationHeader(request) || isExternalGenericRequest(request);
+}
+
+function shouldBypassCaching(request, response) {
+  return (
+    hasAuthorizationHeader(request) ||
+    isExternalGenericRequest(request) ||
+    hasSensitiveResponseCacheHeaders(response)
+  );
+}
+
+function hasAuthorizationHeader(request) {
+  return Boolean(request.headers.get('authorization'));
+}
+
+function isExternalGenericRequest(request) {
+  const url = new URL(request.url);
+  return url.origin !== self.location.origin && !isStaticAsset(request) && !isAPIRequest(request);
+}
+
+function hasSensitiveResponseCacheHeaders(response) {
+  if (!response) {
+    return false;
+  }
+
+  const cacheControl = (response.headers.get('cache-control') || '').toLowerCase();
+  if (cacheControl.includes('no-store') || cacheControl.includes('private')) {
+    return true;
+  }
+
+  const vary = (response.headers.get('vary') || '').toLowerCase();
+  return vary === '*' || vary.split(',').map((value) => value.trim()).includes('authorization');
+}
 
 function isStaticAsset(request) {
   // Don't cache chrome-extension URLs

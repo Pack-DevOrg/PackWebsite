@@ -11,6 +11,7 @@ import {
   SearchCheck,
 } from "lucide-react";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
+import { travelContextBenchmarkLeaderboard } from "@/data/travelContextBenchmarkLeaderboard";
 
 const Page = styled.main`
   width: min(100%, 1120px);
@@ -152,6 +153,52 @@ const LinkRow = styled.div`
   gap: var(--space-2);
 `;
 
+const ScorePanel = styled.div`
+  overflow-x: auto;
+  border: 1px solid rgba(243, 210, 122, 0.12);
+  border-radius: var(--border-radius);
+  background: rgba(255, 255, 255, 0.035);
+`;
+
+const ScoreTable = styled.table`
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  color: var(--color-text-primary);
+
+  th,
+  td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    white-space: nowrap;
+  }
+
+  th {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  td:first-child {
+    font-weight: 700;
+  }
+`;
+
+const Note = styled.p`
+  max-width: 860px;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  line-height: 1.7;
+`;
+
 const TextLink = styled.a`
   display: inline-flex;
   align-items: center;
@@ -218,6 +265,18 @@ const awsCards = [
     icon: Clock3,
   },
 ];
+
+const formatScore = (value: number) => value.toFixed(3);
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 3,
+  }).format(value);
+
+const formatSeconds = (milliseconds: number) =>
+  `${(milliseconds / 1000).toFixed(1)}s`;
 
 const TravelContextBenchmark = () => (
   <Page>
@@ -309,6 +368,51 @@ const TravelContextBenchmark = () => (
           );
         })}
       </CardGrid>
+    </Section>
+
+    <Section>
+      <SectionTitle>Initial AWS Dev Leaderboard</SectionTitle>
+      <SectionText>
+        These v0 scores come from audited AWS Fargate runs over the 20-case dev
+        split. Each run uses the same benchmark HTTP contract and reports score,
+        model cost, and wall-clock runtime from collected run artifacts.
+      </SectionText>
+      <ScorePanel>
+        <ScoreTable>
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Cases</th>
+              <th>Avg score</th>
+              <th>Total cost</th>
+              <th>Avg cost</th>
+              <th>Avg time</th>
+              <th>Score / $</th>
+              <th>Score / min</th>
+            </tr>
+          </thead>
+          <tbody>
+            {travelContextBenchmarkLeaderboard.entries.map((entry) => (
+              <tr key={entry.agentId}>
+                <td>{entry.label}</td>
+                <td>{entry.split.scenarioCount}</td>
+                <td>{formatScore(entry.split.averageScore)}</td>
+                <td>{formatCurrency(entry.split.totalEstimatedCostUsd)}</td>
+                <td>{formatCurrency(entry.split.averageEstimatedCostUsd)}</td>
+                <td>{formatSeconds(entry.split.averageWallClockMs)}</td>
+                <td>{formatScore(entry.split.scorePerDollar)}</td>
+                <td>{formatScore(entry.split.scorePerMinute)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </ScoreTable>
+      </ScorePanel>
+      <Note>
+        Generated {travelContextBenchmarkLeaderboard.generatedAt}. Mode:{" "}
+        {travelContextBenchmarkLeaderboard.mode}; execution: aws-sqs-fargate.
+        Hidden eval is protocol-only, so these are public dev-run numbers rather
+        than a final hidden-test leaderboard.
+      </Note>
     </Section>
 
     <Section>

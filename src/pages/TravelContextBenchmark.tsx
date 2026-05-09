@@ -1,19 +1,16 @@
 import React from "react";
 import styled from "styled-components";
+import { GitBranch } from "lucide-react";
 import {
-  BarChart3,
-  CalendarCheck,
-  Clock3,
-  Cloud,
-  GitBranch,
-  MailSearch,
-  Plane,
-  SearchCheck,
-} from "lucide-react";
+  benchmarkOverview,
+  latestVerifiedPackRun,
+  phaseCards,
+  scoreCards,
+} from "@/data/travelContextBenchmark";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 
 const Page = styled.main`
-  width: min(100%, 1120px);
+  width: min(100%, 1180px);
   margin: 0 auto;
   padding: var(--space-4) var(--space-3) var(--space-6);
 
@@ -24,7 +21,7 @@ const Page = styled.main`
 
 const Header = styled.header`
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
   margin-bottom: var(--space-5);
 `;
 
@@ -38,45 +35,62 @@ const Kicker = styled.p`
 `;
 
 const Title = styled.h1`
-  max-width: 820px;
+  max-width: 900px;
   margin: 0;
   color: var(--color-text-primary);
-  font-size: clamp(2rem, 5vw, 4.25rem);
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
   line-height: 1.02;
 `;
 
 const Intro = styled.p`
-  max-width: 760px;
+  max-width: 840px;
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-large);
   line-height: 1.7;
 `;
 
-const MetaGrid = styled.dl`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-3);
-  margin: var(--space-4) 0 0;
+const StatusBar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  border: 1px solid rgba(243, 210, 122, 0.18);
+  border-radius: var(--border-radius);
+  background: rgba(255, 248, 236, 0.045);
+  padding: var(--space-3);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+
+  strong {
+    color: var(--color-text-primary);
+  }
 `;
 
-const MetaItem = styled.div`
-  border: 1px solid rgba(243, 210, 122, 0.14);
+const MetricGrid = styled.dl`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+`;
+
+const Metric = styled.div`
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--border-radius);
-  background: rgba(255, 248, 236, 0.04);
+  background: rgba(255, 255, 255, 0.035);
   padding: var(--space-3);
 
   dt {
+    margin: 0 0 0.35rem;
     color: var(--color-text-secondary);
     font-size: var(--font-size-small);
-    margin-bottom: 0.35rem;
   }
 
   dd {
+    margin: 0;
     color: var(--color-text-primary);
     font-size: var(--font-size-large);
-    font-weight: 700;
-    margin: 0;
+    font-weight: 800;
   }
 `;
 
@@ -93,7 +107,7 @@ const SectionTitle = styled.h2`
 `;
 
 const SectionText = styled.p`
-  max-width: 780px;
+  max-width: 860px;
   margin: 0;
   color: var(--color-text-secondary);
   line-height: 1.7;
@@ -101,7 +115,7 @@ const SectionText = styled.p`
 
 const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--space-3);
 `;
 
@@ -109,8 +123,8 @@ const Card = styled.article`
   display: grid;
   align-content: start;
   gap: var(--space-2);
-  min-height: 190px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  min-height: 210px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--border-radius);
   background: rgba(255, 255, 255, 0.035);
   padding: var(--space-4);
@@ -134,6 +148,72 @@ const Card = styled.article`
   }
 `;
 
+const CardMetric = styled.span`
+  color: var(--color-accent);
+  font-size: var(--font-size-small);
+  font-weight: 800;
+  text-transform: uppercase;
+`;
+
+const ProtocolList = styled.ol`
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+`;
+
+const ResultPanel = styled.article`
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid rgba(243, 210, 122, 0.16);
+  border-radius: var(--border-radius);
+  background: rgba(0, 0, 0, 0.26);
+  padding: var(--space-4);
+`;
+
+const ResultHeader = styled.div`
+  display: grid;
+  gap: var(--space-1);
+
+  h3 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xl);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+`;
+
+const ResultGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-2);
+`;
+
+const ResultItem = styled.div`
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-2);
+
+  span {
+    display: block;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+  }
+
+  strong {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-large);
+  }
+`;
+
 const CommandBlock = styled.pre`
   overflow-x: auto;
   margin: 0;
@@ -146,24 +226,11 @@ const CommandBlock = styled.pre`
   line-height: 1.7;
 `;
 
-const LinkRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-`;
-
-const Note = styled.p`
-  max-width: 860px;
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-  line-height: 1.7;
-`;
-
 const TextLink = styled.a`
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  width: fit-content;
   color: var(--color-accent);
   text-decoration: none;
   font-weight: 700;
@@ -179,66 +246,18 @@ const TextLink = styled.a`
   }
 `;
 
-const flowCards = [
-  {
-    title: "Trip parsing",
-    body:
-      "Recover the real travel state from a noisy household inbox and calendar, including forwarded flight and hotel confirmations.",
-    icon: MailSearch,
-  },
-  {
-    title: "Trip planning",
-    body:
-      "Resolve natural requests against private constraints, public events, existing bookings, and calendar conflicts.",
-    icon: CalendarCheck,
-  },
-  {
-    title: "Travel search",
-    body:
-      "Select flights and hotels from synthetic inventory with prices, seat counts, room fit, timing, and preference traps.",
-    icon: Plane,
-  },
-  {
-    title: "Scored efficiency",
-    body:
-      "Report quality, pass rate, cost, tokens, tool calls, score per dollar, and score per minute for each agent run.",
-    icon: BarChart3,
-  },
-];
-
-const awsCards = [
-  {
-    title: "Prepare jobs",
-    body:
-      "Generate S3 case inputs and SQS messages from a checked manifest covering the public dev suite.",
-    icon: Cloud,
-  },
-  {
-    title: "Run workers",
-    body:
-      "Fargate-compatible workers fetch cases, expose local tools, call any HTTP-compatible agent, score, and write S3 artifacts.",
-    icon: SearchCheck,
-  },
-  {
-    title: "Collect results",
-    body:
-      "Aggregate per-case run bundles into run.json, case-results.jsonl, summary.json, and leaderboard.json.",
-    icon: Clock3,
-  },
-];
-
 const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
       title="Travel Context Benchmark | Pack"
-      description="Pack's AWS-runnable benchmark for evaluating travel agents on noisy household context, public events, mock flight and hotel search, quality, time, and cost."
+      description="Pack's runnable benchmark for evaluating travel agents on noisy household email, calendar context, public timing, flight search, hotel search, runtime, and cost."
       path="/benchmark/travel-context"
       schema={[
         {
           "@type": "Dataset",
           name: "Travel Context Benchmark",
           description:
-            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and mock travel inventory.",
+            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory.",
           url: buildAbsoluteUrl("/benchmark/travel-context"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {
@@ -248,48 +267,56 @@ const TravelContextBenchmark = () => (
         },
       ]}
     />
+
     <Header>
-      <Kicker>Benchmark v0</Kicker>
-      <Title>Travel agents should handle the mess around the trip.</Title>
+      <Kicker>Benchmark {benchmarkOverview.version}</Kicker>
+      <Title>Travel agents should survive the inbox before they book the trip.</Title>
       <Intro>
-        Travel Context Benchmark evaluates whether an agent can parse a noisy
-        household inbox, plan around calendars and public events, search mock
-        flights and hotels, and report quality, runtime, and cost.
+        Travel Context Benchmark measures the complete workflow: extracting a
+        household travel history from realistic email and calendar data,
+        planning from a short human prompt, and selecting flights and hotels
+        from large deterministic inventories.
       </Intro>
-      <MetaGrid>
-        <MetaItem>
-          <dt>Public scenarios</dt>
-          <dd>30</dd>
-        </MetaItem>
-        <MetaItem>
-          <dt>Hard prompt seeds</dt>
-          <dd>100</dd>
-        </MetaItem>
-        <MetaItem>
-          <dt>Inbox smoke</dt>
-          <dd>10k/person</dd>
-        </MetaItem>
-        <MetaItem>
-          <dt>Inventory smoke</dt>
+      <StatusBar>
+        <strong>{benchmarkOverview.officialRunStatus}.</strong>
+        The current published page is wired for final Pack and external-provider
+        runs, but only verified smoke results are shown until the full 100-case
+        run completes.
+      </StatusBar>
+      <MetricGrid>
+        <Metric>
+          <dt>Household</dt>
+          <dd>{benchmarkOverview.corpus.people} people</dd>
+        </Metric>
+        <Metric>
+          <dt>Inbox</dt>
+          <dd>{benchmarkOverview.corpus.totalEmails}</dd>
+        </Metric>
+        <Metric>
+          <dt>Travel items</dt>
+          <dd>{benchmarkOverview.corpus.travelEmails}</dd>
+        </Metric>
+        <Metric>
+          <dt>Search inventory</dt>
           <dd>1M + 1M</dd>
-        </MetaItem>
-      </MetaGrid>
+        </Metric>
+      </MetricGrid>
     </Header>
 
     <Section>
-      <SectionTitle>What It Measures</SectionTitle>
+      <SectionTitle>Benchmark Phases</SectionTitle>
       <SectionText>
-        The benchmark is designed for realistic travel-agent workflows: short
-        human prompts, relevant private context buried among stale travel items,
-        calendar blocks, public event timing, and flight or hotel options that
-        can be valid, invalid, cheap, expensive, useful, or distracting.
+        Each phase is scored separately and then rolled into an end-to-end case
+        score. Pack runs through its native code path; external systems run
+        against the same tool protocol and result schemas.
       </SectionText>
       <CardGrid>
-        {flowCards.map((card) => {
+        {phaseCards.map((card) => {
           const Icon = card.icon;
           return (
             <Card key={card.title}>
               <Icon aria-hidden="true" />
+              <CardMetric>{card.metric}</CardMetric>
               <h3>{card.title}</h3>
               <p>{card.body}</p>
             </Card>
@@ -299,19 +326,23 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>AWS Run Path</SectionTitle>
-      <SectionText>
-        The repo includes an AWS-oriented execution path: a manifest builder, a
-        run-prep step that writes S3 inputs and SQS messages, a worker entrypoint
-        for Fargate, and a collector for official score artifacts.
-      </SectionText>
+      <SectionTitle>Official Protocol</SectionTitle>
+      <ProtocolList>
+        {benchmarkOverview.protocol.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ProtocolList>
+    </Section>
+
+    <Section>
+      <SectionTitle>Scoring</SectionTitle>
       <CardGrid>
-        {awsCards.map((card) => {
+        {scoreCards.map((card) => {
           const Icon = card.icon;
           return (
-            <Card key={card.title}>
+            <Card key={card.label}>
               <Icon aria-hidden="true" />
-              <h3>{card.title}</h3>
+              <h3>{card.label}</h3>
               <p>{card.body}</p>
             </Card>
           );
@@ -320,33 +351,58 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Official Score Policy</SectionTitle>
-      <SectionText>
-        Official results use the full no-grace harness: tens of thousands of
-        synthetic inbox messages, large flight and hotel inventories exposed
-        through benchmark APIs, strict schema validation, and fully loaded cost
-        accounting. Invalid model JSON, invalid evidence kinds, and missing
-        required fields fail the case instead of being repaired.
-      </SectionText>
-      <Note>
-        The current public page intentionally does not show the earlier 20-case
-        scaffold diagnostics as a leaderboard. Those runs validated the runner,
-        not the real full-corpus benchmark.
-      </Note>
+      <SectionTitle>Latest Verified Pack Run</SectionTitle>
+      <ResultPanel>
+        <ResultHeader>
+          <h3>{latestVerifiedPackRun.label}</h3>
+          <p>{latestVerifiedPackRun.prompt}</p>
+        </ResultHeader>
+        <ResultGrid>
+          <ResultItem>
+            <span>Cases</span>
+            <strong>{latestVerifiedPackRun.caseCount}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Extractor profiles</span>
+            <strong>{latestVerifiedPackRun.extractionProfiles}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Historical trips</span>
+            <strong>{latestVerifiedPackRun.historicalTrips}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Flight scan</span>
+            <strong>{latestVerifiedPackRun.scannedFlights}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Hotel scan</span>
+            <strong>{latestVerifiedPackRun.scannedHotels}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Total cost</span>
+            <strong>{latestVerifiedPackRun.costs.total}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Planning accuracy</span>
+            <strong>{latestVerifiedPackRun.scores.planningAccuracy}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>User value</span>
+            <strong>{latestVerifiedPackRun.scores.userValue}</strong>
+          </ResultItem>
+        </ResultGrid>
+      </ResultPanel>
     </Section>
 
     <Section>
-      <SectionTitle>Run It Locally</SectionTitle>
-      <CommandBlock>{`npm ci
-npm run typecheck
-npm run validate-release
-npm run suite -- --out-dir tmp/travel-context-benchmark/dev-suite`}</CommandBlock>
-      <LinkRow>
-        <TextLink href="https://github.com/Pack-DevOrg" rel="noopener noreferrer" target="_blank">
-          <GitBranch aria-hidden="true" />
-          GitHub release repo coming next
-        </TextLink>
-      </LinkRow>
+      <SectionTitle>Run Path</SectionTitle>
+      <CommandBlock>{`cd PackServer
+npm run bench:travel-context:pack-extractor-hartwell -- --email-task-concurrency 2 --out-dir tmp/hartwell-pack-real-extractor-full
+npm run bench:travel-context:pack-phased-hartwell -- --extraction-dir tmp/hartwell-pack-real-extractor-full --limit 100 --flight-count 1000000 --hotel-count 1000000`}</CommandBlock>
+      <TextLink href="https://github.com/Pack-DevOrg" rel="noopener noreferrer" target="_blank">
+        <GitBranch aria-hidden="true" />
+        Release repository coming next
+      </TextLink>
     </Section>
   </Page>
 );

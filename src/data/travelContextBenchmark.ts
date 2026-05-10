@@ -10,7 +10,8 @@ import {
 } from "lucide-react";
 
 export const benchmarkOverview = {
-  version: "travel-context-scaffold-v0",
+  name: "Pack DeeperBench",
+  version: "pack-deeperbench-v0",
   officialRunStatus: "Full 100-case Pack run pending",
   corpus: {
     household: "Fakerson household",

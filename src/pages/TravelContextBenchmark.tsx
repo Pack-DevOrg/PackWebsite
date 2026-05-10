@@ -249,13 +249,13 @@ const TextLink = styled.a`
 const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
-      title="Travel Context Benchmark | Pack"
+      title="Pack DeeperBench | Pack"
       description="Pack's runnable benchmark for evaluating travel agents on noisy household email, calendar context, public timing, flight search, hotel search, runtime, and cost."
       path="/benchmark/travel-context"
       schema={[
         {
           "@type": "Dataset",
-          name: "Travel Context Benchmark",
+          name: "Pack DeeperBench",
           description:
             "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory.",
           url: buildAbsoluteUrl("/benchmark/travel-context"),
@@ -270,9 +270,9 @@ const TravelContextBenchmark = () => (
 
     <Header>
       <Kicker>Benchmark {benchmarkOverview.version}</Kicker>
-      <Title>Travel agents should survive the inbox before they book the trip.</Title>
+      <Title>{benchmarkOverview.name}: travel agents should survive the inbox before they book the trip.</Title>
       <Intro>
-        Travel Context Benchmark measures the complete workflow: extracting a
+        Pack DeeperBench measures the complete workflow: extracting a
         household travel history from realistic email and calendar data,
         planning from a short human prompt, and selecting flights and hotels
         from large deterministic inventories.

@@ -108,7 +108,7 @@ describe("SSR-like render smoke", () => {
     ).not.toThrow();
   });
 
-  it("renders travel-context benchmark for SSR", () => {
+  it("renders Pack DeeperBench for SSR", () => {
     expect(() =>
       renderToString(
         renderShell(

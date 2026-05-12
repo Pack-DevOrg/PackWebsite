@@ -1,0 +1,231 @@
+{
+  "brandTerms": [
+    "Pack",
+    "TryPackAI",
+    "Try Pack AI",
+    "AI travel assistant"
+  ],
+  "audiences": [
+    "frequent travelers",
+    "business travelers",
+    "executive assistants",
+    "travel coordinators",
+    "families planning trips",
+    "people with complex itineraries"
+  ],
+  "competitorTerms": [
+    "TripIt",
+    "Google Travel",
+    "Kayak Trips",
+    "Wanderlog",
+    "Hopper",
+    "Expedia",
+    "Navan",
+    "TravelPerk"
+  ],
+  "topicClusters": [
+    {
+      "id": "ai-travel-planning",
+      "label": "AI travel planning",
+      "priority": 10,
+      "intent": "commercial",
+      "keywords": [
+        "AI travel planner",
+        "AI trip planner",
+        "AI travel assistant",
+        "AI itinerary planner",
+        "best AI travel planner",
+        "travel planning app with AI",
+        "plan a trip from calendar events",
+        "turn emails into travel itinerary"
+      ],
+      "questions": [
+        "What is the best AI travel planner for complex trips?",
+        "Can AI turn emails and calendar events into a travel plan?",
+        "How do AI travel assistants compare with itinerary apps?"
+      ],
+      "preferredPages": [
+        "/",
+        "/features",
+        "/trip-planning-from-events",
+        "/how-it-works"
+      ]
+    },
+    {
+      "id": "trip-organization",
+      "label": "Trip organization",
+      "priority": 9,
+      "intent": "commercial",
+      "keywords": [
+        "travel itinerary organizer",
+        "trip organizer app",
+        "organize travel confirmations",
+        "email itinerary organizer",
+        "travel confirmation parser",
+        "automatic trip itinerary",
+        "travel inbox organizer"
+      ],
+      "questions": [
+        "How can I organize travel confirmations automatically?",
+        "What app turns booking emails into an itinerary?",
+        "How do I keep flights, hotels, and rental cars in one place?"
+      ],
+      "preferredPages": [
+        "/travel-history",
+        "/upcoming-trip-details",
+        "/connected-accounts",
+        "/features"
+      ]
+    },
+    {
+      "id": "booking-context",
+      "label": "Booking with context",
+      "priority": 8,
+      "intent": "commercial",
+      "keywords": [
+        "AI flight booking assistant",
+        "AI hotel booking assistant",
+        "travel booking assistant",
+        "book flights from itinerary",
+        "compare flights with traveler preferences",
+        "travel booking with calendar context"
+      ],
+      "questions": [
+        "Can an AI assistant help book flights and hotels?",
+        "How do I compare travel options against my calendar?",
+        "What is the best way to keep booking context attached to a trip?"
+      ],
+      "preferredPages": [
+        "/travel-booking",
+        "/trip-calendar-sync",
+        "/traveler-profiles"
+      ]
+    },
+    {
+      "id": "airport-security",
+      "label": "Airport security intelligence",
+      "priority": 7,
+      "intent": "informational",
+      "keywords": [
+        "airport security wait times",
+        "TSA wait times",
+        "live TSA wait times",
+        "airport wait time tracker",
+        "security line wait times",
+        "TSA wait time app"
+      ],
+      "questions": [
+        "Where can I check live TSA wait times?",
+        "How accurate are airport security wait times?",
+        "Which airports publish live security line data?"
+      ],
+      "preferredPages": [
+        "/airport-security-wait-times",
+        "/tsa"
+      ]
+    },
+    {
+      "id": "traveler-profile",
+      "label": "Traveler profile and loyalty",
+      "priority": 7,
+      "intent": "commercial",
+      "keywords": [
+        "traveler profile app",
+        "travel loyalty number organizer",
+        "frequent flyer number organizer",
+        "traveler preference profile",
+        "keep loyalty numbers with trips",
+        "trusted traveler number organizer"
+      ],
+      "questions": [
+        "How do I keep loyalty numbers organized for travel?",
+        "What is a reusable traveler profile?",
+        "Can an app remember traveler preferences across bookings?"
+      ],
+      "preferredPages": [
+        "/traveler-profiles",
+        "/loyalty-details",
+        "/travel-booking"
+      ]
+    },
+    {
+      "id": "travel-day-operations",
+      "label": "Travel-day operations",
+      "priority": 6,
+      "intent": "commercial",
+      "keywords": [
+        "travel day assistant",
+        "trip update app",
+        "live trip tracking",
+        "flight hotel itinerary updates",
+        "share live trip plan",
+        "trip expense organizer"
+      ],
+      "questions": [
+        "How do I track updates across a whole trip?",
+        "What app shares a live trip plan with family or coworkers?",
+        "How do I keep trip expenses attached to an itinerary?"
+      ],
+      "preferredPages": [
+        "/trip-updates",
+        "/live-trip-views",
+        "/trip-sharing",
+        "/trip-expenses"
+      ]
+    }
+  ],
+  "outreachAngles": [
+    {
+      "id": "ai-travel-tools-roundups",
+      "label": "AI travel tools roundups",
+      "queries": [
+        "\"best AI travel planner\"",
+        "\"AI travel tools\" \"travel planning\"",
+        "\"AI trip planner\" roundup",
+        "\"travel apps\" \"AI\" \"itinerary\""
+      ],
+      "pitch": "Offer Pack as an AI-native travel assistant that combines prompts, email confirmations, calendars, and booking context."
+    },
+    {
+      "id": "travel-productivity",
+      "label": "Travel productivity articles",
+      "queries": [
+        "\"organize travel emails\"",
+        "\"travel itinerary organizer\"",
+        "\"business travel\" \"itinerary app\"",
+        "\"calendar\" \"travel planning\" \"app\""
+      ],
+      "pitch": "Position Pack as a way to reduce travel admin by turning existing context into structured plans."
+    },
+    {
+      "id": "airport-operations",
+      "label": "Airport operations and TSA coverage",
+      "queries": [
+        "\"TSA wait times\" \"app\"",
+        "\"airport security wait times\" \"live\"",
+        "\"airport wait time tracker\"",
+        "\"TSA\" \"wait time\" \"travel app\""
+      ],
+      "pitch": "Use Pack's public TSA board and airport-specific pages as citeable live travel utility content."
+    },
+    {
+      "id": "founder-company-profiles",
+      "label": "Startup and founder profiles",
+      "queries": [
+        "\"AI travel startup\"",
+        "\"travel tech startup\" \"AI\"",
+        "\"trip planning\" \"startup\"",
+        "\"AI assistant\" \"travel\" \"founder\""
+      ],
+      "pitch": "Lead with Pack's travel-context thesis and the founders' AI/product background."
+    }
+  ],
+  "contentFormats": [
+    "comparison",
+    "how-to",
+    "benchmark",
+    "checklist",
+    "integration guide",
+    "data-backed explainer"
+  ]
+}

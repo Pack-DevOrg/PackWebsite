@@ -18,6 +18,9 @@
     "lint": "eslint .",
     "lint:strict": "PACK_LINT_STRICT=1 npm run lint",
     "preview": "vite preview",
+    "seo:analyze": "node scripts/seo/analyze-seo-opportunities.mjs",
+    "seo:check": "node scripts/seo/analyze-seo-opportunities.mjs --fail-on-critical",
+    "seo:discover": "node scripts/seo/analyze-seo-opportunities.mjs --discover-articles",
     "validate:meta-browser": "node scripts/validate-meta-browser-events.mjs",
     "capture:live-activity-lab": "node scripts/capture-live-activity-lab.mjs",
     "sync:live-activity-lab": "node scripts/sync-live-activity-lab.mjs",
@@ -29,6 +32,7 @@
     "test:e2e:headed": "npm run test:e2e:guard && playwright test -c playwright.config.ts --headed",
     "test:e2e:live": "npm run test:e2e:guard && E2E_BASE_URL=https://www.trypackai.com playwright test -c playwright.config.ts",
     "test": "jest",
+    "test:seo": "node --test scripts/seo/seo-opportunity-engine.test.mjs",
     "test:e2e:guard": "node scripts/check-e2e-subscribe-safety.mjs"
   },
   "dependencies": {

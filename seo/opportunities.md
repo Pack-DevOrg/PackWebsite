@@ -1,6 +1,6 @@
 # PackWebsite SEO and GEO Opportunities
 
-Generated: 2026-05-12T15:21:27.022Z
+Generated: 2026-05-12T15:28:50.037Z
 
 ## Technical Findings
 
@@ -10,27 +10,27 @@ Generated: 2026-05-12T15:21:27.022Z
 
 1. **plan a trip from calendar events** (AI travel planning, score 118) -> /. Create or substantially rewrite a focused page before pursuing outreach.
 2. **travel assistant with email calendar and loyalty** (Context-aware travel assistance, score 110) -> /connected-accounts. Create or substantially rewrite a focused page before pursuing outreach.
-3. **AI water energy consumption travel planning** (Reliable and responsible AI travel planning, score 108) -> /connected-accounts. Create or substantially rewrite a focused page before pursuing outreach.
-4. **turn emails into travel itinerary** (AI travel planning, score 105) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
-5. **travel email parser** (Trip organization, score 102) -> /travel-history. Create or substantially rewrite a focused page before pursuing outreach.
-6. **client meeting travel planner** (Event and calendar-based trip planning, score 102) -> /trip-planning-from-events. Create or substantially rewrite a focused page before pursuing outreach.
-7. **compare flights with traveler preferences** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
-8. **itinerary from confirmation emails** (Trip organization, score 100) -> /travel-history. Expand the preferred page with a focused section, FAQ, and internal links.
-9. **best AI travel planner** (AI travel planning, score 98) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
-10. **AI trip planner** (AI travel planning, score 97) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
-11. **AI itinerary planner** (AI travel planning, score 97) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
-12. **context aware travel assistant** (Context-aware travel assistance, score 97) -> /connected-accounts. Refresh title, internal links, and FAQ coverage on the existing page.
+3. **turn emails into travel itinerary** (AI travel planning, score 105) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
+4. **travel email parser** (Trip organization, score 102) -> /travel-history. Create or substantially rewrite a focused page before pursuing outreach.
+5. **client meeting travel planner** (Event and calendar-based trip planning, score 102) -> /trip-planning-from-events. Create or substantially rewrite a focused page before pursuing outreach.
+6. **compare flights with traveler preferences** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+7. **itinerary from confirmation emails** (Trip organization, score 100) -> /travel-history. Expand the preferred page with a focused section, FAQ, and internal links.
+8. **best AI travel planner** (AI travel planning, score 98) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
+9. **AI trip planner** (AI travel planning, score 97) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
+10. **AI itinerary planner** (AI travel planning, score 97) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
+11. **context aware travel assistant** (Context-aware travel assistance, score 97) -> /connected-accounts. Refresh title, internal links, and FAQ coverage on the existing page.
+12. **personal travel assistant app** (Context-aware travel assistance, score 97) -> /connected-accounts. Refresh title, internal links, and FAQ coverage on the existing page.
 
 ## Content Opportunities
 
 1. **AI travel planning: plan a trip from calendar events** -> /guides/ai-travel-planning. Format: integration guide. Links: /guides/ai-travel-planning, /, /features, /trip-planning-from-events, /how-it-works
 2. **Context-aware travel assistance: travel assistant with email calendar and loyalty** -> /guides/travel-context-engine. Format: checklist. Links: /guides/travel-context-engine, /connected-accounts, /travel-history, /traveler-profiles, /upcoming-trip-details
-3. **Reliable and responsible AI travel planning: AI water energy consumption travel planning** -> /guides/reliable-ai-travel-planning. Format: benchmark. Links: /guides/reliable-ai-travel-planning, /guides/travel-context-engine, /guides/ai-travel-planning, /connected-accounts, /travel-history, /upcoming-trip-details
-4. **Trip organization: travel email parser** -> /guides/trip-organization. Format: checklist. Links: /guides/trip-organization, /travel-history, /upcoming-trip-details, /connected-accounts, /features
-5. **Event and calendar-based trip planning: client meeting travel planner** -> /guides/event-trip-planning. Format: benchmark. Links: /guides/event-trip-planning, /trip-planning-from-events, /trip-calendar-sync, /travel-booking, /upcoming-trip-details
-6. **Booking with context: compare flights with traveler preferences** -> /guides/booking-context. Format: benchmark. Links: /guides/booking-context, /travel-booking, /trip-calendar-sync, /traveler-profiles
-7. **Airport security intelligence: airport wait time tracker** -> /guides/airport-security. Format: how-to. Links: /airport-security-wait-times, /tsa
-8. **Traveler profile and loyalty: travel loyalty number organizer** -> /guides/traveler-profile. Format: how-to. Links: /traveler-profiles, /loyalty-details, /travel-booking
+3. **Trip organization: travel email parser** -> /guides/trip-organization. Format: checklist. Links: /guides/trip-organization, /travel-history, /upcoming-trip-details, /connected-accounts, /features
+4. **Event and calendar-based trip planning: client meeting travel planner** -> /guides/event-trip-planning. Format: benchmark. Links: /guides/event-trip-planning, /trip-planning-from-events, /trip-calendar-sync, /travel-booking, /upcoming-trip-details
+5. **Booking with context: compare flights with traveler preferences** -> /guides/booking-context. Format: benchmark. Links: /guides/booking-context, /travel-booking, /trip-calendar-sync, /traveler-profiles
+6. **Airport security intelligence: airport wait time tracker** -> /guides/airport-security. Format: how-to. Links: /airport-security-wait-times, /tsa
+7. **Traveler profile and loyalty: travel loyalty number organizer** -> /guides/traveler-profile. Format: how-to. Links: /traveler-profiles, /loyalty-details, /travel-booking
+8. **Reliable and responsible AI travel planning: reliable AI travel planner** -> /guides/reliable-ai-travel-planning. Format: benchmark. Links: /guides/reliable-ai-travel-planning, /guides/travel-context-engine, /guides/ai-travel-planning, /connected-accounts, /travel-history, /upcoming-trip-details
 
 ## GEO Opportunities
 

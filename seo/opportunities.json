@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T15:21:27.022Z",
+  "generatedAt": "2026-05-12T15:28:50.037Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -85,34 +85,6 @@
           "path": "/llms.txt",
           "title": "Pack",
           "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "AI water energy consumption travel planning",
-      "clusterId": "reliable-ai-travel-planning",
-      "clusterLabel": "Reliable and responsible AI travel planning",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 108,
-      "currentBestCoverage": 0.41,
-      "recommendedPage": "/connected-accounts",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.41250000000000003
-        },
-        {
-          "path": "/reliable-ai-travel-planning",
-          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
-          "score": 0.41250000000000003
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.41250000000000003
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -217,13 +189,13 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
           "score": 0.55
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
+          "path": "/source/src/content/capabilityPages.ts",
+          "title": "capabilityPages.ts",
           "score": 0.55
         }
       ],
@@ -874,6 +846,34 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "token efficient AI travel planner",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "energy efficient AI travel assistant",
       "clusterId": "reliable-ai-travel-planning",
       "clusterLabel": "Reliable and responsible AI travel planning",
@@ -891,12 +891,40 @@
         {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
-          "score": 0.3666666666666667
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "AI travel planning energy use",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
         },
         {
           "path": "/reliable-ai-travel-planning",
           "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
-          "score": 0.3666666666666667
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1146,8 +1174,8 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/travel-stats-and-maps",
-          "title": "Travel Stats App For Maps And Personal Travel History",
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
           "score": 0.55
         }
       ],
@@ -2612,14 +2640,6 @@
   ],
   "questionOpportunities": [
     {
-      "question": "How do I track updates across a whole trip?",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "answerTarget": "/guides/travel-day-intelligence",
-      "currentBestCoverage": 0.37,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
-    {
       "question": "What app shares a live trip plan with family or coworkers?",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
@@ -2669,6 +2689,14 @@
     },
     {
       "question": "How can an AI travel assistant reduce wasted AI work?",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "answerTarget": "/guides/reliable-ai-travel-planning",
+      "currentBestCoverage": 0.55,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "How can a travel assistant use fewer AI tokens?",
       "clusterId": "reliable-ai-travel-planning",
       "clusterLabel": "Reliable and responsible AI travel planning",
       "answerTarget": "/guides/reliable-ai-travel-planning",
@@ -2812,6 +2840,14 @@
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
+      "question": "How do I track updates across a whole trip?",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "answerTarget": "/guides/travel-day-intelligence",
+      "currentBestCoverage": 0.55,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
       "question": "How do I keep trip expenses attached to an itinerary?",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
@@ -2926,27 +2962,6 @@
       ]
     },
     {
-      "clusterId": "reliable-ai-travel-planning",
-      "title": "Reliable and responsible AI travel planning: AI water energy consumption travel planning",
-      "recommendedSlug": "/guides/reliable-ai-travel-planning",
-      "format": "benchmark",
-      "score": 108,
-      "brief": [
-        "Lead with the user problem behind \"AI water energy consumption travel planning\".",
-        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
-        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
-        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
-      ],
-      "internalLinks": [
-        "/guides/reliable-ai-travel-planning",
-        "/guides/travel-context-engine",
-        "/guides/ai-travel-planning",
-        "/connected-accounts",
-        "/travel-history",
-        "/upcoming-trip-details"
-      ]
-    },
-    {
       "clusterId": "trip-organization",
       "title": "Trip organization: travel email parser",
       "recommendedSlug": "/guides/trip-organization",
@@ -3038,6 +3053,27 @@
         "/traveler-profiles",
         "/loyalty-details",
         "/travel-booking"
+      ]
+    },
+    {
+      "clusterId": "reliable-ai-travel-planning",
+      "title": "Reliable and responsible AI travel planning: reliable AI travel planner",
+      "recommendedSlug": "/guides/reliable-ai-travel-planning",
+      "format": "benchmark",
+      "score": 89,
+      "brief": [
+        "Lead with the user problem behind \"reliable AI travel planner\".",
+        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
+        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
+        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
+      ],
+      "internalLinks": [
+        "/guides/reliable-ai-travel-planning",
+        "/guides/travel-context-engine",
+        "/guides/ai-travel-planning",
+        "/connected-accounts",
+        "/travel-history",
+        "/upcoming-trip-details"
       ]
     },
     {
@@ -3142,10 +3178,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3196,10 +3232,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3250,10 +3286,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3304,10 +3340,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3358,10 +3394,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3412,10 +3448,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3466,10 +3502,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3520,10 +3556,10 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI water energy consumption travel planning\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+water+energy+consumption+travel+planning%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3541,10 +3577,6 @@
       "score": 95,
       "rationale": "AI retrieval benefits from crawlable textual answers that directly address query fan-out subquestions.",
       "targets": [
-        {
-          "question": "How do I track updates across a whole trip?",
-          "page": "/guides/travel-day-intelligence"
-        },
         {
           "question": "What app shares a live trip plan with family or coworkers?",
           "page": "/guides/travel-day-intelligence"

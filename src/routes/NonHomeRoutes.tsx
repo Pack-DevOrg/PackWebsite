@@ -112,6 +112,12 @@ const LabsBrandAssetsPage = labsEnabled
       return { default: module.LabsBrandAssetsPage };
     })
   : null;
+const LabsSoundmarksPage = labsEnabled
+  ? React.lazy(async () => {
+      const module = await import("../pages/Labs");
+      return { default: module.LabsSoundmarksPage };
+    })
+  : null;
 const LabsAuthCallbackPage = labsEnabled
   ? React.lazy(async () => {
       const module = await import("../pages/Labs");
@@ -659,6 +665,18 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
         ) : null}
+        {LabsSoundmarksPage ? (
+          <Route
+            path="/labs/soundmarks"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <LabsSoundmarksPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ) : null}
         {LabsAuthCallbackPage ? (
           <Route
             path="/labs/auth-callback"
@@ -982,6 +1000,9 @@ const NonHomeRoutes: React.FC = () => {
           ) : null}
           {LabsBrandAssetsPage ? (
             <Route path="labs/brand-assets" element={<Layout><Suspense fallback={null}><LabsBrandAssetsPage /></Suspense></Layout>} />
+          ) : null}
+          {LabsSoundmarksPage ? (
+            <Route path="labs/soundmarks" element={<Layout><Suspense fallback={null}><LabsSoundmarksPage /></Suspense></Layout>} />
           ) : null}
           {LabsAuthCallbackPage ? (
             <Route path="labs/auth-callback" element={<Layout><Suspense fallback={null}><LabsAuthCallbackPage /></Suspense></Layout>} />

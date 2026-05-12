@@ -63,6 +63,30 @@ type BrandAsset = {
   pathLabel: string;
 };
 
+type Soundmark = {
+  slug: string;
+  title: string;
+  useCase: string;
+  description: string;
+  src: string;
+  duration: string;
+};
+
+type SoundmarkScenario = {
+  label: string;
+  soundmarkSlug: Soundmark["slug"];
+};
+
+type ReferenceSoundmark = Soundmark & {
+  sourceUrl: string;
+  username: string;
+  rating: number | null;
+  ratingCount: number;
+  tags: string[];
+  foundBy: string;
+  rank: number;
+};
+
 type OgConcept = {
   slug: string;
   title: string;
@@ -378,6 +402,73 @@ const brandAssets: BrandAsset[] = [
   },
 ];
 
+const soundmarks: Soundmark[] = [
+  {
+    slug: "passport-stamp-chime",
+    title: "Passport Stamp Chime",
+    useCase: "Primary brand sound",
+    description:
+      "A tactile stamp click followed by a warm two-note lift for the moment Pack captures a travel detail.",
+    src: "/labs/soundmarks/passport-stamp-chime.wav",
+    duration: "0.75s",
+  },
+  {
+    slug: "packed-chime",
+    title: "Packed Chime",
+    useCase: "Trip ready",
+    description:
+      "A clean rising confirmation for a generated itinerary, imported booking, or successful save.",
+    src: "/labs/soundmarks/packed-chime.wav",
+    duration: "0.90s",
+  },
+  {
+    slug: "compass-ping",
+    title: "Compass Ping",
+    useCase: "Live travel update",
+    description:
+      "A bright locator tone for airport timing, route, or other travel-day changes.",
+    src: "/labs/soundmarks/compass-ping.wav",
+    duration: "0.84s",
+  },
+  {
+    slug: "pack-pulse",
+    title: "Pack Pulse",
+    useCase: "Calm notification",
+    description:
+      "A soft tap-and-tone reminder for useful notifications that should not feel urgent.",
+    src: "/labs/soundmarks/pack-pulse.wav",
+    duration: "0.80s",
+  },
+  {
+    slug: "gentle-nudge",
+    title: "Gentle Nudge",
+    useCase: "Needs attention",
+    description:
+      "A tiny prompt for missing traveler details, quiet reminders, or incomplete setup.",
+    src: "/labs/soundmarks/gentle-nudge.wav",
+    duration: "0.45s",
+  },
+];
+
+const soundmarkScenarios: SoundmarkScenario[] = [
+  {
+    label: "Email confirmation imported",
+    soundmarkSlug: "passport-stamp-chime",
+  },
+  {
+    label: "Your trip is ready",
+    soundmarkSlug: "packed-chime",
+  },
+  {
+    label: "Airport timing changed",
+    soundmarkSlug: "compass-ping",
+  },
+  {
+    label: "Add traveler details",
+    soundmarkSlug: "gentle-nudge",
+  },
+];
+
 const refinedOgConcepts: OgConcept[] = [
   {
     slug: "quiet-ember-breathing-room",
@@ -570,6 +661,251 @@ const AssetCard = styled.article`
   @media (max-width: 900px) {
     grid-column: span 1;
   }
+`;
+
+const SoundmarkCard = styled.article<{ $active?: boolean }>`
+  grid-column: span 4;
+  display: flex;
+  min-height: 17rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.1rem;
+  border: 1px solid
+    ${({ theme, $active }) =>
+      $active ? theme.colors.primary.main : theme.colors.border.light};
+  border-radius: 24px;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at top right, rgba(243, 210, 122, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow:
+    ${({ $active }) =>
+      $active ? "0 0 0 3px rgba(243, 210, 122, 0.14)," : ""}
+    ${({ theme }) => theme.colors.shadow.medium};
+
+  @media (max-width: 1080px) {
+    grid-column: span 6;
+  }
+
+  @media (max-width: 900px) {
+    grid-column: span 1;
+  }
+`;
+
+const SoundmarkControlRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const SoundmarkButton = styled.button`
+  display: inline-flex;
+  min-width: 7rem;
+  min-height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.primary.gradient};
+  color: #14110d;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 16px 34px rgba(243, 210, 122, 0.2);
+
+  &:focus-visible {
+    outline: 3px solid rgba(243, 210, 122, 0.45);
+    outline-offset: 3px;
+  }
+`;
+
+const DurationLabel = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.86rem;
+`;
+
+const SoundmarkStatus = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 22px;
+  background: rgba(255, 248, 236, 0.05);
+  padding: 1rem;
+`;
+
+const NowPlayingLabel = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.86rem;
+`;
+
+const NowPlayingValue = styled.strong`
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const ScenarioGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+
+  @media (max-width: 980px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 620px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ScenarioButton = styled.button`
+  display: flex;
+  min-height: 5.7rem;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 18px;
+  background: rgba(255, 248, 236, 0.05);
+  padding: 0.9rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary.light};
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(243, 210, 122, 0.45);
+    outline-offset: 3px;
+  }
+`;
+
+const ScenarioLabel = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.85rem;
+`;
+
+const ScenarioSound = styled.strong`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.96rem;
+`;
+
+const SoundmarkReviewShell = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 46rem;
+  margin: 0 auto;
+  width: 100%;
+`;
+
+const SoundmarkReviewCard = styled.article`
+  display: flex;
+  min-height: 26rem;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.35rem;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 28px;
+  padding: clamp(1.4rem, 4vw, 2.2rem);
+  text-align: center;
+  background:
+    radial-gradient(circle at top right, rgba(243, 210, 122, 0.1), transparent 30%),
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const SoundmarkReviewTitle = styled.h2`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+`;
+
+const SoundmarkReviewMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.95rem;
+`;
+
+const SoundmarkReviewControls = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.8rem;
+  align-items: center;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SoundmarkReviewButton = styled.button<{ $tone?: "yes" | "no" | "play" }>`
+  min-height: ${({ $tone }) => ($tone === "play" ? "4.5rem" : "4rem")};
+  min-width: ${({ $tone }) => ($tone === "play" ? "11rem" : "0")};
+  border: 1px solid
+    ${({ theme, $tone }) =>
+      $tone === "yes"
+        ? theme.colors.primary.light
+        : $tone === "no"
+          ? theme.colors.secondary.main
+          : theme.colors.border.light};
+  border-radius: 14px;
+  background: ${({ theme, $tone }) =>
+    $tone === "play"
+      ? theme.colors.primary.gradient
+      : $tone === "yes"
+        ? "rgba(243, 210, 122, 0.15)"
+        : $tone === "no"
+          ? "rgba(231, 35, 64, 0.14)"
+          : "rgba(255, 248, 236, 0.05)"};
+  color: ${({ $tone, theme }) =>
+    $tone === "play" ? "#14110d" : theme.colors.text.primary};
+  font: inherit;
+  font-size: 1.02rem;
+  font-weight: 900;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid rgba(243, 210, 122, 0.45);
+    outline-offset: 3px;
+  }
+`;
+
+const SoundmarkReviewStats = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.92rem;
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary.light};
+  }
+`;
+
+const ReviewerPill = styled.div`
+  display: inline-flex;
+  width: fit-content;
+  align-self: center;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 999px;
+  background: rgba(255, 248, 236, 0.05);
+  padding: 0.5rem 0.8rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.9rem;
 `;
 
 const ConceptCard = styled.article`
@@ -1404,6 +1740,14 @@ const labsContent = {
           kicker: "Brand exploration",
         },
         {
+          slug: "soundmarks",
+          title: "Soundmarks",
+          description:
+            "Audition the current Pack audio identity sketches and map them to travel-product moments.",
+          href: "/labs/soundmarks",
+          kicker: "Audio identity",
+        },
+        {
           slug: "brand-assets",
           title: "Brand Assets",
           description:
@@ -1450,6 +1794,14 @@ const labsContent = {
             "Review the 78-case detail aggregate, inspect each leg payload, and mark cases that are wrong before the next prompt pass.",
           href: "/labs/travel-detail-review",
           kicker: "Extractor QA",
+        },
+        {
+          slug: "pack-deeperbench-report",
+          title: "Pack DeeperBench Report",
+          description:
+            "Inspect the latest 100-case benchmark run, per-case costs, planner failures, search selections, and extractor profile quality notes.",
+          href: "/labs/pack-deeperbench-report.html",
+          kicker: "Benchmark QA",
         },
       ],
     },
@@ -1508,6 +1860,23 @@ const labsContent = {
         "This is the approved homepage social card direction now promoted into the live website OG asset.",
       refinedConcepts: refinedOgConcepts,
     },
+    soundmarks: {
+      title: "100 soundmark candidates for Pack.",
+      description:
+        "Review short, clean, fun reference sounds for ad endings and notifications. Use the fast yes/no flow, then copy the review JSON so the next search can get sharper.",
+      options: soundmarks,
+      scenarios: soundmarkScenarios,
+      nowPlayingEmpty: "Nothing yet",
+      playLabel: "Play",
+      scenarioHeading: "Try them in context.",
+      scenarioDescription:
+        "These buttons map the same files to moments that would exist in the mobile app, which makes it easier to judge whether the tone fits the workflow.",
+      guidanceTitle: "Usage guidance.",
+      guidanceBody:
+        "Choose one primary brand sound first, then generate or commission polished WAV variants and test them on actual iPhone speakers at low volume. The strongest current direction is Passport Stamp Chime.",
+      referenceHuntLabel: "Open 100 reference candidates",
+      referenceHuntHref: "/labs/soundmarks/reference-hunt.html",
+    },
     authCallback: {
       title: "OAuth callback review surface.",
       description:
@@ -1549,6 +1918,7 @@ const labsContent = {
       videos: "Videos",
       comparisons: "Comparisons",
       brandAssets: "Brand assets",
+      soundmarks: "Soundmarks",
       authCallback: "Auth callback",
       travelDetailReview: "Travel detail review",
     },
@@ -1572,6 +1942,14 @@ const labsContent = {
             "Genera variaciones numeradas de logo con la ruta Vertex de PackAds y luego refina la siguiente ronda a partir de las opciones que más te gusten.",
           href: "/labs/logo-studio",
           kicker: "Exploración de marca",
+        },
+        {
+          slug: "soundmarks",
+          title: "Soundmarks",
+          description:
+            "Escucha los bocetos actuales de identidad sonora de Pack y asígnalos a momentos del producto de viaje.",
+          href: "/labs/soundmarks",
+          kicker: "Identidad sonora",
         },
         {
           slug: "brand-assets",
@@ -1620,6 +1998,14 @@ const labsContent = {
             "Revisa el aggregate de detail de 78 casos, inspecciona cada payload por leg y marca los casos incorrectos antes de la siguiente pasada de prompts.",
           href: "/labs/travel-detail-review",
           kicker: "QA del extractor",
+        },
+        {
+          slug: "pack-deeperbench-report",
+          title: "Pack DeeperBench Report",
+          description:
+            "Inspecciona el benchmark de 100 casos, costos por caso, fallas del planner, selecciones de búsqueda y notas de calidad del extractor.",
+          href: "/labs/pack-deeperbench-report.html",
+          kicker: "QA de benchmark",
         },
       ],
     },
@@ -1691,6 +2077,23 @@ const labsContent = {
         "Esta es la dirección aprobada para la tarjeta social de la homepage y ya fue promovida al asset OG activo del sitio.",
       refinedConcepts: refinedOgConcepts,
     },
+    soundmarks: {
+      title: "100 candidatos de soundmark para Pack.",
+      description:
+        "Revisa referencias cortas, limpias y divertidas para cierres de anuncios y notificaciones. Usa el flujo rápido sí/no y copia el JSON para afinar la siguiente búsqueda.",
+      options: soundmarks,
+      scenarios: soundmarkScenarios,
+      nowPlayingEmpty: "Nada todavía",
+      playLabel: "Reproducir",
+      scenarioHeading: "Pruébalos en contexto.",
+      scenarioDescription:
+        "Estos botones asignan los mismos archivos a momentos que existirían en la app móvil para juzgar mejor si el tono encaja con el flujo.",
+      guidanceTitle: "Guía de uso.",
+      guidanceBody:
+        "Elige primero un sonido principal de marca, luego genera o encarga variantes WAV pulidas y pruébalas en speakers reales de iPhone a bajo volumen. La dirección más fuerte ahora es Passport Stamp Chime.",
+      referenceHuntLabel: "Abrir 100 referencias",
+      referenceHuntHref: "/labs/soundmarks/reference-hunt.html",
+    },
     authCallback: {
       title: "Superficie de revisión del callback OAuth.",
       description:
@@ -1732,6 +2135,7 @@ const labsContent = {
       videos: "Videos",
       comparisons: "Comparaciones",
       brandAssets: "Brand assets",
+      soundmarks: "Soundmarks",
       authCallback: "Auth callback",
       travelDetailReview: "Travel detail review",
     },
@@ -1815,6 +2219,74 @@ const summarizeTravelDetailOutput = (
   }
 
   return lines;
+};
+
+const loadReferenceSoundmarks = async (round: string): Promise<ReferenceSoundmark[]> => {
+  const fileNameByRound: Record<string, string> = {
+    "1": "reference-sounds.json",
+    "2": "reference-sounds-round2.json",
+    "3": "reference-sounds-round3.json",
+  };
+  const fileName = fileNameByRound[round] ?? fileNameByRound["1"];
+  const response = await fetch(`/labs/soundmarks/${fileName}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to load soundmark references: ${response.status}`);
+  }
+
+  const payload = (await response.json()) as Array<{
+    id?: unknown;
+    title?: unknown;
+    url?: unknown;
+    previewMp3?: unknown;
+    duration?: unknown;
+    username?: unknown;
+    rating?: unknown;
+    ratingCount?: unknown;
+    tags?: unknown;
+    foundBy?: unknown;
+    rank?: unknown;
+  }>;
+
+  return payload
+    .filter((item) => typeof item.id === "string" && typeof item.title === "string")
+    .map((item) => {
+      const tags = Array.isArray(item.tags)
+        ? item.tags.filter((tag): tag is string => typeof tag === "string")
+        : [];
+      const duration =
+        typeof item.duration === "number" ? item.duration : Number(item.duration ?? 0);
+      const rank = typeof item.rank === "number" ? item.rank : Number(item.rank ?? 0);
+      const foundBy = typeof item.foundBy === "string" ? item.foundBy : "reference";
+      const username = typeof item.username === "string" ? item.username : "unknown";
+      const rating = typeof item.rating === "number" ? item.rating : null;
+      const ratingCount =
+        typeof item.ratingCount === "number"
+          ? item.ratingCount
+          : Number(item.ratingCount ?? 0);
+
+      return {
+        slug: item.id,
+        title: item.title,
+        useCase: `#${rank || "?"} · ${foundBy.split(", ")[0]}`,
+        description: [
+          username ? `by ${username}` : null,
+          rating ? `rating ${rating.toFixed(1)} (${ratingCount})` : null,
+          tags.length > 0 ? tags.slice(0, 5).join(", ") : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+        src: typeof item.previewMp3 === "string" ? item.previewMp3 : "",
+        duration: `${duration.toFixed(2)}s`,
+        sourceUrl: typeof item.url === "string" ? item.url : "",
+        username,
+        rating,
+        ratingCount,
+        tags,
+        foundBy,
+        rank,
+      };
+    });
 };
 
 const LabsShell: React.FC<{
@@ -2359,6 +2831,378 @@ export const LabsBrandAssetsPage: React.FC = () => {
           </ConceptCard>
         ))}
       </Grid>
+    </LabsShell>
+  );
+};
+
+export const LabsSoundmarksPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const reviewer =
+    typeof window === "undefined"
+      ? "default"
+      : new URLSearchParams(window.location.search).get("reviewer")?.trim() ||
+        "default";
+  const reviewerSlug = reviewer
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "default";
+  const round =
+    typeof window === "undefined"
+      ? "1"
+      : new URLSearchParams(window.location.search).get("round")?.trim() || "1";
+  const roundSlug = ["1", "2", "3"].includes(round) ? round : "1";
+  const storagePrefix = `pack-labs-reference-soundmarks-v1:round-${roundSlug}:${reviewerSlug}`;
+  const referenceSoundmarksQuery = useQuery({
+    queryKey: ["labs", "soundmarks", "references", roundSlug],
+    queryFn: () => loadReferenceSoundmarks(roundSlug),
+  });
+  const options = referenceSoundmarksQuery.data ?? [];
+  const isShortlistRound = roundSlug === "3";
+  const [browseIndex, setBrowseIndex] = React.useState(0);
+  const readStoredSlugs = (key: string): string[] => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    try {
+      return JSON.parse(window.localStorage.getItem(key) || "[]");
+    } catch {
+      return [];
+    }
+  };
+  const writeStoredSlugs = (key: string, slugs: readonly string[]) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(key, JSON.stringify(slugs));
+  };
+  const likedKey = `${storagePrefix}:liked`;
+  const rejectedKey = `${storagePrefix}:rejected`;
+  const historyKey = `${storagePrefix}:history`;
+  const [likedSlugs, setLikedSlugs] = React.useState<string[]>(() =>
+    readStoredSlugs(likedKey),
+  );
+  const [rejectedSlugs, setRejectedSlugs] = React.useState<string[]>(() =>
+    readStoredSlugs(rejectedKey),
+  );
+  const [history, setHistory] = React.useState<
+    Array<{ decision: "yes" | "no"; slug: string }>
+  >(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    try {
+      return JSON.parse(window.localStorage.getItem(historyKey) || "[]");
+    } catch {
+      return [];
+    }
+  });
+
+  const findNextSoundmark = (
+    liked: readonly string[],
+    rejected: readonly string[],
+  ) => {
+    const decided = new Set([...liked, ...rejected]);
+    return options.find((soundmark) => !decided.has(soundmark.slug)) ?? null;
+  };
+  const browseSoundmarkIndex =
+    options.length > 0 ? Math.min(browseIndex, options.length - 1) : 0;
+  const currentSoundmark = isShortlistRound
+    ? options[browseSoundmarkIndex] ?? null
+    : findNextSoundmark(likedSlugs, rejectedSlugs);
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+  };
+
+  const playSoundmark = (soundmark: Soundmark) => {
+    stopAudio();
+    const audio = new Audio(soundmark.src);
+    audioRef.current = audio;
+    void audio.play();
+  };
+
+  const decide = (decision: "yes" | "no") => {
+    if (!currentSoundmark || isShortlistRound) {
+      return;
+    }
+
+    stopAudio();
+    const nextLiked = likedSlugs.filter((slug) => slug !== currentSoundmark.slug);
+    const nextRejected = rejectedSlugs.filter(
+      (slug) => slug !== currentSoundmark.slug,
+    );
+
+    if (decision === "yes") {
+      nextLiked.push(currentSoundmark.slug);
+    } else {
+      nextRejected.push(currentSoundmark.slug);
+    }
+
+    const nextHistory = [...history, { decision, slug: currentSoundmark.slug }];
+    setLikedSlugs(nextLiked);
+    setRejectedSlugs(nextRejected);
+    setHistory(nextHistory);
+    writeStoredSlugs(likedKey, nextLiked);
+    writeStoredSlugs(rejectedKey, nextRejected);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(historyKey, JSON.stringify(nextHistory));
+    }
+  };
+
+  const browse = (direction: "previous" | "next") => {
+    if (!isShortlistRound || options.length === 0) {
+      return;
+    }
+
+    stopAudio();
+    setBrowseIndex((currentIndex) => {
+      if (direction === "previous") {
+        return currentIndex === 0 ? options.length - 1 : currentIndex - 1;
+      }
+
+      return currentIndex === options.length - 1 ? 0 : currentIndex + 1;
+    });
+  };
+
+  const undo = () => {
+    const last = history.at(-1);
+
+    if (!last) {
+      return;
+    }
+
+    stopAudio();
+    const nextLiked = likedSlugs.filter((slug) => slug !== last.slug);
+    const nextRejected = rejectedSlugs.filter((slug) => slug !== last.slug);
+    const nextHistory = history.slice(0, -1);
+    setLikedSlugs(nextLiked);
+    setRejectedSlugs(nextRejected);
+    setHistory(nextHistory);
+    writeStoredSlugs(likedKey, nextLiked);
+    writeStoredSlugs(rejectedKey, nextRejected);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(historyKey, JSON.stringify(nextHistory));
+    }
+  };
+
+  const copyReviewJson = async () => {
+    const payload = {
+      v: 1,
+      r: reviewerSlug,
+      d: roundSlug,
+      y: isShortlistRound ? options.map((soundmark) => soundmark.slug) : likedSlugs,
+      n: isShortlistRound ? [] : rejectedSlugs,
+    };
+    const text = JSON.stringify(payload, null, 2);
+
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      console.log(text);
+    }
+  };
+  const decideRef = React.useRef(decide);
+  const browseRef = React.useRef(browse);
+  const isShortlistRoundRef = React.useRef(isShortlistRound);
+  const undoRef = React.useRef(undo);
+  const playCurrentRef = React.useRef(() => {
+    if (currentSoundmark) {
+      playSoundmark(currentSoundmark);
+    }
+  });
+
+  decideRef.current = decide;
+  browseRef.current = browse;
+  isShortlistRoundRef.current = isShortlistRound;
+  undoRef.current = undo;
+  playCurrentRef.current = () => {
+    if (currentSoundmark) {
+      playSoundmark(currentSoundmark);
+    }
+  };
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        if (isShortlistRoundRef.current) {
+          browseRef.current("previous");
+        } else {
+          decideRef.current("no");
+        }
+      } else if (event.key === "ArrowRight") {
+        if (isShortlistRoundRef.current) {
+          browseRef.current("next");
+        } else {
+          decideRef.current("yes");
+        }
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        playCurrentRef.current();
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        undoRef.current();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  return (
+    <LabsShell
+      title={localizedContent.soundmarks.title}
+      description={localizedContent.soundmarks.description}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
+        <BreadcrumbLink to={pathFor("/labs/soundmarks")}>
+          {localizedContent.crumbs.soundmarks}
+        </BreadcrumbLink>
+      </BreadcrumbRow>
+      <SoundmarkReviewShell>
+        <ReviewerPill>
+          Reviewer: {reviewerSlug} · Round {roundSlug}
+        </ReviewerPill>
+        {referenceSoundmarksQuery.isLoading ? (
+          <SoundmarkReviewCard>
+            <Kicker>{localizedContent.soundmarks.guidanceTitle}</Kicker>
+            <SoundmarkReviewTitle>Loading references</SoundmarkReviewTitle>
+            <CardBody>Loading the soundmark list.</CardBody>
+          </SoundmarkReviewCard>
+        ) : referenceSoundmarksQuery.isError ? (
+          <SoundmarkReviewCard>
+            <Kicker>{localizedContent.soundmarks.guidanceTitle}</Kicker>
+            <SoundmarkReviewTitle>Could not load references</SoundmarkReviewTitle>
+            <CardBody>
+              Open the 100-reference board below, or refresh once the dev server
+              has served the JSON file.
+            </CardBody>
+          </SoundmarkReviewCard>
+        ) : currentSoundmark ? (
+          <>
+            <SoundmarkReviewCard>
+              <Kicker>{currentSoundmark.useCase}</Kicker>
+              <SoundmarkReviewTitle>{currentSoundmark.title}</SoundmarkReviewTitle>
+              <CardBody>{currentSoundmark.description}</CardBody>
+              <SoundmarkReviewMeta>
+                <span>{currentSoundmark.duration}</span>
+                <span>{currentSoundmark.src}</span>
+              </SoundmarkReviewMeta>
+            </SoundmarkReviewCard>
+            <SoundmarkReviewControls>
+              <SoundmarkReviewButton
+                type="button"
+                $tone="no"
+                onClick={() =>
+                  isShortlistRound ? browse("previous") : decide("no")
+                }
+              >
+                {isShortlistRound ? "← Previous" : "← No"}
+              </SoundmarkReviewButton>
+              <div>
+                <SoundmarkReviewButton
+                  type="button"
+                  $tone="play"
+                  onClick={() => playSoundmark(currentSoundmark)}
+                >
+                  {localizedContent.soundmarks.playLabel}
+                </SoundmarkReviewButton>
+                {!isShortlistRound ? (
+                  <SoundmarkReviewButton type="button" onClick={undo}>
+                    Undo
+                  </SoundmarkReviewButton>
+                ) : null}
+              </div>
+              <SoundmarkReviewButton
+                type="button"
+                $tone="yes"
+                onClick={() => (isShortlistRound ? browse("next") : decide("yes"))}
+              >
+                {isShortlistRound ? "Next →" : "Yes →"}
+              </SoundmarkReviewButton>
+            </SoundmarkReviewControls>
+          </>
+        ) : (
+          <SoundmarkReviewCard>
+            <Kicker>{localizedContent.soundmarks.guidanceTitle}</Kicker>
+            <SoundmarkReviewTitle>Review complete</SoundmarkReviewTitle>
+            <CardBody>
+              Copy the review JSON and send it over so the next search can be
+              tighter.
+            </CardBody>
+          </SoundmarkReviewCard>
+        )}
+        <SoundmarkReviewStats>
+          {isShortlistRound ? (
+            <>
+              <span>
+                Position{" "}
+                <strong>
+                  {options.length > 0 ? browseSoundmarkIndex + 1 : 0} / {options.length}
+                </strong>
+              </span>
+              <span>
+                Shortlist <strong>{options.length}</strong>
+              </span>
+            </>
+          ) : (
+            <>
+              <span>
+                Yes <strong>{likedSlugs.length}</strong>
+              </span>
+              <span>
+                No <strong>{rejectedSlugs.length}</strong>
+              </span>
+              <span>
+                Remaining{" "}
+                <strong>
+                  {Math.max(options.length - likedSlugs.length - rejectedSlugs.length, 0)}
+                </strong>
+              </span>
+            </>
+          )}
+        </SoundmarkReviewStats>
+        <LinkRow>
+          <SecondaryLink as="button" type="button" onClick={copyReviewJson}>
+            Copy review JSON
+          </SecondaryLink>
+          {!isShortlistRound ? (
+            <SecondaryLink as="button" type="button" onClick={undo}>
+              Undo
+            </SecondaryLink>
+          ) : null}
+          <SecondaryLink href={`${pathFor("/labs/soundmarks")}?reviewer=matt`}>
+            Start Matt review
+          </SecondaryLink>
+          <SecondaryLink
+            href={`${pathFor("/labs/soundmarks")}?round=2&reviewer=${reviewerSlug}`}
+          >
+            Open round 2
+          </SecondaryLink>
+          <SecondaryLink
+            href={`${pathFor("/labs/soundmarks")}?round=3&reviewer=${reviewerSlug}`}
+          >
+            Open round 3
+          </SecondaryLink>
+        </LinkRow>
+      </SoundmarkReviewShell>
+      <SectionHeading>
+        <SectionTitle>{localizedContent.soundmarks.guidanceTitle}</SectionTitle>
+        <SectionDescription>{localizedContent.soundmarks.guidanceBody}</SectionDescription>
+      </SectionHeading>
+      <LinkRow>
+        <SecondaryLink href={localizedContent.soundmarks.referenceHuntHref}>
+          {localizedContent.soundmarks.referenceHuntLabel}
+        </SecondaryLink>
+      </LinkRow>
     </LabsShell>
   );
 };

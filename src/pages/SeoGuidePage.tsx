@@ -125,7 +125,7 @@ const VennDiagram = styled.div`
   isolation: isolate;
 
   @media (max-width: 520px) {
-    min-height: 20rem;
+    min-height: 16rem;
   }
 `;
 
@@ -144,6 +144,10 @@ const VennCircle = styled.div<{
   background: color-mix(in srgb, ${(props) => props.$color} 24%, transparent);
   transform: translate(-50%, -50%);
   z-index: 1;
+
+  @media (max-width: 520px) {
+    width: min(42vw, 10.25rem);
+  }
 `;
 
 const VennLabel = styled.div<{
@@ -165,6 +169,13 @@ const VennLabel = styled.div<{
   transform: translate(-50%, -50%);
   white-space: nowrap;
   z-index: 3;
+
+  @media (max-width: 520px) {
+    max-width: 7.4rem;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.72rem;
+    white-space: normal;
+  }
 `;
 
 const VennCenter = styled.div`
@@ -187,6 +198,10 @@ const VennCenter = styled.div`
   text-align: center;
   transform: translate(-50%, -50%);
   z-index: 2;
+
+  @media (max-width: 520px) {
+    width: min(32vw, 7.5rem);
+  }
 `;
 
 const SystemMapHeader = styled.div`
@@ -496,7 +511,7 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
             <VennCircle
               aria-hidden="true"
               $left="50%"
-              $top="29%"
+              $top="34%"
               $color="rgba(243, 210, 122, 0.5)"
             />
             <VennCircle
@@ -511,9 +526,9 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
               $top="62%"
               $color="rgba(88, 166, 255, 0.48)"
             />
-            <VennLabel $left="50%" $top="17%">AI planning</VennLabel>
-            <VennLabel $left="23%" $top="74%">Itinerary organization</VennLabel>
-            <VennLabel $left="77%" $top="74%">Real trip context</VennLabel>
+            <VennLabel $left="50%" $top="24%">AI planning</VennLabel>
+            <VennLabel $left="31%" $top="74%">Itinerary organization</VennLabel>
+            <VennLabel $left="69%" $top="74%">Real trip context</VennLabel>
             <VennCenter>Pack</VennCenter>
           </VennDiagram>
           <div>

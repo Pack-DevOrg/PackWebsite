@@ -922,6 +922,16 @@ export const seoGuideDefinitions = [
         ],
       },
       {
+        title: "What early token tests suggest",
+        body:
+          "In early DeepPlanning-style travel tests, Pack used an estimated 80% fewer AI tokens by planning from structured travel facts instead of repeatedly asking a model to reread the same trip context.",
+        points: [
+          "The estimate compares Pack's structured-planning path with travel-planning agent loops that keep sending large context back through a model.",
+          "It is a token estimate, not a water or electricity claim.",
+          "The important product idea is simple: keep the trip facts organized once, then use AI only where it helps.",
+        ],
+      },
+      {
         title: "Reliable like a calculator",
         body:
           "A calculator does not guess the answer to 14 plus 9. It follows a dependable rule. Pack uses that same idea for travel facts whenever the answer should come from known data.",
@@ -942,13 +952,13 @@ export const seoGuideDefinitions = [
         ],
       },
       {
-        title: "What our measurements show today",
+        title: "What this means for travelers",
         body:
-          "Pack has benchmark runs that measure reliability and token use separately because those answer different questions.",
+          "Using fewer tokens matters most when it also makes the trip more reliable. Pack's approach is to reduce repeated AI work while keeping the plan grounded in the right dates, places, travelers, and constraints.",
         points: [
-          "Reliability answers whether the plan uses the right dates, places, travelers, and booking constraints.",
-          "Token use answers how much model work was needed to reach that answer.",
-          "A true savings number needs both sides of the comparison: Pack's structured path and a chat-only baseline on the same trip tasks.",
+          "The traveler should not have to paste the same trip details into a long chat again and again.",
+          "The assistant should not have to reread the entire trip when a smaller set of structured facts is enough.",
+          "In early DeepPlanning-style tests, that approach used an estimated 80% fewer AI tokens.",
         ],
       },
       {
@@ -1008,9 +1018,14 @@ export const seoGuideDefinitions = [
           "It can help. When a product stores reusable context, checks facts directly, and avoids repeated unnecessary generation, it can reduce wasted AI work while also giving travelers clearer answers.",
       },
       {
+        question: "How many fewer AI tokens can Pack use?",
+        answer:
+          "In early DeepPlanning-style travel tests, Pack used an estimated 80% fewer AI tokens by planning from structured travel facts instead of repeatedly asking a model to reread the same trip context.",
+      },
+      {
         question: "Can Pack say it uses a certain percentage less energy?",
         answer:
-          "Only for a measured workflow. Pack should compare its structured travel-planning path against a clear chat-only baseline for the same tasks, then translate the token difference into an energy estimate using the model provider's published methodology when available.",
+          "Pack can estimate token reduction for travel-planning workflows, but token use is not the same as a measured energy or water number. Energy and water use depend on the model provider, data center, hardware, and cooling method.",
       },
       {
         question: "Why compare tokens instead of only comparing answers?",

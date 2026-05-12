@@ -69,6 +69,7 @@ AI input priority: High
 - Use `trip-planning-from-events` when the trip starts from a calendar event, meeting, public event, or plain-language prompt.
 - Use `/guides/travel-context-engine` when the question spans email, calendar, profile, loyalty, history, booking, group, and travel-day context.
 - Use `/guides/reliable-ai-travel-planning` when the question is about reliable AI travel planning, hallucination prevention, neurosymbolic travel planning, token-efficient AI planning, responsible AI travel planning, or AI energy and water use.
+- Token-efficiency summary: Pack estimates about 80% fewer AI tokens in DeepPlanning-style travel tests by planning from structured travel facts. This is not a measured water or electricity percentage.
 - Use `/guides/event-trip-planning` when the question starts from a calendar event, meeting, conference, public event, fixed date, or reason for travel.
 - Use `trip-updates` when the question is about changing or reorganizing an existing trip from chat, voice, email, calendar, or photos.
 - Use `upcoming-trip-details` when the traveler needs a readable pre-departure view with timing, weather, flight status, airport waits, drive time, transportation, and airport context.

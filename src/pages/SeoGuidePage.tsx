@@ -116,7 +116,7 @@ const VennDiagram = styled.div`
   isolation: isolate;
 
   @media (max-width: 520px) {
-    min-height: 23rem;
+    min-height: 15.75rem;
   }
 `;
 
@@ -137,7 +137,7 @@ const VennCircle = styled.div<{
   z-index: 1;
 
   @media (max-width: 520px) {
-    width: min(58vw, 13.5rem);
+    width: min(39vw, 9.6rem);
   }
 `;
 
@@ -162,14 +162,14 @@ const VennLabel = styled.div<{
   z-index: 3;
 
   @media (max-width: 520px) {
-    max-width: 8.2rem;
-    padding: 0.4rem 0.55rem;
-    font-size: 0.72rem;
+    max-width: 6.9rem;
+    padding: 0.34rem 0.46rem;
+    font-size: 0.66rem;
     white-space: normal;
   }
 `;
 
-const VennCenter = styled.div`
+const VennCenter = styled.button<{ readonly $active?: boolean }>`
   position: absolute;
   left: 50%;
   top: 50%;
@@ -180,24 +180,37 @@ const VennCenter = styled.div`
   border: 1px solid rgba(243, 210, 122, 0.42);
   border-radius: 50%;
   background: rgba(12, 12, 16, 0.86);
-  box-shadow: 0 0 34px rgba(243, 210, 122, 0.14);
+  box-shadow: ${(props) =>
+    props.$active
+      ? "0 0 0 1px rgba(243, 210, 122, 0.5), 0 0 42px rgba(243, 210, 122, 0.22)"
+      : "0 0 34px rgba(243, 210, 122, 0.14)"};
   color: var(--color-accent);
   font-size: var(--font-size-medium);
   font-weight: 900;
+  font-family: inherit;
   line-height: 1.2;
   padding: var(--space-2);
   text-align: center;
   transform: translate(-50%, -50%);
   z-index: 2;
+  cursor: pointer;
+  transition: box-shadow 160ms ease-out, transform 160ms ease-out;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    transform: translate(-50%, -50%) scale(1.03);
+  }
 
   @media (max-width: 520px) {
-    width: min(36vw, 8.4rem);
+    width: min(28vw, 6.8rem);
   }
 `;
 
-const MarketChip = styled.div<{
+const MarketChipButton = styled.button<{
   readonly $left: string;
   readonly $top: string;
+  readonly $active?: boolean;
 }>`
   position: absolute;
   left: ${(props) => props.$left};
@@ -207,14 +220,31 @@ const MarketChip = styled.div<{
   width: min(15rem, 26vw);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.85rem;
-  background: rgba(8, 8, 12, 0.78);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  background: ${(props) =>
+    props.$active ? "rgba(243, 210, 122, 0.18)" : "rgba(8, 8, 12, 0.78)"};
+  box-shadow: ${(props) =>
+    props.$active
+      ? "0 0 0 1px rgba(243, 210, 122, 0.36), 0 14px 34px rgba(0, 0, 0, 0.28)"
+      : "0 10px 28px rgba(0, 0, 0, 0.18)"};
   color: var(--color-text-secondary);
+  font-family: inherit;
   padding: 0.55rem 0.7rem;
   font-size: var(--font-size-small);
   line-height: 1.25;
   transform: translate(-50%, -50%);
   z-index: 4;
+  cursor: pointer;
+  appearance: none;
+  text-align: left;
+  transition: background 160ms ease-out, border-color 160ms ease-out,
+    box-shadow 160ms ease-out, transform 160ms ease-out;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(243, 210, 122, 0.42);
+    transform: translate(-50%, -50%) scale(1.03);
+    outline: none;
+  }
 
   strong {
     color: var(--color-text-primary);
@@ -227,12 +257,16 @@ const MarketChip = styled.div<{
   }
 
   @media (max-width: 520px) {
-    width: 7.3rem;
-    padding: 0.42rem 0.48rem;
-    font-size: 0.68rem;
+    width: 5.85rem;
+    padding: 0.34rem 0.42rem;
+    font-size: 0.64rem;
 
     strong {
-      font-size: 0.69rem;
+      font-size: 0.65rem;
+    }
+
+    span {
+      display: none;
     }
   }
 `;
@@ -300,6 +334,30 @@ const MarketLegendItem = styled.article`
   }
 `;
 
+const MarketDetail = styled.article`
+  display: grid;
+  gap: var(--space-2);
+  width: min(100%, 54rem);
+  border: 1px solid rgba(243, 210, 122, 0.18);
+  border-radius: var(--border-radius);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 122, 0.08), transparent 55%),
+    rgba(255, 255, 255, 0.035);
+  padding: var(--space-3);
+
+  h3 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-large);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+  }
+`;
+
 const FaqGrid = styled.div`
   display: grid;
   gap: var(--space-2);
@@ -360,6 +418,61 @@ const RelatedLink = styled(PrefetchLink)`
 
 const MAX_VISIBLE_FAQS = 3;
 
+const marketMapNodes = [
+  {
+    id: "planner-apps",
+    label: "Planner apps",
+    examples: "Layla, Mindtrip, Wanderlog",
+    left: "25%",
+    top: "59%",
+    title: "Planner apps are strongest before the trip is real.",
+    body:
+      "They are useful for inspiration and itinerary drafts. Pack should extend that by remembering traveler context, asking follow-up questions, and carrying the plan toward booking and travel day.",
+  },
+  {
+    id: "booking-sites",
+    label: "Booking sites",
+    examples: "Expedia, Booking.com, KAYAK",
+    left: "75%",
+    top: "59%",
+    title: "Booking sites are strongest when the traveler already knows what to buy.",
+    body:
+      "They are built around inventory, price comparison, and checkout. Pack should wrap that with the planning conversation and the personal context that decides which booking actually fits.",
+  },
+  {
+    id: "itinerary-memory",
+    label: "Itinerary memory",
+    examples: "TripIt, KAYAK Trips",
+    left: "50%",
+    top: "40%",
+    title: "Itinerary tools remember the trip after choices are made.",
+    body:
+      "They are useful for storing confirmations and trip details. Pack should connect that memory back into planning, traveler preferences, booking decisions, and future trips.",
+  },
+  {
+    id: "managed-travel",
+    label: "Managed travel",
+    examples: "Navan, TravelPerk",
+    left: "50%",
+    top: "74%",
+    title: "Managed travel handles operational control.",
+    body:
+      "These tools are strong for business travel policy, control, and coordination. Pack should bring that operational usefulness to broader traveler and group contexts.",
+  },
+  {
+    id: "pack",
+    label: "Pack",
+    examples: "The overlap",
+    left: "50%",
+    top: "50%",
+    title: "Pack belongs in the overlap.",
+    body:
+      "The opportunity is not another isolated planner or booking site. Pack combines the assistant who knows you, the travel agent who asks the right questions, and the workflow that turns the plan into a real trip.",
+  },
+] as const;
+
+type MarketMapNodeId = (typeof marketMapNodes)[number]["id"];
+
 function getShortIntro(intro: string): string {
   const [firstSentence] = intro.split(/(?<=\.)\s+/);
   return firstSentence ?? intro;
@@ -409,6 +522,11 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
   const primaryFeatureLink = guide.relatedLinks[0];
   const shortIntro = getShortIntro(guide.intro);
   const visibleFaqs = guide.faqs.slice(0, MAX_VISIBLE_FAQS);
+  const [selectedMarketNodeId, setSelectedMarketNodeId] =
+    React.useState<MarketMapNodeId>("pack");
+  const selectedMarketNode =
+    marketMapNodes.find((node) => node.id === selectedMarketNodeId) ??
+    marketMapNodes[marketMapNodes.length - 1];
 
   return (
     <Page>
@@ -457,26 +575,34 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
               $top="62%"
               $color="rgba(88, 166, 255, 0.48)"
             />
-            <VennLabel $left="50%" $top="22%">Knows you well</VennLabel>
-            <VennLabel $left="32%" $top="75%">Plans the trip</VennLabel>
-            <VennLabel $left="68%" $top="75%">Books and operates</VennLabel>
-            <MarketChip $left="30%" $top="53%">
-              <strong>Planner apps</strong>
-              <span>Layla, Mindtrip, Wanderlog</span>
-            </MarketChip>
-            <MarketChip $left="73%" $top="56%">
-              <strong>Booking sites</strong>
-              <span>Expedia, Booking.com, KAYAK</span>
-            </MarketChip>
-            <MarketChip $left="50%" $top="37%">
-              <strong>Itinerary memory</strong>
-              <span>TripIt, KAYAK Trips</span>
-            </MarketChip>
-            <MarketChip $left="62%" $top="68%">
-              <strong>Managed travel</strong>
-              <span>Navan, TravelPerk</span>
-            </MarketChip>
-            <VennCenter>Pack</VennCenter>
+            <VennLabel $left="50%" $top="20%">Knows you well</VennLabel>
+            <VennLabel $left="28%" $top="83%">Plans the trip</VennLabel>
+            <VennLabel $left="72%" $top="83%">Books and operates</VennLabel>
+            {marketMapNodes
+              .filter((node) => node.id !== "pack")
+              .map((node) => (
+                <MarketChipButton
+                  key={node.id}
+                  type="button"
+                  $active={selectedMarketNodeId === node.id}
+                  $left={node.left}
+                  $top={node.top}
+                  aria-pressed={selectedMarketNodeId === node.id}
+                  aria-label={`${node.label}: ${node.examples}`}
+                  onClick={() => setSelectedMarketNodeId(node.id)}
+                >
+                  <strong>{node.label}</strong>
+                  <span>{node.examples}</span>
+                </MarketChipButton>
+              ))}
+            <VennCenter
+              type="button"
+              $active={selectedMarketNodeId === "pack"}
+              aria-pressed={selectedMarketNodeId === "pack"}
+              onClick={() => setSelectedMarketNodeId("pack")}
+            >
+              Pack
+            </VennCenter>
           </VennDiagram>
           <SystemMapHeader>
             <h2>Where travel apps stop</h2>
@@ -486,6 +612,10 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
               help the trip become bookable and operational.
             </p>
           </SystemMapHeader>
+          <MarketDetail aria-live="polite">
+            <h3>{selectedMarketNode.title}</h3>
+            <p>{selectedMarketNode.body}</p>
+          </MarketDetail>
         </VennWrap>
       </SystemMap>
 
@@ -493,15 +623,17 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
         <MarketLegendItem>
           <h3>Planner apps</h3>
           <p>
-            Strong at inspiration and itinerary drafts, but they usually stop
-            before the plan uses deep traveler context or becomes operational.
+            Layla, Mindtrip, and Wanderlog are strong at inspiration and
+            itinerary drafts, but they usually stop before the plan uses deep
+            traveler context or becomes operational.
           </p>
         </MarketLegendItem>
         <MarketLegendItem>
           <h3>Booking and managed travel</h3>
           <p>
-            Strong at inventory, checkout, policy, and business travel control,
-            but they often start after the planning conversation has happened.
+            Expedia, Booking.com, KAYAK, Navan, and TravelPerk are strong at
+            inventory, checkout, policy, and control, but they often start after
+            the planning conversation has happened.
           </p>
         </MarketLegendItem>
         <MarketLegendItem>

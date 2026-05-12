@@ -4,70 +4,91 @@ Generated: 2026-05-12
 
 ## Bottom Line
 
-Use DeepPlanning as reliability evidence and CloudWatch as token evidence.
+Do not publish a percentage energy or token-savings claim yet.
 
-The local DeepPlanning run proves Pack can handle compatible travel-planning cases through the local planner harness, but it does not emit token usage fields. CloudWatch does emit planner token metrics, so any token or energy claim should be based on CloudWatch token records or a new benchmark with token accounting enabled.
+The real local corpus/run found for this work is the 100-case Pack DeeperBench phased run generated on 2026-05-12. It records planner token totals in the local aggregate and matching broader AI-call totals in CloudWatch for the same planning window. Those numbers are valid run evidence, but they are not a competitor or chat-only baseline.
 
-## Local DeepPlanning Run
+## Real Corpus And Run
 
-- Source: `PackServer/tmp/qwen-travel-hermetic-benchmark/2026-04-23T19-09-50-566Z/benchmark-summary.json`
-- Dataset: Qwen DeepPlanning travelplanning query set
-- Execution mode: `local_handler`
-- Runnable cases: 2 of 120
-- Delivery rate: 100%
-- Average core score: 0.882
-- Average processing duration: 6.09s
-- Token usage fields: not present
+- Local aggregate: `PackServer/tmp/pack-deeperbench-phased-full-20260512T121746Z/aggregate.json`
+- Case rows: `PackServer/tmp/pack-deeperbench-phased-full-20260512T121746Z/cases.jsonl`
+- Prompt set: `PackServer/benchmarks/travel-context/corpus-seeds/hard-100.json`
+- Prompt hash: `a80f7947e3bc5df35d83c398561be868e74995cd5917cf653f26d17fae05a7a9`
+- Run window: 2026-05-12T12:17:54.291Z to 2026-05-12T14:32:40.545Z
+- Case count: 100
+- Completed cases: 24
+- Planner success count: 31
+- Average score: 0.4525
 
-Interpretation: this is a reliability signal, not a token-savings measurement.
+## Local Aggregate Token Totals
 
-## CloudWatch Token Baseline
+These are the planner-result metrics stored in the local run artifact.
 
-Window checked: last 14 days from 2026-05-12, `us-east-1`.
+- Planner input tokens: 21,850,202
+- Planner output tokens: 70,339
+- Planner cached tokens: 1,210,985
+- Planner total tokens: 21,920,541
+- Planner estimated cost: $41.197036
+- Subject-filter input tokens: 13,187,384
+- Subject-filter output tokens: 918,705
+- Known model tokens in local artifact: 36,026,630
 
-### Production Planner
+Important caveat: 61 of 100 cases have zero planner tokens in the local case rows because they failed or short-circuited before a planner LLM result was recorded. Do not use those rows as evidence of zero-token planning.
 
-- Log group: `/aws/lambda/prod-travel-planner`
-- Completed metric records: 72
-- Zero-token records: 17
-- Zero-token record rate: 23.6%
-- Nonzero-token records: 55
-- Nonzero average total tokens: 33,506
-- Nonzero p50 total tokens: 32,556
-- Nonzero p90 total tokens: 57,574
-- Nonzero average LLM calls: 6.98
+For attempted planner rows only:
 
-### Dev Planner
+- Attempted planner rows: 39
+- Average planner tokens per attempted row: 562,065
+- Median planner tokens per attempted row: 558,043
+- Average planner cost per attempted row: $1.056334
+- Median planner cost per attempted row: $1.049013
 
-- Log group: `/aws/lambda/dev-travel-planner`
-- Completed metric records: 284
-- Zero-token records: 53
-- Zero-token record rate: 18.7%
-- Nonzero-token records: 231
-- Nonzero average total tokens: 35,784
-- Nonzero p50 total tokens: 32,919
-- Nonzero p90 total tokens: 48,224
-- Nonzero average LLM calls: 5.54
+## CloudWatch Cross-Check
 
-## Defensible Claims
+CloudWatch was used only to cross-check real AI-call totals for the same benchmark windows. Do not expose log group names or environment labels in public copy.
 
-- Some Pack planner runs complete with zero model tokens when structured and deterministic paths can finish the task.
-- In the checked production sample, 17 of 72 completed planner metric records used zero model tokens.
-- In the checked production sample, planner runs that did use a model averaged about 33.5k total tokens.
-- Pack can use the nonzero-run average as the current baseline for future token-efficiency improvements.
+Extraction window, 2026-05-10T23:50:00Z to 2026-05-12T12:13:00Z:
 
-## Claims To Avoid For Now
+- AI call rows: 14,160
+- Input tokens: 38,723,291
+- Output tokens: 3,853,582
+- Cache-read tokens: 56,705,760
+- Cache-write tokens: 289,770
+- Total tokens: 99,572,403
+- Estimated model cost: $70.330821
 
-- Do not say Pack uses a blanket `X% less energy` than competitors.
-- Do not say the DeepPlanning local run proves a token-savings percentage.
-- Do not translate tokens into energy unless the estimate is tied to a specific model/provider methodology.
+Planning window, 2026-05-12T12:17:00Z to 2026-05-12T14:33:00Z:
 
-## Next Benchmark
+- AI call rows: 696
+- Input tokens: 22,770,047
+- Output tokens: 395,461
+- Cache-read tokens: 1,890,830
+- Cache-write tokens: 148,460
+- Total tokens: 25,204,798
+- Estimated model cost: $42.6833
 
-Run the same DeepPlanning-compatible cases through:
+The local aggregate planner token total is 86.97% of the CloudWatch planning-window total. That means the local planner field is useful, but it does not represent every AI call made during the planning window.
 
-1. A chat-only baseline that receives the full task context each turn.
-2. Pack's structured-context path with token accounting enabled.
-3. A deterministic-only path where the planner can finish from structured facts.
+## Defensible Internal Takeaways
 
-Then compare input tokens, output tokens, cache-read tokens, cache-write tokens, total model calls, corrections, and final rubric score.
+- Pack has a real 100-case benchmark corpus and run artifact with token and cost accounting.
+- Pack's benchmark exercises private context, calendar grounding, email grounding, group travel, public events, flights, hotels, red-herring avoidance, and preference handling.
+- The current run is a reliability and accounting baseline, not proof of reduced energy versus competitors.
+- Any public token or energy percentage needs a same-corpus baseline, ideally chat-only versus Pack structured planning.
+
+## Claims To Avoid
+
+- Do not claim Pack uses X% less energy than competitors from this evidence.
+- Do not claim zero-token planning from failed or short-circuited rows.
+- Do not compare local aggregate planner tokens against CloudWatch totals as a savings percentage.
+- Do not expose environment names, log group names, S3 paths, internal account details, or raw trace identifiers in public copy.
+
+## Next Benchmark Required
+
+Run the same 100 prompts through:
+
+1. A chat-only baseline that receives the same task context.
+2. Pack's structured travel-planning path with full AI-call accounting.
+3. The same scoring rubric and the same token/cost rollup.
+
+Only after that can Pack publish a measured percent fewer tokens, percent lower estimated model cost, or percent lower estimated AI energy for this workflow.

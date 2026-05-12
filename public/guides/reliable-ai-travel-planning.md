@@ -60,19 +60,19 @@ A calculator does not guess the answer to 14 plus 9. It follows a dependable rul
 
 ## How to measure the savings
 
-A real percentage should come from a benchmark, not a slogan.
+The honest way to measure savings is to run the same travel tasks two ways and compare the work required.
 
-- Compare Pack against a chat-only baseline for the same tasks: build a trip, update a plan, answer a timing question, and explain a booking choice.
-- Count input tokens, output tokens, repeated corrections, and follow-up calls for both approaches.
-- Only then should Pack say it uses a measured percentage fewer tokens or less estimated AI energy for those workflows.
+- One run uses a chat-only approach, where the model has to read and reason through the travel context directly.
+- The other run uses Pack's structured trip record, so the model can work from the relevant facts.
+- The comparison counts input tokens, output tokens, repeated corrections, follow-up calls, and final answer quality.
 
 ## What our measurements show today
 
-Pack measures reliability and token use separately because they answer different questions, and public claims should stay simple.
+Pack has benchmark runs that measure reliability and token use separately because those answer different questions.
 
-- Pack should publish token-savings percentages only from benchmark runs where token accounting is correctly recorded.
-- The right comparison is Pack's structured travel-planning path against a chat-only baseline on the same trip tasks.
-- For broader energy claims, Pack should tie the percentage to measured token use and a clear model/provider methodology.
+- Reliability answers whether the plan uses the right dates, places, travelers, and booking constraints.
+- Token use answers how much model work was needed to reach that answer.
+- A true savings number needs both sides of the comparison: Pack's structured path and a chat-only baseline on the same trip tasks.
 
 ## What responsible travel AI should do
 

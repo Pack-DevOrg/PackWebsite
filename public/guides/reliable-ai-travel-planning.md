@@ -66,6 +66,14 @@ A real percentage should come from a benchmark, not a slogan.
 - Count input tokens, output tokens, repeated corrections, and follow-up calls for both approaches.
 - Only then should Pack say it uses a measured percentage fewer tokens or less estimated AI energy for those workflows.
 
+## What our measurements show today
+
+Pack measures reliability and token use separately because they answer different questions, and public claims should stay simple.
+
+- In a recent CloudWatch sample, about 24% of completed planner runs used zero model tokens because structured checks could finish the task without an LLM call.
+- That means Pack can sometimes behave more like a calculator: use the facts already in the trip record, then skip the model when no generation is needed.
+- For broader energy claims, Pack should publish percentages only for measured workflows with a clear comparison baseline.
+
 ## What responsible travel AI should do
 
 - Use official provider details as the source of truth for bookings, tickets, government records, and live operational changes.
@@ -94,7 +102,7 @@ It can help. When a product stores reusable context, checks facts directly, and 
 
 ### Can Pack say it uses a certain percentage less energy?
 
-Only after measuring it. The right way to make that claim is to compare Pack's actual token use against a clear chat-only baseline for the same travel tasks, then translate the token difference into an energy estimate using the model provider's published methodology when available.
+Only for a measured workflow. A recent CloudWatch sample showed that about 24% of completed planner runs used zero model tokens. A broader energy claim should compare Pack against a clear chat-only baseline for the same tasks, then translate the token difference into an energy estimate using the model provider's published methodology when available.
 
 ### Why compare tokens instead of only comparing answers?
 

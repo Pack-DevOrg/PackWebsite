@@ -942,6 +942,16 @@ export const seoGuideDefinitions = [
         ],
       },
       {
+        title: "What our measurements show today",
+        body:
+          "Pack measures reliability and token use separately because they answer different questions, and public claims should stay simple.",
+        points: [
+          "In a recent CloudWatch sample, about 24% of completed planner runs used zero model tokens because structured checks could finish the task without an LLM call.",
+          "That means Pack can sometimes behave more like a calculator: use the facts already in the trip record, then skip the model when no generation is needed.",
+          "For broader energy claims, Pack should publish percentages only for measured workflows with a clear comparison baseline.",
+        ],
+      },
+      {
         title: "What responsible travel AI should do",
         body:
           "Reliable AI should make travel feel calmer, not more mysterious.",
@@ -1000,7 +1010,7 @@ export const seoGuideDefinitions = [
       {
         question: "Can Pack say it uses a certain percentage less energy?",
         answer:
-          "Only after measuring it. The right way to make that claim is to compare Pack's actual token use against a clear chat-only baseline for the same travel tasks, then translate the token difference into an energy estimate using the model provider's published methodology when available.",
+          "Only for a measured workflow. A recent CloudWatch sample showed that about 24% of completed planner runs used zero model tokens. A broader energy claim should compare Pack against a clear chat-only baseline for the same tasks, then translate the token difference into an energy estimate using the model provider's published methodology when available.",
       },
       {
         question: "Why compare tokens instead of only comparing answers?",

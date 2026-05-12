@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-05-12T15:36:00.000Z",
+  "status": "evidence_summary",
+  "deepPlanningLocalRun": {
+    "source": "PackServer/tmp/qwen-travel-hermetic-benchmark/2026-04-23T19-09-50-566Z/benchmark-summary.json",
+    "dataset": "Qwen DeepPlanning travelplanning query set",
+    "executionMode": "local_handler",
+    "evaluationMode": "end_to_end",
+    "totalDatasetCases": 120,
+    "runnableCaseCount": 2,
+    "deliveryRate": 1,
+    "averageCoreScore": 0.8819444444444444,
+    "fullCaseAccuracy": 0,
+    "averageProcessingDurationMs": 6088.5,
+    "tokenUsageAvailable": false,
+    "tokenClaimStatus": "Use this run for reliability evidence only; it does not emit token usage fields."
+  },
+  "cloudWatchWindow": {
+    "checkedAt": "2026-05-12T15:35:00.000Z",
+    "region": "us-east-1",
+    "lookbackDays": 14,
+    "prodLogGroup": "/aws/lambda/prod-travel-planner",
+    "devLogGroup": "/aws/lambda/dev-travel-planner"
+  },
+  "prodPlannerMetrics": {
+    "completedMetricRecords": 72,
+    "zeroTokenRecords": 17,
+    "zeroTokenRecordRate": 0.2361111111111111,
+    "nonzeroTokenRecords": 55,
+    "nonzeroTotalTokens": 1842803,
+    "nonzeroAverageTotalTokens": 33505.5091,
+    "nonzeroP50TotalTokens": 32556,
+    "nonzeroP90TotalTokens": 57574,
+    "nonzeroMinTotalTokens": 1756,
+    "nonzeroMaxTotalTokens": 68102,
+    "nonzeroAverageLlmCalls": 6.9818
+  },
+  "devPlannerMetrics": {
+    "completedMetricRecords": 284,
+    "zeroTokenRecords": 53,
+    "zeroTokenRecordRate": 0.18661971830985916,
+    "nonzeroTokenRecords": 231,
+    "nonzeroTotalTokens": 8266095,
+    "nonzeroAverageTotalTokens": 35783.961,
+    "nonzeroP50TotalTokens": 32918.8252,
+    "nonzeroP90TotalTokens": 48223.855,
+    "nonzeroMinTotalTokens": 2578,
+    "nonzeroMaxTotalTokens": 94067,
+    "nonzeroAverageLlmCalls": 5.5411
+  },
+  "claimGuidance": {
+    "supported": [
+      "Some planner runs complete with zero model tokens when structured/deterministic paths can finish the task.",
+      "In the checked production sample, zero-token planner records were 17 of 72 completed metric records.",
+      "In the checked production sample, nonzero model runs averaged about 33.5k total tokens."
+    ],
+    "notSupportedYet": [
+      "A blanket claim that Pack uses X% less energy than all competitors.",
+      "A DeepPlanning token-savings percentage, because the local DeepPlanning run did not record token usage.",
+      "An energy estimate without a model/provider energy methodology tied to the measured token counts."
+    ],
+    "nextBenchmarkNeeded": "Run the same DeepPlanning-compatible cases through a chat-only baseline and a Pack structured-context path with token accounting enabled."
+  }
+}

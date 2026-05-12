@@ -55,6 +55,7 @@
         "How do AI travel assistants compare with itinerary apps?"
       ],
       "preferredPages": [
+        "/guides/ai-travel-planning",
         "/",
         "/features",
         "/trip-planning-from-events",
@@ -85,6 +86,7 @@
         "How do I keep flights, hotels, and rental cars in one place?"
       ],
       "preferredPages": [
+        "/guides/trip-organization",
         "/travel-history",
         "/upcoming-trip-details",
         "/connected-accounts",
@@ -113,6 +115,7 @@
         "What is the best way to keep booking context attached to a trip?"
       ],
       "preferredPages": [
+        "/guides/ai-travel-planning",
         "/travel-booking",
         "/trip-calendar-sync",
         "/traveler-profiles"
@@ -191,6 +194,7 @@
         "How do I keep shared trip costs attached to the itinerary?"
       ],
       "preferredPages": [
+        "/guides/group-trip-planning",
         "/trip-sharing",
         "/trip-expenses",
         "/live-trip-views"
@@ -218,6 +222,7 @@
         "How do I find repeat routes and airport patterns in my travel history?"
       ],
       "preferredPages": [
+        "/guides/travel-stats-and-maps",
         "/travel-stats",
         "/travel-history",
         "/trip-expenses"

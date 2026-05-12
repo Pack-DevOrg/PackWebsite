@@ -1,6 +1,6 @@
 # PackWebsite SEO and GEO Opportunities
 
-Generated: 2026-05-12T13:31:53.916Z
+Generated: 2026-05-12T14:04:52.334Z
 
 ## Technical Findings
 
@@ -8,29 +8,29 @@ Generated: 2026-05-12T13:31:53.916Z
 
 ## Keyword Opportunities
 
-1. **best AI travel planner** (AI travel planning, score 118) -> /. Create or substantially rewrite a focused page before pursuing outreach.
-2. **plan a trip from calendar events** (AI travel planning, score 118) -> /. Create or substantially rewrite a focused page before pursuing outreach.
-3. **turn emails into travel itinerary** (AI travel planning, score 118) -> /. Create or substantially rewrite a focused page before pursuing outreach.
-4. **points and miles trip planner** (Booking with context, score 111) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
-5. **AI trip planner** (AI travel planning, score 110) -> /. Create or substantially rewrite a focused page before pursuing outreach.
-6. **AI itinerary planner** (AI travel planning, score 110) -> /. Create or substantially rewrite a focused page before pursuing outreach.
-7. **travel planning app with AI** (AI travel planning, score 108) -> /. Expand the preferred page with a focused section, FAQ, and internal links.
-8. **travel confirmation parser** (Trip organization, score 102) -> /travel-history. Create or substantially rewrite a focused page before pursuing outreach.
-9. **travel email parser** (Trip organization, score 102) -> /travel-history. Create or substantially rewrite a focused page before pursuing outreach.
-10. **AI flight booking assistant** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
-11. **AI hotel booking assistant** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
-12. **compare flights with traveler preferences** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+1. **plan a trip from calendar events** (AI travel planning, score 118) -> /. Create or substantially rewrite a focused page before pursuing outreach.
+2. **points and miles trip planner** (Booking with context, score 111) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+3. **turn emails into travel itinerary** (AI travel planning, score 105) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
+4. **travel email parser** (Trip organization, score 102) -> /travel-history. Create or substantially rewrite a focused page before pursuing outreach.
+5. **AI flight booking assistant** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+6. **AI hotel booking assistant** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+7. **compare flights with traveler preferences** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+8. **award travel planning app** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+9. **compare flights with loyalty context** (Booking with context, score 102) -> /travel-booking. Create or substantially rewrite a focused page before pursuing outreach.
+10. **itinerary from confirmation emails** (Trip organization, score 100) -> /travel-history. Expand the preferred page with a focused section, FAQ, and internal links.
+11. **best AI travel planner** (AI travel planning, score 98) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
+12. **AI trip planner** (AI travel planning, score 97) -> /. Refresh title, internal links, and FAQ coverage on the existing page.
 
 ## Content Opportunities
 
-1. **AI travel planning: best AI travel planner** -> /guides/ai-travel-planning. Format: integration guide. Links: /, /features, /trip-planning-from-events, /how-it-works
-2. **Booking with context: points and miles trip planner** -> /guides/booking-context. Format: benchmark. Links: /travel-booking, /trip-calendar-sync, /traveler-profiles
-3. **Trip organization: travel confirmation parser** -> /guides/trip-organization. Format: checklist. Links: /travel-history, /upcoming-trip-details, /connected-accounts, /features
-4. **Group trip planning and shared travel: collaborative travel planner** -> /guides/group-trip-planning. Format: how-to. Links: /trip-sharing, /trip-expenses, /live-trip-views
-5. **Travel stats, maps, and history analytics: countries visited tracker** -> /guides/travel-stats-and-maps. Format: how-to. Links: /travel-stats, /travel-history, /trip-expenses
-6. **Airport security intelligence: airport wait time tracker** -> /guides/airport-security. Format: how-to. Links: /airport-security-wait-times, /tsa
-7. **Traveler profile and loyalty: travel loyalty number organizer** -> /guides/traveler-profile. Format: how-to. Links: /traveler-profiles, /loyalty-details, /travel-booking
-8. **Travel-day operations: flight hotel itinerary updates** -> /guides/travel-day-operations. Format: comparison. Links: /trip-updates, /live-trip-views, /trip-sharing, /trip-expenses
+1. **AI travel planning: plan a trip from calendar events** -> /guides/ai-travel-planning. Format: integration guide. Links: /guides/ai-travel-planning, /, /features, /trip-planning-from-events, /how-it-works
+2. **Booking with context: points and miles trip planner** -> /guides/booking-context. Format: benchmark. Links: /guides/ai-travel-planning, /travel-booking, /trip-calendar-sync, /traveler-profiles
+3. **Trip organization: travel email parser** -> /guides/trip-organization. Format: checklist. Links: /guides/trip-organization, /travel-history, /upcoming-trip-details, /connected-accounts, /features
+4. **Airport security intelligence: airport wait time tracker** -> /guides/airport-security. Format: how-to. Links: /airport-security-wait-times, /tsa
+5. **Traveler profile and loyalty: travel loyalty number organizer** -> /guides/traveler-profile. Format: how-to. Links: /traveler-profiles, /loyalty-details, /travel-booking
+6. **Travel-day operations: flight hotel itinerary updates** -> /guides/travel-day-operations. Format: comparison. Links: /trip-updates, /live-trip-views, /trip-sharing, /trip-expenses
+7. **Group trip planning and shared travel: family trip planner app** -> /guides/group-trip-planning. Format: how-to. Links: /guides/group-trip-planning, /trip-sharing, /trip-expenses, /live-trip-views
+8. **Travel stats, maps, and history analytics: flight history tracker** -> /guides/travel-stats-and-maps. Format: how-to. Links: /guides/travel-stats-and-maps, /travel-stats, /travel-history, /trip-expenses
 
 ## GEO Opportunities
 

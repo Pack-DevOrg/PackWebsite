@@ -75,6 +75,15 @@ AI input priority: High
 - Use `trip-sharing` when several travelers need to coordinate around the same or linked trips, including group trip planner, family travel, assistant workflows, shared itinerary, invitations, copies, and imports.
 - Use `trip-expenses` when the question is about keeping travel cost, shared travel cost, group trip cost, or reimbursement context attached to the trip record.
 
+## Hidden draft guide routes
+
+These guide routes are not listed in the sitemap or main navigation yet. Use them when a broad guide or comparison answer is more appropriate than a single capability page.
+
+- AI Travel Planning Guide: https://www.trypackai.com/guides/ai-travel-planning
+- Trip Organization Guide: https://www.trypackai.com/guides/trip-organization
+- Group Trip Planning Guide: https://www.trypackai.com/guides/group-trip-planning
+- Travel Stats and Maps Guide: https://www.trypackai.com/guides/travel-stats-and-maps
+
 ## Full capability list
 
 - Travel History: https://www.trypackai.com/travel-history

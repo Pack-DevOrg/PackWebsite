@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T13:31:07.007Z",
+  "generatedAt": "2026-05-12T14:04:25.034Z",
   "methodology": {
     "maxSitemapUrls": 4000,
     "maxPageFetches": 24,
@@ -1443,42 +1443,30 @@
         {
           "url": "https://www.booking.com/airport/us/day.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/day.pt-pt.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Dayton - James M. Cox (DAY) | Booking.com",
-          "description": "Hotéis perto de Aeroporto Internacional de Dayton - James M. Cox DAY, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotéis perto do Aeroporto Internacional de Dayton - James M. Cox (DAY), Dayton"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/us/day.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2023
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/us/and.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/and.pt-pt.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Regional Anderson (AND) | Booking.com",
-          "description": "Hotéis perto de Aeroporto Regional Anderson AND, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotéis perto do Aeroporto Regional Anderson (AND), Anderson"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/us/and.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 1823
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/us/day.en-gb.html",
@@ -1498,7 +1486,7 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 2677
+          "wordCount": 2713
         },
         {
           "url": "https://www.booking.com/airport/us/atl.pt-pt.html",
@@ -1517,16 +1505,22 @@
         {
           "url": "https://www.booking.com/airport/us/ord.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/ord.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional Chicago O&#x27;Hare (ORD) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional Chicago O&#x27;Hare ORD, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional Chicago O&#x27;Hare (ORD), Chicago"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/ord.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2933
         },
         {
           "url": "https://www.booking.com/airport/us/lax.pt-pt.html",
@@ -1546,7 +1540,7 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 3174
+          "wordCount": 3114
         },
         {
           "url": "https://www.booking.com/airport/gb/lhr.pt-pt.html",
@@ -1566,7 +1560,7 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 3333
+          "wordCount": 3312
         },
         {
           "url": "https://www.booking.com/airport/jp/hnd.pt-pt.html",
@@ -1600,7 +1594,7 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 2730
+          "wordCount": 2661
         },
         {
           "url": "https://www.booking.com/airport/de/fra.pt-pt.html",
@@ -1620,21 +1614,27 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 3301
+          "wordCount": 3274
         },
         {
           "url": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto de Paris - Charles de Gaulle (CDG) | Booking.com",
+          "description": "Hotéis perto de Aeroporto de Paris - Charles de Gaulle CDG, França. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto de Paris - Charles de Gaulle (CDG), Paris"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2419
         },
         {
           "url": "https://www.booking.com/airport/nl/ams.pt-pt.html",
@@ -1654,7 +1654,7 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 3153
+          "wordCount": 3184
         },
         {
           "url": "https://www.booking.com/airport/us/den.pt-pt.html",
@@ -1673,16 +1673,22 @@
         {
           "url": "https://www.booking.com/airport/us/phx.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/phx.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Phoenix Sky Harbor (PHX) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de Phoenix Sky Harbor PHX, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional de Phoenix Sky Harbor (PHX), Phoenix"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/phx.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2667
         },
         {
           "url": "https://www.booking.com/airport/us/las.pt-pt.html",
@@ -1715,16 +1721,22 @@
         {
           "url": "https://www.booking.com/airport/us/sfo.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/sfo.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de São Francisco (SFO) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de São Francisco SFO, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional de São Francisco (SFO), São Francisco"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/sfo.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2544
         },
         {
           "url": "https://www.booking.com/airport/us/msp.pt-pt.html",
@@ -1744,21 +1756,27 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 2662
+          "wordCount": 2633
         },
         {
           "url": "https://www.booking.com/airport/es/mad.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/es/mad.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Adolfo Suárez - Madrid-Barajas (MAD) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Adolfo Suárez - Madrid-Barajas MAD, Espanha. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Adolfo Suárez - Madrid-Barajas (MAD), Madrid"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/es/mad.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2480
         },
         {
           "url": "https://www.booking.com/airport/hk/hkg.pt-pt.html",
@@ -3999,7 +4017,7 @@
           "h1s": [],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 2200
+          "wordCount": 2192
         },
         {
           "url": "https://awardwallet.com/features",
@@ -4048,7 +4066,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2409
+          "wordCount": 2408
         },
         {
           "url": "https://awardwallet.com/blog/redeem-defunct-air-berlin-miles-travel-etihad/",
@@ -4073,7 +4091,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1123
+          "wordCount": 1163
         },
         {
           "url": "https://awardwallet.com/travel/airline-perks-birthday/",
@@ -4097,7 +4115,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1715
+          "wordCount": 1692
         },
         {
           "url": "https://awardwallet.com/travel/father-son-3-day-trip/",
@@ -4121,7 +4139,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2398
+          "wordCount": 2347
         },
         {
           "url": "https://awardwallet.com/airlines/set-flight-alerts-thrifty-traveler-pro/",
@@ -4145,7 +4163,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1525
+          "wordCount": 1529
         },
         {
           "url": "https://awardwallet.com/blog/tag/paid-travel/",
@@ -4187,7 +4205,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 6397
+          "wordCount": 6377
         },
         {
           "url": "https://awardwallet.com/credit-cards/british-airways-club/travel-together-ticket/",
@@ -4211,7 +4229,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2002
+          "wordCount": 1994
         },
         {
           "url": "https://awardwallet.com/blog/how-the-big-brands-stack-up-in-the-2016-acsi-travel-report/",
@@ -4236,7 +4254,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1403
+          "wordCount": 1402
         },
         {
           "url": "https://awardwallet.com/travel/airlines/best-flight-price-tracker/",
@@ -4260,7 +4278,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1905
+          "wordCount": 1886
         },
         {
           "url": "https://awardwallet.com/travel/airlines/business-class-vs-first-class/",
@@ -4285,7 +4303,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1301
+          "wordCount": 1291
         },
         {
           "url": "https://awardwallet.com/travel/how-to-get-fair-compensation-from-an-airline-or-hotel/",
@@ -4309,7 +4327,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2574
+          "wordCount": 2582
         },
         {
           "url": "https://awardwallet.com/blog/introducing-award-travel-101-awardwallets-official-facebook-community/",
@@ -4333,7 +4351,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1474
+          "wordCount": 1480
         },
         {
           "url": "https://awardwallet.com/travel/airlines/how-to-find-cheap-flights/",
@@ -4357,7 +4375,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1826
+          "wordCount": 1808
         },
         {
           "url": "https://awardwallet.com/airlines/american-aadvantage/aa-award-travel-rules/",
@@ -4381,7 +4399,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 3669
+          "wordCount": 3677
         },
         {
           "url": "https://awardwallet.com/travel/ways-to-save-money-on-roadtrips/",
@@ -4405,7 +4423,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2160
+          "wordCount": 2157
         },
         {
           "url": "https://awardwallet.com/airlines/united-mileageplus/united-award-travel/",
@@ -4429,7 +4447,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1792
+          "wordCount": 1788
         },
         {
           "url": "https://awardwallet.com/airlines/earn-elite-status-award-travel/",
@@ -4453,7 +4471,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2260
+          "wordCount": 2227
         },
         {
           "url": "https://awardwallet.com/travel/airlines/etihad-layover-hotel/",
@@ -4477,7 +4495,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1834
+          "wordCount": 1815
         },
         {
           "url": "https://awardwallet.com/travel/airhelp/",
@@ -4501,7 +4519,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2794
+          "wordCount": 2832
         }
       ],
       "schemaTypes": [
@@ -4819,7 +4837,7 @@
             "FAQPage",
             "Organization"
           ],
-          "wordCount": 1426
+          "wordCount": 1424
         },
         {
           "url": "https://www.point.me/how-it-works",
@@ -6265,66 +6283,6 @@
   ],
   "packGapMatrix": [
     {
-      "keyword": "AI trip planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 1,
-      "leaders": [
-        {
-          "competitorId": "layla",
-          "competitorName": "Layla",
-          "coverage": 1
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 1
-        },
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 127
-    },
-    {
-      "keyword": "best AI travel planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 1,
-      "leaders": [
-        {
-          "competitorId": "layla",
-          "competitorName": "Layla",
-          "coverage": 1
-        },
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 127
-    },
-    {
       "keyword": "points and miles trip planner",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
@@ -6355,22 +6313,7 @@
       "gapScore": 117
     },
     {
-      "keyword": "collaborative travel planner",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "packCoverage": 0.28,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 112
-    },
-    {
-      "keyword": "AI travel planner",
+      "keyword": "AI trip planner",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
       "packCoverage": 0.85,
@@ -6398,66 +6341,6 @@
         }
       ],
       "gapScore": 109
-    },
-    {
-      "keyword": "AI itinerary planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "layla",
-          "competitorName": "Layla",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 106
-    },
-    {
-      "keyword": "travel planning app with AI",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 106
     },
     {
       "keyword": "plan a trip from calendar events",
@@ -6490,34 +6373,34 @@
       "gapScore": 106
     },
     {
-      "keyword": "turn emails into travel itinerary",
+      "keyword": "AI travel planner",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
+      "packCoverage": 1,
+      "bestCompetitorCoverage": 1,
       "leaders": [
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 1
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 1
+        },
         {
           "competitorId": "navan",
           "competitorName": "Navan",
           "coverage": 0.65
         },
         {
-          "competitorId": "awardwallet",
-          "competitorName": "AwardWallet",
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "layla",
-          "competitorName": "Layla",
-          "coverage": 0.43
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.43
         }
       ],
-      "gapScore": 106
+      "gapScore": 100
     },
     {
       "keyword": "AI travel assistant",
@@ -6550,12 +6433,82 @@
       "gapScore": 100
     },
     {
-      "keyword": "organize travel confirmations",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "packCoverage": 0.55,
+      "keyword": "AI itinerary planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.85,
       "bestCompetitorCoverage": 0.65,
       "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 100
+    },
+    {
+      "keyword": "best AI travel planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 1,
+      "bestCompetitorCoverage": 1,
+      "leaders": [
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 1
+        },
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 100
+    },
+    {
+      "keyword": "travel planning app with AI",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
         {
           "competitorId": "tripit",
           "competitorName": "TripIt",
@@ -6565,14 +6518,39 @@
           "competitorId": "wanderlog",
           "competitorName": "Wanderlog",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
         }
       ],
-      "gapScore": 96
+      "gapScore": 100
+    },
+    {
+      "keyword": "turn emails into travel itinerary",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "awardwallet",
+          "competitorName": "AwardWallet",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 100
     },
     {
       "keyword": "automatic trip itinerary",
@@ -6599,66 +6577,6 @@
         {
           "competitorId": "pointme",
           "competitorName": "point.me",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 96
-    },
-    {
-      "keyword": "automatic itinerary from email",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "awardwallet",
-          "competitorName": "AwardWallet",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "pointme",
-          "competitorName": "point.me",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.43
-        }
-      ],
-      "gapScore": 96
-    },
-    {
-      "keyword": "booking email itinerary",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
           "coverage": 0.65
         }
       ],
@@ -6695,21 +6613,6 @@
       "gapScore": 96
     },
     {
-      "keyword": "repeat route tracker",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "packCoverage": 0.37,
-      "bestCompetitorCoverage": 0.43,
-      "leaders": [
-        {
-          "competitorId": "travelperk",
-          "competitorName": "TravelPerk",
-          "coverage": 0.43
-        }
-      ],
-      "gapScore": 94
-    },
-    {
       "keyword": "travel itinerary organizer",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -6722,9 +6625,34 @@
       "keyword": "trip organizer app",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
-      "packCoverage": 0.85,
+      "packCoverage": 1,
       "bestCompetitorCoverage": 0,
       "leaders": [],
+      "gapScore": 90
+    },
+    {
+      "keyword": "organize travel confirmations",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
       "gapScore": 90
     },
     {
@@ -6751,7 +6679,7 @@
       "keyword": "travel confirmation parser",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
-      "packCoverage": 0.55,
+      "packCoverage": 0.85,
       "bestCompetitorCoverage": 0,
       "leaders": [],
       "gapScore": 90
@@ -6766,28 +6694,70 @@
       "gapScore": 90
     },
     {
+      "keyword": "automatic itinerary from email",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "awardwallet",
+          "competitorName": "AwardWallet",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "pointme",
+          "competitorName": "point.me",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 90
+    },
+    {
+      "keyword": "booking email itinerary",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 90
+    },
+    {
       "keyword": "travel email parser",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
       "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0,
-      "leaders": [],
-      "gapScore": 90
-    },
-    {
-      "keyword": "countries visited tracker",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "packCoverage": 0.37,
-      "bestCompetitorCoverage": 0,
-      "leaders": [],
-      "gapScore": 90
-    },
-    {
-      "keyword": "airport pattern tracker",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "packCoverage": 0.37,
       "bestCompetitorCoverage": 0,
       "leaders": [],
       "gapScore": 90
@@ -7213,111 +7183,6 @@
       "gapScore": 76
     },
     {
-      "keyword": "shared trip itinerary",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "awardwallet",
-          "competitorName": "AwardWallet",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "pointme",
-          "competitorName": "point.me",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 76
-    },
-    {
-      "keyword": "family trip planner app",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "pointme",
-          "competitorName": "point.me",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 76
-    },
-    {
-      "keyword": "group travel itinerary",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "travelperk",
-          "competitorName": "TravelPerk",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 76
-    },
-    {
-      "keyword": "shared travel expenses",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "awardwallet",
-          "competitorName": "AwardWallet",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "pointme",
-          "competitorName": "point.me",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 76
-    },
-    {
       "keyword": "group trip expenses",
       "clusterId": "group-trip-planning",
       "clusterLabel": "Group trip planning and shared travel",
@@ -7366,51 +7231,6 @@
         }
       ],
       "gapScore": 76
-    },
-    {
-      "keyword": "travel stats app",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 76
-    },
-    {
-      "keyword": "travel map app",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 76
-    },
-    {
-      "keyword": "travel history map",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "packCoverage": 0.57,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 75
     },
     {
       "keyword": "airport security wait times",
@@ -7558,6 +7378,61 @@
       "keyword": "group trip planner",
       "clusterId": "group-trip-planning",
       "clusterLabel": "Group trip planning and shared travel",
+      "packCoverage": 1,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "pointme",
+          "competitorName": "point.me",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "shared trip itinerary",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "awardwallet",
+          "competitorName": "AwardWallet",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "pointme",
+          "competitorName": "point.me",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "family trip planner app",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
       "packCoverage": 0.85,
       "bestCompetitorCoverage": 0.65,
       "leaders": [
@@ -7585,6 +7460,101 @@
       "gapScore": 70
     },
     {
+      "keyword": "collaborative travel planner",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "group travel itinerary",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "travelperk",
+          "competitorName": "TravelPerk",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "shared travel expenses",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "awardwallet",
+          "competitorName": "AwardWallet",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "pointme",
+          "competitorName": "point.me",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "travel stats app",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "packCoverage": 1,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "travel map app",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
       "keyword": "personal travel map",
       "clusterId": "travel-stats-and-maps",
       "clusterLabel": "Travel stats, maps, and history analytics",
@@ -7594,10 +7564,58 @@
       "gapScore": 70
     },
     {
+      "keyword": "travel history map",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
       "keyword": "flight history tracker",
       "clusterId": "travel-stats-and-maps",
       "clusterLabel": "Travel stats, maps, and history analytics",
-      "packCoverage": 0.55,
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 70
+    },
+    {
+      "keyword": "countries visited tracker",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 70
+    },
+    {
+      "keyword": "repeat route tracker",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.43,
+      "leaders": [
+        {
+          "competitorId": "travelperk",
+          "competitorName": "TravelPerk",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "airport pattern tracker",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "packCoverage": 0.85,
       "bestCompetitorCoverage": 0,
       "leaders": [],
       "gapScore": 70
@@ -7760,12 +7778,12 @@
       "priority": "critical",
       "gap": "Own the AI travel planning category with direct comparison and proof pages.",
       "evidence": [
-        "AI trip planner: Pack 0.55, best competitor 1",
-        "best AI travel planner: Pack 0.55, best competitor 1",
-        "AI travel planner: Pack 0.85, best competitor 1",
-        "AI itinerary planner: Pack 0.55, best competitor 0.65",
-        "travel planning app with AI: Pack 0.55, best competitor 0.65",
-        "plan a trip from calendar events: Pack 0.55, best competitor 0.65"
+        "AI trip planner: Pack 0.85, best competitor 1",
+        "plan a trip from calendar events: Pack 0.55, best competitor 0.65",
+        "AI travel planner: Pack 1, best competitor 1",
+        "AI travel assistant: Pack 1, best competitor 1",
+        "AI itinerary planner: Pack 0.85, best competitor 0.65",
+        "best AI travel planner: Pack 1, best competitor 1"
       ],
       "action": "Build a strong /ai-travel-planner or /guides/ai-travel-planning page with screenshots, workflow proof, FAQs, and comparison sections for Mindtrip, Layla, TripIt, Expedia, Booking, and Navan."
     },
@@ -7773,12 +7791,12 @@
       "priority": "critical",
       "gap": "Trip organization and email-confirmation organization are under-owned by Pack relative to itinerary organizer competitors.",
       "evidence": [
-        "organize travel confirmations: leaders TripIt, Wanderlog, KAYAK",
         "automatic trip itinerary: leaders Navan, TravelPerk, AwardWallet, point.me",
-        "automatic itinerary from email: leaders Navan, AwardWallet, point.me, Mindtrip",
-        "booking email itinerary: leaders Navan, Mindtrip, TripIt, Wanderlog",
         "itinerary from confirmation emails: leaders Navan, TripIt, Wanderlog, AwardWallet",
-        "travel itinerary organizer: leaders none detected"
+        "travel itinerary organizer: leaders none detected",
+        "trip organizer app: leaders none detected",
+        "organize travel confirmations: leaders TripIt, Wanderlog, KAYAK",
+        "email itinerary organizer: leaders Mindtrip, TripIt"
       ],
       "action": "Turn /travel-history and /upcoming-trip-details into stronger itinerary-organizer pages, then add a focused guide targeting travel itinerary organizer, trip organizer app, and email itinerary organizer."
     },
@@ -7812,11 +7830,11 @@
       "priority": "medium",
       "gap": "GEO answer readiness should be expanded around comparison questions, not AI-only markup.",
       "evidence": [
+        "Booking with context: 9 high-gap terms",
         "AI travel planning: 8 high-gap terms",
-        "Booking with context: 7 high-gap terms",
-        "Group trip planning and shared travel: 1 high-gap terms",
         "Trip organization: 11 high-gap terms",
-        "Travel stats, maps, and history analytics: 3 high-gap terms"
+        "Travel stats, maps, and history analytics: 1 high-gap terms",
+        "Airport security intelligence: 1 high-gap terms"
       ],
       "action": "Add visible answers for comparison, use-case, and how-it-works questions; keep structured data representative of visible content."
     }

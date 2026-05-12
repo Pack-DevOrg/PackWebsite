@@ -38,6 +38,7 @@ const SupportPage = React.lazy(() => import("../pages/Support"));
 const TravelContextBenchmarkPage = React.lazy(
   () => import("../pages/TravelContextBenchmark")
 );
+const SeoGuidePage = React.lazy(() => import("../pages/SeoGuidePage"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const EmailForwardingSetupPage = React.lazy(
   () => import("../pages/EmailForwardingSetup")
@@ -325,6 +326,12 @@ const LocalizedOutlet: React.FC = () => (
   </LocalizedRouteGuard>
 );
 
+const SeoGuideRoute: React.FC = () => {
+  const { guideSlug } = useParams();
+
+  return <SeoGuidePage slug={guideSlug} />;
+};
+
 const NonHomeRoutes: React.FC = () => {
   const {pathFor} = useI18n();
   const tsaEnabled = shouldExposeTsaForCurrentHost();
@@ -541,6 +548,16 @@ const NonHomeRoutes: React.FC = () => {
             <Layout>
               <Suspense fallback={null}>
                 <WestLaLiveWorkZoningPage />
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/guides/:guideSlug"
+          element={
+            <Layout>
+              <Suspense fallback={null}>
+                <SeoGuideRoute />
               </Suspense>
             </Layout>
           }
@@ -918,6 +935,16 @@ const NonHomeRoutes: React.FC = () => {
               <Layout>
                 <Suspense fallback={null}>
                   <WestLaLiveWorkZoningPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="guides/:guideSlug"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <SeoGuideRoute />
                 </Suspense>
               </Layout>
             }

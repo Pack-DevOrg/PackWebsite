@@ -1,44 +1,44 @@
 # PackWebsite Competitor SEO Gap Analysis
 
-Generated: 2026-05-12T13:31:07.007Z
+Generated: 2026-05-12T14:04:25.034Z
 
 Methodology: Public technical SEO crawl based on robots.txt, sitemap URLs, selected public pages, visible metadata, URL structures, and Pack seed-topic coverage. It is not a paid rank/traffic/backlink database.
 
 ## Strategic Gaps
 
-1. **critical**: Own the AI travel planning category with direct comparison and proof pages. Build a strong /ai-travel-planner or /guides/ai-travel-planning page with screenshots, workflow proof, FAQs, and comparison sections for Mindtrip, Layla, TripIt, Expedia, Booking, and Navan. Evidence: AI trip planner: Pack 0.55, best competitor 1; best AI travel planner: Pack 0.55, best competitor 1; AI travel planner: Pack 0.85, best competitor 1; AI itinerary planner: Pack 0.55, best competitor 0.65; travel planning app with AI: Pack 0.55, best competitor 0.65; plan a trip from calendar events: Pack 0.55, best competitor 0.65
-2. **critical**: Trip organization and email-confirmation organization are under-owned by Pack relative to itinerary organizer competitors. Turn /travel-history and /upcoming-trip-details into stronger itinerary-organizer pages, then add a focused guide targeting travel itinerary organizer, trip organizer app, and email itinerary organizer. Evidence: organize travel confirmations: leaders TripIt, Wanderlog, KAYAK; automatic trip itinerary: leaders Navan, TravelPerk, AwardWallet, point.me; automatic itinerary from email: leaders Navan, AwardWallet, point.me, Mindtrip; booking email itinerary: leaders Navan, Mindtrip, TripIt, Wanderlog; itinerary from confirmation emails: leaders Navan, TripIt, Wanderlog, AwardWallet; travel itinerary organizer: leaders none detected
+1. **critical**: Own the AI travel planning category with direct comparison and proof pages. Build a strong /ai-travel-planner or /guides/ai-travel-planning page with screenshots, workflow proof, FAQs, and comparison sections for Mindtrip, Layla, TripIt, Expedia, Booking, and Navan. Evidence: AI trip planner: Pack 0.85, best competitor 1; plan a trip from calendar events: Pack 0.55, best competitor 0.65; AI travel planner: Pack 1, best competitor 1; AI travel assistant: Pack 1, best competitor 1; AI itinerary planner: Pack 0.85, best competitor 0.65; best AI travel planner: Pack 1, best competitor 1
+2. **critical**: Trip organization and email-confirmation organization are under-owned by Pack relative to itinerary organizer competitors. Turn /travel-history and /upcoming-trip-details into stronger itinerary-organizer pages, then add a focused guide targeting travel itinerary organizer, trip organizer app, and email itinerary organizer. Evidence: automatic trip itinerary: leaders Navan, TravelPerk, AwardWallet, point.me; itinerary from confirmation emails: leaders Navan, TripIt, Wanderlog, AwardWallet; travel itinerary organizer: leaders none detected; trip organizer app: leaders none detected; organize travel confirmations: leaders TripIt, Wanderlog, KAYAK; email itinerary organizer: leaders Mindtrip, TripIt
 3. **high**: Pack has no programmatic destination or city inventory moat like OTAs and consumer planners. Avoid shallow destination spam. Use Pack-owned utility data instead: TSA airport pages, live wait time explainers, public event planning examples, and benchmark pages. Evidence: Layla: Programmatic travel inventory or destination landing pages.; Expedia: High-authority transactional marketplace footprint across flights, hotels, packages, and destinations.; Booking.com: High-authority transactional marketplace footprint across flights, hotels, packages, and destinations.; AwardWallet: Programmatic travel inventory or destination landing pages.; point.me: Programmatic travel inventory or destination landing pages.; Roame.travel: Programmatic travel inventory or destination landing pages.
 4. **high**: Business-travel language is weak against Navan and TravelPerk. Add business-traveler and executive-assistant angles to existing capability pages before creating B2B landing pages. Evidence: Navan: Business-travel and expense-management authority content.; Booking.com: Business-travel and expense-management authority content.; TripIt: Business-travel and expense-management authority content.; Wanderlog: Business-travel and expense-management authority content.; TravelPerk: Business-travel and expense-management authority content.; AwardWallet: Business-travel and expense-management authority content.
-5. **medium**: GEO answer readiness should be expanded around comparison questions, not AI-only markup. Add visible answers for comparison, use-case, and how-it-works questions; keep structured data representative of visible content. Evidence: AI travel planning: 8 high-gap terms; Booking with context: 7 high-gap terms; Group trip planning and shared travel: 1 high-gap terms; Trip organization: 11 high-gap terms; Travel stats, maps, and history analytics: 3 high-gap terms
+5. **medium**: GEO answer readiness should be expanded around comparison questions, not AI-only markup. Add visible answers for comparison, use-case, and how-it-works questions; keep structured data representative of visible content. Evidence: Booking with context: 9 high-gap terms; AI travel planning: 8 high-gap terms; Trip organization: 11 high-gap terms; Travel stats, maps, and history analytics: 1 high-gap terms; Airport security intelligence: 1 high-gap terms
 
 ## Highest Keyword Gaps
 
-1. **AI trip planner** (AI travel planning) - Pack coverage 0.55, best competitor 1. Leaders: Layla 1, Wanderlog 1, Navan 0.65, Mindtrip 0.65. Gap score: 127
-2. **best AI travel planner** (AI travel planning) - Pack coverage 0.55, best competitor 1. Leaders: Layla 1, Navan 0.65, Mindtrip 0.65, TripIt 0.65. Gap score: 127
-3. **points and miles trip planner** (Booking with context) - Pack coverage 0.37, best competitor 0.65. Leaders: Navan 0.65, TripIt 0.65, point.me 0.65, Mindtrip 0.43. Gap score: 117
-4. **collaborative travel planner** (Group trip planning and shared travel) - Pack coverage 0.28, best competitor 0.65. Leaders: Wanderlog 0.65. Gap score: 112
-5. **AI travel planner** (AI travel planning) - Pack coverage 0.85, best competitor 1. Leaders: Layla 1, Wanderlog 1, Navan 0.65, Mindtrip 0.65. Gap score: 109
-6. **AI itinerary planner** (AI travel planning) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, Layla 0.65, TripIt 0.65. Gap score: 106
-7. **travel planning app with AI** (AI travel planning) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, TripIt 0.65, Wanderlog 0.65. Gap score: 106
-8. **plan a trip from calendar events** (AI travel planning) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, AwardWallet 0.65, Mindtrip 0.43, Layla 0.43. Gap score: 106
-9. **turn emails into travel itinerary** (AI travel planning) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, AwardWallet 0.65, Layla 0.43, TripIt 0.43. Gap score: 106
-10. **AI travel assistant** (AI travel planning) - Pack coverage 1, best competitor 1. Leaders: Navan 1, Mindtrip 1, Wanderlog 0.65, KAYAK 0.65. Gap score: 100
-11. **organize travel confirmations** (Trip organization) - Pack coverage 0.55, best competitor 0.65. Leaders: TripIt 0.65, Wanderlog 0.65, KAYAK 0.65. Gap score: 96
-12. **automatic trip itinerary** (Trip organization) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, TravelPerk 0.65, AwardWallet 0.65, point.me 0.65. Gap score: 96
-13. **automatic itinerary from email** (Trip organization) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, AwardWallet 0.65, point.me 0.65, Mindtrip 0.43. Gap score: 96
-14. **booking email itinerary** (Trip organization) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, TripIt 0.65, Wanderlog 0.65. Gap score: 96
-15. **itinerary from confirmation emails** (Trip organization) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, TripIt 0.65, Wanderlog 0.65, AwardWallet 0.65. Gap score: 96
-16. **repeat route tracker** (Travel stats, maps, and history analytics) - Pack coverage 0.37, best competitor 0.43. Leaders: TravelPerk 0.43. Gap score: 94
-17. **travel itinerary organizer** (Trip organization) - Pack coverage 0.85, best competitor 0. Leaders: none detected. Gap score: 90
-18. **trip organizer app** (Trip organization) - Pack coverage 0.85, best competitor 0. Leaders: none detected. Gap score: 90
-19. **email itinerary organizer** (Trip organization) - Pack coverage 0.85, best competitor 0.43. Leaders: Mindtrip 0.43, TripIt 0.43. Gap score: 90
-20. **travel confirmation parser** (Trip organization) - Pack coverage 0.55, best competitor 0. Leaders: none detected. Gap score: 90
-21. **travel inbox organizer** (Trip organization) - Pack coverage 0.85, best competitor 0. Leaders: none detected. Gap score: 90
-22. **travel email parser** (Trip organization) - Pack coverage 0.55, best competitor 0. Leaders: none detected. Gap score: 90
-23. **countries visited tracker** (Travel stats, maps, and history analytics) - Pack coverage 0.37, best competitor 0. Leaders: none detected. Gap score: 90
-24. **airport pattern tracker** (Travel stats, maps, and history analytics) - Pack coverage 0.37, best competitor 0. Leaders: none detected. Gap score: 90
-25. **AI flight booking assistant** (Booking with context) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Wanderlog 0.65, KAYAK 0.65. Gap score: 86
+1. **points and miles trip planner** (Booking with context) - Pack coverage 0.37, best competitor 0.65. Leaders: Navan 0.65, TripIt 0.65, point.me 0.65, Mindtrip 0.43. Gap score: 117
+2. **AI trip planner** (AI travel planning) - Pack coverage 0.85, best competitor 1. Leaders: Layla 1, Wanderlog 1, Navan 0.65, Mindtrip 0.65. Gap score: 109
+3. **plan a trip from calendar events** (AI travel planning) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, AwardWallet 0.65, Mindtrip 0.43, Layla 0.43. Gap score: 106
+4. **AI travel planner** (AI travel planning) - Pack coverage 1, best competitor 1. Leaders: Layla 1, Wanderlog 1, Navan 0.65, Mindtrip 0.65. Gap score: 100
+5. **AI travel assistant** (AI travel planning) - Pack coverage 1, best competitor 1. Leaders: Navan 1, Mindtrip 1, Wanderlog 0.65, KAYAK 0.65. Gap score: 100
+6. **AI itinerary planner** (AI travel planning) - Pack coverage 0.85, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, Layla 0.65, TripIt 0.65. Gap score: 100
+7. **best AI travel planner** (AI travel planning) - Pack coverage 1, best competitor 1. Leaders: Layla 1, Navan 0.65, Mindtrip 0.65, TripIt 0.65. Gap score: 100
+8. **travel planning app with AI** (AI travel planning) - Pack coverage 0.85, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, TripIt 0.65, Wanderlog 0.65. Gap score: 100
+9. **turn emails into travel itinerary** (AI travel planning) - Pack coverage 0.85, best competitor 0.65. Leaders: Navan 0.65, AwardWallet 0.65, Layla 0.43, TripIt 0.43. Gap score: 100
+10. **automatic trip itinerary** (Trip organization) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, TravelPerk 0.65, AwardWallet 0.65, point.me 0.65. Gap score: 96
+11. **itinerary from confirmation emails** (Trip organization) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, TripIt 0.65, Wanderlog 0.65, AwardWallet 0.65. Gap score: 96
+12. **travel itinerary organizer** (Trip organization) - Pack coverage 0.85, best competitor 0. Leaders: none detected. Gap score: 90
+13. **trip organizer app** (Trip organization) - Pack coverage 1, best competitor 0. Leaders: none detected. Gap score: 90
+14. **organize travel confirmations** (Trip organization) - Pack coverage 0.85, best competitor 0.65. Leaders: TripIt 0.65, Wanderlog 0.65, KAYAK 0.65. Gap score: 90
+15. **email itinerary organizer** (Trip organization) - Pack coverage 0.85, best competitor 0.43. Leaders: Mindtrip 0.43, TripIt 0.43. Gap score: 90
+16. **travel confirmation parser** (Trip organization) - Pack coverage 0.85, best competitor 0. Leaders: none detected. Gap score: 90
+17. **travel inbox organizer** (Trip organization) - Pack coverage 0.85, best competitor 0. Leaders: none detected. Gap score: 90
+18. **automatic itinerary from email** (Trip organization) - Pack coverage 0.85, best competitor 0.65. Leaders: Navan 0.65, AwardWallet 0.65, point.me 0.65, Mindtrip 0.43. Gap score: 90
+19. **booking email itinerary** (Trip organization) - Pack coverage 0.85, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, TripIt 0.65, Wanderlog 0.65. Gap score: 90
+20. **travel email parser** (Trip organization) - Pack coverage 0.55, best competitor 0. Leaders: none detected. Gap score: 90
+21. **AI flight booking assistant** (Booking with context) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Wanderlog 0.65, KAYAK 0.65. Gap score: 86
+22. **AI hotel booking assistant** (Booking with context) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Wanderlog 0.65, KAYAK 0.65. Gap score: 86
+23. **travel booking assistant** (Booking with context) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, Wanderlog 0.65, KAYAK 0.65. Gap score: 86
+24. **book flights from itinerary** (Booking with context) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Mindtrip 0.65, Layla 0.65, TripIt 0.65. Gap score: 86
+25. **compare flights with traveler preferences** (Booking with context) - Pack coverage 0.55, best competitor 0.65. Leaders: Navan 0.65, Layla 0.65, KAYAK 0.65, AwardWallet 0.65. Gap score: 86
 
 ## Competitor Breakdowns
 
@@ -219,8 +219,8 @@ Representative fetched pages:
 - 202 https://www.booking.com/index.html - No title
 - 202 https://www.booking.com/destination.html - No title
 - 202 https://www.booking.com/articles.html - No title
-- 200 https://www.booking.com/airport/us/day.pt-pt.html - Os 10 hotéis mais próximos do Aeroporto Internacional de Dayton - James M. Cox (DAY) | Booking.com
-- 200 https://www.booking.com/airport/us/and.pt-pt.html - Os 10 hotéis mais próximos do Aeroporto Regional Anderson (AND) | Booking.com
+- 202 https://www.booking.com/airport/us/day.pt-pt.html - No title
+- 202 https://www.booking.com/airport/us/and.pt-pt.html - No title
 - 200 https://www.booking.com/airport/us/day.en-gb.html - The 10 closest hotels to James M. Cox Dayton International Airport (DAY) | Booking.com
 - 202 https://www.booking.com/airport/us/atl.pt-pt.html - No title
 

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T13:31:53.916Z",
+  "generatedAt": "2026-05-12T14:04:52.334Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -28,39 +28,11 @@
     }
   ],
   "inventory": {
-    "scannedPages": 174,
+    "scannedPages": 180,
     "sitemapUrls": 25,
     "prerenderRoutes": 36
   },
   "keywordOpportunities": [
-    {
-      "keyword": "best AI travel planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "intent": "commercial",
-      "priority": 10,
-      "gapScore": 118,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/faq",
-          "title": "Pack FAQ",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
     {
       "keyword": "plan a trip from calendar events",
       "clusterId": "ai-travel-planning",
@@ -72,6 +44,11 @@
       "recommendedPage": "/",
       "strongestExistingPages": [
         {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.55
+        },
+        {
           "path": "/how-it-works",
           "title": "How Pack Works",
           "score": 0.55
@@ -80,39 +57,6 @@
           "path": "/trip-planning-from-events",
           "title": "Trip Planning From Events",
           "score": 0.55
-        },
-        {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "turn emails into travel itinerary",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "intent": "commercial",
-      "priority": 10,
-      "gapScore": 118,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/",
-      "strongestExistingPages": [
-        {
-          "path": "/connected-accounts",
-          "title": "Connected Accounts",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.3666666666666667
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -138,124 +82,40 @@
           "score": 0.3666666666666667
         },
         {
-          "path": "/faq",
-          "title": "Pack FAQ",
-          "score": 0.18333333333333335
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.3666666666666667
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
     },
     {
-      "keyword": "AI trip planner",
+      "keyword": "turn emails into travel itinerary",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
       "intent": "commercial",
       "priority": 10,
-      "gapScore": 110,
-      "currentBestCoverage": 0.55,
+      "gapScore": 105,
+      "currentBestCoverage": 0.85,
       "recommendedPage": "/",
       "strongestExistingPages": [
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/connected-accounts",
+          "title": "Connected Accounts",
           "score": 0.55
         },
         {
-          "path": "/faq",
-          "title": "Pack FAQ",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
           "score": 0.55
         }
       ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "AI itinerary planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "intent": "commercial",
-      "priority": 10,
-      "gapScore": 110,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/components/SemanticSearchOptimization.tsx",
-          "title": "SemanticSearchOptimization.tsx",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "travel planning app with AI",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "intent": "commercial",
-      "priority": 10,
-      "gapScore": 108,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/",
-      "strongestExistingPages": [
-        {
-          "path": "/capability-pages",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/product-overview",
-          "title": "Pack Product Overview",
-          "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
-      "keyword": "travel confirmation parser",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "intent": "commercial",
-      "priority": 9,
-      "gapScore": 102,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/travel-history",
-      "strongestExistingPages": [
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        },
-        {
-          "path": "/AuthorizedAgent",
-          "title": "Authorized Agent Process - CCPA",
-          "score": 0.275
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.275
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
       "keyword": "travel email parser",
@@ -268,19 +128,19 @@
       "recommendedPage": "/travel-history",
       "strongestExistingPages": [
         {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.55
+        },
+        {
           "path": "/llms.txt",
           "title": "Pack",
           "score": 0.55
         },
         {
-          "path": "/support-and-contact",
-          "title": "Pack Support And Contact",
-          "score": 0.275
-        },
-        {
-          "path": "/AuthorizedAgent",
-          "title": "Authorized Agent Process - CCPA",
-          "score": 0.275
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -357,14 +217,14 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/pages/FAQ.tsx",
-          "title": "FAQ.tsx",
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
           "score": 0.55
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.41250000000000003
+          "path": "/source/src/pages/FAQ.tsx",
+          "title": "FAQ.tsx",
+          "score": 0.55
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -385,13 +245,13 @@
           "score": 0.55
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
           "score": 0.55
         },
         {
-          "path": "/loyalty-details",
-          "title": "Loyalty Details",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         }
       ],
@@ -408,50 +268,22 @@
       "recommendedPage": "/travel-booking",
       "strongestExistingPages": [
         {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.55
+        },
+        {
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
           "score": 0.55
         },
         {
-          "path": "/source/src/pages/FAQ.tsx",
-          "title": "FAQ.tsx",
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
           "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.41250000000000003
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "automatic itinerary from email",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "intent": "commercial",
-      "priority": 9,
-      "gapScore": 100,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/travel-history",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/connected-accounts",
-          "title": "Connected Accounts",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
     },
     {
       "keyword": "itinerary from confirmation emails",
@@ -469,48 +301,48 @@
           "score": 0.55
         },
         {
-          "path": "/travel-history",
-          "title": "Travel History",
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
           "score": 0.55
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/travel-history",
+          "title": "Travel History",
           "score": 0.55
         }
       ],
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
     },
     {
-      "keyword": "collaborative travel planner",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
+      "keyword": "best AI travel planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
       "intent": "commercial",
-      "priority": 7,
-      "gapScore": 99,
-      "currentBestCoverage": 0.28,
-      "recommendedPage": "/trip-sharing",
+      "priority": 10,
+      "gapScore": 98,
+      "currentBestCoverage": 1,
+      "recommendedPage": "/",
       "strongestExistingPages": [
+        {
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "score": 1
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
         {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
-          "score": 0.275
-        },
-        {
-          "path": "/faq",
-          "title": "Pack FAQ",
-          "score": 0.275
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.275
+          "score": 0.55
         }
       ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
-      "keyword": "AI travel planner",
+      "keyword": "AI trip planner",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
       "intent": "commercial",
@@ -520,106 +352,78 @@
       "recommendedPage": "/",
       "strongestExistingPages": [
         {
-          "path": "/faq",
-          "title": "Pack FAQ",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/components/SemanticSearchOptimization.tsx",
-          "title": "SemanticSearchOptimization.tsx",
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/pages/FAQ.tsx",
-          "title": "FAQ.tsx",
-          "score": 0.8500000000000001
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
-      "keyword": "countries visited tracker",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
+      "keyword": "AI itinerary planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
       "intent": "commercial",
-      "priority": 7,
-      "gapScore": 95,
-      "currentBestCoverage": 0.37,
-      "recommendedPage": "/travel-stats",
+      "priority": 10,
+      "gapScore": 97,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/",
       "strongestExistingPages": [
         {
-          "path": "/source/src/components/app/TravelStatsOverview.tsx",
-          "title": "TravelStatsOverview.tsx",
-          "score": 0.3666666666666667
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/components/hero/HeroJourneyMapCard.tsx",
-          "title": "HeroJourneyMapCard.tsx",
-          "score": 0.3666666666666667
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
         },
         {
-          "path": "/privacy",
-          "title": "Privacy Policy",
-          "score": 0.18333333333333335
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.55
         }
       ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
-      "keyword": "repeat route tracker",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
+      "keyword": "travel planning app with AI",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
       "intent": "commercial",
-      "priority": 7,
+      "priority": 10,
       "gapScore": 95,
-      "currentBestCoverage": 0.37,
-      "recommendedPage": "/travel-stats",
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/",
       "strongestExistingPages": [
         {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.3666666666666667
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/traveler-profiles",
-          "title": "Traveler Profiles",
-          "score": 0.3666666666666667
-        },
-        {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.3666666666666667
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "airport pattern tracker",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 95,
-      "currentBestCoverage": 0.37,
-      "recommendedPage": "/travel-stats",
-      "strongestExistingPages": [
-        {
-          "path": "/tsa-airport-pages",
-          "title": "Pack TSA Airport Pages",
-          "score": 0.3666666666666667
-        },
-        {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.3666666666666667
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         },
         {
           "path": "/capability-pages",
           "title": "Pack Capability Pages",
-          "score": 0.18333333333333335
+          "score": 0.55
         }
       ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
       "keyword": "travel booking assistant",
@@ -642,8 +446,8 @@
           "score": 0.55
         },
         {
-          "path": "/",
-          "title": "Pack",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.55
         }
       ],
@@ -790,62 +594,6 @@
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
     },
     {
-      "keyword": "family trip planner app",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 94,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-sharing",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/data/travelContextBenchmark.ts",
-          "title": "travelContextBenchmark.ts",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "organize travel confirmations",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "intent": "commercial",
-      "priority": 9,
-      "gapScore": 92,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/travel-history",
-      "strongestExistingPages": [
-        {
-          "path": "/terms",
-          "title": "TermsOfService.md",
-          "score": 0.55
-        },
-        {
-          "path": "/travel-history",
-          "title": "Travel History",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
       "keyword": "automatic trip itinerary",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -866,36 +614,8 @@
           "score": 0.55
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
-      "keyword": "booking email itinerary",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "intent": "commercial",
-      "priority": 9,
-      "gapScore": 92,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/travel-history",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/connected-accounts",
-          "title": "Connected Accounts",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.55
         }
       ],
@@ -958,6 +678,62 @@
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
     },
     {
+      "keyword": "AI travel planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "intent": "commercial",
+      "priority": 10,
+      "gapScore": 90,
+      "currentBestCoverage": 1,
+      "recommendedPage": "/",
+      "strongestExistingPages": [
+        {
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "score": 1
+        },
+        {
+          "path": "/faq",
+          "title": "Pack FAQ",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/components/SemanticSearchOptimization.tsx",
+          "title": "SemanticSearchOptimization.tsx",
+          "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "travel confirmation parser",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-history",
+      "strongestExistingPages": [
+        {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "travel inbox organizer",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -968,6 +744,11 @@
       "recommendedPage": "/travel-history",
       "strongestExistingPages": [
         {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.8500000000000001
+        },
+        {
           "path": "/llms.txt",
           "title": "Pack",
           "score": 0.8500000000000001
@@ -976,10 +757,33 @@
           "path": "/capabilities",
           "title": "Pack Capability Pages",
           "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "automatic itinerary from email",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 87,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-history",
+      "strongestExistingPages": [
+        {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -1008,34 +812,6 @@
         {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
-          "score": 0.3666666666666667
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "flight history tracker",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 86,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/travel-stats",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.3666666666666667
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
           "score": 0.3666666666666667
         }
       ],
@@ -1080,18 +856,18 @@
       "recommendedPage": "/trip-updates",
       "strongestExistingPages": [
         {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.55
+        },
+        {
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
           "score": 0.55
         },
         {
-          "path": "/source/src/pages/ConversationPage.tsx",
-          "title": "ConversationPage.tsx",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/pages/FAQ.tsx",
-          "title": "FAQ.tsx",
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
           "score": 0.55
         }
       ],
@@ -1220,6 +996,11 @@
       "recommendedPage": "/traveler-profiles",
       "strongestExistingPages": [
         {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.55
+        },
+        {
           "path": "/traveler-profiles",
           "title": "Traveler Profiles",
           "score": 0.55
@@ -1228,14 +1009,37 @@
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
           "score": 0.55
-        },
-        {
-          "path": "/source/src/pages/FAQ.tsx",
-          "title": "FAQ.tsx",
-          "score": 0.55
         }
       ],
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
+    },
+    {
+      "keyword": "family trip planner app",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 81,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-sharing",
+      "strongestExistingPages": [
+        {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
       "keyword": "AI travel assistant",
@@ -1258,8 +1062,8 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/",
-          "title": "Pack",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.8500000000000001
         }
       ],
@@ -1276,6 +1080,11 @@
       "recommendedPage": "/travel-history",
       "strongestExistingPages": [
         {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.8500000000000001
+        },
+        {
           "path": "/travel-history",
           "title": "Travel History",
           "score": 0.8500000000000001
@@ -1284,17 +1093,12 @@
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
           "score": 0.8500000000000001
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
-      "keyword": "trip organizer app",
+      "keyword": "organize travel confirmations",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
       "intent": "commercial",
@@ -1304,18 +1108,18 @@
       "recommendedPage": "/travel-history",
       "strongestExistingPages": [
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
           "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/travel-history",
-          "title": "Travel History",
+          "path": "/terms",
+          "title": "TermsOfService.md",
           "score": 0.55
         }
       ],
@@ -1332,8 +1136,36 @@
       "recommendedPage": "/travel-history",
       "strongestExistingPages": [
         {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.8500000000000001
+        },
+        {
           "path": "/llms.txt",
           "title": "Pack",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "booking email itinerary",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 79,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-history",
+      "strongestExistingPages": [
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
           "score": 0.8500000000000001
         },
         {
@@ -1342,8 +1174,8 @@
           "score": 0.55
         },
         {
-          "path": "/travel-history",
-          "title": "Travel History",
+          "path": "/connected-accounts",
+          "title": "Connected Accounts",
           "score": 0.55
         }
       ],
@@ -1365,13 +1197,13 @@
           "score": 0.55
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.55
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
           "score": 0.55
         }
       ],
@@ -1393,13 +1225,13 @@
           "score": 0.55
         },
         {
-          "path": "/capability-pages",
-          "title": "Pack Capability Pages",
-          "score": 0.275
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
         },
         {
-          "path": "/terms",
-          "title": "TermsOfService.md",
+          "path": "/capability-pages",
+          "title": "Pack Capability Pages",
           "score": 0.275
         }
       ],
@@ -1416,19 +1248,19 @@
       "recommendedPage": "/trip-updates",
       "strongestExistingPages": [
         {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.55
+        },
+        {
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
           "score": 0.55
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.275
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.275
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -1449,13 +1281,13 @@
           "score": 0.55
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.55
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         }
       ],
@@ -1482,8 +1314,8 @@
           "score": 0.55
         },
         {
-          "path": "/how-it-works",
-          "title": "How Pack Works",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.55
         }
       ],
@@ -1500,6 +1332,11 @@
       "recommendedPage": "/traveler-profiles",
       "strongestExistingPages": [
         {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.55
+        },
+        {
           "path": "/traveler-profiles",
           "title": "Traveler Profiles",
           "score": 0.55
@@ -1508,11 +1345,6 @@
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
           "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.275
         }
       ],
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
@@ -1574,90 +1406,6 @@
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
     },
     {
-      "keyword": "shared trip itinerary",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 76,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-sharing",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        },
-        {
-          "path": "/trip-expenses",
-          "title": "Trip Expenses",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
-      "keyword": "group travel itinerary",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 76,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-sharing",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/features",
-          "title": "Pack Features",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
-      "keyword": "shared travel expenses",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 76,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-sharing",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        },
-        {
-          "path": "/trip-expenses",
-          "title": "Trip Expenses",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
       "keyword": "group trip expenses",
       "clusterId": "group-trip-planning",
       "clusterLabel": "Group trip planning and shared travel",
@@ -1673,13 +1421,13 @@
           "score": 0.55
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.55
         },
         {
-          "path": "/trip-expenses",
-          "title": "Trip Expenses",
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
           "score": 0.55
         }
       ],
@@ -1714,90 +1462,6 @@
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
     },
     {
-      "keyword": "travel stats app",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 76,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/travel-stats",
-      "strongestExistingPages": [
-        {
-          "path": "/capability-pages",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/features",
-          "title": "Pack Features",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
-      "keyword": "travel map app",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 76,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/travel-stats",
-      "strongestExistingPages": [
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        },
-        {
-          "path": "/travel-stats",
-          "title": "Travel Stats",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/components/app/FlightRouteMap.tsx",
-          "title": "FlightRouteMap.tsx",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
-      "keyword": "travel history map",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "intent": "commercial",
-      "priority": 7,
-      "gapScore": 75,
-      "currentBestCoverage": 0.57,
-      "recommendedPage": "/travel-stats",
-      "strongestExistingPages": [
-        {
-          "path": "/features",
-          "title": "Pack Features",
-          "score": 0.575
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        },
-        {
-          "path": "/travel-stats",
-          "title": "Travel Stats",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
       "keyword": "airline points aggregator",
       "clusterId": "traveler-profile",
       "clusterLabel": "Traveler profile and loyalty",
@@ -1826,7 +1490,7 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
-      "keyword": "group trip planner",
+      "keyword": "collaborative travel planner",
       "clusterId": "group-trip-planning",
       "clusterLabel": "Group trip planning and shared travel",
       "intent": "commercial",
@@ -1836,9 +1500,149 @@
       "recommendedPage": "/trip-sharing",
       "strongestExistingPages": [
         {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.275
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "flight history tracker",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 73,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-stats",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
           "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/capabilityPages.ts",
+          "title": "capabilityPages.ts",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "countries visited tracker",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 73,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-stats",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/components/app/TravelStatsOverview.tsx",
+          "title": "TravelStatsOverview.tsx",
+          "score": 0.3666666666666667
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "repeat route tracker",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 73,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-stats",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.3666666666666667
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "airport pattern tracker",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 73,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-stats",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/tsa-airport-pages",
+          "title": "Pack TSA Airport Pages",
+          "score": 0.3666666666666667
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "trip organizer app",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 72,
+      "currentBestCoverage": 1,
+      "recommendedPage": "/travel-history",
+      "strongestExistingPages": [
+        {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 1
         },
         {
           "path": "/llms.txt",
@@ -1846,9 +1650,9 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/pages/FAQ.tsx",
-          "title": "FAQ.tsx",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1880,6 +1684,34 @@
         }
       ],
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
+    },
+    {
+      "keyword": "group trip planner",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 66,
+      "currentBestCoverage": 1,
+      "recommendedPage": "/trip-sharing",
+      "strongestExistingPages": [
+        {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 1
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
       "keyword": "airport security wait times",
@@ -1938,6 +1770,118 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "shared trip itinerary",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 63,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-sharing",
+      "strongestExistingPages": [
+        {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "group travel itinerary",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 63,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-sharing",
+      "strongestExistingPages": [
+        {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/features",
+          "title": "Pack Features",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "shared travel expenses",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 63,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-sharing",
+      "strongestExistingPages": [
+        {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "travel map app",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 63,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-stats",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        },
+        {
+          "path": "/travel-stats",
+          "title": "Travel Stats",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "personal travel map",
       "clusterId": "travel-stats-and-maps",
       "clusterLabel": "Travel stats, maps, and history analytics",
@@ -1948,19 +1892,47 @@
       "recommendedPage": "/travel-stats",
       "strongestExistingPages": [
         {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.8500000000000001
+        },
+        {
           "path": "/travel-stats",
           "title": "Travel Stats",
           "score": 0.8500000000000001
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "travel history map",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 63,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/travel-stats",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/features",
+          "title": "Pack Features",
+          "score": 0.575
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1981,28 +1953,48 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
           "score": 0.8500000000000001
         },
         {
-          "path": "/travel-stats",
-          "title": "Travel Stats",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "travel stats app",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "intent": "commercial",
+      "priority": 7,
+      "gapScore": 56,
+      "currentBestCoverage": 1,
+      "recommendedPage": "/travel-stats",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-stats-and-maps",
+          "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 1
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capability-pages",
+          "title": "Pack Capability Pages",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     }
   ],
   "questionOpportunities": [
-    {
-      "question": "What is the best AI travel planner for complex trips?",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "answerTarget": "/",
-      "currentBestCoverage": 0.37,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
     {
       "question": "How do I track updates across a whole trip?",
       "clusterId": "travel-day-operations",
@@ -2023,7 +2015,7 @@
       "question": "How do I compare travel options against my calendar?",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
-      "answerTarget": "/travel-booking",
+      "answerTarget": "/guides/ai-travel-planning",
       "currentBestCoverage": 0.41,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2036,18 +2028,10 @@
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
-      "question": "How do I find repeat routes and airport patterns in my travel history?",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "answerTarget": "/travel-stats",
-      "currentBestCoverage": 0.46,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
-    {
       "question": "Can AI turn emails and calendar events into a travel plan?",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
-      "answerTarget": "/",
+      "answerTarget": "/guides/ai-travel-planning",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2055,7 +2039,7 @@
       "question": "How do AI travel assistants compare with itinerary apps?",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
-      "answerTarget": "/",
+      "answerTarget": "/guides/ai-travel-planning",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2063,7 +2047,7 @@
       "question": "How can I organize travel confirmations automatically?",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
-      "answerTarget": "/travel-history",
+      "answerTarget": "/guides/trip-organization",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2071,7 +2055,7 @@
       "question": "What app turns booking emails into an itinerary?",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
-      "answerTarget": "/travel-history",
+      "answerTarget": "/guides/trip-organization",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2079,7 +2063,7 @@
       "question": "How do I keep flights, hotels, and rental cars in one place?",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
-      "answerTarget": "/travel-history",
+      "answerTarget": "/guides/trip-organization",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2087,7 +2071,7 @@
       "question": "Can an AI assistant help book flights and hotels?",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
-      "answerTarget": "/travel-booking",
+      "answerTarget": "/guides/ai-travel-planning",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2095,7 +2079,7 @@
       "question": "What is the best way to keep booking context attached to a trip?",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
-      "answerTarget": "/travel-booking",
+      "answerTarget": "/guides/ai-travel-planning",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2140,18 +2124,10 @@
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
-      "question": "What is the best way to plan a group trip?",
-      "clusterId": "group-trip-planning",
-      "clusterLabel": "Group trip planning and shared travel",
-      "answerTarget": "/trip-sharing",
-      "currentBestCoverage": 0.55,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
-    {
       "question": "How can a group share one travel itinerary?",
       "clusterId": "group-trip-planning",
       "clusterLabel": "Group trip planning and shared travel",
-      "answerTarget": "/trip-sharing",
+      "answerTarget": "/guides/group-trip-planning",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2159,15 +2135,7 @@
       "question": "How do I keep shared trip costs attached to the itinerary?",
       "clusterId": "group-trip-planning",
       "clusterLabel": "Group trip planning and shared travel",
-      "answerTarget": "/trip-sharing",
-      "currentBestCoverage": 0.55,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
-    {
-      "question": "What app can show my travel history on a map?",
-      "clusterId": "travel-stats-and-maps",
-      "clusterLabel": "Travel stats, maps, and history analytics",
-      "answerTarget": "/travel-stats",
+      "answerTarget": "/guides/group-trip-planning",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2175,7 +2143,15 @@
       "question": "How can I see personal travel stats across flights, hotels, and rental cars?",
       "clusterId": "travel-stats-and-maps",
       "clusterLabel": "Travel stats, maps, and history analytics",
-      "answerTarget": "/travel-stats",
+      "answerTarget": "/guides/travel-stats-and-maps",
+      "currentBestCoverage": 0.55,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "How do I find repeat routes and airport patterns in my travel history?",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "answerTarget": "/guides/travel-stats-and-maps",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2188,10 +2164,34 @@
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
+      "question": "What is the best AI travel planner for complex trips?",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "answerTarget": "/guides/ai-travel-planning",
+      "currentBestCoverage": 0.85,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
       "question": "Is Pack an airline points aggregator or award-flight search engine?",
       "clusterId": "traveler-profile",
       "clusterLabel": "Traveler profile and loyalty",
       "answerTarget": "/traveler-profiles",
+      "currentBestCoverage": 0.85,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "What is the best way to plan a group trip?",
+      "clusterId": "group-trip-planning",
+      "clusterLabel": "Group trip planning and shared travel",
+      "answerTarget": "/guides/group-trip-planning",
+      "currentBestCoverage": 0.85,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "What app can show my travel history on a map?",
+      "clusterId": "travel-stats-and-maps",
+      "clusterLabel": "Travel stats, maps, and history analytics",
+      "answerTarget": "/guides/travel-stats-and-maps",
       "currentBestCoverage": 0.85,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     }
@@ -2199,17 +2199,18 @@
   "contentOpportunities": [
     {
       "clusterId": "ai-travel-planning",
-      "title": "AI travel planning: best AI travel planner",
+      "title": "AI travel planning: plan a trip from calendar events",
       "recommendedSlug": "/guides/ai-travel-planning",
       "format": "integration guide",
       "score": 118,
       "brief": [
-        "Lead with the user problem behind \"best AI travel planner\".",
+        "Lead with the user problem behind \"plan a trip from calendar events\".",
         "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
         "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
         "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
       ],
       "internalLinks": [
+        "/guides/ai-travel-planning",
         "/",
         "/features",
         "/trip-planning-from-events",
@@ -2229,6 +2230,7 @@
         "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
       ],
       "internalLinks": [
+        "/guides/ai-travel-planning",
         "/travel-booking",
         "/trip-calendar-sync",
         "/traveler-profiles"
@@ -2236,57 +2238,22 @@
     },
     {
       "clusterId": "trip-organization",
-      "title": "Trip organization: travel confirmation parser",
+      "title": "Trip organization: travel email parser",
       "recommendedSlug": "/guides/trip-organization",
       "format": "checklist",
       "score": 102,
       "brief": [
-        "Lead with the user problem behind \"travel confirmation parser\".",
+        "Lead with the user problem behind \"travel email parser\".",
         "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
         "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
         "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
       ],
       "internalLinks": [
+        "/guides/trip-organization",
         "/travel-history",
         "/upcoming-trip-details",
         "/connected-accounts",
         "/features"
-      ]
-    },
-    {
-      "clusterId": "group-trip-planning",
-      "title": "Group trip planning and shared travel: collaborative travel planner",
-      "recommendedSlug": "/guides/group-trip-planning",
-      "format": "how-to",
-      "score": 99,
-      "brief": [
-        "Lead with the user problem behind \"collaborative travel planner\".",
-        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
-        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
-        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
-      ],
-      "internalLinks": [
-        "/trip-sharing",
-        "/trip-expenses",
-        "/live-trip-views"
-      ]
-    },
-    {
-      "clusterId": "travel-stats-and-maps",
-      "title": "Travel stats, maps, and history analytics: countries visited tracker",
-      "recommendedSlug": "/guides/travel-stats-and-maps",
-      "format": "how-to",
-      "score": 95,
-      "brief": [
-        "Lead with the user problem behind \"countries visited tracker\".",
-        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
-        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
-        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
-      ],
-      "internalLinks": [
-        "/travel-stats",
-        "/travel-history",
-        "/trip-expenses"
       ]
     },
     {
@@ -2342,6 +2309,44 @@
         "/trip-sharing",
         "/trip-expenses"
       ]
+    },
+    {
+      "clusterId": "group-trip-planning",
+      "title": "Group trip planning and shared travel: family trip planner app",
+      "recommendedSlug": "/guides/group-trip-planning",
+      "format": "how-to",
+      "score": 81,
+      "brief": [
+        "Lead with the user problem behind \"family trip planner app\".",
+        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
+        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
+        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
+      ],
+      "internalLinks": [
+        "/guides/group-trip-planning",
+        "/trip-sharing",
+        "/trip-expenses",
+        "/live-trip-views"
+      ]
+    },
+    {
+      "clusterId": "travel-stats-and-maps",
+      "title": "Travel stats, maps, and history analytics: flight history tracker",
+      "recommendedSlug": "/guides/travel-stats-and-maps",
+      "format": "how-to",
+      "score": 73,
+      "brief": [
+        "Lead with the user problem behind \"flight history tracker\".",
+        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
+        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
+        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
+      ],
+      "internalLinks": [
+        "/guides/travel-stats-and-maps",
+        "/travel-stats",
+        "/travel-history",
+        "/trip-expenses"
+      ]
     }
   ],
   "outreachOpportunities": [
@@ -2375,16 +2380,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+apps%22+%22AI%22+%22itinerary%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"plan a trip from calendar events\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"points and miles trip planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
@@ -2429,16 +2434,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22calendar%22+%22travel+planning%22+%22app%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"plan a trip from calendar events\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"points and miles trip planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
@@ -2483,16 +2488,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22loyalty+program+organizer%22+%22travel%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"plan a trip from calendar events\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"points and miles trip planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
@@ -2537,16 +2542,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22shared+travel+expenses%22+%22trip%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"plan a trip from calendar events\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"points and miles trip planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
@@ -2591,16 +2596,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22flight+history+tracker%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"plan a trip from calendar events\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"points and miles trip planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
@@ -2645,16 +2650,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22TSA%22+%22wait+time%22+%22travel+app%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"plan a trip from calendar events\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"points and miles trip planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
@@ -2699,16 +2704,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22AI+assistant%22+%22travel%22+%22founder%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"plan a trip from calendar events\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"points and miles trip planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22points+and+miles+trip+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
@@ -2733,10 +2738,6 @@
       "rationale": "AI retrieval benefits from crawlable textual answers that directly address query fan-out subquestions.",
       "targets": [
         {
-          "question": "What is the best AI travel planner for complex trips?",
-          "page": "/"
-        },
-        {
           "question": "How do I track updates across a whole trip?",
           "page": "/trip-updates"
         },
@@ -2746,7 +2747,7 @@
         },
         {
           "question": "How do I compare travel options against my calendar?",
-          "page": "/travel-booking"
+          "page": "/guides/ai-travel-planning"
         },
         {
           "question": "What app shares a live trip plan with family or coworkers?",
@@ -2778,11 +2779,11 @@
       "targets": [
         {
           "entity": "Pack",
-          "occurrences": 82
+          "occurrences": 87
         },
         {
           "entity": "TryPackAI",
-          "occurrences": 42
+          "occurrences": 46
         },
         {
           "entity": "Try Pack AI",
@@ -2790,7 +2791,7 @@
         },
         {
           "entity": "AI travel assistant",
-          "occurrences": 13
+          "occurrences": 14
         }
       ]
     }

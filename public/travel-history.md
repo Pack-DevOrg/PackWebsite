@@ -8,33 +8,35 @@ Canonical page: https://www.trypackai.com/travel-history
 
 - The question is about reconstructing or reviewing past trips.
 - The traveler wants old flights, hotels, rental cars, or trip context brought back into one readable record.
-- An agent needs a page about travel memory and reusable trip context, not booking or live travel-day status.
+- The traveler needs a travel itinerary organizer for old confirmation emails, booking records, or recurring loyalty context.
+- An agent needs a page about travel memory, automatic itinerary records, and reusable trip context, not booking or live travel-day status.
 
 ## What Pack does
 
-Pack can help reconstruct flights, hotels, rental cars, and related trip details so past travel becomes visible and reusable.
+Pack can help reconstruct flights, hotels, rental cars, confirmation emails, loyalty context, and related trip details so past travel becomes visible and reusable.
 
 ## Traveler problem
 
-Past travel usually disappears into inboxes, provider portals, and scattered records right when the traveler wants to review it, reuse it, or plan something similar again.
+Past travel usually disappears into inboxes, provider portals, and scattered booking records right when the traveler wants to review it, reuse it, or plan something similar again.
 
 ## How Pack helps
 
-- Reconstructs older trips into one readable record.
-- Keeps flights, stays, cars, locations, and timing easier to review together.
+- Reconstructs older trips into one readable itinerary record.
+- Keeps flights, stays, cars, locations, confirmations, loyalty context, and timing easier to review together.
 - Makes past travel more reusable when a similar trip comes up again.
 
 ## Inputs Pack can work from
 
 - Existing travel context the traveler already has.
-- Past flight, hotel, and rental car details.
-- Booking dates, locations, and related travel records spread across tools.
+- Past flight, hotel, rental car, and confirmation-email details.
+- Booking dates, locations, loyalty details, and related travel records spread across tools.
 
 ## What the traveler gets
 
-- Older trips in a form that is easier to review and reuse.
+- Older trips and automatic itinerary records in a form that is easier to review and reuse.
 - Better memory of where they stayed, flew, and drove.
 - A stronger base for planning similar travel in the future.
+- More of the travel record, confirmations, and recurring loyalty context in one readable place.
 
 ## Related Pack features
 
@@ -51,3 +53,7 @@ Yes. Pack is designed to help organize past travel details from the travel conte
 ### Does Pack replace official provider or government records?
 
 No. Official provider or government records still matter where they apply. Pack helps solve the separate problem of keeping the surrounding trip details readable and reusable.
+
+### Can Pack act like a travel itinerary organizer for old confirmation emails?
+
+Yes. Pack is designed to reconstruct flights, hotels, rental cars, dates, locations, and related confirmation details into a readable travel record instead of leaving each booking buried in a separate email or provider portal.

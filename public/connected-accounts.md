@@ -8,33 +8,34 @@ Canonical page: https://www.trypackai.com/connected-accounts
 
 - The question is about connecting email, calendar, or travel providers.
 - The traveler wants planning and trip organization to start from richer imported context.
+- The traveler wants booking emails, calendar context, loyalty details, and provider updates to help form automatic itineraries.
 - An agent needs the Pack page for bringing travel context into the system, not pushing events back out.
 
 ## What Pack does
 
-Pack can use connected-account context to reduce repeated travel setup and keep supporting travel data in one workflow.
+Pack can use connected-account context from email, calendar, and travel sources to reduce repeated travel setup and keep supporting travel data in one workflow.
 
 ## Traveler problem
 
-Before planning even starts, the trip is already spread across email, calendar, provider accounts, and other tools. Manual forwarding and re-entry make that worse.
+Before planning even starts, the trip is already spread across email, calendar, provider accounts, booking confirmations, loyalty details, and other tools. Manual forwarding and re-entry make that worse.
 
 ## How Pack helps
 
-- Connects external accounts and providers so richer trip context comes in automatically.
+- Connects external accounts and providers so richer trip context can come in automatically.
 - Reduces manual forwarding and re-entry.
-- Gives planning, history, profiles, and updates a stronger starting point.
+- Gives planning, history, profiles, loyalty details, automatic itineraries, and updates a stronger starting point.
 
 ## Inputs Pack can work from
 
 - Email and calendar sources.
 - External travel accounts and providers.
-- Related travel data already spread across tools.
+- Booking confirmations, loyalty details, and related travel data already spread across tools.
 
 ## What the traveler gets
 
 - Richer travel context from the start of planning.
 - Less manual setup across the workflow.
-- A stronger base for history, profiles, and trip updates.
+- A stronger base for history, profiles, loyalty details, automatic itineraries, and trip updates.
 
 ## Related Pack features
 
@@ -51,3 +52,7 @@ Yes. Pack is designed to connect key external accounts and travel sources so mor
 ### How is this different from calendar sync?
 
 Connected accounts solve the context-import problem. Calendar sync solves the schedule-visibility problem after the trip is organized.
+
+### Can connected accounts help turn booking emails into an itinerary?
+
+Yes. Connected accounts give Pack a stronger base for finding travel confirmations, calendar context, loyalty details, and trip updates so the itinerary can be organized without relying only on manual forwarding.

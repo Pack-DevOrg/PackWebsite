@@ -26,7 +26,12 @@
     "Navan",
     "TravelPerk",
     "KAYAK",
-    "Wanderlog"
+    "Wanderlog",
+    "AwardWallet",
+    "point.me",
+    "Seats.aero",
+    "Roame.travel",
+    "Roame"
   ],
   "topicClusters": [
     {
@@ -68,7 +73,11 @@
         "email itinerary organizer",
         "travel confirmation parser",
         "automatic trip itinerary",
-        "travel inbox organizer"
+        "travel inbox organizer",
+        "automatic itinerary from email",
+        "booking email itinerary",
+        "travel email parser",
+        "itinerary from confirmation emails"
       ],
       "questions": [
         "How can I organize travel confirmations automatically?",
@@ -93,7 +102,10 @@
         "travel booking assistant",
         "book flights from itinerary",
         "compare flights with traveler preferences",
-        "travel booking with calendar context"
+        "travel booking with calendar context",
+        "points and miles trip planner",
+        "award travel planning app",
+        "compare flights with loyalty context"
       ],
       "questions": [
         "Can an AI assistant help book flights and hotels?",
@@ -136,6 +148,10 @@
       "intent": "commercial",
       "keywords": [
         "traveler profile app",
+        "airline points aggregator",
+        "travel points tracker",
+        "travel loyalty app",
+        "loyalty program organizer",
         "travel loyalty number organizer",
         "frequent flyer number organizer",
         "traveler preference profile",
@@ -145,12 +161,66 @@
       "questions": [
         "How do I keep loyalty numbers organized for travel?",
         "What is a reusable traveler profile?",
-        "Can an app remember traveler preferences across bookings?"
+        "Can an app remember traveler preferences across bookings?",
+        "Is Pack an airline points aggregator or award-flight search engine?"
       ],
       "preferredPages": [
         "/traveler-profiles",
         "/loyalty-details",
         "/travel-booking"
+      ]
+    },
+    {
+      "id": "group-trip-planning",
+      "label": "Group trip planning and shared travel",
+      "priority": 7,
+      "intent": "commercial",
+      "keywords": [
+        "group trip planner",
+        "shared trip itinerary",
+        "family trip planner app",
+        "collaborative travel planner",
+        "group travel itinerary",
+        "shared travel expenses",
+        "group trip expenses",
+        "trip sharing app"
+      ],
+      "questions": [
+        "What is the best way to plan a group trip?",
+        "How can a group share one travel itinerary?",
+        "How do I keep shared trip costs attached to the itinerary?"
+      ],
+      "preferredPages": [
+        "/trip-sharing",
+        "/trip-expenses",
+        "/live-trip-views"
+      ]
+    },
+    {
+      "id": "travel-stats-and-maps",
+      "label": "Travel stats, maps, and history analytics",
+      "priority": 7,
+      "intent": "commercial",
+      "keywords": [
+        "travel stats app",
+        "travel map app",
+        "personal travel map",
+        "travel history map",
+        "flight history tracker",
+        "travel analytics",
+        "countries visited tracker",
+        "repeat route tracker",
+        "airport pattern tracker"
+      ],
+      "questions": [
+        "What app can show my travel history on a map?",
+        "How can I see personal travel stats across flights, hotels, and rental cars?",
+        "How do I find repeat routes and airport patterns in my travel history?"
+      ],
+      "preferredPages": [
+        "/travel-stats",
+        "/travel-history",
+        "/trip-expenses"
       ]
     },
     {
@@ -164,7 +234,10 @@
         "live trip tracking",
         "flight hotel itinerary updates",
         "share live trip plan",
-        "trip expense organizer"
+        "trip expense organizer",
+        "upcoming trip assistant",
+        "flight alerts airport wait times",
+        "airport wait time and drive time"
       ],
       "questions": [
         "How do I track updates across a whole trip?",
@@ -201,6 +274,39 @@
         "\"calendar\" \"travel planning\" \"app\""
       ],
       "pitch": "Position Pack as a way to reduce travel admin by turning existing context into structured plans."
+    },
+    {
+      "id": "points-and-loyalty-roundups",
+      "label": "Points, loyalty, and travel account roundups",
+      "queries": [
+        "\"airline points aggregator\"",
+        "\"travel points tracker\"",
+        "\"frequent flyer number organizer\"",
+        "\"loyalty program organizer\" \"travel\""
+      ],
+      "pitch": "Position Pack as the trip-attached loyalty context layer: loyalty numbers, points context, traveler profiles, and booking context organized around the actual trip rather than a standalone award-search screen."
+    },
+    {
+      "id": "group-trip-tools",
+      "label": "Group trip and shared itinerary articles",
+      "queries": [
+        "\"group trip planner\"",
+        "\"shared trip itinerary\"",
+        "\"family trip planner app\"",
+        "\"shared travel expenses\" \"trip\""
+      ],
+      "pitch": "Position Pack for shared itineraries, linked trips, group trip costs, and live views where planning breaks across screenshots, spreadsheets, and message threads."
+    },
+    {
+      "id": "travel-stats-history-tools",
+      "label": "Travel stats and personal map articles",
+      "queries": [
+        "\"travel stats app\"",
+        "\"travel map app\"",
+        "\"personal travel map\"",
+        "\"flight history tracker\""
+      ],
+      "pitch": "Position Pack around travel history, personal maps, repeat routes, airport patterns, and trip-cost context across flights, hotels, and rental cars."
     },
     {
       "id": "airport-operations",

@@ -116,6 +116,56 @@
         "/travel-guides",
         "/explore"
       ]
+    },
+    {
+      "id": "awardwallet",
+      "name": "AwardWallet",
+      "origin": "https://awardwallet.com",
+      "category": "loyalty and points tracking",
+      "priority": 7,
+      "seedPaths": [
+        "/",
+        "/blog",
+        "/features",
+        "/travel-plans"
+      ]
+    },
+    {
+      "id": "pointme",
+      "name": "point.me",
+      "origin": "https://www.point.me",
+      "category": "award flight search",
+      "priority": 7,
+      "seedPaths": [
+        "/",
+        "/how-it-works",
+        "/explore",
+        "/blog"
+      ]
+    },
+    {
+      "id": "seatsaero",
+      "name": "Seats.aero",
+      "origin": "https://seats.aero",
+      "category": "award seat search",
+      "priority": 6,
+      "seedPaths": [
+        "/",
+        "/search",
+        "/tools"
+      ]
+    },
+    {
+      "id": "roame",
+      "name": "Roame.travel",
+      "origin": "https://roame.travel",
+      "category": "award flight search",
+      "priority": 6,
+      "seedPaths": [
+        "/",
+        "/discover",
+        "/blog"
+      ]
     }
   ]
 }

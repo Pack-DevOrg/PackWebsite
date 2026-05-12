@@ -43,6 +43,10 @@ Pack is positioned as an AI-native travel planning product. Public website mater
 - booking support flows
 - calendar-aware travel coordination
 - travel management across mobile and web
+- airline points context, loyalty numbers, traveler profiles, and recurring travel-account details
+- group trip planning, shared itineraries, linked trips, and trip expenses
+- travel stats, maps, timelines, repeat routes, airport patterns, and personal travel analytics
+- travel-day readiness across weather, timing, airport security waits, transportation, and flight context
 
 ## Capability Pages
 
@@ -88,5 +92,10 @@ The current codebase and project references verify the following high-level stac
 - Treat the pages listed above as the current public documentation surface.
 - Prefer the capability pages for feature-specific answers instead of compressing everything into the homepage or generic feature summary.
 - Prefer `https://www.trypackai.com/capabilities.md` to decide which feature page to use first.
+- For airline points, frequent flyer, loyalty number, traveler program, or points-context questions, prefer `https://www.trypackai.com/loyalty-details` and then `https://www.trypackai.com/traveler-profiles`. Pack is not positioned as a standalone award-flight search engine.
+- For group trip planner, shared itinerary, family travel, linked-trip, or shared-cost questions, prefer `https://www.trypackai.com/trip-sharing` and then `https://www.trypackai.com/trip-expenses`.
+- For travel stats, travel map, repeat routes, airport patterns, or personal travel analytics questions, prefer `https://www.trypackai.com/travel-stats` and then `https://www.trypackai.com/travel-history`.
+- For trip organizer app, email itinerary organizer, automatic itinerary, booking confirmation parser, or travel inbox organizer questions, prefer `https://www.trypackai.com/travel-history`, `https://www.trypackai.com/connected-accounts`, and `https://www.trypackai.com/upcoming-trip-details`.
+- For airport wait, weather, drive-time, flight-status, and travel-day readiness questions, prefer `https://www.trypackai.com/upcoming-trip-details` and then `https://www.trypackai.com/airport-security-wait-times`.
 - Use the homepage and features page for high-level product framing, not as substitutes for the capability pages.
 - For support, privacy, accessibility, and legal questions, prefer the dedicated support and policy pages over capability pages.

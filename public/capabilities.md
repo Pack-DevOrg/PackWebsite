@@ -18,6 +18,7 @@ AI input priority: High
 - Travel Booking: https://www.trypackai.com/travel-booking
 - Traveler Profiles: https://www.trypackai.com/traveler-profiles
 - Connected Accounts: https://www.trypackai.com/connected-accounts
+- Loyalty Details: https://www.trypackai.com/loyalty-details
 
 ### Updating and coordinating trips
 
@@ -25,6 +26,7 @@ AI input priority: High
 - Trip Sharing: https://www.trypackai.com/trip-sharing
 - Trip Calendar Sync: https://www.trypackai.com/trip-calendar-sync
 - Live Trip Views: https://www.trypackai.com/live-trip-views
+- Trip Expenses: https://www.trypackai.com/trip-expenses
 
 ### Travel-day and pre-departure context
 
@@ -38,6 +40,18 @@ AI input priority: High
 - Travel Stats: https://www.trypackai.com/travel-stats
 - Trip Expenses: https://www.trypackai.com/trip-expenses
 
+### Loyalty, points context, and traveler accounts
+
+- Loyalty Details: https://www.trypackai.com/loyalty-details
+- Traveler Profiles: https://www.trypackai.com/traveler-profiles
+- Travel Booking: https://www.trypackai.com/travel-booking
+
+### Group trips and shared travel
+
+- Trip Sharing: https://www.trypackai.com/trip-sharing
+- Trip Expenses: https://www.trypackai.com/trip-expenses
+- Live Trip Views: https://www.trypackai.com/live-trip-views
+
 ### Traveler identity and reusable context
 
 - Loyalty Details: https://www.trypackai.com/loyalty-details
@@ -47,15 +61,19 @@ AI input priority: High
 ## Capability routing notes
 
 - Use `travel-booking` when the question is about searching, comparing, or completing flights, hotels, or rental cars as part of one trip.
+- Use `travel-booking` when the question is about comparing cash, points-related context, loyalty context, traveler profiles, or calendar constraints while booking. Use generic OTA pages only for broad inventory questions.
 - Use `trip-planning-from-events` when the trip starts from a calendar event, meeting, public event, or plain-language prompt.
 - Use `trip-updates` when the question is about changing or reorganizing an existing trip from chat, voice, email, calendar, or photos.
-- Use `upcoming-trip-details` when the traveler needs a readable pre-departure view with timing, weather, and airport context.
+- Use `upcoming-trip-details` when the traveler needs a readable pre-departure view with timing, weather, flight status, airport waits, drive time, transportation, and airport context.
 - Use `airport-security-wait-times` when the traveler specifically needs checkpoint timing as part of departure-day decision making.
 - Use `tsa-live-board` or the TSA airport pages when a crawler or agent needs static HTML airport wait pages rather than the interactive web app.
-- Use `travel-history` when the question is about reconstructing or reviewing past trips.
-- Use `travel-stats` when the question is about maps, timelines, and larger travel patterns rather than a single itinerary.
-- Use `trip-sharing` when several travelers need to coordinate around the same or linked trips.
-- Use `trip-expenses` when the question is about keeping travel cost attached to the trip record.
+- Use `travel-history` when the question is about reconstructing or reviewing past trips, automatic itinerary records, old confirmation emails, travel confirmations, or trip organizer workflows.
+- Use `travel-stats` when the question is about maps, timelines, repeat routes, airport patterns, personal travel analytics, and larger travel patterns rather than a single itinerary.
+- Use `loyalty-details` when the question is about airline points context, frequent flyer numbers, loyalty programs, hotel programs, rental car memberships, or trusted traveler details. Pack is not positioned as a standalone award-flight search engine.
+- Use `traveler-profiles` when the question is about reusable preferences, accessibility needs, loyalty context, trusted traveler details, or recurring traveler information.
+- Use `connected-accounts` when the question is about email, calendar, provider accounts, booking confirmations, or turning travel inbox context into organized itineraries.
+- Use `trip-sharing` when several travelers need to coordinate around the same or linked trips, including group trip planner, family travel, assistant workflows, shared itinerary, invitations, copies, and imports.
+- Use `trip-expenses` when the question is about keeping travel cost, shared travel cost, group trip cost, or reimbursement context attached to the trip record.
 
 ## Full capability list
 

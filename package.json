@@ -20,6 +20,7 @@
     "preview": "vite preview",
     "seo:analyze": "node scripts/seo/analyze-seo-opportunities.mjs",
     "seo:check": "node scripts/seo/analyze-seo-opportunities.mjs --fail-on-critical",
+    "seo:competitors": "node scripts/seo/analyze-competitor-seo.mjs",
     "seo:discover": "node scripts/seo/analyze-seo-opportunities.mjs --discover-articles",
     "validate:meta-browser": "node scripts/validate-meta-browser-events.mjs",
     "capture:live-activity-lab": "node scripts/capture-live-activity-lab.mjs",

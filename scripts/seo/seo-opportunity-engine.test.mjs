@@ -9,6 +9,7 @@ import {
   hasBlockingFindings,
   renderMarkdownReport
 } from "./seo-opportunity-engine.mjs";
+import { renderCompetitorMarkdown } from "./analyze-competitor-seo.mjs";
 
 function createFixtureSite() {
   const rootDir = mkdtempSync(join(tmpdir(), "pack-seo-"));
@@ -92,4 +93,63 @@ test("renders a readable markdown report", async () => {
   assert.match(markdown, /GEO Opportunities/);
   assert.match(markdown, /Article Prospects/);
   assert.match(markdown, /Guidance Used/);
+});
+
+test("renders competitor gap analysis markdown", () => {
+  const markdown = renderCompetitorMarkdown({
+    generatedAt: "2026-05-12T00:00:00.000Z",
+    methodology: {
+      note: "Fixture methodology."
+    },
+    strategicGaps: [
+      {
+        priority: "critical",
+        gap: "Own AI trip planning.",
+        action: "Build proof-led pages.",
+        evidence: ["AI trip planner: Pack 0.5, competitor 1"]
+      }
+    ],
+    packGapMatrix: [
+      {
+        keyword: "AI trip planner",
+        clusterLabel: "AI travel planning",
+        packCoverage: 0.5,
+        bestCompetitorCoverage: 1,
+        leaders: [{ competitorName: "Example", coverage: 1 }],
+        gapScore: 120
+      }
+    ],
+    competitors: [
+      {
+        name: "Example",
+        origin: "https://example.test",
+        category: "AI trip planner",
+        robots: { ok: true },
+        sitemapUrlCount: 2,
+        fetchedPages: [
+          {
+            ok: true,
+            status: 200,
+            url: "https://example.test/",
+            title: "Example planner"
+          }
+        ],
+        topPathSegments: [{ segment: "blog", count: 1 }],
+        schemaTypes: ["WebSite"],
+        strengths: ["Visible AI planning language."],
+        keywordCoverage: [
+          {
+            keyword: "AI trip planner",
+            clusterLabel: "AI travel planning",
+            coverage: 1
+          }
+        ],
+        crawlLimitations: []
+      }
+    ]
+  });
+
+  assert.match(markdown, /Competitor SEO Gap Analysis/);
+  assert.match(markdown, /Highest Keyword Gaps/);
+  assert.match(markdown, /Example planner/);
 });

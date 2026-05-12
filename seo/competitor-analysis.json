@@ -1,0 +1,4399 @@
+{
+  "generatedAt": "2026-05-12T05:12:07.333Z",
+  "methodology": {
+    "maxSitemapUrls": 4000,
+    "maxPageFetches": 24,
+    "note": "Public technical SEO crawl based on robots.txt, sitemap URLs, selected public pages, visible metadata, URL structures, and Pack seed-topic coverage. It is not a paid rank/traffic/backlink database."
+  },
+  "competitors": [
+    {
+      "id": "navan",
+      "name": "Navan",
+      "origin": "https://navan.com",
+      "category": "corporate travel and expense",
+      "priority": 10,
+      "robots": {
+        "url": "https://navan.com/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 10
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://navan.com/sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://navan.com/sitemap-0.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://navan.com/blog-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/pages-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/case-study-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/ebook-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/report-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/glossary-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/calculators-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/website-pages-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/web-pages-sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://navan.com/sitemap_index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/html; charset=utf-8"
+        },
+        {
+          "url": "https://navan.com/global/sitemap",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html; charset=utf-8"
+        }
+      ],
+      "sitemapUrlCount": 2133,
+      "topPathSegments": [
+        {
+          "segment": "blog",
+          "count": 816
+        },
+        {
+          "segment": "resources",
+          "count": 339
+        },
+        {
+          "segment": "fr",
+          "count": 310
+        },
+        {
+          "segment": "de",
+          "count": 278
+        },
+        {
+          "segment": "uk",
+          "count": 267
+        },
+        {
+          "segment": "calculators",
+          "count": 50
+        },
+        {
+          "segment": "es",
+          "count": 14
+        },
+        {
+          "segment": "solutions",
+          "count": 6
+        },
+        {
+          "segment": "about",
+          "count": 4
+        },
+        {
+          "segment": "product",
+          "count": 4
+        },
+        {
+          "segment": "careers",
+          "count": 2
+        },
+        {
+          "segment": "press",
+          "count": 2
+        },
+        {
+          "segment": "/",
+          "count": 1
+        },
+        {
+          "segment": "contact",
+          "count": 1
+        }
+      ],
+      "fetchedPages": [
+        {
+          "url": "https://navan.com/",
+          "finalUrl": "https://navan.com/",
+          "status": 200,
+          "ok": true,
+          "title": "Navan: The #1 Corporate Travel Management Platform",
+          "description": "Streamline your corporate travel management and expense processes in one app. Save time, gain efficiency, and reduce costs with this powerful, all-in-one solution.",
+          "h1s": [
+            "Business travel & expense management. Solved."
+          ],
+          "canonical": "https://navan.com/",
+          "schemaTypes": [],
+          "wordCount": 1313
+        },
+        {
+          "url": "https://navan.com/travel",
+          "finalUrl": "https://navan.com/product/business-travel",
+          "status": 200,
+          "ok": true,
+          "title": "No. 1 Business Travel Solution for Companies",
+          "description": "Get exclusive travel deals, policy controls, real-time visibility, and world-class support with Navan, the No. 1 business travel management app.",
+          "h1s": [
+            "Business travel — smart and simplified™"
+          ],
+          "canonical": "https://navan.com/product/business-travel",
+          "schemaTypes": [
+            "FAQPage"
+          ],
+          "wordCount": 2038
+        },
+        {
+          "url": "https://navan.com/expense",
+          "finalUrl": "https://navan.com/expense",
+          "status": 404,
+          "ok": false,
+          "title": "Sorry!",
+          "description": "The page you&#x27;re looking for cannot be found or has moved. Visit our homepage or try searching.",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1
+        },
+        {
+          "url": "https://navan.com/company",
+          "finalUrl": "https://navan.com/company",
+          "status": 404,
+          "ok": false,
+          "title": "Sorry!",
+          "description": "The page you&#x27;re looking for cannot be found or has moved. Visit our homepage or try searching.",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1
+        },
+        {
+          "url": "https://navan.com/resources",
+          "finalUrl": "https://navan.com/resources",
+          "status": 200,
+          "ok": true,
+          "title": "Corporate Business Travel Resource Center",
+          "description": "Explore our resources for insights, best practices, tips and tools to deliver a great business travel experience for your organization.",
+          "h1s": [
+            "Resource Center"
+          ],
+          "canonical": "https://navan.com/resources",
+          "schemaTypes": [],
+          "wordCount": 800
+        },
+        {
+          "url": "https://navan.com/blog/tripactions-introduces-business-travel-sustainability-features",
+          "finalUrl": "https://navan.com/blog/tripactions-introduces-business-travel-sustainability-features",
+          "status": 200,
+          "ok": true,
+          "title": "Navan Introduces Sustainability Suite to Track & Reduce Carbon Emissions",
+          "description": "Navan introduces new real-time data, tools, and information to aid sustainable business travel and reduce organizations’ carbon footprint.",
+          "h1s": [
+            "Navan Introduces Sustainability Suite to Track & Reduce Carbon Emissions"
+          ],
+          "canonical": "https://navan.com/blog/tripactions-introduces-business-travel-sustainability-features",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1103
+        },
+        {
+          "url": "https://navan.com/blog/why-navans-new-ai-powered-hotel-concierge-will-transform-travel-booking",
+          "finalUrl": "https://navan.com/blog/why-navans-new-ai-powered-hotel-concierge-will-transform-travel-booking",
+          "status": 200,
+          "ok": true,
+          "title": "Navan’s New AI-Powered Hotel Concierge Will Transform Travel",
+          "description": "Navan’s AI-powered assistant, Ava, is now a hotel concierge — an innovation set to transform the business travel booking landscape.",
+          "h1s": [
+            "Why Navan’s New AI-Powered Hotel Concierge Will Transform Travel Booking"
+          ],
+          "canonical": "https://navan.com/blog/why-navans-new-ai-powered-hotel-concierge-will-transform-travel-booking",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1137
+        },
+        {
+          "url": "https://navan.com/blog/pros-and-challenges-of-integrating-ai-with-travel-management-systems",
+          "finalUrl": "https://navan.com/blog/pros-and-challenges-of-integrating-ai-with-travel-management-systems",
+          "status": 200,
+          "ok": true,
+          "title": "AI in Travel Management Systems: 5 Benefits and 5 Considerations",
+          "description": "Should you integrate AI with your travel management system? See five documented pros and five potential challenges, with real data on expense automation, policy enforcement, and adoption.",
+          "h1s": [
+            "10 Pros and Potential Challenges of Integrating AI With Travel Management Systems"
+          ],
+          "canonical": "https://navan.com/blog/pros-and-challenges-of-integrating-ai-with-travel-management-systems",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "FAQPage"
+          ],
+          "wordCount": 2559
+        },
+        {
+          "url": "https://navan.com/blog/meet-ava-ai-travel-expense",
+          "finalUrl": "https://navan.com/blog/meet-ava-ai-travel-expense",
+          "status": 200,
+          "ok": true,
+          "title": "Navan Introduces World’s Smartest T&E Personal Assistant",
+          "description": "In an AI-driven world, Navan is leading the charge in building business software designed for people and making AI work for our customers.",
+          "h1s": [
+            "Navan Introduces World’s Smartest T&E Personal Assistant"
+          ],
+          "canonical": "https://navan.com/blog/meet-ava-ai-travel-expense",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1005
+        },
+        {
+          "url": "https://navan.com/blog/navan-travelers-now-earn-rewards-on-personal-bookings",
+          "finalUrl": "https://navan.com/blog/navan-travelers-now-earn-rewards-on-personal-bookings",
+          "status": 200,
+          "ok": true,
+          "title": "Navan Travelers Now Earn Rewards on Personal Bookings",
+          "description": "Navan travelers can now earn Navan Rewards not only for business but also for personal travel, unlocking a new era of unparalleled perks.",
+          "h1s": [
+            "Navan Travelers Now Earn Rewards on Personal Bookings"
+          ],
+          "canonical": "https://navan.com/blog/navan-travelers-now-earn-rewards-on-personal-bookings",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "Thing"
+          ],
+          "wordCount": 1104
+        },
+        {
+          "url": "https://navan.com/blog/avoid-flight-delays-a-business-travelers-guide",
+          "finalUrl": "https://navan.com/blog/avoid-flight-delays-a-business-travelers-guide",
+          "status": 200,
+          "ok": true,
+          "title": "Avoid Flight Delays: A Business Traveler&#x27;s Guide",
+          "description": "The complete checklist for business travelers to avoid flight delays in 2024",
+          "h1s": [
+            "Avoid Flight Delays: A Business Traveler&#x27;s Guide"
+          ],
+          "canonical": "https://navan.com/blog/avoid-flight-delays-a-business-travelers-guide",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1853
+        },
+        {
+          "url": "https://navan.com/blog/hotel-booking-for-business-travelers",
+          "finalUrl": "https://navan.com/blog/hotel-booking-for-business-travelers",
+          "status": 200,
+          "ok": true,
+          "title": "Hotel Booking Strategies for Business Travelers: 4 Tips for Smooth Stays",
+          "description": "Booking hotels doesn’t have to be a hassle for business travelers. With these four tips, you can secure accommodations that meet your needs and budget.",
+          "h1s": [
+            "Business Traveler’s Guide to Efficient Hotel Booking"
+          ],
+          "canonical": "https://navan.com/blog/hotel-booking-for-business-travelers",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "Thing"
+          ],
+          "wordCount": 1314
+        },
+        {
+          "url": "https://navan.com/blog/sustainable-business-travel",
+          "finalUrl": "https://navan.com/blog/sustainable-business-travel",
+          "status": 200,
+          "ok": true,
+          "title": "Sustainable Business Travel For Your Organization",
+          "description": "Learn practical strategies to make your corporate travel more sustainable. Implement eco-friendly practices to reduce your company’s carbon footprint and promote responsible business travel.",
+          "h1s": [
+            "Sustainable Business Travel: Implementing Eco-Friendly Practices in Corporate Journeys"
+          ],
+          "canonical": "https://navan.com/blog/sustainable-business-travel",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "FAQPage"
+          ],
+          "wordCount": 1238
+        },
+        {
+          "url": "https://navan.com/blog/ai-solutions-for-sustainable-business-travel",
+          "finalUrl": "https://navan.com/blog/ai-solutions-for-sustainable-business-travel",
+          "status": 200,
+          "ok": true,
+          "title": "Best Sustainable Business Travel Platforms Compared",
+          "description": "5 AI-powered platforms for tracking emissions, enforcing carbon policy at booking, and meeting Scope 3 reporting requirements — with sourced strengths and trade-offs for each.",
+          "h1s": [
+            "5 AI Tools for Sustainable Business Travel"
+          ],
+          "canonical": "https://navan.com/blog/ai-solutions-for-sustainable-business-travel",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "FAQPage"
+          ],
+          "wordCount": 2777
+        },
+        {
+          "url": "https://navan.com/blog/ai-tools-travel-expense-management",
+          "finalUrl": "https://navan.com/blog/ai-tools-travel-expense-management",
+          "status": 200,
+          "ok": true,
+          "title": "7 Best AI Tools for Travel and Expense Management in Corporations",
+          "description": "7 Best AI Tools for Travel and Expense Management in 2026",
+          "h1s": [
+            "7 Best AI Tools for Travel and Expense Management in Corporations"
+          ],
+          "canonical": "https://navan.com/blog/ai-tools-travel-expense-management",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "FAQPage"
+          ],
+          "wordCount": 2724
+        },
+        {
+          "url": "https://navan.com/blog/ai-travel-expense-processing",
+          "finalUrl": "https://navan.com/blog/ai-travel-expense-processing",
+          "status": 200,
+          "ok": true,
+          "title": "AI-Powered Travel Expense Processing: A Guide for Finance Teams",
+          "description": "Learn how AI automates receipt capture, GL coding, and policy enforcement at the point of transaction to cut expense processing time and speed up month-end close.",
+          "h1s": [
+            "How Does AI Improve Travel Expense Processing?"
+          ],
+          "canonical": "https://navan.com/blog/ai-travel-expense-processing",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "FAQPage",
+            "Thing"
+          ],
+          "wordCount": 2669
+        },
+        {
+          "url": "https://navan.com/blog/how-ai-impacts-corporate-travel-management-systems-enterprises",
+          "finalUrl": "https://navan.com/blog/how-ai-impacts-corporate-travel-management-systems-enterprises",
+          "status": 200,
+          "ok": true,
+          "title": "How AI Impacts Corporate Travel Management Systems in 2026",
+          "description": "AI transforms corporate travel management through automated booking intelligence, real-time policy enforcement, and instant expense processing.",
+          "h1s": [
+            "How AI Impacts Corporate Travel Management Systems in 2026"
+          ],
+          "canonical": "https://navan.com/blog/how-ai-impacts-corporate-travel-management-systems-enterprises",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "FAQPage"
+          ],
+          "wordCount": 2452
+        },
+        {
+          "url": "https://navan.com/blog/benefits-combining-travel-management-software-ai",
+          "finalUrl": "https://navan.com/blog/benefits-combining-travel-management-software-ai",
+          "status": 200,
+          "ok": true,
+          "title": "8 Benefits of Combining Travel Management Software with AI (2026)",
+          "description": "Discover how AI-powered travel management delivers real-time policy enforcement, proactive disruption management, and traveler support for corporate travel.",
+          "h1s": [
+            "8 Benefits of Combining Travel Management Software with AI"
+          ],
+          "canonical": "https://navan.com/blog/benefits-combining-travel-management-software-ai",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList",
+            "FAQPage"
+          ],
+          "wordCount": 2580
+        },
+        {
+          "url": "https://navan.com/blog/the-tripactions-guide-to-travel-and-expense-policies",
+          "finalUrl": "https://navan.com/blog/the-tripactions-guide-to-travel-and-expense-policies",
+          "status": 200,
+          "ok": true,
+          "title": "A Guide to Travel and Expense Policies",
+          "description": "It is time to rethink travel and expense policies throughout the business travel experience. TripActions calls for a new kind of policy and technology to drive the future of business forward.",
+          "h1s": [
+            "A Guide to Travel and Expense Policies"
+          ],
+          "canonical": "https://navan.com/blog/the-tripactions-guide-to-travel-and-expense-policies",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1827
+        },
+        {
+          "url": "https://navan.com/blog/ai-arrives-in-travel-and-expense-management",
+          "finalUrl": "https://navan.com/blog/ai-arrives-in-travel-and-expense-management",
+          "status": 200,
+          "ok": true,
+          "title": "AI Arrives in Travel and Expense Management",
+          "description": "The Navan brand heralds a new era for the travel and expense industry. One example is by showing what’s possible with AI and ChatGPT.",
+          "h1s": [
+            "AI Arrives in Travel and Expense Management"
+          ],
+          "canonical": "https://navan.com/blog/ai-arrives-in-travel-and-expense-management",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1050
+        },
+        {
+          "url": "https://navan.com/blog/secrets-for-overcoming-the-biggest-pain-points-in-travel-and-expense",
+          "finalUrl": "https://navan.com/blog/secrets-for-overcoming-the-biggest-pain-points-in-travel-and-expense",
+          "status": 200,
+          "ok": true,
+          "title": "Secrets for Overcoming the Biggest Pain Points in Travel and Expense",
+          "description": "Atmosphere Research Group surveyed travel and finance managers about what they like — and don’t like — about their T&E tools and processes.",
+          "h1s": [
+            "Secrets for Overcoming the Biggest Pain Points in Travel and Expense"
+          ],
+          "canonical": "https://navan.com/blog/secrets-for-overcoming-the-biggest-pain-points-in-travel-and-expense",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1036
+        },
+        {
+          "url": "https://navan.com/blog/7-ways-tripactions-solves-business-travel-management",
+          "finalUrl": "https://navan.com/blog/7-ways-tripactions-solves-business-travel-management",
+          "status": 200,
+          "ok": true,
+          "title": "7 Ways Navan Solves Business Travel Management",
+          "description": "Learn how Navan relieves common business travel management pitfalls with a user-friendly platform that drives cost savings.",
+          "h1s": [
+            "7 Ways Navan Solves Business Travel Management"
+          ],
+          "canonical": "https://navan.com/blog/7-ways-tripactions-solves-business-travel-management",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1274
+        },
+        {
+          "url": "https://navan.com/uk/blog/barclays-navan-new-partnership-for-business-travel-and-expense",
+          "finalUrl": "https://navan.com/uk/blog/barclays-navan-new-partnership-for-business-travel-and-expense",
+          "status": 200,
+          "ok": true,
+          "title": "Barclays + Navan: a new partnership for best-in-class business travel and expense",
+          "description": "Barclays and Navan have partnered to transform how UK businesses manage corporate travel, spend, and expense reconciliation.",
+          "h1s": [
+            "Barclays + Navan: a new partnership for best-in-class business travel and expense"
+          ],
+          "canonical": "https://navan.com/uk/blog/barclays-navan-new-partnership-for-business-travel-and-expense",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1034
+        },
+        {
+          "url": "https://navan.com/uk/blog/5-ways-to-make-business-travel-more-sustainable",
+          "finalUrl": "https://navan.com/uk/blog/5-ways-to-make-business-travel-more-sustainable",
+          "status": 200,
+          "ok": true,
+          "title": "5 ways to make business travel more sustainable",
+          "description": "See what industry leaders consider to be the sustainability challenges facing the business travel industry today — and the solutions to overcome them.",
+          "h1s": [
+            "5 ways to make business travel more sustainable"
+          ],
+          "canonical": "https://navan.com/uk/blog/5-ways-to-make-business-travel-more-sustainable",
+          "schemaTypes": [
+            "Article",
+            "BreadcrumbList"
+          ],
+          "wordCount": 1232
+        }
+      ],
+      "schemaTypes": [
+        "Article",
+        "BreadcrumbList",
+        "FAQPage",
+        "Thing"
+      ],
+      "keywordCoverage": [
+        {
+          "keyword": "AI travel assistant",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 1
+        },
+        {
+          "keyword": "AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI trip planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI itinerary planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "best AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel planning app with AI",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "plan a trip from calendar events",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "turn emails into travel itinerary",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "automatic trip itinerary",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI flight booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI hotel booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel booking with calendar context",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "airport security wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "TSA wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "live TSA wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "airport wait time tracker",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "security line wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "TSA wait time app",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "traveler profile app",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "traveler preference profile",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel day assistant",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        }
+      ],
+      "strengths": [
+        "Large indexed URL surface sampled from sitemaps (2133+ URLs observed).",
+        "Dedicated editorial or guide directory structure.",
+        "Visible AI/planning language in crawlable page copy or URL paths.",
+        "Business-travel and expense-management authority content.",
+        "Structured data types observed: Article, BreadcrumbList, FAQPage, Thing."
+      ],
+      "crawlLimitations": [
+        "https://navan.com/expense returned 404",
+        "https://navan.com/company returned 404"
+      ]
+    },
+    {
+      "id": "mindtrip",
+      "name": "Mindtrip",
+      "origin": "https://mindtrip.ai",
+      "category": "AI trip planner",
+      "priority": 10,
+      "robots": {
+        "url": "https://mindtrip.ai/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 1
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://mindtrip.ai/sitemap.xml",
+          "status": 403,
+          "ok": false,
+          "contentType": "text/html; charset=UTF-8"
+        },
+        {
+          "url": "https://mindtrip.ai/sitemap_index.xml",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html; charset=utf-8"
+        },
+        {
+          "url": "https://mindtrip.ai/global/sitemap",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/html; charset=utf-8"
+        }
+      ],
+      "sitemapUrlCount": 0,
+      "topPathSegments": [],
+      "fetchedPages": [
+        {
+          "url": "https://mindtrip.ai/",
+          "finalUrl": "https://mindtrip.ai/",
+          "status": 200,
+          "ok": true,
+          "title": "Mindtrip: AI-powered travel, personalized to you.",
+          "description": "Get personalized and actionable travel recommendations — destinations, hotels, flights, restaurants and attractions — and organize everything all in one place.",
+          "h1s": [
+            "Travel b e t t e r ."
+          ],
+          "canonical": "https://mindtrip.ai",
+          "schemaTypes": [],
+          "wordCount": 493
+        },
+        {
+          "url": "https://mindtrip.ai/about",
+          "finalUrl": "https://mindtrip.ai/about",
+          "status": 200,
+          "ok": true,
+          "title": "Why and how we’re revolutionizing travel | mindtrip",
+          "description": "Mindtrip makes travel-planning as fun and exciting as the trip itself. Learn why and how we empower you to travel differently and experience the world your way.",
+          "h1s": [
+            "Meet Mindtrip."
+          ],
+          "canonical": "https://mindtrip.ai/about",
+          "schemaTypes": [],
+          "wordCount": 174
+        },
+        {
+          "url": "https://mindtrip.ai/product",
+          "finalUrl": "https://mindtrip.ai/auth/sign-in?callbackUrl=%2Fproduct",
+          "status": 200,
+          "ok": true,
+          "title": "mindtrip",
+          "description": "",
+          "h1s": [],
+          "canonical": "https://mindtrip.ai/auth/sign-in",
+          "schemaTypes": [],
+          "wordCount": 17
+        },
+        {
+          "url": "https://mindtrip.ai/blog",
+          "finalUrl": "https://mindtrip.ai/auth/sign-in?callbackUrl=%2Fblog",
+          "status": 200,
+          "ok": true,
+          "title": "mindtrip",
+          "description": "",
+          "h1s": [],
+          "canonical": "https://mindtrip.ai/auth/sign-in",
+          "schemaTypes": [],
+          "wordCount": 17
+        }
+      ],
+      "schemaTypes": [],
+      "keywordCoverage": [
+        {
+          "keyword": "AI travel assistant",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 1
+        },
+        {
+          "keyword": "AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI trip planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI itinerary planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "best AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel planning app with AI",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "plan a trip from calendar events",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "email itinerary organizer",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "traveler profile app",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "share live trip plan",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.43
+        }
+      ],
+      "strengths": [
+        "Visible AI/planning language in crawlable page copy or URL paths."
+      ],
+      "crawlLimitations": []
+    },
+    {
+      "id": "layla",
+      "name": "Layla",
+      "origin": "https://layla.ai",
+      "category": "AI trip planner",
+      "priority": 10,
+      "robots": {
+        "url": "https://layla.ai/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 1
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://layla.ai/sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://layla.ai/sitemap_0.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://layla.ai/sitemap_index.xml",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html; charset=utf-8"
+        },
+        {
+          "url": "https://layla.ai/global/sitemap",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html; charset=utf-8"
+        }
+      ],
+      "sitemapUrlCount": 5,
+      "topPathSegments": [
+        {
+          "segment": "/",
+          "count": 1
+        },
+        {
+          "segment": "roamaround",
+          "count": 1
+        },
+        {
+          "segment": "hotels",
+          "count": 1
+        },
+        {
+          "segment": "plan",
+          "count": 1
+        },
+        {
+          "segment": "couple-trip-planner",
+          "count": 1
+        }
+      ],
+      "fetchedPages": [
+        {
+          "url": "https://layla.ai/",
+          "finalUrl": "https://layla.ai/",
+          "status": 200,
+          "ok": true,
+          "title": "Meet Layla: AI Trip Planner 2026 | Trusted by Millions",
+          "description": "The world&#x27;s best AI travel planner 4.9★ . Get tailored itineraries & epic road trips. From chat to checkout.",
+          "h1s": [
+            "Your trip. Planned in minutes."
+          ],
+          "canonical": "https://layla.ai",
+          "schemaTypes": [
+            "FAQPage",
+            "Organization",
+            "Product",
+            "WebSite"
+          ],
+          "wordCount": 649
+        },
+        {
+          "url": "https://layla.ai/trip-planner",
+          "finalUrl": "https://layla.ai/trip-planner",
+          "status": 404,
+          "ok": false,
+          "title": "",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 20
+        },
+        {
+          "url": "https://layla.ai/ai-trip-planner",
+          "finalUrl": "https://layla.ai/ai-trip-planner",
+          "status": 404,
+          "ok": false,
+          "title": "",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 20
+        },
+        {
+          "url": "https://layla.ai/blog",
+          "finalUrl": "https://layla.ai/blog",
+          "status": 200,
+          "ok": true,
+          "title": "Layla Blog - Travel Tips & Inspiration",
+          "description": "Discover travel tips, destination guides, and inspiration from the Layla travel planning community.",
+          "h1s": [
+            "Layla Travel Blog"
+          ],
+          "canonical": "https://layla.ai/blog",
+          "schemaTypes": [
+            "Blog",
+            "BreadcrumbList",
+            "WebSite"
+          ],
+          "wordCount": 732
+        },
+        {
+          "url": "https://layla.ai/plan/family-vacation-trip-planner",
+          "finalUrl": "https://layla.ai/plan/family-vacation-trip-planner",
+          "status": 200,
+          "ok": true,
+          "title": "Family Vacation Trip Planner | Layla AI Designs Your Trips",
+          "description": "Plan unforgettable family trips with Layla&#x27;s AI-powered vacation planner. From road trips to dream getaways, get a stress-free plan tailored for your family.",
+          "h1s": [
+            "Your trip. Planned in minutes."
+          ],
+          "canonical": "https://layla.ai/plan/family-vacation-trip-planner",
+          "schemaTypes": [
+            "FAQPage",
+            "Organization",
+            "Product",
+            "WebSite"
+          ],
+          "wordCount": 647
+        },
+        {
+          "url": "https://layla.ai/couple-trip-planner",
+          "finalUrl": "https://layla.ai/couple-trip-planner",
+          "status": 404,
+          "ok": false,
+          "title": "",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 20
+        }
+      ],
+      "schemaTypes": [
+        "Blog",
+        "BreadcrumbList",
+        "FAQPage",
+        "Organization",
+        "Product",
+        "WebSite"
+      ],
+      "keywordCoverage": [
+        {
+          "keyword": "AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 1
+        },
+        {
+          "keyword": "AI trip planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 1
+        },
+        {
+          "keyword": "best AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 1
+        },
+        {
+          "keyword": "AI itinerary planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "share live trip plan",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "flight hotel itinerary updates",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "plan a trip from calendar events",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "turn emails into travel itinerary",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.43
+        }
+      ],
+      "strengths": [
+        "Programmatic travel inventory or destination landing pages.",
+        "Visible AI/planning language in crawlable page copy or URL paths.",
+        "Structured data types observed: Blog, BreadcrumbList, FAQPage, Organization, Product, WebSite."
+      ],
+      "crawlLimitations": [
+        "https://layla.ai/trip-planner returned 404",
+        "https://layla.ai/ai-trip-planner returned 404",
+        "https://layla.ai/couple-trip-planner returned 404"
+      ]
+    },
+    {
+      "id": "expedia",
+      "name": "Expedia",
+      "origin": "https://www.expedia.com",
+      "category": "OTA marketplace",
+      "priority": 8,
+      "robots": {
+        "url": "https://www.expedia.com/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 0
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://www.expedia.com/sitemap.xml",
+          "status": 403,
+          "ok": false,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://www.expedia.com/sitemap_index.xml",
+          "status": 403,
+          "ok": false,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://www.expedia.com/global/sitemap",
+          "status": 429,
+          "ok": false,
+          "contentType": "text/html; charset=utf-8"
+        }
+      ],
+      "sitemapUrlCount": 0,
+      "topPathSegments": [],
+      "fetchedPages": [
+        {
+          "url": "https://www.expedia.com/",
+          "finalUrl": "https://www.expedia.com/",
+          "status": 429,
+          "ok": false,
+          "title": "Bot or Not?",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://www.expedia.com/global/sitemap",
+          "finalUrl": "https://www.expedia.com/global/sitemap",
+          "status": 429,
+          "ok": false,
+          "title": "Bot or Not?",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://www.expedia.com/travel-blog",
+          "finalUrl": "https://www.expedia.com/travel-blog",
+          "status": 429,
+          "ok": false,
+          "title": "Bot or Not?",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://www.expedia.com/Things-To-Do",
+          "finalUrl": "https://www.expedia.com/Things-To-Do",
+          "status": 429,
+          "ok": false,
+          "title": "Bot or Not?",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 12
+        }
+      ],
+      "schemaTypes": [],
+      "keywordCoverage": [],
+      "strengths": [
+        "High-authority transactional marketplace footprint across flights, hotels, packages, and destinations."
+      ],
+      "crawlLimitations": [
+        "https://www.expedia.com/ returned 429",
+        "https://www.expedia.com/global/sitemap returned 429",
+        "https://www.expedia.com/travel-blog returned 429",
+        "https://www.expedia.com/Things-To-Do returned 429"
+      ]
+    },
+    {
+      "id": "booking",
+      "name": "Booking.com",
+      "origin": "https://www.booking.com",
+      "category": "OTA marketplace",
+      "priority": 8,
+      "robots": {
+        "url": "https://www.booking.com/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 275
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://www.booking.com/sitembk-airport-index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://www.booking.com/sitembk-airport-th.0000.xml.gz",
+          "status": 200,
+          "ok": true,
+          "contentType": "binary/octet-stream"
+        },
+        {
+          "url": "https://www.booking.com/sitembk-airport-es-mx.0000.xml.gz",
+          "status": 200,
+          "ok": true,
+          "contentType": "binary/octet-stream"
+        }
+      ],
+      "sitemapUrlCount": 4000,
+      "topPathSegments": [
+        {
+          "segment": "airport",
+          "count": 4000
+        }
+      ],
+      "fetchedPages": [
+        {
+          "url": "https://www.booking.com/",
+          "finalUrl": "https://www.booking.com/",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/index.html",
+          "finalUrl": "https://www.booking.com/index.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/destination.html",
+          "finalUrl": "https://www.booking.com/destination.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/articles.html",
+          "finalUrl": "https://www.booking.com/articles.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/day.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/day.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินนานาชาติเจมส์ เอ็ม ค็อกซ์ เดย์ตัน (DAY) ที่สุด | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินนานาชาติเจมส์ เอ็ม ค็อกซ์ เดย์ตัน DAY, สหรัฐอเมริกา จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินนานาชาติเจมส์ เอ็ม ค็อกซ์ เดย์ตัน (DAY) ในเดย์ตัน"
+          ],
+          "canonical": "https://www.booking.com/airport/us/day.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 561
+        },
+        {
+          "url": "https://www.booking.com/airport/us/day.es-mx.html",
+          "finalUrl": "https://www.booking.com/airport/us/day.es-mx.html",
+          "status": 200,
+          "ok": true,
+          "title": "Los 10 hoteles más cercanos a Aeropuerto Internacional James M. Cox-Dayton (DAY) | Booking.com",
+          "description": "Hoteles cerca del Aeropuerto Internacional James M. Cox-Dayton DAY, Estados Unidos. Consigue fantásticos descuentos en tu reservación. Reserva online, paga en el hotel. Lee comentarios reales de clientes.",
+          "h1s": [
+            "Hoteles cerca de Aeropuerto Internacional James M. Cox-Dayton (DAY), Dayton"
+          ],
+          "canonical": "https://www.booking.com/airport/us/day.es-mx.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 1793
+        },
+        {
+          "url": "https://www.booking.com/airport/us/atl.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/atl.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินฮาร์ทสฟีลด์-แจ็คสัน (ATL) ที่สุดในแอตแลนตา | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินฮาร์ทสฟีลด์-แจ็คสัน ATL, สหรัฐอเมริกา จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินฮาร์ทสฟีลด์-แจ็คสัน (ATL) ในแอตแลนตา"
+          ],
+          "canonical": "https://www.booking.com/airport/us/atl.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 848
+        },
+        {
+          "url": "https://www.booking.com/airport/us/ord.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/ord.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/lax.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/lax.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/gb/lhr.th.html",
+          "finalUrl": "https://www.booking.com/airport/gb/lhr.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/jp/hnd.th.html",
+          "finalUrl": "https://www.booking.com/airport/jp/hnd.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/dfw.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/dfw.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/de/fra.th.html",
+          "finalUrl": "https://www.booking.com/airport/de/fra.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินแฟรงก์เฟิร์ต (FRA) ที่สุดในแฟรงก์เฟิร์ต อัม ไมน์ | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินแฟรงก์เฟิร์ต FRA, เยอรมนี จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินแฟรงก์เฟิร์ต (FRA) ในแฟรงก์เฟิร์ต อัม ไมน์"
+          ],
+          "canonical": "https://www.booking.com/airport/de/fra.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 885
+        },
+        {
+          "url": "https://www.booking.com/airport/fr/cdg.th.html",
+          "finalUrl": "https://www.booking.com/airport/fr/cdg.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินปารีส - ชาร์ลเดอโกล (CDG) ที่สุด | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินปารีส - ชาร์ลเดอโกล CDG, ฝรั่งเศส จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินปารีส - ชาร์ลเดอโกล (CDG) ในปารีส"
+          ],
+          "canonical": "https://www.booking.com/airport/fr/cdg.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 539
+        },
+        {
+          "url": "https://www.booking.com/airport/nl/ams.th.html",
+          "finalUrl": "https://www.booking.com/airport/nl/ams.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินสกิปโพล (AMS) ที่สุดในอัมสเตอร์ดัม | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินสกิปโพล AMS, เนเธอร์แลนด์ จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินสกิปโพล (AMS) ในอัมสเตอร์ดัม"
+          ],
+          "canonical": "https://www.booking.com/airport/nl/ams.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 880
+        },
+        {
+          "url": "https://www.booking.com/airport/us/den.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/den.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/phx.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/phx.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/las.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/las.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/iah.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/iah.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินนานาชาติจอร์จบุชฮูสตัน (IAH) ที่สุด | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินนานาชาติจอร์จบุชฮูสตัน IAH, สหรัฐอเมริกา จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินนานาชาติจอร์จบุชฮูสตัน (IAH) ในฮูสตัน"
+          ],
+          "canonical": "https://www.booking.com/airport/us/iah.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 698
+        },
+        {
+          "url": "https://www.booking.com/airport/us/sfo.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/sfo.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/msp.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/msp.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินนานาชาติมินนีแอโพลิส-เซนต์พอล (MSP) ที่สุด | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินนานาชาติมินนีแอโพลิส-เซนต์พอล MSP, สหรัฐอเมริกา จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินนานาชาติมินนีแอโพลิส-เซนต์พอล (MSP) ในมินนีแอโพลิส"
+          ],
+          "canonical": "https://www.booking.com/airport/us/msp.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 757
+        },
+        {
+          "url": "https://www.booking.com/airport/es/mad.th.html",
+          "finalUrl": "https://www.booking.com/airport/es/mad.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินอดอลโฟซัวเรซมาดริด-บาราคาส (MAD) ที่สุด | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินอดอลโฟซัวเรซมาดริด-บาราคาส MAD, สเปน จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินอดอลโฟซัวเรซมาดริด-บาราคาส (MAD) ในมาดริด"
+          ],
+          "canonical": "https://www.booking.com/airport/es/mad.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 410
+        },
+        {
+          "url": "https://www.booking.com/airport/hk/hkg.th.html",
+          "finalUrl": "https://www.booking.com/airport/hk/hkg.th.html",
+          "status": 200,
+          "ok": true,
+          "title": "10 โรงแรมที่ใกล้สนามบินนานาชาติฮ่องกง (HKG) ที่สุด | Booking.com",
+          "description": "โรงแรมใกล้ สนามบินนานาชาติฮ่องกง HKG, ฮ่องกง จองห้องพักราคาสุดประหยัดผ่านระบบออนไลน์ จ่ายที่โรงแรม รวมทั้งอ่านความคิดเห็นโรงแรมจากผู้เข้าพักจริง",
+          "h1s": [
+            "โรงแรมใกล้สนามบินนานาชาติฮ่องกง (HKG) ในฮ่องกง"
+          ],
+          "canonical": "https://www.booking.com/airport/hk/hkg.th.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 645
+        },
+        {
+          "url": "https://www.booking.com/airport/us/dtw.th.html",
+          "finalUrl": "https://www.booking.com/airport/us/dtw.th.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        }
+      ],
+      "schemaTypes": [
+        "Brand",
+        "Corporation",
+        "ImageObject",
+        "Person",
+        "WebSite"
+      ],
+      "keywordCoverage": [],
+      "strengths": [
+        "Large indexed URL surface sampled from sitemaps (4000+ URLs observed).",
+        "Visible AI/planning language in crawlable page copy or URL paths.",
+        "Business-travel and expense-management authority content.",
+        "Structured data types observed: Brand, Corporation, ImageObject, Person, WebSite.",
+        "High-authority transactional marketplace footprint across flights, hotels, packages, and destinations."
+      ],
+      "crawlLimitations": []
+    },
+    {
+      "id": "tripit",
+      "name": "TripIt",
+      "origin": "https://www.tripit.com",
+      "category": "itinerary organizer",
+      "priority": 9,
+      "robots": {
+        "url": "https://www.tripit.com/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 0
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://www.tripit.com/sitemap.xml",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html; charset=UTF-8"
+        },
+        {
+          "url": "https://www.tripit.com/sitemap_index.xml",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html; charset=UTF-8"
+        },
+        {
+          "url": "https://www.tripit.com/global/sitemap",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/html; charset=utf-8"
+        }
+      ],
+      "sitemapUrlCount": 0,
+      "topPathSegments": [],
+      "fetchedPages": [
+        {
+          "url": "https://www.tripit.com/",
+          "finalUrl": "https://www.tripit.com/web",
+          "status": 200,
+          "ok": true,
+          "title": "TripIt: Highest-Rated Travel Itinerary App + Trip Planner",
+          "description": "TripIt is a travel itinerary app and trip planner that organizes your vacation plans automatically. TripIt helps keep your business, personal, and road trips organized.",
+          "h1s": [
+            "Organize Your Travel Itinerary Automatically"
+          ],
+          "canonical": "https://www.tripit.com/web",
+          "schemaTypes": [
+            "SoftwareApplication"
+          ],
+          "wordCount": 369
+        },
+        {
+          "url": "https://www.tripit.com/web",
+          "finalUrl": "https://www.tripit.com/web",
+          "status": 200,
+          "ok": true,
+          "title": "TripIt: Highest-Rated Travel Itinerary App + Trip Planner",
+          "description": "TripIt is a travel itinerary app and trip planner that organizes your vacation plans automatically. TripIt helps keep your business, personal, and road trips organized.",
+          "h1s": [
+            "Organize Your Travel Itinerary Automatically"
+          ],
+          "canonical": "https://www.tripit.com/web",
+          "schemaTypes": [
+            "SoftwareApplication"
+          ],
+          "wordCount": 369
+        },
+        {
+          "url": "https://www.tripit.com/pro",
+          "finalUrl": "https://www.tripit.com/pro",
+          "status": 200,
+          "ok": true,
+          "title": "TripIt Pro Travel App",
+          "description": "TripIt Pro keeps you one step ahead with real-time flight alerts, the best seats and notifications. Free 30-day trial.",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 520
+        },
+        {
+          "url": "https://www.tripit.com/blog",
+          "finalUrl": "https://www.tripit.com/web/blog",
+          "status": 200,
+          "ok": true,
+          "title": "TripIt Blog — Travel Itinerary — Trip Planner",
+          "description": "",
+          "h1s": [],
+          "canonical": "https://www.tripit.com/web/blog",
+          "schemaTypes": [],
+          "wordCount": 855
+        }
+      ],
+      "schemaTypes": [
+        "SoftwareApplication"
+      ],
+      "keywordCoverage": [
+        {
+          "keyword": "AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI trip planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI itinerary planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "best AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel planning app with AI",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "organize travel confirmations",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "frequent flyer number organizer",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "trusted traveler number organizer",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "flight hotel itinerary updates",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "turn emails into travel itinerary",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "email itinerary organizer",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "traveler profile app",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.43
+        }
+      ],
+      "strengths": [
+        "Visible AI/planning language in crawlable page copy or URL paths.",
+        "Business-travel and expense-management authority content.",
+        "Structured data types observed: SoftwareApplication."
+      ],
+      "crawlLimitations": []
+    },
+    {
+      "id": "wanderlog",
+      "name": "Wanderlog",
+      "origin": "https://wanderlog.com",
+      "category": "consumer trip planner",
+      "priority": 8,
+      "robots": {
+        "url": "https://wanderlog.com/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 1
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://wanderlog.com/sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/xml"
+        },
+        {
+          "url": "https://wanderlog.com/sitemap0.txt",
+          "status": 200,
+          "ok": true,
+          "contentType": "text/plain"
+        }
+      ],
+      "sitemapUrlCount": 4000,
+      "topPathSegments": [
+        {
+          "segment": "tp",
+          "count": 3774
+        },
+        {
+          "segment": "fr",
+          "count": 7
+        },
+        {
+          "segment": "ja",
+          "count": 7
+        },
+        {
+          "segment": "zh",
+          "count": 7
+        },
+        {
+          "segment": "ko",
+          "count": 7
+        },
+        {
+          "segment": "es",
+          "count": 7
+        },
+        {
+          "segment": "pt",
+          "count": 7
+        },
+        {
+          "segment": "it",
+          "count": 7
+        },
+        {
+          "segment": "ru",
+          "count": 7
+        },
+        {
+          "segment": "hi",
+          "count": 7
+        },
+        {
+          "segment": "nl",
+          "count": 7
+        },
+        {
+          "segment": "tr",
+          "count": 7
+        },
+        {
+          "segment": "ms",
+          "count": 7
+        },
+        {
+          "segment": "id",
+          "count": 7
+        }
+      ],
+      "fetchedPages": [
+        {
+          "url": "https://wanderlog.com/",
+          "finalUrl": "https://wanderlog.com/",
+          "status": 200,
+          "ok": true,
+          "title": "Wanderlog travel planner: free vacation planner and itinerary app",
+          "description": "Plan your road trip or vacation with the best free itinerary and road trip planner. Wanderlog lets you to make itineraries with friends, mark routes, and optimize maps — on web or mobile app",
+          "h1s": [
+            "One app for all your travel planning needs"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 5335
+        },
+        {
+          "url": "https://wanderlog.com/travel-planner",
+          "finalUrl": "https://wanderlog.com/travel-planner",
+          "status": 404,
+          "ok": false,
+          "title": "Wanderlog: best free travel itinerary & road trip planner app",
+          "description": "Travel planning at it&#x27;s best. Build, organize, and map your custom itineraries in a free travel app designed for vacations & road trips, powered by our trip planner AI",
+          "h1s": [
+            "You&#x27;ll never travel without a Wanderlog itinerary in hand again"
+          ],
+          "canonical": "https://wanderlog.com",
+          "schemaTypes": [
+            "WebSite"
+          ],
+          "wordCount": 685
+        },
+        {
+          "url": "https://wanderlog.com/blog",
+          "finalUrl": "https://wanderlog.com/blog/",
+          "status": 200,
+          "ok": true,
+          "title": "Wanderlog blog",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 265
+        },
+        {
+          "url": "https://wanderlog.com/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/trip-planner-ai",
+          "status": 404,
+          "ok": false,
+          "title": "Trip Planner AI that makes organizing your travel simple, fast, and easy",
+          "description": "Our customizable AI travel planner can help you plan the perfect trip",
+          "h1s": [
+            "Trip Planner AI that you can customize"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1128
+        },
+        {
+          "url": "https://wanderlog.com/fr/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/fr/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "Planificateur de voyage IA qui rend l'organisation de vos voyages simple, rapide et facile",
+          "description": "Notre planificateur de voyage IA personnalisable peut vous aider à planifier votre voyage parfait",
+          "h1s": [
+            "Planificateur de voyage IA que vous pouvez personnaliser"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1540
+        },
+        {
+          "url": "https://wanderlog.com/ja/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/ja/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "旅程の作成をシンプルで迅速かつ簡単にする旅程プランナーAI",
+          "description": "カスタマイズ可能なAI旅行プランナーが完璧な旅行計画の作成をお手伝いします",
+          "h1s": [
+            "カスタマイズ可能な旅程プランナーAI"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 83
+        },
+        {
+          "url": "https://wanderlog.com/zh/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/zh/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "旅行规划器 AI，让您的行程组织简单、快速、轻松",
+          "description": "我们的可定制 AI 旅行规划器可以帮助您规划完美的旅行",
+          "h1s": [
+            "可自定义的旅行规划器 AI"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 83
+        },
+        {
+          "url": "https://wanderlog.com/ko/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/ko/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "여행 계획을 간단하고 빠르게 세워주는 AI 여행 플래너",
+          "description": "맞춤형 AI 여행 플래너가 완벽한 여행 일정을 계획하는 데 도움을 드립니다",
+          "h1s": [
+            "사용자가 맞춤 설정할 수 있는 AI 여행 플래너"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 79
+        },
+        {
+          "url": "https://wanderlog.com/es/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/es/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "Planificador de viajes con IA que hace que planificar tu viaje sea simple, rápido y fácil",
+          "description": "Nuestro planificador de viajes con IA personalizable puede ayudarte a planificar el viaje perfecto",
+          "h1s": [
+            "Planificador de viajes con IA que puedes personalizar"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1368
+        },
+        {
+          "url": "https://wanderlog.com/pt/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/pt/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "Planejador de viagens com IA que torna a organização da sua viagem simples, rápida e fácil",
+          "description": "Nosso planejador de viagens com IA personalizável pode ajudá-lo a planejar a viagem perfeita",
+          "h1s": [
+            "Planejador de Viagens com IA que você pode personalizar"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1403
+        },
+        {
+          "url": "https://wanderlog.com/it/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/it/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "Pianificatore di viaggi IA che rende la pianificazione dei viaggi semplice, veloce e intuitiva",
+          "description": "Il nostro pianificatore di viaggi IA personalizzabile può aiutarti a pianificare il viaggio perfetto",
+          "h1s": [
+            "Pianificatore di viaggi IA che puoi personalizzare"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1454
+        },
+        {
+          "url": "https://wanderlog.com/ru/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/ru/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "ИИ планировщик поездок, который делает планирование поездок простым, быстрым и легким",
+          "description": "Наш настраиваемый ИИ-планировщик поездок поможет вам спланировать идеальное путешествие",
+          "h1s": [
+            "ИИ планировщик поездок, который вы можете настроить"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 85
+        },
+        {
+          "url": "https://wanderlog.com/hi/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/hi/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "यात्रा योजनाकार एआई जो आपकी यात्रा को सरल, तेज और आसान बनाता है",
+          "description": "हमारा अनुकूलन योग्य एआई यात्रा योजनाकार आपकी आदर्श यात्रा की योजना बनाने में मदद कर सकता है।",
+          "h1s": [
+            "यात्रा योजनाकार एआई जिसे आप अनुकूलित कर सकते हैं"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 53
+        },
+        {
+          "url": "https://wanderlog.com/nl/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/nl/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "AI-reisplanner die het plannen van je reis simpel, snel en makkelijk maakt",
+          "description": "Onze aanpasbare AI-reisplanner kan je helpen de perfecte reis te plannen",
+          "h1s": [
+            "AI-reisplanner die je kunt aanpassen"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1269
+        },
+        {
+          "url": "https://wanderlog.com/tr/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/tr/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "Seyahatinizi planlamayı basit, hızlı ve kolay hale getiren Yapay Zeka seyahat planlayıcı",
+          "description": "Özelleştirilebilir Yapay Zeka seyahat planlayıcımız, mükemmel bir seyahat planlamanıza yardımcı olur",
+          "h1s": [
+            "Özelleştirebileceğiniz Yapay Zeka seyahat planlayıcı"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1336
+        },
+        {
+          "url": "https://wanderlog.com/ms/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/ms/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "Perancang perjalanan AI yang memudahkan penyusunan rancangan perjalanan anda menjadi lebih ringkas, pantas, dan mudah",
+          "description": "Perancang perjalanan AI yang boleh disesuaikan kami boleh membantu anda merancang perjalanan yang sempurna",
+          "h1s": [
+            "Perancang perjalanan AI yang boleh anda sesuaikan"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1610
+        },
+        {
+          "url": "https://wanderlog.com/id/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/id/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "AI perencana perjalanan yang membuat pengaturan rencana perjalanan Anda menjadi sederhana, cepat, dan mudah",
+          "description": "Perencana perjalanan AI kami yang dapat disesuaikan dapat membantu Anda merencanakan perjalanan yang sempurna",
+          "h1s": [
+            "AI Perencana Perjalanan yang dapat Anda sesuaikan"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1589
+        },
+        {
+          "url": "https://wanderlog.com/bn/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/bn/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "ভ্রমণ পরিকল্পনাকারী এআই যা আপনার ভ্রমণকে সহজ, দ্রুত এবং সুবিধাজনক করে তোলে",
+          "description": "আমাদের কাস্টমাইজযোগ্য এআই ভ্রমণ পরিকল্পনাকারী আপনাকে নিখুঁত ভ্রমণ পরিকল্পনা করতে সহায়তা করবে",
+          "h1s": [
+            "ট্রিপ প্ল্যানার এআই যা আপনি কাস্টমাইজ করতে পারেন"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 50
+        },
+        {
+          "url": "https://wanderlog.com/pl/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/pl/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "Planer podróży AI, który sprawia, że organizacja podróży jest prosta, szybka i łatwa",
+          "description": "Nasz konfigurowalny planer podróży AI może pomóc Ci zaplanować idealną podróż",
+          "h1s": [
+            "Planer podróży AI, który możesz dostosować"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1307
+        },
+        {
+          "url": "https://wanderlog.com/sv/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/sv/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "AI-reseplanerare som gör det enkelt, snabbt och lätt att organisera din resa",
+          "description": "Vår anpassningsbara AI-reseplanerare kan hjälpa dig att planera den perfekta resan",
+          "h1s": [
+            "AI-reseplanerare som du kan anpassa"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1286
+        },
+        {
+          "url": "https://wanderlog.com/th/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/th/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "AI วางแผนการเดินทางที่ทำให้การวางแผนของคุณง่าย รวดเร็ว และสะดวก",
+          "description": "ผู้วางแผนการเดินทาง AI ที่ปรับแต่งได้ของเราสามารถช่วยคุณวางแผนการเดินทางที่สมบูรณ์แบบ",
+          "h1s": [
+            "AI วางแผนการเดินทางที่คุณสามารถปรับแต่งได้"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 97
+        },
+        {
+          "url": "https://wanderlog.com/vi/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/vi/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "AI lập kế hoạch chuyến đi giúp tổ chức chuyến đi của bạn đơn giản, nhanh chóng và dễ dàng",
+          "description": "Trình lập kế hoạch chuyến đi AI tùy chỉnh của chúng tôi có thể giúp bạn lập kế hoạch chuyến đi hoàn hảo",
+          "h1s": [
+            "AI lập kế hoạch chuyến đi mà bạn có thể tùy chỉnh"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 484
+        },
+        {
+          "url": "https://wanderlog.com/nb/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/nb/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "AI-reiseplanlegger som gjør organiseringen av reisen din enkel, rask og lett",
+          "description": "Vår tilpassbare AI-reiseplanlegger kan hjelpe deg med å planlegge den perfekte reisen",
+          "h1s": [
+            "AI-reiseplanlegger som du kan tilpasse"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1209
+        },
+        {
+          "url": "https://wanderlog.com/pa/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/pa/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "ਯਾਤਰਾ ਯੋਜਕ AI ਜੋ ਤੁਹਾਡੀ ਯਾਤਰਾ ਨੂੰ ਸੰਗਠਿਤ ਕਰਨਾ ਸਧਾਰਨ, ਤੇਜ਼ ਅਤੇ ਆਸਾਨ ਬਣਾਉਂਦਾ ਹੈ",
+          "description": "ਸਾਡਾ ਕਸਟਮਾਈਜ਼ੇਬਲ AI ਯਾਤਰਾ ਯੋਜਕ ਤੁਹਾਨੂੰ ਸੰਪੂਰਨ ਯਾਤਰਾ ਦੀ ਯੋਜਨਾ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ",
+          "h1s": [
+            "ਯਾਤਰਾ ਯੋਜਕ AI ਜੋ ਤੁਸੀਂ ਕਸਟਮਾਈਜ਼ ਕਰ ਸਕਦੇ ਹੋ"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 51
+        }
+      ],
+      "schemaTypes": [
+        "WebSite"
+      ],
+      "keywordCoverage": [
+        {
+          "keyword": "AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 1
+        },
+        {
+          "keyword": "AI trip planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 1
+        },
+        {
+          "keyword": "AI travel assistant",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI itinerary planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "best AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel planning app with AI",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "organize travel confirmations",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI flight booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI hotel booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel day assistant",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "live trip tracking",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "flight hotel itinerary updates",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "share live trip plan",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "turn emails into travel itinerary",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "email itinerary organizer",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "traveler profile app",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.43
+        }
+      ],
+      "strengths": [
+        "Large indexed URL surface sampled from sitemaps (4000+ URLs observed).",
+        "Visible AI/planning language in crawlable page copy or URL paths.",
+        "Business-travel and expense-management authority content.",
+        "Structured data types observed: WebSite."
+      ],
+      "crawlLimitations": [
+        "https://wanderlog.com/travel-planner returned 404",
+        "https://wanderlog.com/trip-planner-ai returned 404"
+      ]
+    },
+    {
+      "id": "travelperk",
+      "name": "TravelPerk",
+      "origin": "https://www.travelperk.com",
+      "category": "business travel management",
+      "priority": 7,
+      "robots": {
+        "url": "https://www.travelperk.com/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 1
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://www.perk.com/sitemap/global-index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/en-ca/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/uk/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/es/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/de/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/de-ch/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/fr/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/it/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.perk.com/nl/sitemap/index.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.travelperk.com/sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml; charset=utf-8"
+        },
+        {
+          "url": "https://www.travelperk.com/sitemap_index.xml",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html"
+        },
+        {
+          "url": "https://www.travelperk.com/global/sitemap",
+          "status": 404,
+          "ok": false,
+          "contentType": "text/html"
+        }
+      ],
+      "sitemapUrlCount": 0,
+      "topPathSegments": [],
+      "fetchedPages": [
+        {
+          "url": "https://www.travelperk.com/",
+          "finalUrl": "https://www.perk.com/",
+          "status": 200,
+          "ok": true,
+          "title": "The intelligent platform for travel and spend | Perk",
+          "description": "",
+          "h1s": [
+            "The intelligent platform for travel and spend",
+            "The intelligent platform for travel and spend",
+            "Automate travel, expenses, and policies in one platform"
+          ],
+          "canonical": "https://www.perk.com/",
+          "schemaTypes": [
+            "WebSite"
+          ],
+          "wordCount": 3715
+        },
+        {
+          "url": "https://www.travelperk.com/travel-solutions",
+          "finalUrl": "https://www.perk.com/travel-solutions",
+          "status": 200,
+          "ok": true,
+          "title": "Corporate Travel Management Solutions | Perk",
+          "description": "Our industry-leading travel solutions make business travel smooth and easy, from transparent booking to simple invoicing.",
+          "h1s": [
+            "Erase shadow work. Power real work."
+          ],
+          "canonical": "https://www.perk.com/travel-solutions/",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "WebSite"
+          ],
+          "wordCount": 1454
+        },
+        {
+          "url": "https://www.travelperk.com/blog",
+          "finalUrl": "https://www.perk.com/blog",
+          "status": 200,
+          "ok": true,
+          "title": "Business Travel Tips | Perk Blog",
+          "description": "Learn more about the future of business travel and human connections, pick up valuable tips & tricks to help make travel management better.",
+          "h1s": [
+            "Perk's Blog"
+          ],
+          "canonical": "https://www.perk.com/blog/",
+          "schemaTypes": [
+            "WebSite"
+          ],
+          "wordCount": 861
+        },
+        {
+          "url": "https://www.travelperk.com/resources",
+          "finalUrl": "https://www.perk.com/resources",
+          "status": 200,
+          "ok": true,
+          "title": "Corporate Travel Resources - Ebooks & Webinars - Perk",
+          "description": "",
+          "h1s": [
+            "Corporate Travel Resources"
+          ],
+          "canonical": "https://www.perk.com/resources/",
+          "schemaTypes": [
+            "WebSite"
+          ],
+          "wordCount": 814
+        }
+      ],
+      "schemaTypes": [
+        "BreadcrumbList",
+        "FAQPage",
+        "WebSite"
+      ],
+      "keywordCoverage": [
+        {
+          "keyword": "automatic trip itinerary",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "trusted traveler number organizer",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "plan a trip from calendar events",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "share live trip plan",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.43
+        }
+      ],
+      "strengths": [
+        "Visible AI/planning language in crawlable page copy or URL paths.",
+        "Business-travel and expense-management authority content.",
+        "Structured data types observed: BreadcrumbList, FAQPage, WebSite."
+      ],
+      "crawlLimitations": []
+    },
+    {
+      "id": "kayak",
+      "name": "KAYAK",
+      "origin": "https://www.kayak.com",
+      "category": "travel metasearch",
+      "priority": 7,
+      "robots": {
+        "url": "https://www.kayak.com/robots.txt",
+        "status": 200,
+        "ok": true,
+        "sitemapCount": 0
+      },
+      "sitemapStatus": [
+        {
+          "url": "https://www.kayak.com/sitemap.xml",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/xml"
+        },
+        {
+          "url": "https://www.kayak.com/sitemaps/kayak-us-car_static-agency-location_airport.xml.gz",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/gzip"
+        },
+        {
+          "url": "https://www.kayak.com/sitemaps/kayak-us-flight_static-airport_unknown.xml.gz",
+          "status": 200,
+          "ok": true,
+          "contentType": "application/gzip"
+        }
+      ],
+      "sitemapUrlCount": 4000,
+      "topPathSegments": [
+        {
+          "segment": "Enterprise-Car-Rentals-Tokyo.NRT.AENTERPRISE.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Budget-Car-Rentals-Kelowna.YLW.ABUDGET.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Dollar-Car-Rentals-Harlingen.HRL.ADOLLAR.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Hertz-Car-Rentals-Providence.PVD.AHERTZ.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Hertz-Car-Rentals-Billings.BIL.AHERTZ.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Enterprise-Car-Rentals-Duluth.DLH.AENTERPRISE.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Ace-Car-Rentals-West-Palm-Beach.PBI.AACE.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Hertz-Car-Rentals-Ciudad-de-Guatemala.GUA.AHERTZ.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Hertz-Car-Rentals-Malaga.AGP.AHERTZ.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Alamo-Car-Rentals-Spokane.GEG.AALAMO.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Hertz-Car-Rentals-Dallas.DAL.AHERTZ.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Europcar-Car-Rentals-Seattle.SEA.AEUROPCAR.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Hertz-Car-Rentals-Reno.RNO.AHERTZ.cla.ksp",
+          "count": 1
+        },
+        {
+          "segment": "Economy-Rent-a-Car-Car-Rentals-Quepos.XQP.AECONOMY.cla.ksp",
+          "count": 1
+        }
+      ],
+      "fetchedPages": [
+        {
+          "url": "https://www.kayak.com/",
+          "finalUrl": "https://www.kayak.com/",
+          "status": 200,
+          "ok": true,
+          "title": "Search Flights, Hotels & Rental Cars | KAYAK",
+          "description": "KAYAK searches hundreds of other travel sites at once to find the information you need to make the right decisions on flights, hotels & rental cars.",
+          "h1s": [
+            "Search Flights , Hotels & Rental Cars"
+          ],
+          "canonical": "https://www.kayak.com",
+          "schemaTypes": [
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 2353
+        },
+        {
+          "url": "https://www.kayak.com/trips",
+          "finalUrl": "https://www.kayak.com/trips",
+          "status": 200,
+          "ok": true,
+          "title": "Trips: Trip Planner to Plan & Manage Your Travel | KAYAK",
+          "description": "KAYAK Trips. Your free personal travel assistant. Save your favorite results to track prices before you buy. Organize, manage and share your trip itinerary. Receive real-time flight status alerts.",
+          "h1s": [
+            "An easier way to manage your trips"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 265
+        },
+        {
+          "url": "https://www.kayak.com/travel-guides",
+          "finalUrl": "https://www.kayak.com/errors/404?url=/travel-guides",
+          "status": 404,
+          "ok": false,
+          "title": "Page not found (404) | KAYAK",
+          "description": "",
+          "h1s": [],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 225
+        },
+        {
+          "url": "https://www.kayak.com/explore",
+          "finalUrl": "https://www.kayak.com/explore",
+          "status": 200,
+          "ok": true,
+          "title": "KAYAK Explore",
+          "description": "Looking for inspiration? Enter your budget, select your trip type and KAYAK Explore will find you your perfect vacation. Find out how far your budget can take you!",
+          "h1s": [],
+          "canonical": "https://www.kayak.com/explore/",
+          "schemaTypes": [
+            "Website"
+          ],
+          "wordCount": 235
+        },
+        {
+          "url": "https://www.kayak.com/Dayton-Dayton-Airport.DAY.ap.html",
+          "finalUrl": "https://www.kayak.com/Dayton-Dayton-Airport.DAY.ap.html",
+          "status": 200,
+          "ok": true,
+          "title": "Dayton (DAY) - Flight status, maps & more | KAYAK",
+          "description": "Airport guide: Dayton (DAY). Terminal maps, arrival & departure times, check-in information & more | KAYAK",
+          "h1s": [
+            "Dayton Airport (DAY) Flights & Flight Status"
+          ],
+          "canonical": "https://www.kayak.com/Dayton-Dayton-Airport.DAY.ap.html",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "Flight",
+            "Organization",
+            "Service",
+            "Trip",
+            "WebPage",
+            "Website",
+            "product"
+          ],
+          "wordCount": 849
+        },
+        {
+          "url": "https://www.kayak.com/Friday-Harbor-Friday-Harbor-Airport.FRD.ap.html",
+          "finalUrl": "https://www.kayak.com/Friday-Harbor-Friday-Harbor-Airport.FRD.ap.html",
+          "status": 200,
+          "ok": true,
+          "title": "Friday Harbor (FRD) - Flight status, maps & more | KAYAK",
+          "description": "Airport guide: Friday Harbor (FRD). Terminal maps, arrival & departure times, check-in information & more | KAYAK",
+          "h1s": [
+            "Friday Harbor Airport (FRD) Flights & Flight Status"
+          ],
+          "canonical": "https://www.kayak.com/Friday-Harbor-Friday-Harbor-Airport.FRD.ap.html",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "WebPage",
+            "Website"
+          ],
+          "wordCount": 551
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Indianapolis.IND.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Indianapolis.IND.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Indianapolis Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Indianapolis Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Indianapolis Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Indianapolis.IND.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 663
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Jose.SJC.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Jose.SJC.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at San Jose Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at San Jose Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at San Jose Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Jose.SJC.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 700
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Sacramento.SMF.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Sacramento.SMF.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Sacramento Intl Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Sacramento Intl Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Sacramento Intl Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Sacramento.SMF.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 610
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Las-Vegas.LAS.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Las-Vegas.LAS.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Las Vegas Harry Reid Intl Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Las Vegas Harry Reid Intl Airport. Also read 18 reviews of Airport Van at Las Vegas Harry Reid Intl Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Las Vegas Harry Reid Intl Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Las-Vegas.LAS.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 1057
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Ontario.ONT.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Ontario.ONT.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Ontario Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Ontario Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Ontario Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Ontario.ONT.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 666
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Los-Angeles.LAX.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Los-Angeles.LAX.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Los Angeles Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Los Angeles Airport. Also read 46 reviews of Airport Van at Los Angeles Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Los Angeles Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Los-Angeles.LAX.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 1149
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Chicago.ORD.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Chicago.ORD.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Chicago O&#x27;Hare Intl Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Chicago O&#x27;Hare Intl Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Chicago O'Hare Intl Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Chicago.ORD.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 693
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Salt-Lake-City.SLC.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Salt-Lake-City.SLC.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Salt Lake City Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Salt Lake City Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Salt Lake City Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Salt-Lake-City.SLC.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 672
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Diego.CLD.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Diego.CLD.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at San Diego Carlsbad-Palomar Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at San Diego Carlsbad-Palomar Airport. Also read 382 reviews of Airport Van at San Diego Carlsbad-Palomar Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at San Diego Carlsbad-Palomar Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Diego.CLD.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 1152
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Dallas.DAL.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Dallas.DAL.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Dallas Love Field Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Dallas Love Field Airport. Also read 382 reviews of Airport Van at Dallas Love Field Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Dallas Love Field Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Dallas.DAL.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 1175
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Diego.SAN.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Diego.SAN.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at San Diego Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at San Diego Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at San Diego Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-San-Diego.SAN.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 679
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Dallas.DFW.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Dallas.DFW.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Dallas/Fort Worth Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Dallas/Fort Worth Airport. Also read 35 reviews of Airport Van at Dallas/Fort Worth Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Dallas/Fort Worth Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Dallas.DFW.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 1412
+        },
+        {
+          "url": "https://www.kayak.com/Airport-Van-Car-Rentals-Chicago.MDW.AAIRPORTVAN.cla.ksp",
+          "finalUrl": "https://www.kayak.com/Airport-Van-Car-Rentals-Chicago.MDW.AAIRPORTVAN.cla.ksp",
+          "status": 200,
+          "ok": true,
+          "title": "Airport Van Car Rentals at Chicago Midway Airport - KAYAK",
+          "description": "Search for the best prices for Airport Van car rentals at Chicago Midway Airport. Find airport rental car deals on KAYAK now.",
+          "h1s": [
+            "Book Airport Van car rentals at Chicago Midway Airport"
+          ],
+          "canonical": "https://www.kayak.com/Airport-Van-Car-Rentals-Chicago.MDW.AAIRPORTVAN.cla.ksp",
+          "schemaTypes": [
+            "AutoRental",
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "Website"
+          ],
+          "wordCount": 661
+        },
+        {
+          "url": "https://www.kayak.com/Enfidha-Enfidha-Hammamet-Int-Airport.NBE.ap.html",
+          "finalUrl": "https://www.kayak.com/Enfidha-Enfidha-Hammamet-Int-Airport.NBE.ap.html",
+          "status": 200,
+          "ok": true,
+          "title": "Enfidha-Hammamet Int (NBE) - Flight status, maps & more | KAYAK",
+          "description": "Airport guide: Enfidha-Hammamet Int (NBE). Terminal maps, arrival & departure times, check-in information & more | KAYAK",
+          "h1s": [
+            "Enfidha-Hammamet Int Airport (NBE) Flights & Flight Status"
+          ],
+          "canonical": "https://www.kayak.com/Enfidha-Enfidha-Hammamet-Int-Airport.NBE.ap.html",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "WebPage",
+            "Website"
+          ],
+          "wordCount": 546
+        },
+        {
+          "url": "https://www.kayak.com/Ozora-Memanbetsu-Airport.MMB.ap.html",
+          "finalUrl": "https://www.kayak.com/Ozora-Memanbetsu-Airport.MMB.ap.html",
+          "status": 200,
+          "ok": true,
+          "title": "Ozora Memanbetsu (MMB) - Flight status, maps & more | KAYAK",
+          "description": "Airport guide: Ozora Memanbetsu (MMB). Terminal maps, arrival & departure times, check-in information & more | KAYAK",
+          "h1s": [
+            "Ozora Memanbetsu Airport (MMB) Flights & Flight Status"
+          ],
+          "canonical": "https://www.kayak.com/Ozora-Memanbetsu-Airport.MMB.ap.html",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "Flight",
+            "Organization",
+            "Service",
+            "Trip",
+            "WebPage",
+            "Website",
+            "product"
+          ],
+          "wordCount": 683
+        },
+        {
+          "url": "https://www.kayak.com/Alghero-Fertilia-Airport.AHO.ap.html",
+          "finalUrl": "https://www.kayak.com/Alghero-Fertilia-Airport.AHO.ap.html",
+          "status": 200,
+          "ok": true,
+          "title": "Alghero-Fertilia (AHO) - Flight status, maps & more | KAYAK",
+          "description": "Airport guide: Alghero-Fertilia (AHO). Terminal maps, arrival & departure times, check-in information & more | KAYAK",
+          "h1s": [
+            "Alghero-Fertilia Airport (AHO) Flights & Flight Status"
+          ],
+          "canonical": "https://www.kayak.com/Alghero-Fertilia-Airport.AHO.ap.html",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "Flight",
+            "Organization",
+            "Service",
+            "Trip",
+            "WebPage",
+            "Website",
+            "product"
+          ],
+          "wordCount": 779
+        },
+        {
+          "url": "https://www.kayak.com/Mount-Isa-Mount-Isa-Airport.ISA.ap.html",
+          "finalUrl": "https://www.kayak.com/Mount-Isa-Mount-Isa-Airport.ISA.ap.html",
+          "status": 200,
+          "ok": true,
+          "title": "Mount Isa (ISA) - Flight status, maps & more | KAYAK",
+          "description": "Airport guide: Mount Isa (ISA). Terminal maps, arrival & departure times, check-in information & more | KAYAK",
+          "h1s": [
+            "Mount Isa Airport (ISA) Flights & Flight Status"
+          ],
+          "canonical": "https://www.kayak.com/Mount-Isa-Mount-Isa-Airport.ISA.ap.html",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "Flight",
+            "Organization",
+            "Service",
+            "Trip",
+            "WebPage",
+            "Website",
+            "product"
+          ],
+          "wordCount": 670
+        },
+        {
+          "url": "https://www.kayak.com/Fort-MacKay-Albian-Aerodrome-Airport.JHL.ap.html",
+          "finalUrl": "https://www.kayak.com/Fort-MacKay-Albian-Aerodrome-Airport.JHL.ap.html",
+          "status": 200,
+          "ok": true,
+          "title": "Fort MacKay Albian Aerodrome (JHL) - Flight status, maps & more | KAYAK",
+          "description": "Airport guide: Fort MacKay Albian Aerodrome (JHL). Terminal maps, arrival & departure times, check-in information & more | KAYAK",
+          "h1s": [
+            "Fort MacKay Albian Aerodrome Airport (JHL) Flights & Flight Status"
+          ],
+          "canonical": "https://www.kayak.com/Fort-MacKay-Albian-Aerodrome-Airport.JHL.ap.html",
+          "schemaTypes": [
+            "BreadcrumbList",
+            "FAQPage",
+            "Organization",
+            "WebPage",
+            "Website"
+          ],
+          "wordCount": 535
+        }
+      ],
+      "schemaTypes": [
+        "AutoRental",
+        "BreadcrumbList",
+        "FAQPage",
+        "Flight",
+        "Organization",
+        "Service",
+        "Trip",
+        "WebPage",
+        "Website",
+        "product"
+      ],
+      "keywordCoverage": [
+        {
+          "keyword": "AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI trip planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI travel assistant",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI itinerary planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "best AI travel planner",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel planning app with AI",
+          "clusterId": "ai-travel-planning",
+          "clusterLabel": "AI travel planning",
+          "priority": 10,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "organize travel confirmations",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI flight booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "AI hotel booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel booking assistant",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "TSA wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "airport wait time tracker",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "TSA wait time app",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "travel day assistant",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "flight hotel itinerary updates",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.65
+        },
+        {
+          "keyword": "airport security wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "live TSA wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "security line wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "trusted traveler number organizer",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.49
+        },
+        {
+          "keyword": "email itinerary organizer",
+          "clusterId": "trip-organization",
+          "clusterLabel": "Trip organization",
+          "priority": 9,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "traveler profile app",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "share live trip plan",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.43
+        }
+      ],
+      "strengths": [
+        "Large indexed URL surface sampled from sitemaps (4000+ URLs observed).",
+        "Visible AI/planning language in crawlable page copy or URL paths.",
+        "Structured data types observed: AutoRental, BreadcrumbList, FAQPage, Flight, Organization, Service, Trip, WebPage."
+      ],
+      "crawlLimitations": [
+        "https://www.kayak.com/travel-guides returned 404"
+      ]
+    }
+  ],
+  "packGapMatrix": [
+    {
+      "keyword": "automatic trip itinerary",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.28,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "travelperk",
+          "competitorName": "TravelPerk",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 132
+    },
+    {
+      "keyword": "AI trip planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 1,
+      "leaders": [
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 1
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 1
+        },
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 127
+    },
+    {
+      "keyword": "best AI travel planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 1,
+      "leaders": [
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 1
+        },
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 127
+    },
+    {
+      "keyword": "email itinerary organizer",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.37,
+      "bestCompetitorCoverage": 0.43,
+      "leaders": [
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 114
+    },
+    {
+      "keyword": "travel itinerary organizer",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.28,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 110
+    },
+    {
+      "keyword": "trip organizer app",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 110
+    },
+    {
+      "keyword": "travel confirmation parser",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.28,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 110
+    },
+    {
+      "keyword": "travel inbox organizer",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.28,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 110
+    },
+    {
+      "keyword": "AI travel planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 1,
+      "leaders": [
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 1
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 1
+        },
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 109
+    },
+    {
+      "keyword": "AI itinerary planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 106
+    },
+    {
+      "keyword": "travel planning app with AI",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 106
+    },
+    {
+      "keyword": "plan a trip from calendar events",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "travelperk",
+          "competitorName": "TravelPerk",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 106
+    },
+    {
+      "keyword": "turn emails into travel itinerary",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 106
+    },
+    {
+      "keyword": "airport wait time tracker",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "packCoverage": 0.41,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 104
+    },
+    {
+      "keyword": "AI travel assistant",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "packCoverage": 1,
+      "bestCompetitorCoverage": 1,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 1
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 1
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 100
+    },
+    {
+      "keyword": "organize travel confirmations",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 96
+    },
+    {
+      "keyword": "frequent flyer number organizer",
+      "clusterId": "traveler-profile",
+      "clusterLabel": "Traveler profile and loyalty",
+      "packCoverage": 0.41,
+      "bestCompetitorCoverage": 0.49,
+      "leaders": [
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.49
+        }
+      ],
+      "gapScore": 95
+    },
+    {
+      "keyword": "trusted traveler number organizer",
+      "clusterId": "traveler-profile",
+      "clusterLabel": "Traveler profile and loyalty",
+      "packCoverage": 0.41,
+      "bestCompetitorCoverage": 0.49,
+      "leaders": [
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.49
+        },
+        {
+          "competitorId": "travelperk",
+          "competitorName": "TravelPerk",
+          "coverage": 0.49
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.49
+        }
+      ],
+      "gapScore": 95
+    },
+    {
+      "keyword": "travel loyalty number organizer",
+      "clusterId": "traveler-profile",
+      "clusterLabel": "Traveler profile and loyalty",
+      "packCoverage": 0.37,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 90
+    },
+    {
+      "keyword": "AI flight booking assistant",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 86
+    },
+    {
+      "keyword": "AI hotel booking assistant",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 86
+    },
+    {
+      "keyword": "travel booking assistant",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 86
+    },
+    {
+      "keyword": "book flights from itinerary",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 86
+    },
+    {
+      "keyword": "compare flights with traveler preferences",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.49
+        }
+      ],
+      "gapScore": 86
+    },
+    {
+      "keyword": "travel booking with calendar context",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 86
+    },
+    {
+      "keyword": "trip expense organizer",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "packCoverage": 0.28,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 80
+    },
+    {
+      "keyword": "live TSA wait times",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.49
+        }
+      ],
+      "gapScore": 76
+    },
+    {
+      "keyword": "security line wait times",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.49
+        }
+      ],
+      "gapScore": 76
+    },
+    {
+      "keyword": "TSA wait time app",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 76
+    },
+    {
+      "keyword": "traveler profile app",
+      "clusterId": "traveler-profile",
+      "clusterLabel": "Traveler profile and loyalty",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 76
+    },
+    {
+      "keyword": "traveler preference profile",
+      "clusterId": "traveler-profile",
+      "clusterLabel": "Traveler profile and loyalty",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 76
+    },
+    {
+      "keyword": "airport security wait times",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "packCoverage": 1,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.49
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "TSA wait times",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 70
+    },
+    {
+      "keyword": "keep loyalty numbers with trips",
+      "clusterId": "traveler-profile",
+      "clusterLabel": "Traveler profile and loyalty",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 70
+    },
+    {
+      "keyword": "travel day assistant",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 66
+    },
+    {
+      "keyword": "live trip tracking",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 66
+    },
+    {
+      "keyword": "flight hotel itinerary updates",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.49
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.49
+        }
+      ],
+      "gapScore": 66
+    },
+    {
+      "keyword": "share live trip plan",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "layla",
+          "competitorName": "Layla",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.43
+        },
+        {
+          "competitorId": "travelperk",
+          "competitorName": "TravelPerk",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 66
+    },
+    {
+      "keyword": "trip update app",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0,
+      "leaders": [],
+      "gapScore": 60
+    }
+  ],
+  "strategicGaps": [
+    {
+      "priority": "critical",
+      "gap": "Own the AI travel planning category with direct comparison and proof pages.",
+      "evidence": [
+        "AI trip planner: Pack 0.55, best competitor 1",
+        "best AI travel planner: Pack 0.55, best competitor 1",
+        "AI travel planner: Pack 0.85, best competitor 1",
+        "AI itinerary planner: Pack 0.55, best competitor 0.65",
+        "travel planning app with AI: Pack 0.55, best competitor 0.65",
+        "plan a trip from calendar events: Pack 0.55, best competitor 0.65"
+      ],
+      "action": "Build a strong /ai-travel-planner or /guides/ai-travel-planning page with screenshots, workflow proof, FAQs, and comparison sections for Mindtrip, Layla, TripIt, Expedia, Booking, and Navan."
+    },
+    {
+      "priority": "critical",
+      "gap": "Trip organization and email-confirmation organization are under-owned by Pack relative to itinerary organizer competitors.",
+      "evidence": [
+        "automatic trip itinerary: leaders Navan, TravelPerk",
+        "email itinerary organizer: leaders Mindtrip, TripIt, Wanderlog, KAYAK",
+        "travel itinerary organizer: leaders none detected",
+        "trip organizer app: leaders none detected",
+        "travel confirmation parser: leaders none detected",
+        "travel inbox organizer: leaders none detected"
+      ],
+      "action": "Turn /travel-history and /upcoming-trip-details into stronger itinerary-organizer pages, then add a focused guide targeting travel itinerary organizer, trip organizer app, and email itinerary organizer."
+    },
+    {
+      "priority": "high",
+      "gap": "Pack has no programmatic destination or city inventory moat like OTAs and consumer planners.",
+      "evidence": [
+        "Layla: Programmatic travel inventory or destination landing pages.",
+        "Expedia: High-authority transactional marketplace footprint across flights, hotels, packages, and destinations.",
+        "Booking.com: High-authority transactional marketplace footprint across flights, hotels, packages, and destinations."
+      ],
+      "action": "Avoid shallow destination spam. Use Pack-owned utility data instead: TSA airport pages, live wait time explainers, public event planning examples, and benchmark pages."
+    },
+    {
+      "priority": "high",
+      "gap": "Business-travel language is weak against Navan and TravelPerk.",
+      "evidence": [
+        "Navan: Business-travel and expense-management authority content.",
+        "Booking.com: Business-travel and expense-management authority content.",
+        "TripIt: Business-travel and expense-management authority content.",
+        "Wanderlog: Business-travel and expense-management authority content.",
+        "TravelPerk: Business-travel and expense-management authority content."
+      ],
+      "action": "Add business-traveler and executive-assistant angles to existing capability pages before creating B2B landing pages."
+    },
+    {
+      "priority": "medium",
+      "gap": "GEO answer readiness should be expanded around comparison questions, not AI-only markup.",
+      "evidence": [
+        "Trip organization: 7 high-gap terms",
+        "AI travel planning: 8 high-gap terms",
+        "Airport security intelligence: 4 high-gap terms",
+        "Traveler profile and loyalty: 4 high-gap terms",
+        "Booking with context: 6 high-gap terms",
+        "Travel-day operations: 1 high-gap terms"
+      ],
+      "action": "Add visible answers for comparison, use-case, and how-it-works questions; keep structured data representative of visible content."
+    }
+  ]
+}

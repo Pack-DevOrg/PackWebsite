@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { ArrowRight, CheckCircle, GitCompare, Search } from "lucide-react";
+import { ArrowRight, CheckCircle, Search } from "lucide-react";
 import PrefetchLink from "@/components/PrefetchLink";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 import {
@@ -22,8 +22,8 @@ const Page = styled.main`
 
 const Header = styled.header`
   display: grid;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 `;
 
 const Eyebrow = styled.p`
@@ -48,27 +48,11 @@ const Title = styled.h1`
 `;
 
 const Intro = styled.p`
-  max-width: 860px;
+  max-width: 720px;
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-large);
-  line-height: 1.7;
-`;
-
-const PillList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-`;
-
-const Pill = styled.span`
-  border: 1px solid rgba(243, 210, 122, 0.16);
-  border-radius: 999px;
-  background: rgba(255, 248, 236, 0.045);
-  color: var(--color-text-secondary);
-  padding: 0.55rem 0.8rem;
-  font-size: var(--font-size-small);
-  line-height: 1.3;
+  line-height: 1.55;
 `;
 
 const Panel = styled.section`
@@ -113,40 +97,6 @@ const TopActions = styled.div`
   align-items: center;
 `;
 
-const CardGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-`;
-
-const Card = styled.article`
-  display: grid;
-  gap: var(--space-2);
-  align-content: start;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--border-radius);
-  background: rgba(255, 255, 255, 0.035);
-  padding: var(--space-4);
-
-  h2,
-  h3 {
-    margin: 0;
-    color: var(--color-text-primary);
-    font-size: var(--font-size-large);
-  }
-
-  p {
-    margin: 0;
-    color: var(--color-text-secondary);
-    line-height: 1.65;
-  }
-`;
-
 const SystemMap = styled.section`
   display: grid;
   gap: var(--space-4);
@@ -161,21 +111,21 @@ const SystemMap = styled.section`
 
 const VennWrap = styled.div`
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 
   @media (min-width: 860px) {
-    grid-template-columns: minmax(22rem, 0.95fr) minmax(0, 1fr);
+    grid-template-columns: minmax(26rem, 1fr) minmax(0, 0.9fr);
     align-items: center;
   }
 `;
 
 const VennDiagram = styled.div`
   position: relative;
-  min-height: 21rem;
+  min-height: 23rem;
   isolation: isolate;
 
   @media (max-width: 520px) {
-    min-height: 18rem;
+    min-height: 20rem;
   }
 `;
 
@@ -187,21 +137,34 @@ const VennCircle = styled.div<{
   position: absolute;
   left: ${(props) => props.$left};
   top: ${(props) => props.$top};
-  display: grid;
-  place-items: center;
-  width: min(46vw, 12.5rem);
+  width: min(52vw, 15rem);
   aspect-ratio: 1;
-  border: 1px solid ${(props) => props.$color};
+  border: 1.5px solid ${(props) => props.$color};
   border-radius: 50%;
-  background: color-mix(in srgb, ${(props) => props.$color} 20%, transparent);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-small);
-  font-weight: 800;
-  line-height: 1.25;
-  padding: var(--space-3);
-  text-align: center;
+  background: color-mix(in srgb, ${(props) => props.$color} 24%, transparent);
   transform: translate(-50%, -50%);
   z-index: 1;
+`;
+
+const VennLabel = styled.div<{
+  readonly $left: string;
+  readonly $top: string;
+}>`
+  position: absolute;
+  left: ${(props) => props.$left};
+  top: ${(props) => props.$top};
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(8, 8, 12, 0.78);
+  color: var(--color-text-primary);
+  padding: 0.45rem 0.7rem;
+  font-size: var(--font-size-small);
+  font-weight: 850;
+  line-height: 1.1;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  z-index: 3;
 `;
 
 const VennCenter = styled.div`
@@ -210,7 +173,7 @@ const VennCenter = styled.div`
   top: 50%;
   display: grid;
   place-items: center;
-  width: min(38vw, 9.5rem);
+  width: min(38vw, 10.5rem);
   aspect-ratio: 1;
   border: 1px solid rgba(243, 210, 122, 0.42);
   border-radius: 50%;
@@ -233,7 +196,7 @@ const SystemMapHeader = styled.div`
   h2 {
     margin: 0;
     color: var(--color-text-primary);
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
   }
 
   p {
@@ -246,21 +209,22 @@ const SystemMapHeader = styled.div`
 
 const SystemNodes = styled.div`
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 
-  @media (min-width: 820px) {
+  @media (min-width: 600px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `;
 
 const SystemNode = styled.article`
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
   min-height: 100%;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--border-radius);
   background: rgba(0, 0, 0, 0.18);
-  padding: var(--space-3);
+  padding: var(--space-2);
 
   span {
     width: fit-content;
@@ -275,31 +239,8 @@ const SystemNode = styled.article`
   p {
     margin: 0;
     color: var(--color-text-secondary);
-    line-height: 1.55;
-  }
-`;
-
-const BulletList = styled.ul`
-  display: grid;
-  gap: var(--space-2);
-  margin: var(--space-1) 0 0;
-  padding: 0;
-  list-style: none;
-`;
-
-const BulletItem = styled.li`
-  display: flex;
-  gap: var(--space-2);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-  line-height: 1.6;
-
-  svg {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    margin-top: 0.15rem;
-    color: var(--color-accent);
+    font-size: var(--font-size-small);
+    line-height: 1.35;
   }
 `;
 
@@ -317,72 +258,119 @@ const SectionTitle = styled.h2`
 
 const BoundaryTable = styled.div`
   display: grid;
-  gap: var(--space-2);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius);
+  background: rgba(255, 255, 255, 0.08);
 `;
 
 const BoundaryRow = styled.article`
   display: grid;
-  gap: var(--space-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--border-radius);
-  background: rgba(255, 255, 255, 0.03);
-  padding: var(--space-3);
+  gap: 1px;
+  background: rgba(0, 0, 0, 0.16);
 
-  @media (min-width: 860px) {
-    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
-    align-items: stretch;
+  @media (min-width: 760px) {
+    grid-template-columns: 0.9fr 1.1fr 1.1fr;
   }
+`;
+
+const BoundaryHeaderRow = styled(BoundaryRow)`
+  display: none;
+
+  @media (min-width: 760px) {
+    display: grid;
+  }
+`;
+
+const BoundaryHead = styled.div`
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--color-accent);
+  padding: var(--space-3);
+  font-size: var(--font-size-small);
+  font-weight: 850;
+  text-transform: uppercase;
 `;
 
 const BoundaryCell = styled.div`
   display: grid;
-  gap: var(--space-1);
+  gap: 0.35rem;
   align-content: start;
+  background: rgba(255, 255, 255, 0.03);
+  padding: var(--space-3);
+`;
 
-  h3 {
-    margin: 0;
-    color: var(--color-text-primary);
-    font-size: var(--font-size-medium);
-  }
+const MobileBoundaryLabel = styled.span`
+  color: var(--color-accent);
+  font-size: var(--font-size-small);
+  font-weight: 850;
+  text-transform: uppercase;
 
-  p {
-    margin: 0;
-    color: var(--color-text-secondary);
-    line-height: 1.55;
+  @media (min-width: 760px) {
+    display: none;
   }
 `;
 
-const BoundaryLabel = styled.span`
-  width: fit-content;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+const BoundaryTitle = styled.h3`
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-medium);
+`;
+
+const BoundaryText = styled.p`
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   color: var(--color-text-secondary);
-  padding: 0.3rem 0.55rem;
   font-size: var(--font-size-small);
-  font-weight: 700;
+  line-height: 1.45;
+`;
+
+const BoundaryPoint = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2);
+  align-items: start;
+  font-size: var(--font-size-small);
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+
+  svg {
+    width: 15px;
+    height: 15px;
+    margin-top: 0.15rem;
+    color: var(--color-accent);
+  }
 `;
 
 const FaqGrid = styled.div`
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
 `;
 
-const FaqItem = styled.article`
-  display: grid;
-  gap: var(--space-1);
+const FaqItem = styled.details`
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: var(--space-3);
+  padding-top: var(--space-2);
 
-  h3 {
+  summary {
+    cursor: pointer;
+    list-style: none;
     margin: 0;
     color: var(--color-text-primary);
     font-size: var(--font-size-medium);
+    font-weight: 700;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
   }
 
   p {
-    margin: 0;
+    margin: var(--space-1) 0 0;
     color: var(--color-text-secondary);
-    line-height: 1.7;
+    line-height: 1.55;
   }
 `;
 
@@ -415,12 +403,19 @@ const RelatedLink = styled(PrefetchLink)`
   }
 `;
 
-const MAX_VISIBLE_TOPICS = 4;
 const MAX_SYSTEM_NODES = 3;
-const MAX_FEATURE_SECTIONS = 2;
 const MAX_POINTS_PER_SECTION = 2;
 const MAX_BOUNDARY_ROWS = 3;
 const MAX_VISIBLE_FAQS = 3;
+
+function getShortIntro(intro: string): string {
+  const [firstSentence] = intro.split(/(?<=\.)\s+/);
+  return firstSentence ?? intro;
+}
+
+function getComparisonName(title: string): string {
+  return title.replace(/^Pack vs\.\s*/i, "");
+}
 
 function createFaqSchema(faqs: readonly SeoGuideFaq[]): Record<string, unknown> {
   return {
@@ -464,13 +459,10 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
   const guide = seoGuideDefinitionMap[slug];
   const path = `/guides/${guide.slug}`;
   const primaryFeatureLink = guide.relatedLinks[0];
+  const shortIntro = getShortIntro(guide.intro);
   const visibleFaqs = guide.faqs.slice(0, MAX_VISIBLE_FAQS);
-  const systemNodes = guide.proofPoints.slice(0, MAX_SYSTEM_NODES);
-  const featureSections = guide.sections.slice(0, MAX_FEATURE_SECTIONS);
-  const boundaryRows = [
-    ...guide.comparisons,
-    ...guide.sections.slice(MAX_FEATURE_SECTIONS),
-  ].slice(0, MAX_BOUNDARY_ROWS);
+  const systemNodes = guide.sections.slice(0, MAX_SYSTEM_NODES);
+  const boundaryRows = guide.comparisons.slice(0, MAX_BOUNDARY_ROWS);
 
   return (
     <Page>
@@ -483,12 +475,7 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
       <Header>
         <Eyebrow>{guide.eyebrow}</Eyebrow>
         <Title>{guide.title}</Title>
-        <Intro>{guide.intro}</Intro>
-        <PillList aria-label="Primary guide topics">
-          {guide.primaryKeywords.slice(0, MAX_VISIBLE_TOPICS).map((keyword) => (
-            <Pill key={keyword}>{keyword}</Pill>
-          ))}
-        </PillList>
+        <Intro>{shortIntro}</Intro>
         <TopActions aria-label="Related Pack features">
           {primaryFeatureLink ? (
             <RelatedLink to={primaryFeatureLink.href}>
@@ -506,15 +493,27 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
       <SystemMap>
         <VennWrap>
           <VennDiagram aria-label="Pack combines planning, organization, context, and travel day tools">
-            <VennCircle $left="50%" $top="27%" $color="rgba(243, 210, 122, 0.46)">
-              AI planning
-            </VennCircle>
-            <VennCircle $left="31%" $top="58%" $color="rgba(249, 47, 96, 0.42)">
-              Itinerary organization
-            </VennCircle>
-            <VennCircle $left="69%" $top="58%" $color="rgba(88, 166, 255, 0.42)">
-              Real trip context
-            </VennCircle>
+            <VennCircle
+              aria-hidden="true"
+              $left="50%"
+              $top="29%"
+              $color="rgba(243, 210, 122, 0.5)"
+            />
+            <VennCircle
+              aria-hidden="true"
+              $left="34%"
+              $top="62%"
+              $color="rgba(249, 47, 96, 0.48)"
+            />
+            <VennCircle
+              aria-hidden="true"
+              $left="66%"
+              $top="62%"
+              $color="rgba(88, 166, 255, 0.48)"
+            />
+            <VennLabel $left="50%" $top="17%">AI planning</VennLabel>
+            <VennLabel $left="23%" $top="74%">Itinerary organization</VennLabel>
+            <VennLabel $left="77%" $top="74%">Real trip context</VennLabel>
             <VennCenter>Pack</VennCenter>
           </VennDiagram>
           <div>
@@ -527,10 +526,10 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
               </p>
             </SystemMapHeader>
             <SystemNodes>
-              {systemNodes.map((point, index) => (
-                <SystemNode key={point}>
+              {systemNodes.map((section, index) => (
+                <SystemNode key={section.title}>
                   <span>Layer {index + 1}</span>
-                  <p>{point}</p>
+                  <p>{section.title}</p>
                 </SystemNode>
               ))}
             </SystemNodes>
@@ -538,46 +537,32 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
         </VennWrap>
       </SystemMap>
 
-      <CardGrid>
-        {featureSections.map((section) => (
-          <Card key={section.title}>
-            <h2>{section.title}</h2>
-            <p>{section.body}</p>
-            <BulletList>
-              {section.points.slice(0, MAX_POINTS_PER_SECTION).map((point) => (
-                <BulletItem key={point}>
-                  <CheckCircle aria-hidden="true" />
-                  <span>{point}</span>
-                </BulletItem>
-              ))}
-            </BulletList>
-          </Card>
-        ))}
-      </CardGrid>
-
       <Section>
         <SectionTitle>Where other tools usually stop</SectionTitle>
-        <BodyText>{guide.competitorFrame}</BodyText>
         <BoundaryTable>
+          <BoundaryHeaderRow aria-hidden="true">
+            <BoundaryHead>Lane</BoundaryHead>
+            <BoundaryHead>Usually stops at</BoundaryHead>
+            <BoundaryHead>Pack wraps around it</BoundaryHead>
+          </BoundaryHeaderRow>
           {boundaryRows.map((comparison) => (
             <BoundaryRow key={comparison.title}>
               <BoundaryCell>
-                <BoundaryLabel>
-                  <GitCompare aria-hidden="true" /> Comparison
-                </BoundaryLabel>
-                <h3>{comparison.title}</h3>
-                <p>{comparison.body}</p>
+                <MobileBoundaryLabel>Lane</MobileBoundaryLabel>
+                <BoundaryTitle>{getComparisonName(comparison.title)}</BoundaryTitle>
               </BoundaryCell>
               <BoundaryCell>
-                <BoundaryLabel>What Pack wraps around it</BoundaryLabel>
-                <BulletList>
-                  {comparison.points.slice(0, MAX_POINTS_PER_SECTION).map((point) => (
-                    <BulletItem key={point}>
-                      <CheckCircle aria-hidden="true" />
-                      <span>{point}</span>
-                    </BulletItem>
-                  ))}
-                </BulletList>
+                <MobileBoundaryLabel>Usually stops at</MobileBoundaryLabel>
+                <BoundaryText>{comparison.body}</BoundaryText>
+              </BoundaryCell>
+              <BoundaryCell>
+                <MobileBoundaryLabel>Pack wraps around it</MobileBoundaryLabel>
+                {comparison.points.slice(0, MAX_POINTS_PER_SECTION).map((point) => (
+                  <BoundaryPoint key={point}>
+                    <CheckCircle aria-hidden="true" />
+                    <span>{point}</span>
+                  </BoundaryPoint>
+                ))}
               </BoundaryCell>
             </BoundaryRow>
           ))}
@@ -592,7 +577,7 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
         <FaqGrid>
           {visibleFaqs.map((faq) => (
             <FaqItem key={faq.question}>
-              <h3>{faq.question}</h3>
+              <summary>{faq.question}</summary>
               <p>{faq.answer}</p>
             </FaqItem>
           ))}

@@ -41,7 +41,7 @@ export const capabilityPageDefinitions = [
       "Pack can help reconstruct flights, hotels, rental cars, and related trip details so past travel becomes visible and reusable.",
     pageTitle: "Travel history that stays useful after the trip ends",
     pageSubtitle:
-      "Pack can help organize past flights, hotels, rental cars, and trip details into one readable travel record.",
+      "Pack can help organize past flights, hotels, rental cars, confirmations, dates, and trip details into one readable travel record.",
     intro:
       "Most travel tools stop being useful once a booking is over. Pack is designed to help you bring past travel back into view so earlier trips become part of future planning instead of dead inbox clutter.",
     problemStatement:
@@ -94,7 +94,7 @@ export const capabilityPageDefinitions = [
       "Travel stats, maps, and timelines help show how flights, hotels, rental cars, and trip events connect at a glance.",
     pageTitle: "Travel stats and maps that go beyond a single itinerary",
     pageSubtitle:
-      "Pack can help turn travel records into maps, timelines, and stats across flights, hotels, and rental cars.",
+      "Pack can help turn travel records into maps, timelines, and stats across flights, hotels, rental cars, destinations, and repeat routes.",
     intro:
       "Travel data gets more useful when it is visible, comparable, and easy to scan. Pack is designed to turn trip records into something you can actually understand at a glance.",
     problemStatement:
@@ -469,7 +469,7 @@ export const capabilityPageDefinitions = [
     featureTitle: "Syncs trip events to device calendars",
     featureDescription:
       "Pack can sync trip events back to calendars so travel timing stays visible where people already manage the rest of their schedule.",
-    pageTitle: "Trip calendar sync that keeps travel visible in your actual schedule",
+    pageTitle: "Trip calendar sync for travel schedules",
     pageSubtitle:
       "Pack is designed to sync trip events to device calendars so departures, stays, and key travel timing stay visible alongside the rest of life.",
     intro:

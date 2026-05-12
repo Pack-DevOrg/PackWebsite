@@ -44,8 +44,8 @@ const SupportPage = () => {
   return (
     <Container>
       <PageSeo
-        title="Pack Support | Contact Pack for booking, privacy, and accessibility help"
-        description="Contact Pack support for account, booking, trip-planning, privacy, and accessibility help."
+        title="Pack Support | Account, Booking, and Privacy Help"
+        description="Contact Pack support for account access, booking support, AI trip planning, privacy requests, accessibility issues, and travel workflow questions."
         path="/support"
         schema={[
           {

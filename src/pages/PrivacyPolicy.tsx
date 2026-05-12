@@ -93,7 +93,7 @@ const PrivacyPolicy: React.FC = () => {
     <MarkdownContainer>
       <PageSeo
         title="Privacy Policy | Pack"
-        description="Read how Pack collects, uses, stores, and protects travel and account data."
+        description="Read how Pack collects, uses, stores, protects, and shares account, travel, booking, device, analytics, and support data across Pack services."
         path="/privacy"
       />
       <h1>Privacy Policy</h1>

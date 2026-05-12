@@ -73,8 +73,26 @@ The local aggregate planner token total is 86.97% of the CloudWatch planning-win
 
 - Pack has a real 100-case benchmark corpus and run artifact with token and cost accounting.
 - Pack's benchmark exercises private context, calendar grounding, email grounding, group travel, public events, flights, hotels, red-herring avoidance, and preference handling.
+- The Qwen DeepPlanning travel benchmark runner now supports full-planner token accounting. A one-case smoke run recorded nonzero token metrics in `PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/benchmark-summary.json`.
 - The current run is a reliability and accounting baseline, not proof of reduced energy versus competitors.
 - Any public token or energy percentage needs a same-corpus baseline, ideally chat-only versus Pack structured planning.
+
+## DeepPlanning Token Accounting Check
+
+This is a runner validation, not a broad benchmark result.
+
+- Benchmark: Qwen DeepPlanning travelplanning case 22
+- Runner mode: full planner
+- Artifact: `PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/benchmark-summary.json`
+- Token accounting available: yes
+- Total LLM calls: 4
+- Input tokens: 956
+- Output tokens: 1,760
+- Cached tokens: 28,428
+- Total tokens: 31,144
+- Estimated model cost: $0.027327
+
+This confirms the DeepPlanning path can now produce real token totals. Use a larger same-corpus run before making aggregate claims.
 
 ## Claims To Avoid
 

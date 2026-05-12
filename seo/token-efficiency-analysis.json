@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T16:15:00.000Z",
+  "generatedAt": "2026-05-12T16:30:00.000Z",
   "status": "evidence_summary",
   "publishableEnergyOrTokenSavingsClaim": false,
   "realCorpusRun": {
@@ -33,6 +33,24 @@
     "averagePlannerCostUsd": 1.0563342564102565,
     "medianPlannerCostUsd": 1.0490129999999995
   },
+  "deepPlanningTokenAccountingCheck": {
+    "purpose": "Runner validation only; not a broad benchmark or public savings claim.",
+    "benchmark": "Qwen DeepPlanning travelplanning",
+    "caseId": "22",
+    "plannerMode": "full_planner",
+    "summaryPath": "PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/benchmark-summary.json",
+    "aggregatePath": "PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/pack-run/aggregate.json",
+    "available": true,
+    "totalCostUsd": 0.027326999999999997,
+    "totalTokens": 31144,
+    "inputTokens": 956,
+    "outputTokens": 1760,
+    "cachedTokens": 28428,
+    "cacheWriteTokens": 0,
+    "totalLLMCalls": 4,
+    "caseCountWithMetrics": 1,
+    "caseCountWithoutMetrics": 0
+  },
   "cloudWatchCrossCheck": {
     "publicDisclosure": "Do not expose log group names, environment labels, account details, S3 paths, or trace identifiers in public copy.",
     "extractionWindow": {
@@ -62,6 +80,7 @@
   "claimGuidance": {
     "supported": [
       "Pack has a real 100-case benchmark corpus and local run artifact with token and cost accounting.",
+      "The Qwen DeepPlanning travel benchmark runner can now emit nonzero token accounting in full-planner mode.",
       "The current benchmark covers private context, calendar grounding, email grounding, group travel, public events, flights, hotels, red-herring avoidance, and preference handling.",
       "The local aggregate planner field records 21,920,541 planner tokens, while broader AI-call logs for the same planning window record 25,204,798 total tokens."
     ],

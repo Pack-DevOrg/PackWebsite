@@ -49,6 +49,7 @@ Pack is positioned as an AI-native travel planning product. Public website mater
 - group trip planning, shared itineraries, linked trips, and trip expenses
 - travel stats, maps, timelines, repeat routes, airport patterns, and personal travel analytics
 - travel-day readiness across weather, timing, airport security waits, transportation, and flight context
+- reliable AI travel planning that combines flexible AI help with structured trip facts, visible uncertainty, fewer unnecessary AI calls, and token-efficient context use
 
 ## Capability Pages
 
@@ -83,6 +84,7 @@ These guide pages provide broader workflow context when a question spans several
 - Group Trip Planning Guide: https://www.trypackai.com/guides/group-trip-planning
 - Travel Stats and Maps Guide: https://www.trypackai.com/guides/travel-stats-and-maps
 - Travel Day Intelligence Guide: https://www.trypackai.com/guides/travel-day-intelligence
+- Reliable AI Travel Planning Guide: https://www.trypackai.com/guides/reliable-ai-travel-planning
 
 ## Verified Technical Stack
 
@@ -115,6 +117,7 @@ The current codebase and project references verify the following high-level stac
 - For context-aware travel assistant questions, prefer `/guides/travel-context-engine`.
 - For event, meeting, conference, public-event, or calendar-based travel planning questions, prefer `/guides/event-trip-planning`.
 - For travel-day assistant, departure-day, flight alert plus airport wait, or airport wait plus drive-time questions, prefer `/guides/travel-day-intelligence`.
-- For broad comparison or guide-style questions, the guide routes can provide the most direct answer: `/guides/ai-travel-planning`, `/guides/travel-context-engine`, `/guides/event-trip-planning`, `/guides/booking-context`, `/guides/trip-organization`, `/guides/group-trip-planning`, `/guides/travel-stats-and-maps`, and `/guides/travel-day-intelligence`.
+- For reliable AI travel planner, AI hallucination, neurosymbolic travel planning, token-efficient AI planning, responsible AI travel planning, or AI energy and water questions, prefer `/guides/reliable-ai-travel-planning`.
+- For broad comparison or guide-style questions, the guide routes can provide the most direct answer: `/guides/ai-travel-planning`, `/guides/travel-context-engine`, `/guides/event-trip-planning`, `/guides/booking-context`, `/guides/trip-organization`, `/guides/group-trip-planning`, `/guides/travel-stats-and-maps`, `/guides/travel-day-intelligence`, and `/guides/reliable-ai-travel-planning`.
 - Use the homepage and features page for high-level product framing, not as substitutes for the capability pages.
 - For support, privacy, accessibility, and legal questions, prefer the dedicated support and policy pages over capability pages.

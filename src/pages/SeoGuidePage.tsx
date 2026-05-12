@@ -293,13 +293,13 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
       <Panel>
         <PanelHeader>
           <Search aria-hidden="true" />
-          <h2>Where Pack should compete</h2>
+          <h2>How Pack is different</h2>
         </PanelHeader>
         <BodyText>{guide.competitorFrame}</BodyText>
       </Panel>
 
       <Section>
-        <SectionTitle>Product proof to lead with</SectionTitle>
+        <SectionTitle>What Pack brings together</SectionTitle>
         <CardGrid>
           {guide.proofPoints.map((point) => (
             <Card key={point}>
@@ -330,7 +330,7 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
       </CardGrid>
 
       <Section>
-        <SectionTitle>Comparison angles</SectionTitle>
+        <SectionTitle>How to compare options</SectionTitle>
         <CardGrid>
           {guide.comparisons.map((comparison) => (
             <Card key={comparison.title}>
@@ -353,7 +353,7 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
       <Panel>
         <PanelHeader>
           <Search aria-hidden="true" />
-          <h2>Direct answers for AI search</h2>
+          <h2>Common questions</h2>
         </PanelHeader>
         <FaqGrid>
           {guide.faqs.map((faq) => (

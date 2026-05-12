@@ -90,6 +90,37 @@
       ]
     },
     {
+      "id": "reliable-ai-travel-planning",
+      "label": "Reliable and responsible AI travel planning",
+      "priority": 8,
+      "intent": "commercial",
+      "keywords": [
+        "reliable AI travel planner",
+        "AI travel planner without hallucinations",
+        "responsible AI travel planning",
+        "accurate AI travel assistant",
+        "neurosymbolic travel planning",
+        "AI travel assistant that checks facts",
+        "token efficient AI travel planner",
+        "energy efficient AI travel assistant",
+        "AI travel planning energy use"
+      ],
+      "questions": [
+        "How can an AI travel planner avoid hallucinations?",
+        "What does neurosymbolic mean in travel planning?",
+        "How can an AI travel assistant reduce wasted AI work?",
+        "How can a travel assistant use fewer AI tokens?"
+      ],
+      "preferredPages": [
+        "/guides/reliable-ai-travel-planning",
+        "/guides/travel-context-engine",
+        "/guides/ai-travel-planning",
+        "/connected-accounts",
+        "/travel-history",
+        "/upcoming-trip-details"
+      ]
+    },
+    {
       "id": "trip-organization",
       "label": "Trip organization",
       "priority": 9,
@@ -334,6 +365,17 @@
         "\"calendar\" \"travel planning\" \"app\""
       ],
       "pitch": "Position Pack as a way to reduce travel admin by turning existing context into structured plans."
+    },
+    {
+      "id": "responsible-ai-travel",
+      "label": "Responsible and reliable AI travel articles",
+      "queries": [
+        "\"AI travel planner\" \"hallucinations\"",
+        "\"responsible AI\" \"travel planning\"",
+        "\"AI travel\" \"energy use\"",
+        "\"AI travel assistant\" \"accurate\""
+      ],
+      "pitch": "Position Pack around reliable travel planning: AI assistance grounded by structured trip facts, visible uncertainty, and fewer unnecessary AI calls."
     },
     {
       "id": "points-and-loyalty-roundups",

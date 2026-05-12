@@ -844,6 +844,184 @@ export const seoGuideDefinitions = [
       { href: "/loyalty-details", label: "Loyalty Details" },
     ],
   },
+  {
+    slug: "reliable-ai-travel-planning",
+    eyebrow: "Reliable AI Travel Guide",
+    title: "Reliable AI travel planning that uses fewer guesses",
+    description:
+      "A plain-English Pack guide to reliable AI travel planning, hallucination prevention, structured trip facts, and thoughtful AI energy and water use.",
+    intro:
+      "AI can be helpful, but travel is a bad place for confident guesses. A wrong airport, date, confirmation detail, or drive time can ruin a trip. Pack's approach is to combine AI with structured travel facts so the assistant can help reason about a trip without pretending uncertainty is certainty.",
+    primaryKeywords: [
+      "reliable AI travel planner",
+      "AI travel planner without hallucinations",
+      "responsible AI travel planning",
+      "accurate AI travel assistant",
+      "neurosymbolic travel planning",
+      "AI travel assistant that checks facts",
+      "token efficient AI travel planner",
+      "energy efficient AI travel assistant",
+      "AI travel planning energy use",
+    ],
+    competitorFrame:
+      "Many AI travel tools are built to produce a fluent answer quickly. Travel needs a higher standard: the assistant has to know what is confirmed, what is inferred, and what is still missing.",
+    proofPoints: [
+      "Structured trip facts help separate confirmed details from ideas, drafts, and open questions.",
+      "AI can explain, summarize, and suggest while checks protect dates, airports, times, confirmations, traveler constraints, and booking context.",
+      "Reusable trip context reduces repeated re-explaining, repeated corrections, and unnecessary AI work.",
+    ],
+    sections: [
+      {
+        title: "Why travel needs fewer guesses",
+        body:
+          "A confident-sounding answer is not enough when the plan affects flights, hotels, meetings, families, money, and timing.",
+        points: [
+          "A suggested restaurant can be flexible; a wrong airport or arrival date is not.",
+          "Travel plans mix confirmed facts, personal preferences, outside conditions, and unanswered questions.",
+          "Reliable planning means being clear about what Pack knows, what it is inferring, and what still needs a source.",
+        ],
+      },
+      {
+        title: "Neurosymbolic, in plain English",
+        body:
+          "Neurosymbolic sounds technical, but the idea is simple: combine flexible AI language understanding with structured facts and checks.",
+        points: [
+          "The AI layer helps read messy input such as emails, calendar notes, chat, and natural-language requests.",
+          "The structured layer keeps facts like dates, airports, confirmation details, loyalty context, traveler profiles, and trip timing in a more dependable form.",
+          "Checks compare suggestions against known trip facts before treating them as part of the travel plan.",
+        ],
+      },
+      {
+        title: "How this reduces hallucinations",
+        body:
+          "Pack should not treat every sentence from an AI model as a travel fact. The plan is stronger when AI output is checked against the trip record.",
+        points: [
+          "Confirmed details should stay attached to their source instead of being rewritten from memory.",
+          "Unknown details should stay unknown until a traveler, provider record, calendar event, or connected account fills the gap.",
+          "When Pack is missing an important detail, the useful answer is to ask or explain the uncertainty instead of inventing one.",
+        ],
+      },
+      {
+        title: "Why energy and water matter",
+        body:
+          "AI runs in data centers. Those data centers use electricity and often use water for cooling, so thoughtful product design matters.",
+        points: [
+          "Pack can reduce waste by keeping reusable trip context instead of asking AI to rediscover the same facts over and over.",
+          "Structured checks can answer some questions directly instead of sending every small decision through a large model.",
+          "Short, task-specific help is usually better than long generated text that travelers have to correct later.",
+        ],
+      },
+      {
+        title: "Why token use matters",
+        body:
+          "Tokens are the pieces of text an AI model reads and writes. In general, asking an AI model to read less repeated text and write fewer unnecessary words means less AI work.",
+        points: [
+          "A chat-only planner may need the traveler to paste the same flights, hotels, preferences, and constraints into a long conversation again and again.",
+          "Pack can keep the trip record structured, then send only the relevant facts for the specific question.",
+          "That does not make every task tiny, but it gives Pack a clear path to use fewer tokens than repeatedly re-reading the whole trip.",
+        ],
+      },
+      {
+        title: "Reliable like a calculator",
+        body:
+          "A calculator does not guess the answer to 14 plus 9. It follows a dependable rule. Pack uses that same idea for travel facts whenever the answer should come from known data.",
+        points: [
+          "Dates, airport codes, confirmation details, traveler profiles, and known trip constraints should be checked as facts, not regenerated from memory.",
+          "AI is best used for language, explanation, and flexible reasoning around those facts.",
+          "When a question can be answered by the structured trip record, Pack should not spend extra tokens asking a model to guess.",
+        ],
+      },
+      {
+        title: "How to measure the savings",
+        body:
+          "A real percentage should come from a benchmark, not a slogan.",
+        points: [
+          "Compare Pack against a chat-only baseline for the same tasks: build a trip, update a plan, answer a timing question, and explain a booking choice.",
+          "Count input tokens, output tokens, repeated corrections, and follow-up calls for both approaches.",
+          "Only then should Pack say it uses a measured percentage fewer tokens or less estimated AI energy for those workflows.",
+        ],
+      },
+      {
+        title: "What responsible travel AI should do",
+        body:
+          "Reliable AI should make travel feel calmer, not more mysterious.",
+        points: [
+          "Use official provider details as the source of truth for bookings, tickets, government records, and live operational changes.",
+          "Make uncertainty visible when a plan depends on an assumption.",
+          "Keep the human in control of choices that affect money, identity, timing, and safety.",
+        ],
+      },
+    ],
+    comparisons: [
+      {
+        title: "Pack vs. chat-only planners",
+        body:
+          "A chat-only planner can be useful for inspiration, but travel reliability depends on facts that should not live only in the conversation.",
+        points: [
+          "Pack connects suggestions to structured trip context.",
+          "The assistant can be useful without treating every generated sentence as confirmed.",
+        ],
+      },
+      {
+        title: "Pack vs. static itinerary apps",
+        body:
+          "Static itinerary apps can store confirmed details. Pack is built for the space between confirmed details, planning questions, traveler context, and what happens next.",
+        points: [
+          "AI helps explain and adapt the plan.",
+          "Structured trip records help keep the plan grounded.",
+        ],
+      },
+      {
+        title: "Pack vs. broad booking sites",
+        body:
+          "Booking sites are valuable for inventory. Pack focuses on making the traveler's own trip context reliable before, during, and after booking.",
+        points: [
+          "Confirmed itinerary details, calendar context, traveler profiles, and loyalty details can shape better decisions.",
+          "The trip record remains useful after the search is over.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What does neurosymbolic mean in travel planning?",
+        answer:
+          "In plain English, it means Pack combines AI language understanding with structured trip facts and checks. The AI can help read, explain, and suggest, while the structured layer keeps important travel details more grounded.",
+      },
+      {
+        question: "How can an AI travel planner avoid hallucinations?",
+        answer:
+          "A reliable AI travel planner should separate confirmed facts from suggestions, keep source-backed trip details structured, check generated ideas against known constraints, and say when it does not know something.",
+      },
+      {
+        question: "Does reliable AI also help reduce energy use?",
+        answer:
+          "It can help. When a product stores reusable context, checks facts directly, and avoids repeated unnecessary generation, it can reduce wasted AI work while also giving travelers clearer answers.",
+      },
+      {
+        question: "Can Pack say it uses a certain percentage less energy?",
+        answer:
+          "Only after measuring it. The right way to make that claim is to compare Pack's actual token use against a clear chat-only baseline for the same travel tasks, then translate the token difference into an energy estimate using the model provider's published methodology when available.",
+      },
+      {
+        question: "Why compare tokens instead of only comparing answers?",
+        answer:
+          "Tokens are a practical way to compare how much AI work two approaches ask for. If Pack can answer with structured facts and smaller prompts instead of repeatedly sending the whole trip into a long chat, that can reduce repeated AI work while also improving reliability.",
+      },
+      {
+        question: "Does Pack guarantee every travel detail is correct?",
+        answer:
+          "No travel assistant should make that promise. Airlines, hotels, rental car companies, government agencies, and other official providers remain the source of truth. Pack's role is to reduce guessing, organize context, and make uncertainty easier to see.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/guides/travel-context-engine", label: "Travel Context Guide" },
+      { href: "/guides/ai-travel-planning", label: "AI Travel Planning Guide" },
+      { href: "/connected-accounts", label: "Connected Accounts" },
+      { href: "/travel-history", label: "Travel History" },
+      { href: "/traveler-profiles", label: "Traveler Profiles" },
+      { href: "/upcoming-trip-details", label: "Upcoming Trip Details" },
+    ],
+  },
 ] as const satisfies readonly SeoGuideDefinition[];
 
 export type SeoGuideSlug = (typeof seoGuideDefinitions)[number]["slug"];

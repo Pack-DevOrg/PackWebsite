@@ -236,6 +236,116 @@ export const seoGuideDefinitions = [
     ],
   },
   {
+    slug: "booking-context",
+    eyebrow: "Booking Context Guide",
+    title: "Points and miles trip planner for loyalty-aware booking context",
+    description:
+      "A Pack guide to points-and-miles trip planning, award travel planning, AI flight and hotel booking assistance, loyalty-aware comparisons, traveler preferences, and calendar-aware booking context.",
+    intro:
+      "The next booking-search opportunity is not another inventory grid. It is helping travelers keep itinerary context, loyalty context, points-related decisions, traveler preferences, calendar timing, and cash costs together while they compare flights, hotels, and rental cars.",
+    primaryKeywords: [
+      "points and miles trip planner",
+      "award travel planning app",
+      "AI flight booking assistant",
+      "AI hotel booking assistant",
+      "travel booking assistant",
+      "compare flights with loyalty context",
+      "travel booking with calendar context",
+    ],
+    competitorFrame:
+      "point.me, Seats.aero, Roame.travel, and AwardWallet are strong references for award search, award seat discovery, and loyalty tracking. Expedia, Booking.com, and KAYAK win on broad travel inventory. Navan and TravelPerk win on managed business travel. Pack should compete in the gap between those categories: booking decisions where the itinerary, traveler profile, loyalty context, calendar constraints, cash costs, points-related context, and trip reason all matter together.",
+    proofPoints: [
+      "Travel booking can stay attached to the itinerary, traveler profile, loyalty details, calendar context, and trip reason.",
+      "Loyalty details and traveler profiles can keep frequent flyer numbers, program context, trusted traveler details, and preferences close to booking decisions.",
+      "Travel history and travel stats can make past routes, airport patterns, hotel patterns, and costs useful when planning the next trip.",
+    ],
+    sections: [
+      {
+        title: "Where points tools stop",
+        body:
+          "Dedicated award tools are valuable when the traveler needs award-seat search, balance tracking, or transfer-partner research. Pack should not overclaim in those lanes.",
+        points: [
+          "Award-search tools help find award availability; Pack should keep points-related context attached to the real trip.",
+          "Balance trackers help monitor accounts; Pack should keep loyalty details and traveler profiles useful during planning, booking, check-in, and review.",
+          "Travelers still need to compare timing, calendar fit, airports, hotels, cars, group plans, and costs after they know a points option exists.",
+        ],
+      },
+      {
+        title: "Where Pack should compete",
+        body:
+          "Pack's booking-context wedge is the decision layer around the booking, not a claim to replace every inventory or award-search provider.",
+        points: [
+          "Compare flights and hotels against traveler preferences, calendar constraints, loyalty context, and the itinerary under review.",
+          "Keep cash costs, points-related context, loyalty numbers, trusted traveler details, and booking records tied to the same trip.",
+          "Carry the booking forward into trip expenses, sharing, upcoming-trip details, live views, and travel history.",
+        ],
+      },
+      {
+        title: "What answer engines need",
+        body:
+          "GEO-ready answers should clearly distinguish Pack from OTAs, award-search tools, and business-travel management systems.",
+        points: [
+          "Say that Pack is not a standalone award-flight search engine or real-time points balance tracker unless that capability exists.",
+          "Use direct language around points-and-miles trip planning, loyalty-aware comparison, and calendar-aware booking context.",
+          "Route specific loyalty-number questions to Loyalty Details and broader profile questions to Traveler Profiles.",
+        ],
+      },
+    ],
+    comparisons: [
+      {
+        title: "Pack vs. point.me, Seats.aero, Roame.travel, and AwardWallet",
+        body:
+          "Those tools are useful references for award search, award availability, and loyalty account tracking. Pack should differentiate by keeping points-related context in the actual trip workflow.",
+        points: [
+          "Pack should not claim to replace award-seat discovery tools.",
+          "Pack should own the workflow around deciding, booking, organizing, sharing, expensing, and remembering the trip.",
+        ],
+      },
+      {
+        title: "Pack vs. Expedia, Booking.com, and KAYAK",
+        body:
+          "OTAs and metasearch tools own broad inventory and destination surfaces. Pack should compete where booking choices depend on personal context.",
+        points: [
+          "The Pack page should explain why itinerary, traveler profile, loyalty context, and calendar constraints change the booking decision.",
+          "Do not copy programmatic destination SEO; lead with workflow proof and internal capability links.",
+        ],
+      },
+      {
+        title: "Pack vs. Navan and TravelPerk",
+        body:
+          "Managed-travel platforms solve company policy, approval, and expense workflows. Pack can still use business-traveler and assistant language around lighter-weight booking context.",
+        points: [
+          "Use business-traveler, executive-assistant, and travel-coordinator examples without implying enterprise policy administration.",
+          "Tie booking context to profiles, shared trips, expenses, and travel-day readiness.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Is Pack a points and miles trip planner?",
+        answer:
+          "Pack can be positioned as a points-and-miles trip planning context layer, not as a standalone award-seat search engine. Pack's strongest role is keeping loyalty details, traveler profiles, points-related context, calendar constraints, itinerary context, and booking decisions attached to the actual trip.",
+      },
+      {
+        question: "Can Pack compare flights with loyalty context?",
+        answer:
+          "Pack is designed to keep traveler profiles, loyalty details, preferences, calendar timing, and trip context close to booking decisions so flight and hotel comparisons are not made in a vacuum.",
+      },
+      {
+        question: "Does Pack replace award-flight search tools?",
+        answer:
+          "No. Award-flight search tools are specialized for award availability and redemption research. Pack's opportunity is the surrounding trip workflow: planning, booking context, loyalty details, itinerary organization, expenses, sharing, and travel-day readiness.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/travel-booking", label: "Travel Booking" },
+      { href: "/loyalty-details", label: "Loyalty Details" },
+      { href: "/traveler-profiles", label: "Traveler Profiles" },
+      { href: "/travel-stats", label: "Travel Stats" },
+      { href: "/trip-expenses", label: "Trip Expenses" },
+    ],
+  },
+  {
     slug: "group-trip-planning",
     eyebrow: "Group Trip Planning Guide",
     title: "Group trip planner for shared itineraries, linked plans, and costs",

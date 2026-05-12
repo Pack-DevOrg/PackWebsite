@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { ArrowRight, CheckCircle, Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import PrefetchLink from "@/components/PrefetchLink";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 import {
@@ -84,12 +84,6 @@ const PanelHeader = styled.div`
   }
 `;
 
-const BodyText = styled.p`
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-`;
-
 const TopActions = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -112,20 +106,17 @@ const SystemMap = styled.section`
 const VennWrap = styled.div`
   display: grid;
   gap: var(--space-4);
-
-  @media (min-width: 860px) {
-    grid-template-columns: minmax(26rem, 1fr) minmax(0, 0.9fr);
-    align-items: center;
-  }
+  justify-items: center;
 `;
 
 const VennDiagram = styled.div`
   position: relative;
-  min-height: 23rem;
+  width: min(100%, 46rem);
+  min-height: clamp(28rem, 48vw, 38rem);
   isolation: isolate;
 
   @media (max-width: 520px) {
-    min-height: 16rem;
+    min-height: 23rem;
   }
 `;
 
@@ -137,7 +128,7 @@ const VennCircle = styled.div<{
   position: absolute;
   left: ${(props) => props.$left};
   top: ${(props) => props.$top};
-  width: min(52vw, 15rem);
+  width: min(44vw, 21rem);
   aspect-ratio: 1;
   border: 1.5px solid ${(props) => props.$color};
   border-radius: 50%;
@@ -146,7 +137,7 @@ const VennCircle = styled.div<{
   z-index: 1;
 
   @media (max-width: 520px) {
-    width: min(42vw, 10.25rem);
+    width: min(58vw, 13.5rem);
   }
 `;
 
@@ -171,7 +162,7 @@ const VennLabel = styled.div<{
   z-index: 3;
 
   @media (max-width: 520px) {
-    max-width: 7.4rem;
+    max-width: 8.2rem;
     padding: 0.4rem 0.55rem;
     font-size: 0.72rem;
     white-space: normal;
@@ -184,7 +175,7 @@ const VennCenter = styled.div`
   top: 50%;
   display: grid;
   place-items: center;
-  width: min(38vw, 10.5rem);
+  width: min(28vw, 12rem);
   aspect-ratio: 1;
   border: 1px solid rgba(243, 210, 122, 0.42);
   border-radius: 50%;
@@ -200,13 +191,58 @@ const VennCenter = styled.div`
   z-index: 2;
 
   @media (max-width: 520px) {
-    width: min(32vw, 7.5rem);
+    width: min(36vw, 8.4rem);
+  }
+`;
+
+const MarketChip = styled.div<{
+  readonly $left: string;
+  readonly $top: string;
+}>`
+  position: absolute;
+  left: ${(props) => props.$left};
+  top: ${(props) => props.$top};
+  display: grid;
+  gap: 0.15rem;
+  width: min(15rem, 26vw);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.85rem;
+  background: rgba(8, 8, 12, 0.78);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  color: var(--color-text-secondary);
+  padding: 0.55rem 0.7rem;
+  font-size: var(--font-size-small);
+  line-height: 1.25;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+
+  strong {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-small);
+    line-height: 1.15;
+  }
+
+  span {
+    display: block;
+  }
+
+  @media (max-width: 520px) {
+    width: 7.3rem;
+    padding: 0.42rem 0.48rem;
+    font-size: 0.68rem;
+
+    strong {
+      font-size: 0.69rem;
+    }
   }
 `;
 
 const SystemMapHeader = styled.div`
   display: grid;
   gap: var(--space-1);
+  justify-items: center;
+  max-width: 760px;
+  text-align: center;
 
   h2 {
     margin: 0;
@@ -215,47 +251,9 @@ const SystemMapHeader = styled.div`
   }
 
   p {
-    max-width: 760px;
     margin: 0;
     color: var(--color-text-secondary);
     line-height: 1.6;
-  }
-`;
-
-const SystemNodes = styled.div`
-  display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-
-  @media (min-width: 600px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-`;
-
-const SystemNode = styled.article`
-  display: grid;
-  gap: var(--space-1);
-  min-height: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: var(--border-radius);
-  background: rgba(0, 0, 0, 0.18);
-  padding: var(--space-2);
-
-  span {
-    width: fit-content;
-    border: 1px solid rgba(243, 210, 122, 0.18);
-    border-radius: 999px;
-    color: var(--color-accent);
-    padding: 0.35rem 0.65rem;
-    font-size: var(--font-size-small);
-    font-weight: 700;
-  }
-
-  p {
-    margin: 0;
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-small);
-    line-height: 1.35;
   }
 `;
 
@@ -271,92 +269,34 @@ const SectionTitle = styled.h2`
   font-size: var(--font-size-2xl);
 `;
 
-const BoundaryTable = styled.div`
+const MarketLegend = styled.div`
   display: grid;
-  gap: 1px;
-  overflow: hidden;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+
+  @media (min-width: 780px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+`;
+
+const MarketLegendItem = styled.article`
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--border-radius);
-  background: rgba(255, 255, 255, 0.08);
-`;
-
-const BoundaryRow = styled.article`
-  display: grid;
-  gap: 1px;
-  background: rgba(0, 0, 0, 0.16);
-
-  @media (min-width: 760px) {
-    grid-template-columns: 0.9fr 1.1fr 1.1fr;
-  }
-`;
-
-const BoundaryHeaderRow = styled(BoundaryRow)`
-  display: none;
-
-  @media (min-width: 760px) {
-    display: grid;
-  }
-`;
-
-const BoundaryHead = styled.div`
-  background: rgba(255, 255, 255, 0.045);
-  color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.035);
   padding: var(--space-3);
-  font-size: var(--font-size-small);
-  font-weight: 850;
-  text-transform: uppercase;
-`;
 
-const BoundaryCell = styled.div`
-  display: grid;
-  gap: 0.35rem;
-  align-content: start;
-  background: rgba(255, 255, 255, 0.03);
-  padding: var(--space-3);
-`;
-
-const MobileBoundaryLabel = styled.span`
-  color: var(--color-accent);
-  font-size: var(--font-size-small);
-  font-weight: 850;
-  text-transform: uppercase;
-
-  @media (min-width: 760px) {
-    display: none;
+  h3 {
+    margin: 0 0 var(--space-1);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-medium);
   }
-`;
 
-const BoundaryTitle = styled.h3`
-  margin: 0;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-medium);
-`;
-
-const BoundaryText = styled.p`
-  display: -webkit-box;
-  margin: 0;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-  line-height: 1.45;
-`;
-
-const BoundaryPoint = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-2);
-  align-items: start;
-  font-size: var(--font-size-small);
-  line-height: 1.45;
-  color: var(--color-text-secondary);
-
-  svg {
-    width: 15px;
-    height: 15px;
-    margin-top: 0.15rem;
-    color: var(--color-accent);
+  p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+    line-height: 1.5;
   }
 `;
 
@@ -418,18 +358,11 @@ const RelatedLink = styled(PrefetchLink)`
   }
 `;
 
-const MAX_SYSTEM_NODES = 3;
-const MAX_POINTS_PER_SECTION = 2;
-const MAX_BOUNDARY_ROWS = 3;
 const MAX_VISIBLE_FAQS = 3;
 
 function getShortIntro(intro: string): string {
   const [firstSentence] = intro.split(/(?<=\.)\s+/);
   return firstSentence ?? intro;
-}
-
-function getComparisonName(title: string): string {
-  return title.replace(/^Pack vs\.\s*/i, "");
 }
 
 function createFaqSchema(faqs: readonly SeoGuideFaq[]): Record<string, unknown> {
@@ -476,8 +409,6 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
   const primaryFeatureLink = guide.relatedLinks[0];
   const shortIntro = getShortIntro(guide.intro);
   const visibleFaqs = guide.faqs.slice(0, MAX_VISIBLE_FAQS);
-  const systemNodes = guide.sections.slice(0, MAX_SYSTEM_NODES);
-  const boundaryRows = guide.comparisons.slice(0, MAX_BOUNDARY_ROWS);
 
   return (
     <Page>
@@ -507,7 +438,7 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
 
       <SystemMap>
         <VennWrap>
-          <VennDiagram aria-label="Pack combines planning, organization, context, and travel day tools">
+          <VennDiagram aria-label="Pack combines a personal assistant, trip planner, and booking agent">
             <VennCircle
               aria-hidden="true"
               $left="50%"
@@ -516,73 +447,72 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
             />
             <VennCircle
               aria-hidden="true"
-              $left="34%"
+              $left="35%"
               $top="62%"
               $color="rgba(249, 47, 96, 0.48)"
             />
             <VennCircle
               aria-hidden="true"
-              $left="66%"
+              $left="65%"
               $top="62%"
               $color="rgba(88, 166, 255, 0.48)"
             />
-            <VennLabel $left="50%" $top="24%">AI planning</VennLabel>
-            <VennLabel $left="31%" $top="74%">Itinerary organization</VennLabel>
-            <VennLabel $left="69%" $top="74%">Real trip context</VennLabel>
+            <VennLabel $left="50%" $top="22%">Knows you well</VennLabel>
+            <VennLabel $left="32%" $top="75%">Plans the trip</VennLabel>
+            <VennLabel $left="68%" $top="75%">Books and operates</VennLabel>
+            <MarketChip $left="30%" $top="53%">
+              <strong>Planner apps</strong>
+              <span>Layla, Mindtrip, Wanderlog</span>
+            </MarketChip>
+            <MarketChip $left="73%" $top="56%">
+              <strong>Booking sites</strong>
+              <span>Expedia, Booking.com, KAYAK</span>
+            </MarketChip>
+            <MarketChip $left="50%" $top="37%">
+              <strong>Itinerary memory</strong>
+              <span>TripIt, KAYAK Trips</span>
+            </MarketChip>
+            <MarketChip $left="62%" $top="68%">
+              <strong>Managed travel</strong>
+              <span>Navan, TravelPerk</span>
+            </MarketChip>
             <VennCenter>Pack</VennCenter>
           </VennDiagram>
-          <div>
-            <SystemMapHeader>
-              <h2>The overlap is the product</h2>
-              <p>
-                Pack is strongest when a trip needs more than one tool. The
-                product keeps planning, organization, booking context, traveler
-                context, and travel-day details in the same conversation.
-              </p>
-            </SystemMapHeader>
-            <SystemNodes>
-              {systemNodes.map((section, index) => (
-                <SystemNode key={section.title}>
-                  <span>Layer {index + 1}</span>
-                  <p>{section.title}</p>
-                </SystemNode>
-              ))}
-            </SystemNodes>
-          </div>
+          <SystemMapHeader>
+            <h2>Where travel apps stop</h2>
+            <p>
+              Most tools live mostly in one circle. Pack is built for the
+              overlap: it should know the traveler, ask planning questions, and
+              help the trip become bookable and operational.
+            </p>
+          </SystemMapHeader>
         </VennWrap>
       </SystemMap>
 
-      <Section>
-        <SectionTitle>Where other tools usually stop</SectionTitle>
-        <BoundaryTable>
-          <BoundaryHeaderRow aria-hidden="true">
-            <BoundaryHead>Lane</BoundaryHead>
-            <BoundaryHead>Usually stops at</BoundaryHead>
-            <BoundaryHead>Pack wraps around it</BoundaryHead>
-          </BoundaryHeaderRow>
-          {boundaryRows.map((comparison) => (
-            <BoundaryRow key={comparison.title}>
-              <BoundaryCell>
-                <MobileBoundaryLabel>Lane</MobileBoundaryLabel>
-                <BoundaryTitle>{getComparisonName(comparison.title)}</BoundaryTitle>
-              </BoundaryCell>
-              <BoundaryCell>
-                <MobileBoundaryLabel>Usually stops at</MobileBoundaryLabel>
-                <BoundaryText>{comparison.body}</BoundaryText>
-              </BoundaryCell>
-              <BoundaryCell>
-                <MobileBoundaryLabel>Pack wraps around it</MobileBoundaryLabel>
-                {comparison.points.slice(0, MAX_POINTS_PER_SECTION).map((point) => (
-                  <BoundaryPoint key={point}>
-                    <CheckCircle aria-hidden="true" />
-                    <span>{point}</span>
-                  </BoundaryPoint>
-                ))}
-              </BoundaryCell>
-            </BoundaryRow>
-          ))}
-        </BoundaryTable>
-      </Section>
+      <MarketLegend aria-label="Venn diagram explanation">
+        <MarketLegendItem>
+          <h3>Planner apps</h3>
+          <p>
+            Strong at inspiration and itinerary drafts, but they usually stop
+            before the plan uses deep traveler context or becomes operational.
+          </p>
+        </MarketLegendItem>
+        <MarketLegendItem>
+          <h3>Booking and managed travel</h3>
+          <p>
+            Strong at inventory, checkout, policy, and business travel control,
+            but they often start after the planning conversation has happened.
+          </p>
+        </MarketLegendItem>
+        <MarketLegendItem>
+          <h3>Pack</h3>
+          <p>
+            Pack aims to sit in the overlap: context-aware like an assistant,
+            questioning like a travel agent, and practical enough to move toward
+            booking and travel-day execution.
+          </p>
+        </MarketLegendItem>
+      </MarketLegend>
 
       <Panel>
         <PanelHeader>

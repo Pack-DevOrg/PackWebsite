@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T14:44:12.919Z",
+  "generatedAt": "2026-05-12T14:58:23.319Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -28,7 +28,7 @@
     }
   ],
   "inventory": {
-    "scannedPages": 181,
+    "scannedPages": 184,
     "sitemapUrls": 25,
     "prerenderRoutes": 36
   },
@@ -44,6 +44,11 @@
       "recommendedPage": "/",
       "strongestExistingPages": [
         {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.55
+        },
+        {
           "path": "/trip-organization",
           "title": "Trip Organizer App For Emails And Automatic Itineraries",
           "score": 0.55
@@ -52,10 +57,33 @@
           "path": "/how-it-works",
           "title": "How Pack Works",
           "score": 0.55
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "travel assistant with email calendar and loyalty",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 110,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
         },
         {
-          "path": "/trip-planning-from-events",
-          "title": "Trip Planning From Events",
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         }
       ],
@@ -113,6 +141,34 @@
           "path": "/source/src/content/seoGuides.ts",
           "title": "seoGuides.ts",
           "score": 0.55
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "client meeting travel planner",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 102,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.55
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.3666666666666667
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -258,6 +314,62 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "context aware travel assistant",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 97,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "personal travel assistant app",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 97,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "travel planning app with AI",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
@@ -301,13 +413,13 @@
           "score": 0.55
         },
         {
-          "path": "/privacy",
-          "title": "Privacy Policy",
-          "score": 0.41250000000000003
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
         },
         {
-          "path": "/terms",
-          "title": "TermsOfService.md",
+          "path": "/privacy",
+          "title": "Privacy Policy",
           "score": 0.41250000000000003
         }
       ],
@@ -324,6 +436,11 @@
       "recommendedPage": "/airport-security-wait-times",
       "strongestExistingPages": [
         {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
+        },
+        {
           "path": "/source/src/pages/FAQ.tsx",
           "title": "FAQ.tsx",
           "score": 0.55
@@ -332,11 +449,6 @@
           "path": "/source/src/pages/TermsOfService.tsx",
           "title": "TermsOfService.tsx",
           "score": 0.55
-        },
-        {
-          "path": "/capability-pages",
-          "title": "Pack Capability Pages",
-          "score": 0.41250000000000003
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -362,9 +474,9 @@
           "score": 0.55
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.3666666666666667
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -390,9 +502,9 @@
           "score": 0.55
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.41250000000000003
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -413,13 +525,13 @@
           "score": 0.55
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.41250000000000003
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.41250000000000003
         }
       ],
@@ -474,8 +586,8 @@
           "score": 0.55
         },
         {
-          "path": "/trip-organization",
-          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
           "score": 0.55
         }
       ],
@@ -538,6 +650,62 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "connected travel assistant",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "travel memory app",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/policies-and-trust",
+          "title": "Pack Policies And Trust",
+          "score": 0.55
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "travel confirmation parser",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -589,6 +757,90 @@
           "path": "/capabilities",
           "title": "Pack Capability Pages",
           "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "conference travel planning assistant",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "public event trip planner",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "calendar based travel planning",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 89,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -700,6 +952,34 @@
         {
           "path": "/travel-stats-and-maps",
           "title": "Travel Stats App For Maps And Personal Travel History",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "AI travel agent with email and calendar",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 87,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/privacy",
+          "title": "Privacy Policy",
           "score": 0.55
         }
       ],
@@ -818,62 +1098,6 @@
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
     },
     {
-      "keyword": "flight alerts airport wait times",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "intent": "commercial",
-      "priority": 6,
-      "gapScore": 86,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-updates",
-      "strongestExistingPages": [
-        {
-          "path": "/upcoming-trip-details",
-          "title": "Upcoming Trip Details",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
-          "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.44000000000000006
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "airport wait time and drive time",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "intent": "commercial",
-      "priority": 6,
-      "gapScore": 86,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-updates",
-      "strongestExistingPages": [
-        {
-          "path": "/airport-security-wait-times",
-          "title": "Airport Security Wait Times",
-          "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
       "keyword": "live TSA wait times",
       "clusterId": "airport-security",
       "clusterLabel": "Airport security intelligence",
@@ -986,6 +1210,34 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "meeting travel planner",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 81,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "travel booking assistant",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
@@ -1034,8 +1286,8 @@
           "score": 0.55
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
           "score": 0.55
         }
       ],
@@ -1065,6 +1317,34 @@
           "path": "/ai-travel-planning",
           "title": "Best AI Travel Planner For Context-Aware Trips",
           "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "travel context app",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "intent": "commercial",
+      "priority": 9,
+      "gapScore": 79,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/privacy",
+          "title": "Privacy Policy",
+          "score": 0.55
+        },
+        {
+          "path": "/airport-security-wait-times",
+          "title": "Airport Security Wait Times",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1154,6 +1434,34 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "plan travel from calendar event",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 79,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.55
+        },
+        {
+          "path": "/trip-planning-from-events",
+          "title": "Trip Planning From Events",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "travel booking with calendar context",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
@@ -1180,62 +1488,6 @@
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "travel day assistant",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "intent": "commercial",
-      "priority": 6,
-      "gapScore": 78,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-updates",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
-          "score": 0.55
-        },
-        {
-          "path": "/booking-context",
-          "title": "Points And Miles Trip Planner For Booking Context",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "live trip tracking",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "intent": "commercial",
-      "priority": 6,
-      "gapScore": 78,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-updates",
-      "strongestExistingPages": [
-        {
-          "path": "/privacy",
-          "title": "Privacy Policy",
-          "score": 0.55
-        },
-        {
-          "path": "/booking-context",
-          "title": "Points And Miles Trip Planner For Booking Context",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
     },
     {
       "keyword": "trip expense organizer",
@@ -1266,34 +1518,6 @@
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
     },
     {
-      "keyword": "upcoming trip assistant",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "intent": "commercial",
-      "priority": 6,
-      "gapScore": 78,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/trip-updates",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
-          "score": 0.55
-        },
-        {
-          "path": "/booking-context",
-          "title": "Points And Miles Trip Planner For Booking Context",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
       "keyword": "traveler profile app",
       "clusterId": "traveler-profile",
       "clusterLabel": "Traveler profile and loyalty",
@@ -1309,13 +1533,13 @@
           "score": 0.55
         },
         {
-          "path": "/features",
-          "title": "Pack Features",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         },
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "path": "/features",
+          "title": "Pack Features",
           "score": 0.55
         }
       ],
@@ -1460,6 +1684,34 @@
         }
       ],
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
+    },
+    {
+      "keyword": "event travel planner",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 74,
+      "currentBestCoverage": 1,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 1
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
       "keyword": "airline points aggregator",
@@ -1630,6 +1882,62 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "flight alerts airport wait times",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "intent": "commercial",
+      "priority": 6,
+      "gapScore": 73,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-updates",
+      "strongestExistingPages": [
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/travel-day-intelligence",
+          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "airport wait time and drive time",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "intent": "commercial",
+      "priority": 6,
+      "gapScore": 73,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-updates",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-day-intelligence",
+          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/airport-security-wait-times",
+          "title": "Airport Security Wait Times",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "trip organizer app",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -1714,6 +2022,62 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "live trip tracking",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "intent": "commercial",
+      "priority": 6,
+      "gapScore": 65,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-updates",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-day-intelligence",
+          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/privacy",
+          "title": "Privacy Policy",
+          "score": 0.55
+        },
+        {
+          "path": "/booking-context",
+          "title": "Points And Miles Trip Planner For Booking Context",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "upcoming trip assistant",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "intent": "commercial",
+      "priority": 6,
+      "gapScore": 65,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/trip-updates",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-day-intelligence",
+          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/ai-travel-planning",
+          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "airport security wait times",
       "clusterId": "airport-security",
       "clusterLabel": "Airport security intelligence",
@@ -1790,8 +2154,8 @@
           "score": 0.55
         },
         {
-          "path": "/trip-organization",
-          "title": "Trip Organizer App For Emails And Automatic Itineraries",
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
           "score": 0.55
         }
       ],
@@ -1966,6 +2330,34 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "travel day assistant",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "intent": "commercial",
+      "priority": 6,
+      "gapScore": 58,
+      "currentBestCoverage": 1,
+      "recommendedPage": "/trip-updates",
+      "strongestExistingPages": [
+        {
+          "path": "/travel-day-intelligence",
+          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
+          "score": 1
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
       "keyword": "travel stats app",
       "clusterId": "travel-stats-and-maps",
       "clusterLabel": "Travel stats, maps, and history analytics",
@@ -1999,16 +2391,8 @@
       "question": "How do I track updates across a whole trip?",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
-      "answerTarget": "/trip-updates",
+      "answerTarget": "/guides/travel-day-intelligence",
       "currentBestCoverage": 0.37,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
-    {
-      "question": "Which airports publish live security line data?",
-      "clusterId": "airport-security",
-      "clusterLabel": "Airport security intelligence",
-      "answerTarget": "/airport-security-wait-times",
-      "currentBestCoverage": 0.39,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
@@ -2023,8 +2407,16 @@
       "question": "What app shares a live trip plan with family or coworkers?",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
-      "answerTarget": "/trip-updates",
+      "answerTarget": "/guides/travel-day-intelligence",
       "currentBestCoverage": 0.44,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "Which airports publish live security line data?",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "answerTarget": "/airport-security-wait-times",
+      "currentBestCoverage": 0.47,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
@@ -2040,6 +2432,22 @@
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
       "answerTarget": "/guides/ai-travel-planning",
+      "currentBestCoverage": 0.55,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "Can a travel assistant use my email, calendar, profile, and trip history together?",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "answerTarget": "/guides/travel-context-engine",
+      "currentBestCoverage": 0.55,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "How is a connected travel assistant different from a normal travel app?",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "answerTarget": "/guides/travel-context-engine",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2064,6 +2472,22 @@
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
       "answerTarget": "/guides/trip-organization",
+      "currentBestCoverage": 0.55,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "How do I plan a trip around a meeting or conference?",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "answerTarget": "/guides/event-trip-planning",
+      "currentBestCoverage": 0.55,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "What travel planner starts from the reason for the trip?",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "answerTarget": "/guides/event-trip-planning",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2159,7 +2583,7 @@
       "question": "How do I keep trip expenses attached to an itinerary?",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
-      "answerTarget": "/trip-updates",
+      "answerTarget": "/guides/travel-day-intelligence",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2168,6 +2592,22 @@
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
       "answerTarget": "/guides/ai-travel-planning",
+      "currentBestCoverage": 0.85,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "What is a context-aware travel assistant?",
+      "clusterId": "travel-context-engine",
+      "clusterLabel": "Context-aware travel assistance",
+      "answerTarget": "/guides/travel-context-engine",
+      "currentBestCoverage": 0.85,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
+      "question": "Can Pack plan travel from a calendar event?",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "answerTarget": "/guides/event-trip-planning",
       "currentBestCoverage": 0.85,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -2218,6 +2658,26 @@
       ]
     },
     {
+      "clusterId": "travel-context-engine",
+      "title": "Context-aware travel assistance: travel assistant with email calendar and loyalty",
+      "recommendedSlug": "/guides/travel-context-engine",
+      "format": "checklist",
+      "score": 110,
+      "brief": [
+        "Lead with the user problem behind \"travel assistant with email calendar and loyalty\".",
+        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
+        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
+        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
+      ],
+      "internalLinks": [
+        "/guides/travel-context-engine",
+        "/connected-accounts",
+        "/travel-history",
+        "/traveler-profiles",
+        "/upcoming-trip-details"
+      ]
+    },
+    {
       "clusterId": "trip-organization",
       "title": "Trip organization: travel email parser",
       "recommendedSlug": "/guides/trip-organization",
@@ -2235,6 +2695,26 @@
         "/upcoming-trip-details",
         "/connected-accounts",
         "/features"
+      ]
+    },
+    {
+      "clusterId": "event-trip-planning",
+      "title": "Event and calendar-based trip planning: client meeting travel planner",
+      "recommendedSlug": "/guides/event-trip-planning",
+      "format": "benchmark",
+      "score": 102,
+      "brief": [
+        "Lead with the user problem behind \"client meeting travel planner\".",
+        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
+        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
+        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
+      ],
+      "internalLinks": [
+        "/guides/event-trip-planning",
+        "/trip-planning-from-events",
+        "/trip-calendar-sync",
+        "/travel-booking",
+        "/upcoming-trip-details"
       ]
     },
     {
@@ -2304,6 +2784,7 @@
         "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
       ],
       "internalLinks": [
+        "/guides/travel-day-intelligence",
         "/trip-updates",
         "/live-trip-views",
         "/trip-sharing",
@@ -2386,16 +2867,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"travel email parser\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -2440,16 +2921,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"travel email parser\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -2494,16 +2975,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"travel email parser\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -2548,16 +3029,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"travel email parser\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -2602,16 +3083,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"travel email parser\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -2656,16 +3137,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"travel email parser\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -2710,16 +3191,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"travel email parser\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22travel+email+parser%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -2739,11 +3220,7 @@
       "targets": [
         {
           "question": "How do I track updates across a whole trip?",
-          "page": "/trip-updates"
-        },
-        {
-          "question": "Which airports publish live security line data?",
-          "page": "/airport-security-wait-times"
+          "page": "/guides/travel-day-intelligence"
         },
         {
           "question": "How do I compare travel options against my calendar?",
@@ -2751,7 +3228,7 @@
         },
         {
           "question": "What app shares a live trip plan with family or coworkers?",
-          "page": "/trip-updates"
+          "page": "/guides/travel-day-intelligence"
         }
       ]
     },
@@ -2779,11 +3256,11 @@
       "targets": [
         {
           "entity": "Pack",
-          "occurrences": 88
+          "occurrences": 91
         },
         {
           "entity": "TryPackAI",
-          "occurrences": 47
+          "occurrences": 50
         },
         {
           "entity": "Try Pack AI",

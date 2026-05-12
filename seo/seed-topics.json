@@ -63,6 +63,33 @@
       ]
     },
     {
+      "id": "travel-context-engine",
+      "label": "Context-aware travel assistance",
+      "priority": 9,
+      "intent": "commercial",
+      "keywords": [
+        "context aware travel assistant",
+        "connected travel assistant",
+        "travel context app",
+        "personal travel assistant app",
+        "travel memory app",
+        "AI travel agent with email and calendar",
+        "travel assistant with email calendar and loyalty"
+      ],
+      "questions": [
+        "What is a context-aware travel assistant?",
+        "Can a travel assistant use my email, calendar, profile, and trip history together?",
+        "How is a connected travel assistant different from a normal travel app?"
+      ],
+      "preferredPages": [
+        "/guides/travel-context-engine",
+        "/connected-accounts",
+        "/travel-history",
+        "/traveler-profiles",
+        "/upcoming-trip-details"
+      ]
+    },
+    {
       "id": "trip-organization",
       "label": "Trip organization",
       "priority": 9,
@@ -91,6 +118,33 @@
         "/upcoming-trip-details",
         "/connected-accounts",
         "/features"
+      ]
+    },
+    {
+      "id": "event-trip-planning",
+      "label": "Event and calendar-based trip planning",
+      "priority": 8,
+      "intent": "commercial",
+      "keywords": [
+        "event travel planner",
+        "plan travel from calendar event",
+        "meeting travel planner",
+        "conference travel planning assistant",
+        "public event trip planner",
+        "calendar based travel planning",
+        "client meeting travel planner"
+      ],
+      "questions": [
+        "Can Pack plan travel from a calendar event?",
+        "How do I plan a trip around a meeting or conference?",
+        "What travel planner starts from the reason for the trip?"
+      ],
+      "preferredPages": [
+        "/guides/event-trip-planning",
+        "/trip-planning-from-events",
+        "/trip-calendar-sync",
+        "/travel-booking",
+        "/upcoming-trip-details"
       ]
     },
     {
@@ -250,6 +304,7 @@
         "How do I keep trip expenses attached to an itinerary?"
       ],
       "preferredPages": [
+        "/guides/travel-day-intelligence",
         "/trip-updates",
         "/live-trip-views",
         "/trip-sharing",

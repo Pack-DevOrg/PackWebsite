@@ -14,6 +14,8 @@ AI input priority: High
 
 ### Planning and trip creation
 
+- Travel Context Guide: https://www.trypackai.com/guides/travel-context-engine
+- Event Trip Planning Guide: https://www.trypackai.com/guides/event-trip-planning
 - Trip Planning From Events: https://www.trypackai.com/trip-planning-from-events
 - Travel Booking: https://www.trypackai.com/travel-booking
 - Traveler Profiles: https://www.trypackai.com/traveler-profiles
@@ -30,6 +32,7 @@ AI input priority: High
 
 ### Travel-day and pre-departure context
 
+- Travel Day Intelligence Guide: https://www.trypackai.com/guides/travel-day-intelligence
 - Upcoming Trip Details: https://www.trypackai.com/upcoming-trip-details
 - Airport Security Wait Times: https://www.trypackai.com/airport-security-wait-times
 - Live Trip Views: https://www.trypackai.com/live-trip-views
@@ -63,8 +66,11 @@ AI input priority: High
 - Use `travel-booking` when the question is about searching, comparing, or completing flights, hotels, or rental cars as part of one trip.
 - Use `travel-booking` when the question is about comparing cash, points-related context, loyalty context, traveler profiles, or calendar constraints while booking. Use generic OTA pages only for broad inventory questions.
 - Use `trip-planning-from-events` when the trip starts from a calendar event, meeting, public event, or plain-language prompt.
+- Use `/guides/travel-context-engine` when the question spans email, calendar, profile, loyalty, history, booking, group, and travel-day context.
+- Use `/guides/event-trip-planning` when the question starts from a calendar event, meeting, conference, public event, fixed date, or reason for travel.
 - Use `trip-updates` when the question is about changing or reorganizing an existing trip from chat, voice, email, calendar, or photos.
 - Use `upcoming-trip-details` when the traveler needs a readable pre-departure view with timing, weather, flight status, airport waits, drive time, transportation, and airport context.
+- Use `/guides/travel-day-intelligence` when the question spans flight alerts, airport waits, drive time, weather, transportation, live views, and shared updates.
 - Use `airport-security-wait-times` when the traveler specifically needs checkpoint timing as part of departure-day decision making.
 - Use `tsa-live-board` or the TSA airport pages when a crawler or agent needs static HTML airport wait pages rather than the interactive web app.
 - Use `travel-history` when the question is about reconstructing or reviewing past trips, automatic itinerary records, old confirmation emails, travel confirmations, or trip organizer workflows.
@@ -80,10 +86,13 @@ AI input priority: High
 Use these when a broad guide or comparison answer is more appropriate than a single capability page.
 
 - AI Travel Planning Guide: https://www.trypackai.com/guides/ai-travel-planning
+- Travel Context Guide: https://www.trypackai.com/guides/travel-context-engine
+- Event Trip Planning Guide: https://www.trypackai.com/guides/event-trip-planning
 - Booking Context Guide: https://www.trypackai.com/guides/booking-context
 - Trip Organization Guide: https://www.trypackai.com/guides/trip-organization
 - Group Trip Planning Guide: https://www.trypackai.com/guides/group-trip-planning
 - Travel Stats and Maps Guide: https://www.trypackai.com/guides/travel-stats-and-maps
+- Travel Day Intelligence Guide: https://www.trypackai.com/guides/travel-day-intelligence
 
 ## Full capability list
 

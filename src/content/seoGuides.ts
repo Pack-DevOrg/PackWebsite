@@ -29,6 +29,306 @@ export interface SeoGuideDefinition {
 
 export const seoGuideDefinitions = [
   {
+    slug: "travel-context-engine",
+    eyebrow: "Travel Context Guide",
+    title: "Context-aware travel assistant for trips that use your real travel data",
+    description:
+      "A Pack guide to context-aware travel assistance across email, calendar, traveler profiles, loyalty details, travel history, booking context, group trips, and travel-day signals.",
+    intro:
+      "A trip becomes easier to plan when the assistant understands more than the destination. Pack connects the context around travel: confirmations, calendars, traveler profiles, loyalty details, prior trips, booking choices, shared plans, expenses, and travel-day signals.",
+    primaryKeywords: [
+      "context aware travel assistant",
+      "connected travel assistant",
+      "travel context app",
+      "personal travel assistant app",
+      "travel memory app",
+      "AI travel agent with email and calendar",
+    ],
+    competitorFrame:
+      "Many travel tools specialize in one layer: itinerary storage, destination search, award-seat discovery, corporate travel, or AI inspiration. Pack is built around the connective tissue between those layers, so the trip can use the context the traveler already has.",
+    proofPoints: [
+      "Connected accounts can bring email, calendar, and provider context into the trip workflow.",
+      "Travel history, travel stats, loyalty details, and traveler profiles make past behavior useful for future planning.",
+      "Booking, sharing, expenses, live trip views, airport waits, weather, and timing can stay attached to the same trip.",
+    ],
+    sections: [
+      {
+        title: "Why context matters",
+        body:
+          "Most travel decisions depend on constraints that live outside a search form.",
+        points: [
+          "Calendar timing can change which flights or hotels make sense.",
+          "Traveler profiles and loyalty details can change what a good option means.",
+          "Past routes, airport patterns, and trip costs can make the next trip easier to judge.",
+        ],
+      },
+      {
+        title: "What Pack connects",
+        body:
+          "Pack treats trip context as a system, not a pile of unrelated records.",
+        points: [
+          "Inbox confirmations and connected accounts help build the record.",
+          "Traveler profiles, loyalty details, travel history, and stats keep recurring context useful.",
+          "Trip updates, sharing, expenses, and travel-day details keep the trip useful after planning.",
+        ],
+      },
+      {
+        title: "When this helps most",
+        body:
+          "A context-aware travel assistant is most valuable when the trip has constraints, other travelers, or reusable history.",
+        points: [
+          "Repeat routes, frequent flyer context, and recurring preferences matter for frequent travelers.",
+          "Shared plans, linked trips, and expenses matter for families and groups.",
+          "Calendar timing, client meetings, and coordination details matter for business travelers and assistants.",
+        ],
+      },
+    ],
+    comparisons: [
+      {
+        title: "Pack vs. single-purpose travel tools",
+        body:
+          "Single-purpose tools can be excellent at one job. Pack is designed for trips where the jobs need to talk to each other.",
+        points: [
+          "Planning, organization, booking, loyalty context, sharing, expenses, and travel day stay connected.",
+          "The traveler does not have to rebuild context in every separate app.",
+        ],
+      },
+      {
+        title: "Pack vs. generic AI travel prompts",
+        body:
+          "Prompt-based planning is useful, but real trips depend on details the traveler already has.",
+        points: [
+          "Email, calendar, history, profiles, loyalty details, and timing can change the right answer.",
+          "A travel assistant is more useful when it can keep the trip useful after the prompt.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What is a context-aware travel assistant?",
+        answer:
+          "A context-aware travel assistant uses trip details beyond a typed prompt, such as confirmations, calendar timing, traveler profiles, loyalty details, travel history, booking context, shared plans, and travel-day signals.",
+      },
+      {
+        question: "How is Pack different from a normal travel app?",
+        answer:
+          "A normal travel app often focuses on one task. Pack connects multiple travel tasks so planning, itinerary organization, booking context, sharing, expenses, and travel-day readiness can work from the same trip context.",
+      },
+      {
+        question: "Can Pack use travel history for future trips?",
+        answer:
+          "Yes. Pack's travel history and travel stats surfaces are designed to make past flights, stays, routes, airport patterns, loyalty context, and costs useful when planning future travel.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/connected-accounts", label: "Connected Accounts" },
+      { href: "/travel-history", label: "Travel History" },
+      { href: "/traveler-profiles", label: "Traveler Profiles" },
+      { href: "/travel-booking", label: "Travel Booking" },
+      { href: "/upcoming-trip-details", label: "Upcoming Trip Details" },
+    ],
+  },
+  {
+    slug: "event-trip-planning",
+    eyebrow: "Event Trip Planning Guide",
+    title: "Event travel planner for meetings, calendars, conferences, and public events",
+    description:
+      "A Pack guide to planning trips from calendar events, meetings, public events, conferences, time constraints, traveler context, and booking workflows.",
+    intro:
+      "Many trips start because something is already on the calendar: a meeting, conference, wedding, concert, sports event, or client visit. Pack is built to start from the reason for travel and keep the timing, traveler context, and booking workflow connected.",
+    primaryKeywords: [
+      "event travel planner",
+      "plan travel from calendar event",
+      "meeting travel planner",
+      "conference travel planning assistant",
+      "public event trip planner",
+      "calendar based travel planning",
+    ],
+    competitorFrame:
+      "Search sites usually start from destination fields. Generic AI planners often start from prompts. Pack can start from the event, meeting, or schedule constraint that created the trip in the first place.",
+    proofPoints: [
+      "Trip planning can start from public events, private calendar timing, and plain-language prompts.",
+      "Calendar context can stay connected to flight, hotel, rental car, and travel-day decisions.",
+      "Traveler profiles, loyalty details, booking context, and shared plans can shape the trip after the event creates demand.",
+    ],
+    sections: [
+      {
+        title: "Why event-first planning is different",
+        body:
+          "The destination is only one part of the trip. The reason for travel often decides the schedule.",
+        points: [
+          "A meeting can determine arrival time, departure margin, and hotel location.",
+          "A conference or public event can shape dates, nearby airports, and shared plans.",
+          "A family event can introduce group coordination, shared expenses, and linked itineraries.",
+        ],
+      },
+      {
+        title: "How Pack keeps the trip grounded",
+        body:
+          "Pack connects the event to the itinerary instead of leaving the traveler to translate the schedule by hand.",
+        points: [
+          "Calendar timing can shape the first trip draft.",
+          "Booking context can stay tied to the reason for the trip.",
+          "Upcoming-trip details can keep weather, timing, transportation, and airport context visible as departure gets closer.",
+        ],
+      },
+      {
+        title: "Who this helps",
+        body:
+          "Event-first travel is useful whenever the trip exists because something else is happening.",
+        points: [
+          "Business travelers and assistants planning around meetings or client visits.",
+          "Families and groups coordinating around weddings, graduations, concerts, or games.",
+          "Travelers planning around public events, conferences, and fixed-date experiences.",
+        ],
+      },
+    ],
+    comparisons: [
+      {
+        title: "Pack vs. blank search forms",
+        body:
+          "Blank search forms ask the traveler to translate the event into dates, airports, hotels, and timing decisions.",
+        points: [
+          "Pack starts closer to why the trip exists.",
+          "The trip can keep the event, schedule, booking context, and travel-day details connected.",
+        ],
+      },
+      {
+        title: "Pack vs. generic itinerary generators",
+        body:
+          "Generic itinerary generators can create ideas, but event travel needs timing discipline.",
+        points: [
+          "Arrival windows, departure buffers, location constraints, and calendar conflicts matter.",
+          "Pack is a better fit when the plan needs to respect a fixed event or meeting.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Can Pack plan travel from a calendar event?",
+        answer:
+          "Pack is designed to help trips start from calendar timing, meetings, public events, and plain-language prompts so travel planning begins from the reason the trip exists.",
+      },
+      {
+        question: "Can Pack help with conference or meeting travel?",
+        answer:
+          "Yes. Pack can help keep meeting timing, conference dates, traveler context, booking decisions, and upcoming-trip details connected in one workflow.",
+      },
+      {
+        question: "How is event travel planning different from normal travel search?",
+        answer:
+          "Normal travel search starts with destination and date fields. Event travel planning starts with a fixed reason for travel, then works backward into flights, hotels, transportation, timing, and shared plans.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/trip-planning-from-events", label: "Trip Planning From Events" },
+      { href: "/trip-calendar-sync", label: "Trip Calendar Sync" },
+      { href: "/travel-booking", label: "Travel Booking" },
+      { href: "/upcoming-trip-details", label: "Upcoming Trip Details" },
+    ],
+  },
+  {
+    slug: "travel-day-intelligence",
+    eyebrow: "Travel Day Guide",
+    title: "Travel day assistant for airport waits, weather, drive time, and live trip context",
+    description:
+      "A Pack guide to travel-day readiness across upcoming trip details, airport security waits, flight alerts, weather, drive time, transportation, live trip views, and shared updates.",
+    intro:
+      "A trip is not done when it is booked. Travel day brings timing, weather, airport waits, transportation, flight status, shared updates, and quick decisions that need to make sense together.",
+    primaryKeywords: [
+      "travel day assistant",
+      "upcoming trip assistant",
+      "flight alerts airport wait times",
+      "airport wait time and drive time",
+      "travel day planner",
+      "departure day assistant",
+      "live trip tracking",
+    ],
+    competitorFrame:
+      "Flight alert apps, airport wait-time pages, maps, calendars, and weather apps each answer one part of travel day. Pack connects those signals back to the itinerary and the traveler who needs to act on them.",
+    proofPoints: [
+      "Upcoming-trip details can show timing, weather, airport signals, transportation context, and what matters next.",
+      "Airport security wait times can sit beside the trip they affect instead of being checked in isolation.",
+      "Live trip views, trip sharing, and updates can keep travelers and groups aligned when travel is close.",
+    ],
+    sections: [
+      {
+        title: "Why travel day needs context",
+        body:
+          "A raw alert or wait-time number is only useful when the traveler knows what it means for the actual trip.",
+        points: [
+          "A flight alert matters more when it is connected to drive time, airport waits, and departure timing.",
+          "Weather matters more when it is connected to the itinerary, transport, and next action.",
+          "A shared trip matters more when updates reach the people who need them.",
+        ],
+      },
+      {
+        title: "What Pack brings together",
+        body:
+          "Pack keeps travel-day signals closer to the itinerary instead of scattering them across apps.",
+        points: [
+          "Upcoming-trip details for timing, weather, airport context, and transportation.",
+          "Airport security wait times as one signal inside a larger departure decision.",
+          "Live trip views, trip sharing, and trip updates for faster access and coordination.",
+        ],
+      },
+      {
+        title: "Where this helps most",
+        body:
+          "Travel-day context is most valuable when timing is tight or multiple people need the same answer.",
+        points: [
+          "Frequent travelers deciding when to leave for the airport.",
+          "Families and groups trying to keep everyone aligned.",
+          "Assistants and coordinators monitoring travel readiness for someone else.",
+        ],
+      },
+    ],
+    comparisons: [
+      {
+        title: "Pack vs. standalone flight alerts",
+        body:
+          "Flight alerts are useful, but the traveler still needs to decide what to do next.",
+        points: [
+          "Pack connects flight context to the trip around it.",
+          "Airport waits, drive time, weather, and transportation help make the alert actionable.",
+        ],
+      },
+      {
+        title: "Pack vs. airport wait-time pages",
+        body:
+          "Airport wait-time pages show one signal. Pack connects that signal to departure timing and the upcoming trip.",
+        points: [
+          "The useful question is not only how long the line is.",
+          "The useful question is how that line changes the traveler's next move.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Can Pack combine flight alerts, airport waits, weather, and drive time?",
+        answer:
+          "Pack is designed around the combined travel-day readiness problem: flight context, airport waits, weather, transportation, timing, and the itinerary make more sense together.",
+      },
+      {
+        question: "How is Pack different from a flight alert app?",
+        answer:
+          "Flight alert apps focus on flight status. Pack connects flight context to the broader trip, including airport conditions, drive time, weather, transportation, live views, and shared updates.",
+      },
+      {
+        question: "Can Pack help groups on travel day?",
+        answer:
+          "Yes. Trip sharing, live trip views, and updates can help multiple travelers stay closer to the same trip context as plans get closer or change.",
+      },
+    ],
+    relatedLinks: [
+      { href: "/upcoming-trip-details", label: "Upcoming Trip Details" },
+      { href: "/airport-security-wait-times", label: "Airport Security Wait Times" },
+      { href: "/live-trip-views", label: "Live Trip Views" },
+      { href: "/trip-sharing", label: "Trip Sharing" },
+      { href: "/trip-updates", label: "Trip Updates" },
+    ],
+  },
+  {
     slug: "ai-travel-planning",
     eyebrow: "AI Travel Planning Guide",
     title: "Best AI travel planner for trips that start from real context",
@@ -78,8 +378,8 @@ export const seoGuideDefinitions = [
           "The difference is the workflow around the plan, not only whether the product uses AI.",
         points: [
           "Prompt-first planners can be useful for inspiration, while context-first assistants are more useful when the trip has real constraints.",
-          "Explain when a prompt-first planner is enough and when a context-first assistant is better.",
-          "Show that the trip does not end at inspiration: it moves into booking, updates, shared views, expenses, and departure-day context.",
+          "A prompt-first planner is enough for loose inspiration; a context-first assistant is better when timing, profile, loyalty, or booking details matter.",
+          "The trip does not end at inspiration: it moves into booking, updates, shared views, expenses, and departure-day context.",
         ],
       },
     ],
@@ -315,7 +615,7 @@ export const seoGuideDefinitions = [
         body:
           "Managed-travel platforms solve company policy, approval, and expense workflows. Pack can still use business-traveler and assistant language around lighter-weight booking context.",
         points: [
-          "Use business-traveler, executive-assistant, and travel-coordinator examples without implying enterprise policy administration.",
+          "Business travelers, executive assistants, and travel coordinators often need booking context without full enterprise policy administration.",
           "Tie booking context to profiles, shared trips, expenses, and travel-day readiness.",
         ],
       },
@@ -407,7 +707,7 @@ export const seoGuideDefinitions = [
           "Wanderlog is a strong collaborative planning reference. Pack connects shared itinerary, booking context, trip updates, live views, and expenses.",
         points: [
           "Collaborative planning is most useful when it includes what happens after the plan changes.",
-          "Shared expenses and linked trips are important long-tail keywords Pack can own with proof-led content.",
+          "Shared expenses and linked trips make group travel easier to keep organized after the plan changes.",
         ],
       },
       {
@@ -415,7 +715,7 @@ export const seoGuideDefinitions = [
         body:
           "Navan and TravelPerk solve managed business-travel workflows. Pack addresses lighter-weight group coordination for families, assistants, and smaller teams.",
         points: [
-          "Use business-traveler and executive-assistant language without implying enterprise travel management parity.",
+          "Business travelers and executive assistants can coordinate lighter-weight group travel without a full managed-travel platform.",
           "Keep the focus on trip context rather than expense-policy administration.",
         ],
       },
@@ -494,9 +794,9 @@ export const seoGuideDefinitions = [
         body:
           "Travel stats are more useful when they explain patterns instead of only listing places.",
         points: [
-          "Answer map questions with 'travel history map' and 'personal travel map' language.",
-          "Answer route questions with repeat routes, airport patterns, and flight history tracker language.",
-          "Answer planning questions by tying stats back to future trips, loyalty decisions, and budget memory.",
+          "Travel history maps and personal travel maps make the record easier to understand.",
+          "Repeat routes, airport patterns, and flight history make trip behavior easier to compare.",
+          "Future trips, loyalty decisions, and budget memory are more useful when they connect to real history.",
         ],
       },
     ],
@@ -516,7 +816,7 @@ export const seoGuideDefinitions = [
           "Award tools help search seats or track balances. Pack uses travel stats to preserve the trip context that makes future loyalty and booking choices smarter.",
         points: [
           "Pack is not positioned as a real-time points balance tracker.",
-          "Use careful language around loyalty context and points-related decisions attached to trips.",
+          "Pack keeps loyalty context and points-related decisions attached to trips.",
         ],
       },
     ],

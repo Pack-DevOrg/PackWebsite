@@ -1,6 +1,6 @@
 # PackWebsite Competitor SEO Gap Analysis
 
-Generated: 2026-05-12T14:57:11.338Z
+Generated: 2026-05-12T14:59:46.717Z
 
 Methodology: Public technical SEO crawl based on robots.txt, sitemap URLs, selected public pages, visible metadata, URL structures, and Pack seed-topic coverage. It is not a paid rank/traffic/backlink database.
 
@@ -205,24 +205,24 @@ Strengths:
 
 Keyword coverage observed:
 - calendar based travel planning (Event and calendar-based trip planning) coverage 0.65
-- book flights from itinerary (Booking with context) coverage 0.65
-- TSA wait times (Airport security intelligence) coverage 0.65
 - shared trip itinerary (Group trip planning and shared travel) coverage 0.65
-- travel history map (Travel stats, maps, and history analytics) coverage 0.65
-- airport wait time and drive time (Travel-day operations) coverage 0.65
-- flight alerts airport wait times (Travel-day operations) coverage 0.52
+- airport wait time and drive time (Travel-day operations) coverage 0.52
 - compare flights with traveler preferences (Booking with context) coverage 0.49
 - compare flights with loyalty context (Booking with context) coverage 0.49
 - airport security wait times (Airport security intelligence) coverage 0.49
+- flight hotel itinerary updates (Travel-day operations) coverage 0.49
+- conference travel planning assistant (Event and calendar-based trip planning) coverage 0.43
+- book flights from itinerary (Booking with context) coverage 0.43
+- points and miles trip planner (Booking with context) coverage 0.43
 
 Representative fetched pages:
 - 202 https://www.booking.com/ - No title
 - 202 https://www.booking.com/index.html - No title
 - 200 https://www.booking.com/destination.html - Booking.com: Booking.com Online Hotel Reservations - List of Destinations
 - 200 https://www.booking.com/articles.html - No title
-- 202 https://www.booking.com/airport/us/day.pt-pt.html - No title
+- 200 https://www.booking.com/airport/us/day.pt-pt.html - Os 10 hotéis mais próximos do Aeroporto Internacional de Dayton - James M. Cox (DAY) | Booking.com
 - 202 https://www.booking.com/airport/us/and.pt-pt.html - No title
-- 200 https://www.booking.com/airport/us/day.en-gb.html - The 10 closest hotels to James M. Cox Dayton International Airport (DAY) | Booking.com
+- 202 https://www.booking.com/airport/us/day.en-gb.html - No title
 - 202 https://www.booking.com/airport/us/atl.pt-pt.html - No title
 
 Crawl limitations:
@@ -270,7 +270,7 @@ Crawl limitations:
 - Category: consumer trip planner
 - Robots: accessible
 - Sitemap URLs sampled: 4000
-- Fetched pages: 11/24
+- Fetched pages: 7/24
 - Top path segments: tp (3774), fr (7), ja (7), zh (7), ko (7), es (7), pt (7), it (7), ru (7), hi (7), nl (7), tr (7), ms (7), id (7)
 - Schema types: none observed
 
@@ -299,17 +299,17 @@ Representative fetched pages:
 - 200 https://wanderlog.com/fr/trip-planner-ai - Planificateur de voyage IA qui rend l'organisation de vos voyages simple, rapide et facile
 - 200 https://wanderlog.com/ja/trip-planner-ai - 旅程の作成をシンプルで迅速かつ簡単にする旅程プランナーAI
 - 200 https://wanderlog.com/zh/trip-planner-ai - 旅行规划器 AI，让您的行程组织简单、快速、轻松
-- 0 https://wanderlog.com/ko/trip-planner-ai - No title
+- 502 https://wanderlog.com/ko/trip-planner-ai - wanderlog.com | 502: Bad gateway
 
 Crawl limitations:
 - https://wanderlog.com/ returned 502
 - https://wanderlog.com/travel-planner returned 502
 - https://wanderlog.com/trip-planner-ai returned 404
-- https://wanderlog.com/ko/trip-planner-ai returned 0
+- https://wanderlog.com/ko/trip-planner-ai returned 502
 - https://wanderlog.com/es/trip-planner-ai returned 502
 - https://wanderlog.com/pt/trip-planner-ai returned 502
 - https://wanderlog.com/it/trip-planner-ai returned 502
-- https://wanderlog.com/tr/trip-planner-ai returned 0
+- https://wanderlog.com/ru/trip-planner-ai returned 502
 
 ### TravelPerk
 
@@ -479,7 +479,7 @@ Crawl limitations:
 - Category: award seat search
 - Robots: accessible
 - Sitemap URLs sampled: 4000
-- Fetched pages: 23/24
+- Fetched pages: 22/24
 - Top path segments: united (359), american (359), alaska (334), qantas (324), aeroplan (311), delta (302), virginatlantic (274), smiles (198), velocity (174), azul (172), flyingblue (166), jetblue (148), aeromexico (138), etihad (126)
 - Schema types: none observed
 
@@ -489,11 +489,10 @@ Strengths:
 
 Keyword coverage observed:
 - points and miles trip planner (Booking with context) coverage 0.43
-- airline points aggregator (Traveler profile and loyalty) coverage 0.43
 
 Representative fetched pages:
 - 200 https://seats.aero/ - seats.aero - Home
-- 200 https://seats.aero/search - seats.aero - Search
+- 403 https://seats.aero/search - Just a moment...
 - 404 https://seats.aero/tools - 404 - Page Not Found | seats.aero
 - 200 https://seats.aero/united/departing/CAI - seats.aero - Flights departing from CAI (Cairo International Airport) - United MileagePlus Award Flights
 - 200 https://seats.aero/united/arriving/CAI - seats.aero - Flights arriving at CAI (Cairo International Airport) - United MileagePlus Points Flights
@@ -502,6 +501,7 @@ Representative fetched pages:
 - 200 https://seats.aero/aeroplan/departing/RAI - seats.aero - Flights departing from RAI (Nelson Mandela International Airport) - Air Canada Aeroplan Award Flights
 
 Crawl limitations:
+- https://seats.aero/search returned 403
 - https://seats.aero/tools returned 404
 
 ### Roame.travel

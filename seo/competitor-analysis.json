@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T14:57:11.338Z",
+  "generatedAt": "2026-05-12T14:59:46.717Z",
   "methodology": {
     "maxSitemapUrls": 4000,
     "maxPageFetches": 24,
@@ -1472,16 +1472,22 @@
         {
           "url": "https://www.booking.com/airport/us/day.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/day.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Dayton - James M. Cox (DAY) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de Dayton - James M. Cox DAY, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional de Dayton - James M. Cox (DAY), Dayton"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/day.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 1979
         },
         {
           "url": "https://www.booking.com/airport/us/and.pt-pt.html",
@@ -1500,22 +1506,16 @@
         {
           "url": "https://www.booking.com/airport/us/day.en-gb.html",
           "finalUrl": "https://www.booking.com/airport/us/day.en-gb.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "The 10 closest hotels to James M. Cox Dayton International Airport (DAY) | Booking.com",
-          "description": "Hotels near James M. Cox Dayton International Airport DAY, United States. Get great savings on your reservation. Book online, pay at the hotel. Read hotel reviews from real guests.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotels near James M. Cox Dayton International Airport (DAY), Dayton"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/us/day.en-gb.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2677
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/us/atl.pt-pt.html",
@@ -1534,22 +1534,16 @@
         {
           "url": "https://www.booking.com/airport/us/ord.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/ord.pt-pt.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional Chicago O&#x27;Hare (ORD) | Booking.com",
-          "description": "Hotéis perto de Aeroporto Internacional Chicago O&#x27;Hare ORD, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotéis perto do Aeroporto Internacional Chicago O&#x27;Hare (ORD), Chicago"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/us/ord.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2933
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/us/lax.pt-pt.html",
@@ -1597,21 +1591,27 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 3515
+          "wordCount": 3469
         },
         {
           "url": "https://www.booking.com/airport/us/dfw.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/dfw.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Dallas - Fort Worth (DFW) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de Dallas - Fort Worth DFW, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional de Dallas - Fort Worth (DFW), Dallas"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/dfw.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2700
         },
         {
           "url": "https://www.booking.com/airport/de/fra.pt-pt.html",
@@ -1645,21 +1645,27 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 2449
+          "wordCount": 2490
         },
         {
           "url": "https://www.booking.com/airport/nl/ams.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/nl/ams.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto de Schiphol (AMS), Amesterdão | Booking.com",
+          "description": "Hotéis perto de Aeroporto de Schiphol AMS, Países Baixos. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto de Schiphol (AMS), Amesterdão"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/nl/ams.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 3153
         },
         {
           "url": "https://www.booking.com/airport/us/den.pt-pt.html",
@@ -1684,20 +1690,46 @@
         {
           "url": "https://www.booking.com/airport/us/phx.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/phx.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Phoenix Sky Harbor (PHX) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de Phoenix Sky Harbor PHX, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional de Phoenix Sky Harbor (PHX), Phoenix"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/phx.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2663
         },
         {
           "url": "https://www.booking.com/airport/us/las.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/las.pt-pt.html",
+          "status": 200,
+          "ok": true,
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacinal de McCarran (LAS), Las Vegas | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacinal de McCarran LAS, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "h1s": [
+            "Hotéis perto do Aeroporto Internacinal de McCarran (LAS), Las Vegas"
+          ],
+          "canonical": "https://www.booking.com/airport/us/las.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2668
+        },
+        {
+          "url": "https://www.booking.com/airport/us/iah.pt-pt.html",
+          "finalUrl": "https://www.booking.com/airport/us/iah.pt-pt.html",
           "status": 202,
           "ok": true,
           "title": "",
@@ -1710,44 +1742,18 @@
           "wordCount": 0
         },
         {
-          "url": "https://www.booking.com/airport/us/iah.pt-pt.html",
-          "finalUrl": "https://www.booking.com/airport/us/iah.pt-pt.html",
-          "status": 200,
-          "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional George Bush (IAH), Houston | Booking.com",
-          "description": "Hotéis perto de Aeroporto Internacional George Bush IAH, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
-          "h1s": [
-            "Hotéis perto do Aeroporto Internacional George Bush (IAH), Houston"
-          ],
-          "canonical": "https://www.booking.com/airport/us/iah.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2526
-        },
-        {
           "url": "https://www.booking.com/airport/us/sfo.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/sfo.pt-pt.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de São Francisco (SFO) | Booking.com",
-          "description": "Hotéis perto de Aeroporto Internacional de São Francisco SFO, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotéis perto do Aeroporto Internacional de São Francisco (SFO), São Francisco"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/us/sfo.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2514
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/us/msp.pt-pt.html",
@@ -1781,7 +1787,7 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 2490
+          "wordCount": 2480
         },
         {
           "url": "https://www.booking.com/airport/hk/hkg.pt-pt.html",
@@ -1820,20 +1826,6 @@
           "coverage": 0.65
         },
         {
-          "keyword": "book flights from itinerary",
-          "clusterId": "booking-context",
-          "clusterLabel": "Booking with context",
-          "priority": 8,
-          "coverage": 0.65
-        },
-        {
-          "keyword": "TSA wait times",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
-          "coverage": 0.65
-        },
-        {
           "keyword": "shared trip itinerary",
           "clusterId": "group-trip-planning",
           "clusterLabel": "Group trip planning and shared travel",
@@ -1841,21 +1833,7 @@
           "coverage": 0.65
         },
         {
-          "keyword": "travel history map",
-          "clusterId": "travel-stats-and-maps",
-          "clusterLabel": "Travel stats, maps, and history analytics",
-          "priority": 7,
-          "coverage": 0.65
-        },
-        {
           "keyword": "airport wait time and drive time",
-          "clusterId": "travel-day-operations",
-          "clusterLabel": "Travel-day operations",
-          "priority": 6,
-          "coverage": 0.65
-        },
-        {
-          "keyword": "flight alerts airport wait times",
           "clusterId": "travel-day-operations",
           "clusterLabel": "Travel-day operations",
           "priority": 6,
@@ -1883,27 +1861,6 @@
           "coverage": 0.49
         },
         {
-          "keyword": "live TSA wait times",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
-          "coverage": 0.49
-        },
-        {
-          "keyword": "airport wait time tracker",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
-          "coverage": 0.49
-        },
-        {
-          "keyword": "TSA wait time app",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
-          "coverage": 0.49
-        },
-        {
           "keyword": "flight hotel itinerary updates",
           "clusterId": "travel-day-operations",
           "clusterLabel": "Travel-day operations",
@@ -1918,6 +1875,13 @@
           "coverage": 0.43
         },
         {
+          "keyword": "book flights from itinerary",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.43
+        },
+        {
           "keyword": "points and miles trip planner",
           "clusterId": "booking-context",
           "clusterLabel": "Booking with context",
@@ -1925,14 +1889,21 @@
           "coverage": 0.43
         },
         {
-          "keyword": "award travel planning app",
-          "clusterId": "booking-context",
-          "clusterLabel": "Booking with context",
-          "priority": 8,
+          "keyword": "TSA wait times",
+          "clusterId": "airport-security",
+          "clusterLabel": "Airport security intelligence",
+          "priority": 7,
           "coverage": 0.43
         },
         {
           "keyword": "loyalty program organizer",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "travel loyalty number organizer",
           "clusterId": "traveler-profile",
           "clusterLabel": "Traveler profile and loyalty",
           "priority": 7,
@@ -1944,6 +1915,13 @@
           "clusterLabel": "Travel stats, maps, and history analytics",
           "priority": 7,
           "coverage": 0.43
+        },
+        {
+          "keyword": "flight alerts airport wait times",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
+          "coverage": 0.39
         }
       ],
       "strengths": [
@@ -2412,14 +2390,16 @@
         {
           "url": "https://wanderlog.com/ko/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/ko/trip-planner-ai",
-          "status": 0,
+          "status": 502,
           "ok": false,
-          "title": "",
+          "title": "wanderlog.com | 502: Bad gateway",
           "description": "",
-          "h1s": [],
+          "h1s": [
+            "Bad gateway Error code 502"
+          ],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 0
+          "wordCount": 49
         },
         {
           "url": "https://wanderlog.com/es/trip-planner-ai",
@@ -2466,56 +2446,58 @@
         {
           "url": "https://wanderlog.com/ru/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/ru/trip-planner-ai",
-          "status": 200,
-          "ok": true,
-          "title": "ИИ планировщик поездок, который делает планирование поездок простым, быстрым и легким",
-          "description": "Наш настраиваемый ИИ-планировщик поездок поможет вам спланировать идеальное путешествие",
+          "status": 502,
+          "ok": false,
+          "title": "wanderlog.com | 502: Bad gateway",
+          "description": "",
           "h1s": [
-            "ИИ планировщик поездок, который вы можете настроить"
+            "Bad gateway Error code 502"
           ],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 85
+          "wordCount": 49
         },
         {
           "url": "https://wanderlog.com/hi/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/hi/trip-planner-ai",
-          "status": 200,
-          "ok": true,
-          "title": "यात्रा योजनाकार एआई जो आपकी यात्रा को सरल, तेज और आसान बनाता है",
-          "description": "हमारा अनुकूलन योग्य एआई यात्रा योजनाकार आपकी आदर्श यात्रा की योजना बनाने में मदद कर सकता है।",
+          "status": 502,
+          "ok": false,
+          "title": "wanderlog.com | 502: Bad gateway",
+          "description": "",
           "h1s": [
-            "यात्रा योजनाकार एआई जिसे आप अनुकूलित कर सकते हैं"
+            "Bad gateway Error code 502"
           ],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 53
+          "wordCount": 49
         },
         {
           "url": "https://wanderlog.com/nl/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/nl/trip-planner-ai",
-          "status": 200,
-          "ok": true,
-          "title": "AI-reisplanner die het plannen van je reis simpel, snel en makkelijk maakt",
-          "description": "Onze aanpasbare AI-reisplanner kan je helpen de perfecte reis te plannen",
+          "status": 502,
+          "ok": false,
+          "title": "wanderlog.com | 502: Bad gateway",
+          "description": "",
           "h1s": [
-            "AI-reisplanner die je kunt aanpassen"
+            "Bad gateway Error code 502"
           ],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 1269
+          "wordCount": 49
         },
         {
           "url": "https://wanderlog.com/tr/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/tr/trip-planner-ai",
-          "status": 0,
+          "status": 502,
           "ok": false,
-          "title": "",
+          "title": "wanderlog.com | 502: Bad gateway",
           "description": "",
-          "h1s": [],
+          "h1s": [
+            "Bad gateway Error code 502"
+          ],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 0
+          "wordCount": 49
         },
         {
           "url": "https://wanderlog.com/ms/trip-planner-ai",
@@ -2534,16 +2516,16 @@
         {
           "url": "https://wanderlog.com/id/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/id/trip-planner-ai",
-          "status": 200,
-          "ok": true,
-          "title": "AI perencana perjalanan yang membuat pengaturan rencana perjalanan Anda menjadi sederhana, cepat, dan mudah",
-          "description": "Perencana perjalanan AI kami yang dapat disesuaikan dapat membantu Anda merencanakan perjalanan yang sempurna",
+          "status": 502,
+          "ok": false,
+          "title": "wanderlog.com | 502: Bad gateway",
+          "description": "",
           "h1s": [
-            "AI Perencana Perjalanan yang dapat Anda sesuaikan"
+            "Bad gateway Error code 502"
           ],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 1589
+          "wordCount": 49
         },
         {
           "url": "https://wanderlog.com/bn/trip-planner-ai",
@@ -2562,18 +2544,6 @@
         {
           "url": "https://wanderlog.com/pl/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/pl/trip-planner-ai",
-          "status": 0,
-          "ok": false,
-          "title": "",
-          "description": "",
-          "h1s": [],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
-        },
-        {
-          "url": "https://wanderlog.com/sv/trip-planner-ai",
-          "finalUrl": "https://wanderlog.com/sv/trip-planner-ai",
           "status": 502,
           "ok": false,
           "title": "wanderlog.com | 502: Bad gateway",
@@ -2584,6 +2554,20 @@
           "canonical": "",
           "schemaTypes": [],
           "wordCount": 49
+        },
+        {
+          "url": "https://wanderlog.com/sv/trip-planner-ai",
+          "finalUrl": "https://wanderlog.com/sv/trip-planner-ai",
+          "status": 200,
+          "ok": true,
+          "title": "AI-reseplanerare som gör det enkelt, snabbt och lätt att organisera din resa",
+          "description": "Vår anpassningsbara AI-reseplanerare kan hjälpa dig att planera den perfekta resan",
+          "h1s": [
+            "AI-reseplanerare som du kan anpassa"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 1286
         },
         {
           "url": "https://wanderlog.com/th/trip-planner-ai",
@@ -2630,16 +2614,16 @@
         {
           "url": "https://wanderlog.com/pa/trip-planner-ai",
           "finalUrl": "https://wanderlog.com/pa/trip-planner-ai",
-          "status": 200,
-          "ok": true,
-          "title": "ਯਾਤਰਾ ਯੋਜਕ AI ਜੋ ਤੁਹਾਡੀ ਯਾਤਰਾ ਨੂੰ ਸੰਗਠਿਤ ਕਰਨਾ ਸਧਾਰਨ, ਤੇਜ਼ ਅਤੇ ਆਸਾਨ ਬਣਾਉਂਦਾ ਹੈ",
-          "description": "ਸਾਡਾ ਕਸਟਮਾਈਜ਼ੇਬਲ AI ਯਾਤਰਾ ਯੋਜਕ ਤੁਹਾਨੂੰ ਸੰਪੂਰਨ ਯਾਤਰਾ ਦੀ ਯੋਜਨਾ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ",
+          "status": 502,
+          "ok": false,
+          "title": "wanderlog.com | 502: Bad gateway",
+          "description": "",
           "h1s": [
-            "ਯਾਤਰਾ ਯੋਜਕ AI ਜੋ ਤੁਸੀਂ ਕਸਟਮਾਈਜ਼ ਕਰ ਸਕਦੇ ਹੋ"
+            "Bad gateway Error code 502"
           ],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 51
+          "wordCount": 49
         }
       ],
       "schemaTypes": [],
@@ -2822,11 +2806,11 @@
         "https://wanderlog.com/ returned 502",
         "https://wanderlog.com/travel-planner returned 502",
         "https://wanderlog.com/trip-planner-ai returned 404",
-        "https://wanderlog.com/ko/trip-planner-ai returned 0",
+        "https://wanderlog.com/ko/trip-planner-ai returned 502",
         "https://wanderlog.com/es/trip-planner-ai returned 502",
         "https://wanderlog.com/pt/trip-planner-ai returned 502",
         "https://wanderlog.com/it/trip-planner-ai returned 502",
-        "https://wanderlog.com/tr/trip-planner-ai returned 0"
+        "https://wanderlog.com/ru/trip-planner-ai returned 502"
       ]
     },
     {
@@ -4163,7 +4147,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2354
+          "wordCount": 2348
         },
         {
           "url": "https://awardwallet.com/airlines/delta-skymiles/delta-business-traveler-program/",
@@ -4188,7 +4172,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2417
+          "wordCount": 2408
         },
         {
           "url": "https://awardwallet.com/blog/redeem-defunct-air-berlin-miles-travel-etihad/",
@@ -4213,7 +4197,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1120
+          "wordCount": 1127
         },
         {
           "url": "https://awardwallet.com/travel/ways-to-save-money-on-roadtrips/",
@@ -4237,7 +4221,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2161
+          "wordCount": 2128
         },
         {
           "url": "https://awardwallet.com/travel/airline-perks-birthday/",
@@ -4261,7 +4245,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1727
+          "wordCount": 1708
         },
         {
           "url": "https://awardwallet.com/airlines/set-flight-alerts-thrifty-traveler-pro/",
@@ -4285,7 +4269,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1549
+          "wordCount": 1556
         },
         {
           "url": "https://awardwallet.com/travel/tripadvisor-rewards/",
@@ -4309,7 +4293,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1227
+          "wordCount": 1277
         },
         {
           "url": "https://awardwallet.com/blog/tag/paid-travel/",
@@ -4351,7 +4335,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 6383
+          "wordCount": 6395
         },
         {
           "url": "https://awardwallet.com/credit-cards/british-airways-club/travel-together-ticket/",
@@ -4375,7 +4359,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2005
+          "wordCount": 2025
         },
         {
           "url": "https://awardwallet.com/blog/how-the-big-brands-stack-up-in-the-2016-acsi-travel-report/",
@@ -4400,7 +4384,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1437
+          "wordCount": 1405
         },
         {
           "url": "https://awardwallet.com/travel/airlines/best-flight-price-tracker/",
@@ -4424,7 +4408,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1919
+          "wordCount": 1909
         },
         {
           "url": "https://awardwallet.com/travel/airlines/business-class-vs-first-class/",
@@ -4449,7 +4433,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1305
+          "wordCount": 1289
         },
         {
           "url": "https://awardwallet.com/travel/how-to-get-fair-compensation-from-an-airline-or-hotel/",
@@ -4473,7 +4457,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2555
+          "wordCount": 2573
         },
         {
           "url": "https://awardwallet.com/blog/introducing-award-travel-101-awardwallets-official-facebook-community/",
@@ -4497,7 +4481,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1480
+          "wordCount": 1484
         },
         {
           "url": "https://awardwallet.com/travel/airlines/how-to-find-cheap-flights/",
@@ -4521,7 +4505,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1819
+          "wordCount": 1801
         },
         {
           "url": "https://awardwallet.com/airlines/american-aadvantage/aa-award-travel-rules/",
@@ -4545,7 +4529,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 3642
+          "wordCount": 3659
         },
         {
           "url": "https://awardwallet.com/airlines/united-mileageplus/united-award-travel/",
@@ -4569,7 +4553,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1806
+          "wordCount": 1811
         },
         {
           "url": "https://awardwallet.com/airlines/earn-elite-status-award-travel/",
@@ -4593,7 +4577,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2231
+          "wordCount": 2226
         },
         {
           "url": "https://awardwallet.com/travel/airlines/etihad-layover-hotel/",
@@ -4617,7 +4601,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1816
+          "wordCount": 1808
         }
       ],
       "schemaTypes": [
@@ -5552,14 +5536,14 @@
         {
           "url": "https://seats.aero/search",
           "finalUrl": "https://seats.aero/search",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Search",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "status": 403,
+          "ok": false,
+          "title": "Just a moment...",
+          "description": "",
           "h1s": [],
-          "canonical": "https://seats.aero/search",
+          "canonical": "",
           "schemaTypes": [],
-          "wordCount": 87
+          "wordCount": 2
         },
         {
           "url": "https://seats.aero/tools",
@@ -5836,13 +5820,6 @@
           "clusterLabel": "Booking with context",
           "priority": 8,
           "coverage": 0.43
-        },
-        {
-          "keyword": "airline points aggregator",
-          "clusterId": "traveler-profile",
-          "clusterLabel": "Traveler profile and loyalty",
-          "priority": 7,
-          "coverage": 0.43
         }
       ],
       "strengths": [
@@ -5850,6 +5827,7 @@
         "Visible AI/planning language in crawlable page copy or URL paths."
       ],
       "crawlLimitations": [
+        "https://seats.aero/search returned 403",
         "https://seats.aero/tools returned 404"
       ]
     },
@@ -6967,13 +6945,13 @@
           "coverage": 0.65
         },
         {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
           "coverage": 0.65
         },
         {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
           "coverage": 0.65
         }
       ],
@@ -7300,8 +7278,8 @@
           "coverage": 0.43
         },
         {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
           "coverage": 0.43
         }
       ],
@@ -7358,11 +7336,6 @@
           "competitorId": "awardwallet",
           "competitorName": "AwardWallet",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.49
         }
       ],
       "gapScore": 76
@@ -7383,11 +7356,6 @@
           "competitorId": "awardwallet",
           "competitorName": "AwardWallet",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.49
         }
       ],
       "gapScore": 76
@@ -7428,11 +7396,6 @@
           "competitorId": "awardwallet",
           "competitorName": "AwardWallet",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.49
         }
       ],
       "gapScore": 76
@@ -7595,11 +7558,6 @@
       "bestCompetitorCoverage": 0.65,
       "leaders": [
         {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.65
-        },
-        {
           "competitorId": "kayak",
           "competitorName": "KAYAK",
           "coverage": 0.65
@@ -7608,6 +7566,11 @@
           "competitorId": "awardwallet",
           "competitorName": "AwardWallet",
           "coverage": 0.65
+        },
+        {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
+          "coverage": 0.43
         }
       ],
       "gapScore": 70
@@ -7619,11 +7582,6 @@
       "packCoverage": 0.85,
       "bestCompetitorCoverage": 0.43,
       "leaders": [
-        {
-          "competitorId": "seatsaero",
-          "competitorName": "Seats.aero",
-          "coverage": 0.43
-        },
         {
           "competitorId": "roame",
           "competitorName": "Roame.travel",
@@ -7652,8 +7610,14 @@
       "clusterId": "traveler-profile",
       "clusterLabel": "Traveler profile and loyalty",
       "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0,
-      "leaders": [],
+      "bestCompetitorCoverage": 0.43,
+      "leaders": [
+        {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
+          "coverage": 0.43
+        }
+      ],
       "gapScore": 70
     },
     {
@@ -7880,11 +7844,6 @@
       "bestCompetitorCoverage": 0.65,
       "leaders": [
         {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.65
-        },
-        {
           "competitorId": "wanderlog",
           "competitorName": "Wanderlog",
           "coverage": 0.65
@@ -8063,12 +8022,12 @@
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
       "packCoverage": 0.85,
-      "bestCompetitorCoverage": 0.52,
+      "bestCompetitorCoverage": 0.39,
       "leaders": [
         {
           "competitorId": "booking",
           "competitorName": "Booking.com",
-          "coverage": 0.52
+          "coverage": 0.39
         },
         {
           "competitorId": "tripit",
@@ -8088,12 +8047,12 @@
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
       "packCoverage": 0.85,
-      "bestCompetitorCoverage": 0.65,
+      "bestCompetitorCoverage": 0.52,
       "leaders": [
         {
           "competitorId": "booking",
           "competitorName": "Booking.com",
-          "coverage": 0.65
+          "coverage": 0.52
         },
         {
           "competitorId": "tripit",

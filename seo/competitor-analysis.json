@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T14:04:25.034Z",
+  "generatedAt": "2026-05-12T14:43:50.556Z",
   "methodology": {
     "maxSitemapUrls": 4000,
     "maxPageFetches": 24,
@@ -1415,44 +1415,50 @@
         {
           "url": "https://www.booking.com/destination.html",
           "finalUrl": "https://www.booking.com/destination.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
+          "title": "Booking.com: Booking.com Online Hotel Reservations - List of Destinations",
           "description": "",
           "h1s": [
-            "JavaScript is disabled"
+            "Destinations"
           ],
-          "canonical": "",
+          "canonical": "https://www.booking.com/destination.html",
           "schemaTypes": [],
-          "wordCount": 0
+          "wordCount": 610
         },
         {
           "url": "https://www.booking.com/articles.html",
           "finalUrl": "https://www.booking.com/articles.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
           "title": "",
           "description": "",
           "h1s": [
-            "JavaScript is disabled"
+            "Travel articles"
           ],
-          "canonical": "",
+          "canonical": "https://www.booking.com/articles.html",
           "schemaTypes": [],
-          "wordCount": 0
+          "wordCount": 989
         },
         {
           "url": "https://www.booking.com/airport/us/day.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/day.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Dayton - James M. Cox (DAY) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de Dayton - James M. Cox DAY, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional de Dayton - James M. Cox (DAY), Dayton"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/day.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2023
         },
         {
           "url": "https://www.booking.com/airport/us/and.pt-pt.html",
@@ -1471,22 +1477,16 @@
         {
           "url": "https://www.booking.com/airport/us/day.en-gb.html",
           "finalUrl": "https://www.booking.com/airport/us/day.en-gb.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "The 10 closest hotels to James M. Cox Dayton International Airport (DAY) | Booking.com",
-          "description": "Hotels near James M. Cox Dayton International Airport DAY, United States. Get great savings on your reservation. Book online, pay at the hotel. Read hotel reviews from real guests.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotels near James M. Cox Dayton International Airport (DAY), Dayton"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/us/day.en-gb.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2713
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/us/atl.pt-pt.html",
@@ -1525,46 +1525,6 @@
         {
           "url": "https://www.booking.com/airport/us/lax.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/lax.pt-pt.html",
-          "status": 200,
-          "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Los Angeles (LAX) | Booking.com",
-          "description": "Hotéis perto de Aeroporto Internacional de Los Angeles LAX, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
-          "h1s": [
-            "Hotéis perto do Aeroporto Internacional de Los Angeles (LAX), Los Angeles"
-          ],
-          "canonical": "https://www.booking.com/airport/us/lax.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 3114
-        },
-        {
-          "url": "https://www.booking.com/airport/gb/lhr.pt-pt.html",
-          "finalUrl": "https://www.booking.com/airport/gb/lhr.pt-pt.html",
-          "status": 200,
-          "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto de Londres - Heathrow (LHR) | Booking.com",
-          "description": "Hotéis perto de Aeroporto de Londres - Heathrow LHR, Reino Unido. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
-          "h1s": [
-            "Hotéis perto do Aeroporto de Londres - Heathrow (LHR), Londres"
-          ],
-          "canonical": "https://www.booking.com/airport/gb/lhr.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 3312
-        },
-        {
-          "url": "https://www.booking.com/airport/jp/hnd.pt-pt.html",
-          "finalUrl": "https://www.booking.com/airport/jp/hnd.pt-pt.html",
           "status": 202,
           "ok": true,
           "title": "",
@@ -1575,6 +1535,40 @@
           "canonical": "",
           "schemaTypes": [],
           "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/gb/lhr.pt-pt.html",
+          "finalUrl": "https://www.booking.com/airport/gb/lhr.pt-pt.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/jp/hnd.pt-pt.html",
+          "finalUrl": "https://www.booking.com/airport/jp/hnd.pt-pt.html",
+          "status": 200,
+          "ok": true,
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Tóquio - Haneda (HND) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de Tóquio - Haneda HND, Japão. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "h1s": [
+            "Hotéis perto do Aeroporto Internacional de Tóquio - Haneda (HND), Tóquio"
+          ],
+          "canonical": "https://www.booking.com/airport/jp/hnd.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 3545
         },
         {
           "url": "https://www.booking.com/airport/us/dfw.pt-pt.html",
@@ -1599,66 +1593,6 @@
         {
           "url": "https://www.booking.com/airport/de/fra.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/de/fra.pt-pt.html",
-          "status": 200,
-          "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto de Frankfurt am Main (FRA) | Booking.com",
-          "description": "Hotéis perto de Aeroporto de Frankfurt am Main FRA, Alemanha. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
-          "h1s": [
-            "Hotéis perto do Aeroporto de Frankfurt am Main (FRA), Frankfurt am Main"
-          ],
-          "canonical": "https://www.booking.com/airport/de/fra.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 3274
-        },
-        {
-          "url": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
-          "finalUrl": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
-          "status": 200,
-          "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto de Paris - Charles de Gaulle (CDG) | Booking.com",
-          "description": "Hotéis perto de Aeroporto de Paris - Charles de Gaulle CDG, França. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
-          "h1s": [
-            "Hotéis perto do Aeroporto de Paris - Charles de Gaulle (CDG), Paris"
-          ],
-          "canonical": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2419
-        },
-        {
-          "url": "https://www.booking.com/airport/nl/ams.pt-pt.html",
-          "finalUrl": "https://www.booking.com/airport/nl/ams.pt-pt.html",
-          "status": 200,
-          "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto de Schiphol (AMS), Amesterdão | Booking.com",
-          "description": "Hotéis perto de Aeroporto de Schiphol AMS, Países Baixos. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
-          "h1s": [
-            "Hotéis perto do Aeroporto de Schiphol (AMS), Amesterdão"
-          ],
-          "canonical": "https://www.booking.com/airport/nl/ams.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 3184
-        },
-        {
-          "url": "https://www.booking.com/airport/us/den.pt-pt.html",
-          "finalUrl": "https://www.booking.com/airport/us/den.pt-pt.html",
           "status": 202,
           "ok": true,
           "title": "",
@@ -1669,6 +1603,54 @@
           "canonical": "",
           "schemaTypes": [],
           "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
+          "finalUrl": "https://www.booking.com/airport/fr/cdg.pt-pt.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/nl/ams.pt-pt.html",
+          "finalUrl": "https://www.booking.com/airport/nl/ams.pt-pt.html",
+          "status": 202,
+          "ok": true,
+          "title": "",
+          "description": "",
+          "h1s": [
+            "JavaScript is disabled"
+          ],
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
+        },
+        {
+          "url": "https://www.booking.com/airport/us/den.pt-pt.html",
+          "finalUrl": "https://www.booking.com/airport/us/den.pt-pt.html",
+          "status": 200,
+          "ok": true,
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Denver (DEN) | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional de Denver DEN, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "h1s": [
+            "Hotéis perto do Aeroporto Internacional de Denver (DEN), Denver"
+          ],
+          "canonical": "https://www.booking.com/airport/us/den.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 3308
         },
         {
           "url": "https://www.booking.com/airport/us/phx.pt-pt.html",
@@ -1688,35 +1670,47 @@
             "Person",
             "WebSite"
           ],
-          "wordCount": 2667
+          "wordCount": 2661
         },
         {
           "url": "https://www.booking.com/airport/us/las.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/las.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacinal de McCarran (LAS), Las Vegas | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacinal de McCarran LAS, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacinal de McCarran (LAS), Las Vegas"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/las.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2645
         },
         {
           "url": "https://www.booking.com/airport/us/iah.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/iah.pt-pt.html",
-          "status": 202,
+          "status": 200,
           "ok": true,
-          "title": "",
-          "description": "",
+          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional George Bush (IAH), Houston | Booking.com",
+          "description": "Hotéis perto de Aeroporto Internacional George Bush IAH, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
           "h1s": [
-            "JavaScript is disabled"
+            "Hotéis perto do Aeroporto Internacional George Bush (IAH), Houston"
           ],
-          "canonical": "",
-          "schemaTypes": [],
-          "wordCount": 0
+          "canonical": "https://www.booking.com/airport/us/iah.pt-pt.html",
+          "schemaTypes": [
+            "Brand",
+            "Corporation",
+            "ImageObject",
+            "Person",
+            "WebSite"
+          ],
+          "wordCount": 2590
         },
         {
           "url": "https://www.booking.com/airport/us/sfo.pt-pt.html",
@@ -1741,62 +1735,44 @@
         {
           "url": "https://www.booking.com/airport/us/msp.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/us/msp.pt-pt.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto de Minneapolis - Saint Paul (MSP) | Booking.com",
-          "description": "Hotéis perto de Aeroporto de Minneapolis - Saint Paul MSP, Estados Unidos da América. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotéis perto do Aeroporto de Minneapolis - Saint Paul (MSP), Minneapolis"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/us/msp.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2633
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/es/mad.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/es/mad.pt-pt.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Adolfo Suárez - Madrid-Barajas (MAD) | Booking.com",
-          "description": "Hotéis perto de Aeroporto Adolfo Suárez - Madrid-Barajas MAD, Espanha. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotéis perto do Aeroporto Adolfo Suárez - Madrid-Barajas (MAD), Madrid"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/es/mad.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2480
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         },
         {
           "url": "https://www.booking.com/airport/hk/hkg.pt-pt.html",
           "finalUrl": "https://www.booking.com/airport/hk/hkg.pt-pt.html",
-          "status": 200,
+          "status": 202,
           "ok": true,
-          "title": "Os 10 hotéis mais próximos do Aeroporto Internacional de Hong Kong (HKG) | Booking.com",
-          "description": "Hotéis perto de Aeroporto Internacional de Hong Kong HKG, Hong Kong. Receba excelentes descontos na sua reserva. Reserve on-line, pague no hotel. Leia comentários de clientes reais.",
+          "title": "",
+          "description": "",
           "h1s": [
-            "Hotéis perto do Aeroporto Internacional de Hong Kong (HKG), Hong Kong"
+            "JavaScript is disabled"
           ],
-          "canonical": "https://www.booking.com/airport/hk/hkg.pt-pt.html",
-          "schemaTypes": [
-            "Brand",
-            "Corporation",
-            "ImageObject",
-            "Person",
-            "WebSite"
-          ],
-          "wordCount": 2109
+          "canonical": "",
+          "schemaTypes": [],
+          "wordCount": 0
         }
       ],
       "schemaTypes": [
@@ -1812,34 +1788,27 @@
           "clusterId": "travel-day-operations",
           "clusterLabel": "Travel-day operations",
           "priority": 6,
-          "coverage": 0.65
+          "coverage": 0.52
         },
         {
-          "keyword": "airport security wait times",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
+          "keyword": "compare flights with traveler preferences",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
           "coverage": 0.49
         },
         {
-          "keyword": "live TSA wait times",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
+          "keyword": "compare flights with loyalty context",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
           "coverage": 0.49
         },
         {
-          "keyword": "airport wait time tracker",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
-          "coverage": 0.49
-        },
-        {
-          "keyword": "TSA wait time app",
-          "clusterId": "airport-security",
-          "clusterLabel": "Airport security intelligence",
-          "priority": 7,
+          "keyword": "flight hotel itinerary updates",
+          "clusterId": "travel-day-operations",
+          "clusterLabel": "Travel-day operations",
+          "priority": 6,
           "coverage": 0.49
         },
         {
@@ -1857,9 +1826,37 @@
           "coverage": 0.43
         },
         {
+          "keyword": "award travel planning app",
+          "clusterId": "booking-context",
+          "clusterLabel": "Booking with context",
+          "priority": 8,
+          "coverage": 0.43
+        },
+        {
           "keyword": "TSA wait times",
           "clusterId": "airport-security",
           "clusterLabel": "Airport security intelligence",
+          "priority": 7,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "loyalty program organizer",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "travel loyalty number organizer",
+          "clusterId": "traveler-profile",
+          "clusterLabel": "Traveler profile and loyalty",
+          "priority": 7,
+          "coverage": 0.43
+        },
+        {
+          "keyword": "flight history tracker",
+          "clusterId": "travel-stats-and-maps",
+          "clusterLabel": "Travel stats, maps, and history analytics",
           "priority": 7,
           "coverage": 0.43
         },
@@ -4017,7 +4014,7 @@
           "h1s": [],
           "canonical": "",
           "schemaTypes": [],
-          "wordCount": 2192
+          "wordCount": 2187
         },
         {
           "url": "https://awardwallet.com/features",
@@ -4066,7 +4063,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2408
+          "wordCount": 2427
         },
         {
           "url": "https://awardwallet.com/blog/redeem-defunct-air-berlin-miles-travel-etihad/",
@@ -4091,7 +4088,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1163
+          "wordCount": 1110
         },
         {
           "url": "https://awardwallet.com/travel/airline-perks-birthday/",
@@ -4115,7 +4112,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1692
+          "wordCount": 1737
         },
         {
           "url": "https://awardwallet.com/travel/father-son-3-day-trip/",
@@ -4139,7 +4136,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2347
+          "wordCount": 2364
         },
         {
           "url": "https://awardwallet.com/airlines/set-flight-alerts-thrifty-traveler-pro/",
@@ -4163,7 +4160,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1529
+          "wordCount": 1530
         },
         {
           "url": "https://awardwallet.com/blog/tag/paid-travel/",
@@ -4205,7 +4202,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 6377
+          "wordCount": 6422
         },
         {
           "url": "https://awardwallet.com/credit-cards/british-airways-club/travel-together-ticket/",
@@ -4229,7 +4226,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1994
+          "wordCount": 1995
         },
         {
           "url": "https://awardwallet.com/blog/how-the-big-brands-stack-up-in-the-2016-acsi-travel-report/",
@@ -4254,7 +4251,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1402
+          "wordCount": 1398
         },
         {
           "url": "https://awardwallet.com/travel/airlines/best-flight-price-tracker/",
@@ -4278,7 +4275,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1886
+          "wordCount": 1901
         },
         {
           "url": "https://awardwallet.com/travel/airlines/business-class-vs-first-class/",
@@ -4303,7 +4300,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1291
+          "wordCount": 1297
         },
         {
           "url": "https://awardwallet.com/travel/how-to-get-fair-compensation-from-an-airline-or-hotel/",
@@ -4327,7 +4324,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2582
+          "wordCount": 2577
         },
         {
           "url": "https://awardwallet.com/blog/introducing-award-travel-101-awardwallets-official-facebook-community/",
@@ -4351,7 +4348,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1480
+          "wordCount": 1474
         },
         {
           "url": "https://awardwallet.com/travel/airlines/how-to-find-cheap-flights/",
@@ -4375,7 +4372,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1808
+          "wordCount": 1820
         },
         {
           "url": "https://awardwallet.com/airlines/american-aadvantage/aa-award-travel-rules/",
@@ -4399,7 +4396,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 3677
+          "wordCount": 3658
         },
         {
           "url": "https://awardwallet.com/travel/ways-to-save-money-on-roadtrips/",
@@ -4423,7 +4420,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2157
+          "wordCount": 2145
         },
         {
           "url": "https://awardwallet.com/airlines/united-mileageplus/united-award-travel/",
@@ -4447,7 +4444,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1788
+          "wordCount": 1777
         },
         {
           "url": "https://awardwallet.com/airlines/earn-elite-status-award-travel/",
@@ -4471,7 +4468,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2227
+          "wordCount": 2237
         },
         {
           "url": "https://awardwallet.com/travel/airlines/etihad-layover-hotel/",
@@ -4495,7 +4492,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 1815
+          "wordCount": 1805
         },
         {
           "url": "https://awardwallet.com/travel/airhelp/",
@@ -4519,7 +4516,7 @@
             "WebPage",
             "WebSite"
           ],
-          "wordCount": 2832
+          "wordCount": 2803
         }
       ],
       "schemaTypes": [
@@ -5383,59 +5380,59 @@
       "topPathSegments": [
         {
           "segment": "united",
-          "count": 347
-        },
-        {
-          "segment": "qantas",
-          "count": 336
+          "count": 359
         },
         {
           "segment": "american",
-          "count": 334
+          "count": 359
         },
         {
           "segment": "alaska",
-          "count": 317
+          "count": 334
+        },
+        {
+          "segment": "qantas",
+          "count": 324
         },
         {
           "segment": "aeroplan",
-          "count": 297
-        },
-        {
-          "segment": "virginatlantic",
-          "count": 296
+          "count": 311
         },
         {
           "segment": "delta",
-          "count": 258
+          "count": 302
         },
         {
-          "segment": "flyingblue",
-          "count": 246
+          "segment": "virginatlantic",
+          "count": 274
         },
         {
           "segment": "smiles",
-          "count": 222
-        },
-        {
-          "segment": "azul",
-          "count": 180
-        },
-        {
-          "segment": "jetblue",
-          "count": 162
+          "count": 198
         },
         {
           "segment": "velocity",
-          "count": 154
+          "count": 174
+        },
+        {
+          "segment": "azul",
+          "count": 172
+        },
+        {
+          "segment": "flyingblue",
+          "count": 166
+        },
+        {
+          "segment": "jetblue",
+          "count": 148
         },
         {
           "segment": "aeromexico",
-          "count": 150
+          "count": 138
         },
         {
           "segment": "etihad",
-          "count": 102
+          "count": 126
         }
       ],
       "fetchedPages": [
@@ -5478,256 +5475,256 @@
           "wordCount": 16
         },
         {
-          "url": "https://seats.aero/finnair/departing/HKG",
-          "finalUrl": "https://seats.aero/finnair/departing/HKG",
+          "url": "https://seats.aero/united/departing/CAI",
+          "finalUrl": "https://seats.aero/united/departing/CAI",
           "status": 200,
           "ok": true,
-          "title": "seats.aero - Flights departing from HKG (Hong Kong International Airport) - Finnair Plus Award Flights",
+          "title": "seats.aero - Flights departing from CAI (Cairo International Airport) - United MileagePlus Award Flights",
           "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
           "h1s": [],
-          "canonical": "https://seats.aero/finnair/departing/HKG",
-          "schemaTypes": [],
-          "wordCount": 13
-        },
-        {
-          "url": "https://seats.aero/finnair/arriving/HKG",
-          "finalUrl": "https://seats.aero/finnair/arriving/HKG",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights arriving at HKG (Hong Kong International Airport) - Finnair Plus Points Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/arriving/HKG",
-          "schemaTypes": [],
-          "wordCount": 13
-        },
-        {
-          "url": "https://seats.aero/finnair/departing/PIT",
-          "finalUrl": "https://seats.aero/finnair/departing/PIT",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights departing from PIT (Pittsburgh International Airport) - Finnair Plus Award Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/departing/PIT",
+          "canonical": "https://seats.aero/united/departing/CAI",
           "schemaTypes": [],
           "wordCount": 12
         },
         {
-          "url": "https://seats.aero/finnair/arriving/PIT",
-          "finalUrl": "https://seats.aero/finnair/arriving/PIT",
+          "url": "https://seats.aero/united/arriving/CAI",
+          "finalUrl": "https://seats.aero/united/arriving/CAI",
           "status": 200,
           "ok": true,
-          "title": "seats.aero - Flights arriving at PIT (Pittsburgh International Airport) - Finnair Plus Points Flights",
+          "title": "seats.aero - Flights arriving at CAI (Cairo International Airport) - United MileagePlus Points Flights",
           "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
           "h1s": [],
-          "canonical": "https://seats.aero/finnair/arriving/PIT",
+          "canonical": "https://seats.aero/united/arriving/CAI",
           "schemaTypes": [],
           "wordCount": 12
         },
         {
-          "url": "https://seats.aero/finnair/departing/AMS",
-          "finalUrl": "https://seats.aero/finnair/departing/AMS",
+          "url": "https://seats.aero/finnair/departing/IST",
+          "finalUrl": "https://seats.aero/finnair/departing/IST",
           "status": 200,
           "ok": true,
-          "title": "seats.aero - Flights departing from AMS (Amsterdam Airport Schiphol) - Finnair Plus Award Flights",
+          "title": "seats.aero - Flights departing from IST (Istanbul Airport) - Finnair Plus Award Flights",
           "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
           "h1s": [],
-          "canonical": "https://seats.aero/finnair/departing/AMS",
-          "schemaTypes": [],
-          "wordCount": 12
-        },
-        {
-          "url": "https://seats.aero/finnair/arriving/AMS",
-          "finalUrl": "https://seats.aero/finnair/arriving/AMS",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights arriving at AMS (Amsterdam Airport Schiphol) - Finnair Plus Points Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/arriving/AMS",
-          "schemaTypes": [],
-          "wordCount": 12
-        },
-        {
-          "url": "https://seats.aero/finnair/departing/NCE",
-          "finalUrl": "https://seats.aero/finnair/departing/NCE",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights departing from NCE (Nice Cote d'Azur Airport) - Finnair Plus Award Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/departing/NCE",
-          "schemaTypes": [],
-          "wordCount": 13
-        },
-        {
-          "url": "https://seats.aero/finnair/arriving/NCE",
-          "finalUrl": "https://seats.aero/finnair/arriving/NCE",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights arriving at NCE (Nice Cote d'Azur Airport) - Finnair Plus Points Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/arriving/NCE",
-          "schemaTypes": [],
-          "wordCount": 13
-        },
-        {
-          "url": "https://seats.aero/finnair/departing/HND",
-          "finalUrl": "https://seats.aero/finnair/departing/HND",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights departing from HND (Haneda Airport) - Finnair Plus Award Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/departing/HND",
+          "canonical": "https://seats.aero/finnair/departing/IST",
           "schemaTypes": [],
           "wordCount": 11
         },
         {
-          "url": "https://seats.aero/finnair/arriving/HND",
-          "finalUrl": "https://seats.aero/finnair/arriving/HND",
+          "url": "https://seats.aero/finnair/arriving/IST",
+          "finalUrl": "https://seats.aero/finnair/arriving/IST",
           "status": 200,
           "ok": true,
-          "title": "seats.aero - Flights arriving at HND (Haneda Airport) - Finnair Plus Points Flights",
+          "title": "seats.aero - Flights arriving at IST (Istanbul Airport) - Finnair Plus Points Flights",
           "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
           "h1s": [],
-          "canonical": "https://seats.aero/finnair/arriving/HND",
+          "canonical": "https://seats.aero/finnair/arriving/IST",
           "schemaTypes": [],
           "wordCount": 11
         },
         {
-          "url": "https://seats.aero/finnair/departing/PER",
-          "finalUrl": "https://seats.aero/finnair/departing/PER",
+          "url": "https://seats.aero/aeroplan/departing/RAI",
+          "finalUrl": "https://seats.aero/aeroplan/departing/RAI",
           "status": 200,
           "ok": true,
-          "title": "seats.aero - Flights departing from PER (Perth Airport) - Finnair Plus Award Flights",
+          "title": "seats.aero - Flights departing from RAI (Nelson Mandela International Airport) - Air Canada Aeroplan Award Flights",
           "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
           "h1s": [],
-          "canonical": "https://seats.aero/finnair/departing/PER",
-          "schemaTypes": [],
-          "wordCount": 11
-        },
-        {
-          "url": "https://seats.aero/finnair/arriving/PER",
-          "finalUrl": "https://seats.aero/finnair/arriving/PER",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights arriving at PER (Perth Airport) - Finnair Plus Points Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/arriving/PER",
-          "schemaTypes": [],
-          "wordCount": 11
-        },
-        {
-          "url": "https://seats.aero/american/departing/JAI",
-          "finalUrl": "https://seats.aero/american/departing/JAI",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights departing from JAI (Jaipur International Airport) - American AAdvantage Award Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/american/departing/JAI",
-          "schemaTypes": [],
-          "wordCount": 12
-        },
-        {
-          "url": "https://seats.aero/american/arriving/JAI",
-          "finalUrl": "https://seats.aero/american/arriving/JAI",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights arriving at JAI (Jaipur International Airport) - American AAdvantage Points Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/american/arriving/JAI",
-          "schemaTypes": [],
-          "wordCount": 12
-        },
-        {
-          "url": "https://seats.aero/qantas/departing/SAI",
-          "finalUrl": "https://seats.aero/qantas/departing/SAI",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights departing from SAI (Siem Reap-Angkor International Airport) - Qantas Frequent Flyer Award Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/qantas/departing/SAI",
+          "canonical": "https://seats.aero/aeroplan/departing/RAI",
           "schemaTypes": [],
           "wordCount": 14
         },
         {
-          "url": "https://seats.aero/qantas/arriving/SAI",
-          "finalUrl": "https://seats.aero/qantas/arriving/SAI",
+          "url": "https://seats.aero/aeroplan/arriving/RAI",
+          "finalUrl": "https://seats.aero/aeroplan/arriving/RAI",
           "status": 200,
           "ok": true,
-          "title": "seats.aero - Flights arriving at SAI (Siem Reap-Angkor International Airport) - Qantas Frequent Flyer Points Flights",
+          "title": "seats.aero - Flights arriving at RAI (Nelson Mandela International Airport) - Air Canada Aeroplan Points Flights",
           "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
           "h1s": [],
-          "canonical": "https://seats.aero/qantas/arriving/SAI",
+          "canonical": "https://seats.aero/aeroplan/arriving/RAI",
           "schemaTypes": [],
           "wordCount": 14
         },
         {
-          "url": "https://seats.aero/finnair/departing/YYZ",
-          "finalUrl": "https://seats.aero/finnair/departing/YYZ",
+          "url": "https://seats.aero/finnair/departing/BOM",
+          "finalUrl": "https://seats.aero/finnair/departing/BOM",
           "status": 200,
           "ok": true,
-          "title": "seats.aero - Flights departing from YYZ (Toronto Pearson International Airport) - Finnair Plus Award Flights",
+          "title": "seats.aero - Flights departing from BOM (Chhatrapati Shivaji Maharaj International Airport) - Finnair Plus Award Flights",
           "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
           "h1s": [],
-          "canonical": "https://seats.aero/finnair/departing/YYZ",
-          "schemaTypes": [],
-          "wordCount": 13
-        },
-        {
-          "url": "https://seats.aero/finnair/arriving/YYZ",
-          "finalUrl": "https://seats.aero/finnair/arriving/YYZ",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights arriving at YYZ (Toronto Pearson International Airport) - Finnair Plus Points Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/finnair/arriving/YYZ",
-          "schemaTypes": [],
-          "wordCount": 13
-        },
-        {
-          "url": "https://seats.aero/american/departing/CAI",
-          "finalUrl": "https://seats.aero/american/departing/CAI",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights departing from CAI (Cairo International Airport) - American AAdvantage Award Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/american/departing/CAI",
-          "schemaTypes": [],
-          "wordCount": 12
-        },
-        {
-          "url": "https://seats.aero/american/arriving/CAI",
-          "finalUrl": "https://seats.aero/american/arriving/CAI",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights arriving at CAI (Cairo International Airport) - American AAdvantage Points Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/american/arriving/CAI",
-          "schemaTypes": [],
-          "wordCount": 12
-        },
-        {
-          "url": "https://seats.aero/aeroplan/departing/SAI",
-          "finalUrl": "https://seats.aero/aeroplan/departing/SAI",
-          "status": 200,
-          "ok": true,
-          "title": "seats.aero - Flights departing from SAI (Siem Reap-Angkor International Airport) - Air Canada Aeroplan Award Flights",
-          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
-          "h1s": [],
-          "canonical": "https://seats.aero/aeroplan/departing/SAI",
+          "canonical": "https://seats.aero/finnair/departing/BOM",
           "schemaTypes": [],
           "wordCount": 14
+        },
+        {
+          "url": "https://seats.aero/finnair/arriving/BOM",
+          "finalUrl": "https://seats.aero/finnair/arriving/BOM",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights arriving at BOM (Chhatrapati Shivaji Maharaj International Airport) - Finnair Plus Points Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/arriving/BOM",
+          "schemaTypes": [],
+          "wordCount": 14
+        },
+        {
+          "url": "https://seats.aero/finnair/departing/GIG",
+          "finalUrl": "https://seats.aero/finnair/departing/GIG",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights departing from GIG (RIOgaleao International Airport) - Finnair Plus Award Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/departing/GIG",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/finnair/arriving/GIG",
+          "finalUrl": "https://seats.aero/finnair/arriving/GIG",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights arriving at GIG (RIOgaleao International Airport) - Finnair Plus Points Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/arriving/GIG",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/finnair/departing/CMB",
+          "finalUrl": "https://seats.aero/finnair/departing/CMB",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights departing from CMB (Bandaranaike International Airport) - Finnair Plus Award Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/departing/CMB",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/finnair/arriving/CMB",
+          "finalUrl": "https://seats.aero/finnair/arriving/CMB",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights arriving at CMB (Bandaranaike International Airport) - Finnair Plus Points Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/arriving/CMB",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/alaska/departing/FAI",
+          "finalUrl": "https://seats.aero/alaska/departing/FAI",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights departing from FAI (Fairbanks International Airport) - Alaska Atmos Rewards Award Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/alaska/departing/FAI",
+          "schemaTypes": [],
+          "wordCount": 13
+        },
+        {
+          "url": "https://seats.aero/alaska/arriving/FAI",
+          "finalUrl": "https://seats.aero/alaska/arriving/FAI",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights arriving at FAI (Fairbanks International Airport) - Alaska Atmos Rewards Points Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/alaska/arriving/FAI",
+          "schemaTypes": [],
+          "wordCount": 13
+        },
+        {
+          "url": "https://seats.aero/finnair/departing/PHL",
+          "finalUrl": "https://seats.aero/finnair/departing/PHL",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights departing from PHL (Philadelphia International Airport) - Finnair Plus Award Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/departing/PHL",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/finnair/arriving/PHL",
+          "finalUrl": "https://seats.aero/finnair/arriving/PHL",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights arriving at PHL (Philadelphia International Airport) - Finnair Plus Points Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/arriving/PHL",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/finnair/departing/LHR",
+          "finalUrl": "https://seats.aero/finnair/departing/LHR",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights departing from LHR (London Heathrow Airport) - Finnair Plus Award Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/departing/LHR",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/finnair/arriving/LHR",
+          "finalUrl": "https://seats.aero/finnair/arriving/LHR",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights arriving at LHR (London Heathrow Airport) - Finnair Plus Points Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/finnair/arriving/LHR",
+          "schemaTypes": [],
+          "wordCount": 12
+        },
+        {
+          "url": "https://seats.aero/turkish/departing/CAI",
+          "finalUrl": "https://seats.aero/turkish/departing/CAI",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights departing from CAI (Cairo International Airport) - Turkish Miles&Smiles Award Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/turkish/departing/CAI",
+          "schemaTypes": [],
+          "wordCount": 13
+        },
+        {
+          "url": "https://seats.aero/turkish/arriving/CAI",
+          "finalUrl": "https://seats.aero/turkish/arriving/CAI",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights arriving at CAI (Cairo International Airport) - Turkish Miles&Smiles Points Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/turkish/arriving/CAI",
+          "schemaTypes": [],
+          "wordCount": 13
+        },
+        {
+          "url": "https://seats.aero/aeroplan/departing/JAI",
+          "finalUrl": "https://seats.aero/aeroplan/departing/JAI",
+          "status": 200,
+          "ok": true,
+          "title": "seats.aero - Flights departing from JAI (Jaipur International Airport) - Air Canada Aeroplan Award Flights",
+          "description": "The fastest search engine for your points and miles. Easily discover award availability on popular airlines and mileage programs.",
+          "h1s": [],
+          "canonical": "https://seats.aero/aeroplan/departing/JAI",
+          "schemaTypes": [],
+          "wordCount": 13
         }
       ],
       "schemaTypes": [],
@@ -6283,36 +6280,6 @@
   ],
   "packGapMatrix": [
     {
-      "keyword": "points and miles trip planner",
-      "clusterId": "booking-context",
-      "clusterLabel": "Booking with context",
-      "packCoverage": 0.37,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "pointme",
-          "competitorName": "point.me",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.43
-        }
-      ],
-      "gapScore": 117
-    },
-    {
       "keyword": "AI trip planner",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
@@ -6583,6 +6550,36 @@
       "gapScore": 96
     },
     {
+      "keyword": "booking email itinerary",
+      "clusterId": "trip-organization",
+      "clusterLabel": "Trip organization",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 96
+    },
+    {
       "keyword": "itinerary from confirmation emails",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -6724,36 +6721,6 @@
       "gapScore": 90
     },
     {
-      "keyword": "booking email itinerary",
-      "clusterId": "trip-organization",
-      "clusterLabel": "Trip organization",
-      "packCoverage": 0.85,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 90
-    },
-    {
       "keyword": "travel email parser",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -6761,86 +6728,6 @@
       "bestCompetitorCoverage": 0,
       "leaders": [],
       "gapScore": 90
-    },
-    {
-      "keyword": "AI flight booking assistant",
-      "clusterId": "booking-context",
-      "clusterLabel": "Booking with context",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 86
-    },
-    {
-      "keyword": "AI hotel booking assistant",
-      "clusterId": "booking-context",
-      "clusterLabel": "Booking with context",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 86
-    },
-    {
-      "keyword": "travel booking assistant",
-      "clusterId": "booking-context",
-      "clusterLabel": "Booking with context",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "navan",
-          "competitorName": "Navan",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "mindtrip",
-          "competitorName": "Mindtrip",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "wanderlog",
-          "competitorName": "Wanderlog",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "kayak",
-          "competitorName": "KAYAK",
-          "coverage": 0.65
-        }
-      ],
-      "gapScore": 86
     },
     {
       "keyword": "book flights from itinerary",
@@ -6903,10 +6790,90 @@
       "gapScore": 86
     },
     {
+      "keyword": "AI flight booking assistant",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 80
+    },
+    {
+      "keyword": "AI hotel booking assistant",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 80
+    },
+    {
+      "keyword": "travel booking assistant",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 0.85,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "wanderlog",
+          "competitorName": "Wanderlog",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "kayak",
+          "competitorName": "KAYAK",
+          "coverage": 0.65
+        }
+      ],
+      "gapScore": 80
+    },
+    {
       "keyword": "travel booking with calendar context",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
-      "packCoverage": 0.55,
+      "packCoverage": 0.85,
       "bestCompetitorCoverage": 0.65,
       "leaders": [
         {
@@ -6915,13 +6882,43 @@
           "coverage": 0.65
         }
       ],
-      "gapScore": 86
+      "gapScore": 80
+    },
+    {
+      "keyword": "points and miles trip planner",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "packCoverage": 1,
+      "bestCompetitorCoverage": 0.65,
+      "leaders": [
+        {
+          "competitorId": "navan",
+          "competitorName": "Navan",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "pointme",
+          "competitorName": "point.me",
+          "coverage": 0.65
+        },
+        {
+          "competitorId": "mindtrip",
+          "competitorName": "Mindtrip",
+          "coverage": 0.43
+        }
+      ],
+      "gapScore": 80
     },
     {
       "keyword": "award travel planning app",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
-      "packCoverage": 0.55,
+      "packCoverage": 0.85,
       "bestCompetitorCoverage": 0.65,
       "leaders": [
         {
@@ -6945,13 +6942,13 @@
           "coverage": 0.65
         }
       ],
-      "gapScore": 86
+      "gapScore": 80
     },
     {
       "keyword": "compare flights with loyalty context",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
-      "packCoverage": 0.55,
+      "packCoverage": 0.85,
       "bestCompetitorCoverage": 0.65,
       "leaders": [
         {
@@ -6960,12 +6957,17 @@
           "coverage": 0.65
         },
         {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
+          "coverage": 0.49
+        },
+        {
           "competitorId": "roame",
           "competitorName": "Roame.travel",
           "coverage": 0.49
         }
       ],
-      "gapScore": 86
+      "gapScore": 80
     },
     {
       "keyword": "travel analytics",
@@ -7003,11 +7005,6 @@
           "competitorId": "pointme",
           "competitorName": "point.me",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.49
         }
       ],
       "gapScore": 76
@@ -7028,11 +7025,6 @@
           "competitorId": "awardwallet",
           "competitorName": "AwardWallet",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.49
         }
       ],
       "gapScore": 76
@@ -7083,11 +7075,6 @@
           "competitorId": "pointme",
           "competitorName": "point.me",
           "coverage": 0.65
-        },
-        {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.49
         }
       ],
       "gapScore": 76
@@ -7317,8 +7304,14 @@
       "clusterId": "traveler-profile",
       "clusterLabel": "Traveler profile and loyalty",
       "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0,
-      "leaders": [],
+      "bestCompetitorCoverage": 0.43,
+      "leaders": [
+        {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
+          "coverage": 0.43
+        }
+      ],
       "gapScore": 70
     },
     {
@@ -7326,8 +7319,14 @@
       "clusterId": "traveler-profile",
       "clusterLabel": "Traveler profile and loyalty",
       "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0,
-      "leaders": [],
+      "bestCompetitorCoverage": 0.43,
+      "leaders": [
+        {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
+          "coverage": 0.43
+        }
+      ],
       "gapScore": 70
     },
     {
@@ -7583,8 +7582,14 @@
       "clusterId": "travel-stats-and-maps",
       "clusterLabel": "Travel stats, maps, and history analytics",
       "packCoverage": 0.85,
-      "bestCompetitorCoverage": 0,
-      "leaders": [],
+      "bestCompetitorCoverage": 0.43,
+      "leaders": [
+        {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
+          "coverage": 0.43
+        }
+      ],
       "gapScore": 70
     },
     {
@@ -7676,31 +7681,6 @@
       "gapScore": 66
     },
     {
-      "keyword": "airport wait time and drive time",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "packCoverage": 0.55,
-      "bestCompetitorCoverage": 0.65,
-      "leaders": [
-        {
-          "competitorId": "booking",
-          "competitorName": "Booking.com",
-          "coverage": 0.65
-        },
-        {
-          "competitorId": "tripit",
-          "competitorName": "TripIt",
-          "coverage": 0.39
-        },
-        {
-          "competitorId": "roame",
-          "competitorName": "Roame.travel",
-          "coverage": 0.39
-        }
-      ],
-      "gapScore": 66
-    },
-    {
       "keyword": "trip update app",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
@@ -7719,6 +7699,11 @@
         {
           "competitorId": "layla",
           "competitorName": "Layla",
+          "coverage": 0.49
+        },
+        {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
           "coverage": 0.49
         },
         {
@@ -7771,6 +7756,31 @@
         }
       ],
       "gapScore": 60
+    },
+    {
+      "keyword": "airport wait time and drive time",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "packCoverage": 0.55,
+      "bestCompetitorCoverage": 0.52,
+      "leaders": [
+        {
+          "competitorId": "booking",
+          "competitorName": "Booking.com",
+          "coverage": 0.52
+        },
+        {
+          "competitorId": "tripit",
+          "competitorName": "TripIt",
+          "coverage": 0.39
+        },
+        {
+          "competitorId": "roame",
+          "competitorName": "Roame.travel",
+          "coverage": 0.39
+        }
+      ],
+      "gapScore": 60
     }
   ],
   "strategicGaps": [
@@ -7792,11 +7802,11 @@
       "gap": "Trip organization and email-confirmation organization are under-owned by Pack relative to itinerary organizer competitors.",
       "evidence": [
         "automatic trip itinerary: leaders Navan, TravelPerk, AwardWallet, point.me",
+        "booking email itinerary: leaders Navan, Mindtrip, TripIt, Wanderlog",
         "itinerary from confirmation emails: leaders Navan, TripIt, Wanderlog, AwardWallet",
         "travel itinerary organizer: leaders none detected",
         "trip organizer app: leaders none detected",
-        "organize travel confirmations: leaders TripIt, Wanderlog, KAYAK",
-        "email itinerary organizer: leaders Mindtrip, TripIt"
+        "organize travel confirmations: leaders TripIt, Wanderlog, KAYAK"
       ],
       "action": "Turn /travel-history and /upcoming-trip-details into stronger itinerary-organizer pages, then add a focused guide targeting travel itinerary organizer, trip organizer app, and email itinerary organizer."
     },
@@ -7830,9 +7840,9 @@
       "priority": "medium",
       "gap": "GEO answer readiness should be expanded around comparison questions, not AI-only markup.",
       "evidence": [
-        "Booking with context: 9 high-gap terms",
         "AI travel planning: 8 high-gap terms",
         "Trip organization: 11 high-gap terms",
+        "Booking with context: 9 high-gap terms",
         "Travel stats, maps, and history analytics: 1 high-gap terms",
         "Airport security intelligence: 1 high-gap terms"
       ],

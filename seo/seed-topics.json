@@ -115,7 +115,7 @@
         "What is the best way to keep booking context attached to a trip?"
       ],
       "preferredPages": [
-        "/guides/ai-travel-planning",
+        "/guides/booking-context",
         "/travel-booking",
         "/trip-calendar-sync",
         "/traveler-profiles"

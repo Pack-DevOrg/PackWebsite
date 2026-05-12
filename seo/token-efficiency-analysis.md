@@ -94,6 +94,30 @@ This is a runner validation, not a broad benchmark result.
 
 This confirms the DeepPlanning path can now produce real token totals. Use a larger same-corpus run before making aggregate claims.
 
+## Best Current DeepPlanning Estimate
+
+This is the strongest estimate available without running a broad paid competitor baseline.
+
+Published DeepPlanning materials do not include token totals. They do include interaction-cost proxies: the paper says Travel Planning cost is measured by average tool invocations and interaction turns per task, with a maximum of 400 tool calls allowed per task. In its examples, Claude 4.5 Opus drops from 16.9 to 12.5 interaction turns and from 79.5 to 72.9 tool calls when thinking mode is enabled; GPT-5.2-high is described as making roughly 224 tool invocations per task.
+
+For the same DeepPlanning case 22, a cheap raw no-tools Haiku baseline recorded:
+
+- Artifact: `PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/raw-query-baseline-haiku.json`
+- Input tokens: 216
+- Output tokens: 750
+- Total tokens: 966
+- Estimated model cost: $0.004363
+
+Using 966 tokens as a deliberately low per-turn anchor:
+
+- 12.5 turns implies at least about 12,075 tokens.
+- 16.9 turns implies at least about 16,325 tokens.
+- 40 turns implies at least about 38,640 tokens.
+- 150 turns implies at least about 144,900 tokens.
+- 400 turns implies at least about 386,400 tokens.
+
+These are lower bounds, not expected totals. Real agent runs include tool schemas, growing message history, tool outputs, retries, final report conversion, and possibly hidden reasoning tokens. The most honest current statement is: Pack measured 31,144 tokens on this full-planner case; published DeepPlanning agent statistics suggest frontier agents commonly spend many more interaction/tool steps than a raw answer, but we do not yet have exact competitor token totals.
+
 ## Claims To Avoid
 
 - Do not claim Pack uses X% less energy than competitors from this evidence.

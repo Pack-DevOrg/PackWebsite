@@ -133,12 +133,6 @@ export const persistSession = async (session: AuthSession): Promise<void> => {
   });
 
   try {
-    window.sessionStorage.setItem(SESSION_STORAGE_KEY, payload);
-  } catch {
-    // Ignore legacy session storage write failures.
-  }
-
-  try {
     window.localStorage.removeItem(LEGACY_LOCAL_STORAGE_KEY);
   } catch {
     // Ignore local storage clear failures.
@@ -212,11 +206,6 @@ export const storePendingPkce = (pending: PendingPkceSession): void => {
   } catch {
     // Ignore session storage write failures.
   }
-  try {
-    window.localStorage.setItem(PKCE_STORAGE_KEY, payload);
-  } catch {
-    // Ignore local storage write failures.
-  }
   setCookie(PKCE_COOKIE_KEY, payload, {
     domain: getCrossSubdomainCookieDomain(),
     maxAgeSeconds: Math.floor(PKCE_MAX_AGE_MS / 1000),
@@ -247,11 +236,7 @@ export const getPendingPkce = (): PendingPkceSession | null => {
       // Ignore session storage write failures.
     }
 
-    try {
-      window.localStorage.setItem(PKCE_STORAGE_KEY, JSON.stringify(pending));
-    } catch {
-      // Ignore local storage write failures.
-    }
+    window.localStorage.removeItem(PKCE_STORAGE_KEY);
 
     return pending;
   } catch {

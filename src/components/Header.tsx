@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import styled from "styled-components";
 import { shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -18,7 +19,7 @@ const StyledHeader = styled.header`
   }
 `;
 
-const HeaderContainer = styled.div`
+const HeaderContainer = styled.div<{ $isMenuOpen: boolean }>`
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
@@ -32,10 +33,11 @@ const HeaderContainer = styled.div`
   box-shadow: var(--shadow-soft);
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto auto;
     border-radius: 1.4rem;
-    gap: 0.85rem;
-    padding: 0.95rem 1rem;
+    column-gap: 0.65rem;
+    row-gap: ${({ $isMenuOpen }) => ($isMenuOpen ? "0.65rem" : "0")};
+    padding: 0.72rem 0.82rem 0.72rem 1rem;
   }
 `;
 
@@ -62,6 +64,60 @@ const LogoMark = styled.img`
   }
 `;
 
+const MenuToggle = styled.button`
+  display: none;
+  align-items: center;
+  justify-content: center;
+  justify-self: end;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid rgba(243, 210, 122, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 248, 236, 0.07);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(255, 248, 236, 0.12);
+    border-color: rgba(243, 210, 122, 0.28);
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    display: inline-flex;
+  }
+`;
+
+const MobileNavigationPanel = styled.div<{ $isOpen: boolean }>`
+  display: contents;
+
+  @media (max-width: 768px) {
+    display: block;
+    grid-column: 1 / -1;
+    width: 100%;
+    max-height: ${({ $isOpen }) => ($isOpen ? "22rem" : "0")};
+    opacity: ${({ $isOpen }) => ($isOpen ? "1" : "0")};
+    overflow: hidden;
+    padding-top: ${({ $isOpen }) => ($isOpen ? "0.28rem" : "0")};
+    transform: translateY(${({ $isOpen }) => ($isOpen ? "0" : "-0.25rem")});
+    transition: max-height 220ms ease, opacity 180ms ease, padding-top 220ms ease,
+      transform 220ms ease;
+    pointer-events: ${({ $isOpen }) => ($isOpen ? "auto" : "none")};
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: none;
+      transition: none;
+    }
+  }
+`;
+
 const Navigation = styled.nav`
   display: flex;
   align-items: center;
@@ -71,7 +127,11 @@ const Navigation = styled.nav`
   justify-self: center;
 
   @media (max-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr;
     width: 100%;
+    gap: 0.35rem;
+    justify-items: stretch;
   }
 `;
 
@@ -97,6 +157,16 @@ const NavLink = styled(Link)<{ $isActive?: boolean }>`
     color: var(--color-text-primary);
     background: rgba(255, 248, 236, 0.06);
   }
+
+  @media (max-width: 768px) {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0.84rem 1rem;
+    background: rgba(255, 248, 236, 0.045);
+    border-color: ${({ $isActive }) =>
+      $isActive ? "rgba(243, 210, 122, 0.2)" : "rgba(255, 248, 236, 0.06)"};
+  }
 `;
 
 const baseNavItems = [
@@ -110,6 +180,7 @@ const baseNavItems = [
 const Header: React.FC = () => {
   const location = useLocation();
   const { pathFor, t } = useI18n();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const localizedBaseNavItems = baseNavItems.map((item) => ({
     ...item,
     label:
@@ -130,23 +201,40 @@ const Header: React.FC = () => {
   return (
     <StyledHeader>
       <div className="container">
-        <HeaderContainer>
+        <HeaderContainer $isMenuOpen={isMenuOpen}>
           <LogoLink to={pathFor("/")} aria-label={t("common.goToHome")}>
             <LogoMark src={logoPMark} alt="Pack" />
           </LogoLink>
 
-          <Navigation aria-label="Primary">
-            {localizedNavItems.map((item) => (
-              <NavLink
-                key={item.href}
-                to={pathFor(item.href)}
-                $isActive={location.pathname === pathFor(item.href)}
-                aria-current={location.pathname === pathFor(item.href) ? "page" : undefined}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </Navigation>
+          <MenuToggle
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-controls="primary-navigation"
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen((current) => !current)}
+          >
+            {isMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </MenuToggle>
+
+          <MobileNavigationPanel
+            $isOpen={isMenuOpen}
+            role={isMenuOpen ? "dialog" : undefined}
+            aria-label={isMenuOpen ? "Navigation" : undefined}
+          >
+            <Navigation id="primary-navigation" aria-label="Primary">
+              {localizedNavItems.map((item) => (
+                <NavLink
+                  key={item.href}
+                  to={pathFor(item.href)}
+                  $isActive={location.pathname === pathFor(item.href)}
+                  aria-current={location.pathname === pathFor(item.href) ? "page" : undefined}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </Navigation>
+          </MobileNavigationPanel>
         </HeaderContainer>
       </div>
     </StyledHeader>

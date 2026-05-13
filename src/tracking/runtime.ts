@@ -55,7 +55,7 @@ export async function loadGA4Runtime({
   });
 
   ensureGoogleTagInitialized();
-  window.gtag?.('consent', 'default', consentDefaults);
+  window.gtag?.('consent', 'update', consentDefaults);
 
   await loadGoogleTagRuntime({
     tagId: measurementId,
@@ -190,7 +190,7 @@ export async function loadGtmRuntime({
   });
 
   ensureGoogleTagInitialized();
-  window.gtag?.('consent', 'default', consentDefaults);
+  window.gtag?.('consent', 'update', consentDefaults);
 
   const existingScript = document.querySelector<HTMLScriptElement>(
     `script[src="https://www.googletagmanager.com/gtm.js?id=${gtmId}"]`,

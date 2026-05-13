@@ -61,6 +61,11 @@ const packAdsVideoLabExportsDir = path.join(packAdsVideoLabProjectDir, 'exports'
 const packAdsVideoLabTemplatesPath = path.join(
   packAdsVideoLabProjectDir,
   'templates.json',
+const packAppDir = path.join(repoRootDir, 'PackApp');
+const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
+const packAppLiveActivityReviewDir = path.join(
+  packAppDir,
+  'manual-live-activity-review',
 );
 const execFileAsync = promisify(execFile);
 
@@ -638,6 +643,21 @@ export default defineConfig(({ mode, ssrBuild }) => {
   const publicTsaBoardUrl = resolvePublicTsaBoardUrlFromStack(viteEnv, mode);
   const allEnv = loadEnv(mode, process.cwd(), '');
   const localDevBypassSecret = allEnv.PACK_LOCAL_DEV_BYPASS_SECRET?.trim() ?? '';
+  const styledComponentsEntry = isSSR
+    ? path.join(styledComponentsModuleDir, 'dist', 'styled-components.esm.js')
+    : styledComponentsModuleDir;
+  const resolveAliases: Record<string, string> = {
+    '@': normalizePath(srcDir),
+    '@pack/schemas': normalizePath(packSchemasDir),
+    react: normalizePath(reactModuleDir),
+    'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
+    'react/jsx-dev-runtime': normalizePath(reactJsxDevRuntimeEntry),
+    'react-dom': normalizePath(reactDomModuleDir),
+    'react-dom/client': normalizePath(reactDomClientEntry),
+    'react-dom/server': normalizePath(reactDomServerEntry),
+    'styled-components': normalizePath(styledComponentsEntry),
+    zod: normalizePath(zodModuleDir),
+  };
   const babelPlugins: Array<
     | string
     | [string, Record<string, unknown>]
@@ -845,18 +865,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
     },
     resolve: {
       dedupe: ['react', 'react-dom', 'styled-components'],
-      alias: {
-        '@': normalizePath(srcDir),
-        '@pack/schemas': normalizePath(packSchemasDir),
-        react: normalizePath(reactModuleDir),
-        'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
-        'react/jsx-dev-runtime': normalizePath(reactJsxDevRuntimeEntry),
-        'react-dom': normalizePath(reactDomModuleDir),
-        'react-dom/client': normalizePath(reactDomClientEntry),
-        'react-dom/server': normalizePath(reactDomServerEntry),
-        'styled-components': normalizePath(styledComponentsModuleDir),
-        zod: normalizePath(zodModuleDir),
-      },
+      alias: resolveAliases,
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod'],
@@ -909,7 +918,14 @@ export default defineConfig(({ mode, ssrBuild }) => {
       fs: {
         allow: [
           normalizePath(rootDir),
-          normalizePath(repoRootDir),
+          normalizePath(packSchemasDir),
+          normalizePath(packAdsLogoLabOutputDir),
+          normalizePath(packAppAssetImagesDir),
+          normalizePath(packAppLiveActivityReviewDir),
+          normalizePath(reactModuleDir),
+          normalizePath(reactDomModuleDir),
+          normalizePath(styledComponentsModuleDir),
+          normalizePath(zodModuleDir),
         ],
       },
       proxy: devProxy,

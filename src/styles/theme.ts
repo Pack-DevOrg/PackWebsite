@@ -272,7 +272,7 @@ export const brand = {
   social: {
     twitter:
       "https://twitter.com/intent/tweet?text=I%20just%20joined%20the%20waitlist%20for%20Route%20%40trypackai",
-    domain: "trypackai.com",
+    domain: "www.trypackai.com",
   },
   // Animation and motion preferences
   animation: {

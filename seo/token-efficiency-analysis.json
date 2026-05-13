@@ -1,0 +1,174 @@
+{
+  "generatedAt": "2026-05-12T16:55:00.000Z",
+  "status": "evidence_summary",
+  "publishableEnergyOrTokenSavingsClaim": false,
+  "realCorpusRun": {
+    "aggregatePath": "PackServer/tmp/pack-deeperbench-phased-full-20260512T121746Z/aggregate.json",
+    "casesPath": "PackServer/tmp/pack-deeperbench-phased-full-20260512T121746Z/cases.jsonl",
+    "promptSetPath": "PackServer/benchmarks/travel-context/corpus-seeds/hard-100.json",
+    "promptHash": "a80f7947e3bc5df35d83c398561be868e74995cd5917cf653f26d17fae05a7a9",
+    "startedAt": "2026-05-12T12:17:54.291Z",
+    "completedAt": "2026-05-12T14:32:40.545Z",
+    "caseCount": 100,
+    "completedCases": 24,
+    "plannerSuccessCount": 31,
+    "averageScore": 0.4525
+  },
+  "localAggregateMetrics": {
+    "plannerInputTokens": 21850202,
+    "plannerOutputTokens": 70339,
+    "plannerCachedTokens": 1210985,
+    "plannerTotalTokens": 21920541,
+    "planningEstimatedCostUsd": 41.197036,
+    "extractorSubjectFilterInputTokens": 13187384,
+    "extractorSubjectFilterOutputTokens": 918705,
+    "knownModelTokensInLocalArtifact": 36026630,
+    "zeroPlannerTokenCaseRows": 61,
+    "zeroPlannerTokenInterpretation": "Failed or short-circuited rows; not evidence of zero-token planning."
+  },
+  "attemptedPlannerRows": {
+    "count": 39,
+    "averagePlannerTokens": 562065.1538461539,
+    "medianPlannerTokens": 558043,
+    "averagePlannerCostUsd": 1.0563342564102565,
+    "medianPlannerCostUsd": 1.0490129999999995
+  },
+  "deepPlanningTokenAccountingCheck": {
+    "purpose": "Runner validation only; not a broad benchmark or public savings claim.",
+    "benchmark": "Qwen DeepPlanning travelplanning",
+    "caseId": "22",
+    "plannerMode": "full_planner",
+    "summaryPath": "PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/benchmark-summary.json",
+    "aggregatePath": "PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/pack-run/aggregate.json",
+    "available": true,
+    "totalCostUsd": 0.027326999999999997,
+    "totalTokens": 31144,
+    "inputTokens": 956,
+    "outputTokens": 1760,
+    "cachedTokens": 28428,
+    "cacheWriteTokens": 0,
+    "totalLLMCalls": 4,
+    "caseCountWithMetrics": 1,
+    "caseCountWithoutMetrics": 0
+  },
+  "cloudWatchCrossCheck": {
+    "publicDisclosure": "Do not expose log group names, environment labels, account details, S3 paths, or trace identifiers in public copy.",
+    "extractionWindow": {
+      "startedAt": "2026-05-10T23:50:00.000Z",
+      "completedAt": "2026-05-12T12:13:00.000Z",
+      "aiCallRows": 14160,
+      "inputTokens": 38723291,
+      "outputTokens": 3853582,
+      "cacheReadTokens": 56705760,
+      "cacheWriteTokens": 289770,
+      "totalTokens": 99572403,
+      "estimatedCostUsd": 70.330821
+    },
+    "planningWindow": {
+      "startedAt": "2026-05-12T12:17:00.000Z",
+      "completedAt": "2026-05-12T14:33:00.000Z",
+      "aiCallRows": 696,
+      "inputTokens": 22770047,
+      "outputTokens": 395461,
+      "cacheReadTokens": 1890830,
+      "cacheWriteTokens": 148460,
+      "totalTokens": 25204798,
+      "estimatedCostUsd": 42.6833
+    },
+    "localPlannerTotalShareOfCloudWatchPlanningTokens": 0.8697089846908519
+  },
+  "claimGuidance": {
+    "supported": [
+      "Pack has a real 100-case benchmark corpus and local run artifact with token and cost accounting.",
+      "The Qwen DeepPlanning travel benchmark runner can now emit nonzero token accounting in full-planner mode.",
+      "The current benchmark covers private context, calendar grounding, email grounding, group travel, public events, flights, hotels, red-herring avoidance, and preference handling.",
+      "The local aggregate planner field records 21,920,541 planner tokens, while broader AI-call logs for the same planning window record 25,204,798 total tokens.",
+      "Published DeepPlanning materials provide interaction-turn and tool-call cost proxies, but not token totals."
+    ],
+    "notSupportedYet": [
+      "A public claim that Pack uses X% fewer tokens than competitors.",
+      "A public claim that Pack uses X% less energy than competitors.",
+      "Any claim that failed or short-circuited zero-token case rows prove zero-token planning.",
+      "Any energy estimate without a same-corpus baseline and a clear model/provider methodology.",
+      "A precise Pack-vs-competitor token percentage inferred only from published DeepPlanning turn/tool-call proxies."
+    ],
+    "nextBenchmarkNeeded": "Run the same 100 prompts through a chat-only baseline and Pack structured planning with full AI-call token accounting, then compare tokens, estimated model cost, retries, latency, and score."
+  },
+  "deepPlanningRawQueryBaseline": {
+    "purpose": "Cheap single-call raw-query anchor for estimating lower bounds; not a competitor agent run.",
+    "benchmark": "Qwen DeepPlanning travelplanning",
+    "caseId": "22",
+    "artifactPath": "PackServer/tmp/qwen-token-accounting-full-planner-smoke-3/raw-query-baseline-haiku.json",
+    "baselineType": "single_raw_llm_no_tools_capped_output",
+    "model": "claude-haiku-4-5-20251001",
+    "maxOutputTokens": 1200,
+    "inputTokens": 216,
+    "outputTokens": 750,
+    "totalTokens": 966,
+    "estimatedCostUsd": 0.004363
+  },
+  "deepPlanningPublishedCostProxies": {
+    "sources": [
+      {
+        "title": "DeepPlanning: Benchmarking Long-Horizon Agentic Planning with Verifiable Constraints",
+        "url": "https://openreview.net/pdf?id=lyKnvdt57u",
+        "checkedOn": "2026-05-12"
+      },
+      {
+        "title": "Qwen-Agent DeepPlanning travelplanning runner",
+        "url": "https://github.com/QwenLM/Qwen-Agent/tree/31a4d36d123688581a9e9744427272b33ce940e0/benchmark/deepplanning/travelplanning",
+        "checkedOn": "2026-05-12"
+      }
+    ],
+    "maximumToolCallsPerTask": 400,
+    "examples": [
+      {
+        "model": "Claude 4.5 Opus without thinking",
+        "interactionTurns": 16.9,
+        "toolCalls": 79.5
+      },
+      {
+        "model": "Claude 4.5 Opus with thinking",
+        "interactionTurns": 12.5,
+        "toolCalls": 72.9
+      },
+      {
+        "model": "GPT-5.2-high",
+        "toolCallsApprox": 224
+      }
+    ],
+    "note": "Paper reports tool calls and interaction turns, not token totals."
+  },
+  "deepPlanningTokenEstimateLowerBounds": {
+    "method": "Multiply the 966-token raw no-tools case-22 call by published/illustrative interaction-turn counts. This excludes tool schemas, accumulated history, tool outputs, retries, conversion, and hidden reasoning tokens.",
+    "perTurnAnchorTokens": 966,
+    "estimates": [
+      {
+        "turns": 12.5,
+        "lowerBoundTokens": 12075,
+        "lowerBoundVsPackCase22": 0.38771512972001027
+      },
+      {
+        "turns": 16.9,
+        "lowerBoundTokens": 16325,
+        "lowerBoundVsPackCase22": 0.5241908553814538
+      },
+      {
+        "turns": 40,
+        "lowerBoundTokens": 38640,
+        "lowerBoundVsPackCase22": 1.240688415104033
+      },
+      {
+        "turns": 150,
+        "lowerBoundTokens": 144900,
+        "lowerBoundVsPackCase22": 4.652581556640123
+      },
+      {
+        "turns": 400,
+        "lowerBoundTokens": 386400,
+        "lowerBoundVsPackCase22": 12.406884151040328
+      }
+    ],
+    "conclusion": "Pack measured 31,144 tokens on case 22 full-planner mode. Published DeepPlanning agent statistics suggest many interaction/tool steps, but exact competitor token totals still require a same-corpus token-instrumented run."
+  }
+}

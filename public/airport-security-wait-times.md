@@ -45,6 +45,8 @@ A raw airport wait number is not enough on its own. The traveler still has to de
 ## Supporting resource
 
 - Public airport security board: https://www.trypackai.com/tsa
+- Crawlable TSA HTML board: https://tsa-board.trypackai.com/tsa
+- TSA airport sitemap: https://tsa-board.trypackai.com/tsa/sitemap.xml
 
 ## FAQ
 

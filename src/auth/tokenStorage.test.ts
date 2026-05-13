@@ -89,7 +89,7 @@ describe('tokenStorage', () => {
     expect(hasAuthSessionHint()).toBe(false);
   });
 
-  it('stores pending pkce in both sessionStorage and localStorage', () => {
+  it('stores pending pkce in sessionStorage and the shared cookie only', () => {
     const pending = {
       state: 'oauth-state',
       verifier: 'pkce-verifier',
@@ -101,7 +101,7 @@ describe('tokenStorage', () => {
     storePendingPkce(pending);
 
     expect(window.sessionStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
-    expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
+    expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeNull();
     expect(document.cookie).toContain('pack.auth.pkce.shared.v1=');
   });
 
@@ -118,6 +118,7 @@ describe('tokenStorage', () => {
 
     expect(getPendingPkce()).toEqual(pending);
     expect(window.sessionStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
+    expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeNull();
   });
 
   it('loads pending pkce from the shared cookie fallback', () => {
@@ -133,7 +134,7 @@ describe('tokenStorage', () => {
 
     expect(getPendingPkce()).toEqual(pending);
     expect(window.sessionStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
-    expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeTruthy();
+    expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeNull();
   });
 
   it('clears pending pkce from both storage areas', () => {

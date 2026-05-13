@@ -255,32 +255,15 @@ declare global {
 
 ## 🚀 Deployment
 
-### GitHub Pages Deployment
+### Production Deployment
 
-Automated deployment via GitHub Actions:
+The live `trypackai.com` site is served from the S3 app-origin bucket through CloudFront. Deploy production with the app-origin deploy script so redirects, security headers, prerendered HTML, and immutable assets stay in sync:
 
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to GitHub Pages
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-      - name: Install and Build
-        run: |
-          npm install
-          npm run build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+```bash
+npm run deploy
 ```
+
+The canonical public origin is `https://www.trypackai.com`. The apex host and HTTP variants should redirect there and should not be used in sitemaps, canonical tags, or production test defaults.
 
 ### Environment Configuration
 
@@ -296,24 +279,13 @@ VITE_API_ENDPOINT=https://api.trypackai.com
 VITE_RECAPTCHA_SITE_KEY=production_key
 ```
 
-### Custom Domain Setup
+### Legacy GitHub Pages Deployment
 
-Configure custom domain with GitHub Pages:
+GitHub Pages is retained only as a legacy publishing path:
 
-1. **DNS Configuration**:
-
-   ```
-   A    @    185.199.108.153
-   A    @    185.199.109.153
-   A    @    185.199.110.153
-   A    @    185.199.111.153
-   CNAME www  username.github.io
-   ```
-
-2. **Repository Settings**:
-   - Enable GitHub Pages
-   - Set custom domain: `itsdoneai.com`
-   - Enforce HTTPS
+```bash
+npm run deploy:legacy-pages
+```
 
 ## 🧪 Testing Strategy
 

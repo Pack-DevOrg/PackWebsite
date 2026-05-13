@@ -35,6 +35,10 @@ const PrivacyRequestVerificationPage = React.lazy(
 const AccessibilityPage = React.lazy(() => import("../pages/Accessibility"));
 const AboutPage = React.lazy(() => import("../pages/About"));
 const SupportPage = React.lazy(() => import("../pages/Support"));
+const TravelContextBenchmarkPage = React.lazy(
+  () => import("../pages/TravelContextBenchmark")
+);
+const SeoGuidePage = React.lazy(() => import("../pages/SeoGuidePage"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const EmailForwardingSetupPage = React.lazy(
   () => import("../pages/EmailForwardingSetup")
@@ -106,6 +110,12 @@ const LabsBrandAssetsPage = labsEnabled
   ? React.lazy(async () => {
       const module = await import("../pages/Labs");
       return { default: module.LabsBrandAssetsPage };
+    })
+  : null;
+const LabsSoundmarksPage = labsEnabled
+  ? React.lazy(async () => {
+      const module = await import("../pages/Labs");
+      return { default: module.LabsSoundmarksPage };
     })
   : null;
 const LabsAuthCallbackPage = labsEnabled
@@ -322,6 +332,12 @@ const LocalizedOutlet: React.FC = () => (
   </LocalizedRouteGuard>
 );
 
+const SeoGuideRoute: React.FC = () => {
+  const { guideSlug } = useParams();
+
+  return <SeoGuidePage slug={guideSlug} />;
+};
+
 const NonHomeRoutes: React.FC = () => {
   const {pathFor} = useI18n();
   const tsaEnabled = shouldExposeTsaForCurrentHost();
@@ -378,6 +394,20 @@ const NonHomeRoutes: React.FC = () => {
             <Layout>
               <Suspense fallback={null}>
                 <AccessibilityPage />
+              </Suspense>
+              <Suspense fallback={null}>
+                <Footer />
+                <ScrollToTop />
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/benchmark/travel-context"
+          element={
+            <Layout>
+              <Suspense fallback={null}>
+                <TravelContextBenchmarkPage />
               </Suspense>
               <Suspense fallback={null}>
                 <Footer />
@@ -528,6 +558,16 @@ const NonHomeRoutes: React.FC = () => {
             </Layout>
           }
         />
+        <Route
+          path="/guides/:guideSlug"
+          element={
+            <Layout>
+              <Suspense fallback={null}>
+                <SeoGuideRoute />
+              </Suspense>
+            </Layout>
+          }
+        />
         {capabilityPageDefinitions.map((page) => (
           <Route
             key={page.slug}
@@ -620,6 +660,18 @@ const NonHomeRoutes: React.FC = () => {
               <Layout>
                 <Suspense fallback={null}>
                   <LabsBrandAssetsPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ) : null}
+        {LabsSoundmarksPage ? (
+          <Route
+            path="/labs/soundmarks"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <LabsSoundmarksPage />
                 </Suspense>
               </Layout>
             }
@@ -778,6 +830,20 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
           <Route
+            path="benchmark/travel-context"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <TravelContextBenchmarkPage />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <Footer />
+                  <ScrollToTop />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
             path="support"
             element={
               <Layout>
@@ -891,6 +957,16 @@ const NonHomeRoutes: React.FC = () => {
               </Layout>
             }
           />
+          <Route
+            path="guides/:guideSlug"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <SeoGuideRoute />
+                </Suspense>
+              </Layout>
+            }
+          />
           {capabilityPageDefinitions.map((page) => (
             <Route
               key={page.slug}
@@ -924,6 +1000,9 @@ const NonHomeRoutes: React.FC = () => {
           ) : null}
           {LabsBrandAssetsPage ? (
             <Route path="labs/brand-assets" element={<Layout><Suspense fallback={null}><LabsBrandAssetsPage /></Suspense></Layout>} />
+          ) : null}
+          {LabsSoundmarksPage ? (
+            <Route path="labs/soundmarks" element={<Layout><Suspense fallback={null}><LabsSoundmarksPage /></Suspense></Layout>} />
           ) : null}
           {LabsAuthCallbackPage ? (
             <Route path="labs/auth-callback" element={<Layout><Suspense fallback={null}><LabsAuthCallbackPage /></Suspense></Layout>} />

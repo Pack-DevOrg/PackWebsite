@@ -1,0 +1,171 @@
+{
+  "competitors": [
+    {
+      "id": "navan",
+      "name": "Navan",
+      "origin": "https://navan.com",
+      "category": "corporate travel and expense",
+      "priority": 10,
+      "seedPaths": [
+        "/",
+        "/travel",
+        "/expense",
+        "/company",
+        "/resources"
+      ]
+    },
+    {
+      "id": "mindtrip",
+      "name": "Mindtrip",
+      "origin": "https://mindtrip.ai",
+      "category": "AI trip planner",
+      "priority": 10,
+      "seedPaths": [
+        "/",
+        "/about",
+        "/product",
+        "/blog"
+      ]
+    },
+    {
+      "id": "layla",
+      "name": "Layla",
+      "origin": "https://layla.ai",
+      "category": "AI trip planner",
+      "priority": 10,
+      "seedPaths": [
+        "/",
+        "/trip-planner",
+        "/ai-trip-planner",
+        "/blog"
+      ]
+    },
+    {
+      "id": "expedia",
+      "name": "Expedia",
+      "origin": "https://www.expedia.com",
+      "category": "OTA marketplace",
+      "priority": 8,
+      "seedPaths": [
+        "/",
+        "/global/sitemap",
+        "/travel-blog",
+        "/Things-To-Do"
+      ]
+    },
+    {
+      "id": "booking",
+      "name": "Booking.com",
+      "origin": "https://www.booking.com",
+      "category": "OTA marketplace",
+      "priority": 8,
+      "seedPaths": [
+        "/",
+        "/index.html",
+        "/destination.html",
+        "/articles.html"
+      ]
+    },
+    {
+      "id": "tripit",
+      "name": "TripIt",
+      "origin": "https://www.tripit.com",
+      "category": "itinerary organizer",
+      "priority": 9,
+      "seedPaths": [
+        "/",
+        "/web",
+        "/pro",
+        "/blog"
+      ]
+    },
+    {
+      "id": "wanderlog",
+      "name": "Wanderlog",
+      "origin": "https://wanderlog.com",
+      "category": "consumer trip planner",
+      "priority": 8,
+      "seedPaths": [
+        "/",
+        "/travel-planner",
+        "/blog"
+      ]
+    },
+    {
+      "id": "travelperk",
+      "name": "TravelPerk",
+      "origin": "https://www.travelperk.com",
+      "category": "business travel management",
+      "priority": 7,
+      "seedPaths": [
+        "/",
+        "/travel-solutions",
+        "/blog",
+        "/resources"
+      ]
+    },
+    {
+      "id": "kayak",
+      "name": "KAYAK",
+      "origin": "https://www.kayak.com",
+      "category": "travel metasearch",
+      "priority": 7,
+      "seedPaths": [
+        "/",
+        "/trips",
+        "/travel-guides",
+        "/explore"
+      ]
+    },
+    {
+      "id": "awardwallet",
+      "name": "AwardWallet",
+      "origin": "https://awardwallet.com",
+      "category": "loyalty and points tracking",
+      "priority": 7,
+      "seedPaths": [
+        "/",
+        "/blog",
+        "/features",
+        "/travel-plans"
+      ]
+    },
+    {
+      "id": "pointme",
+      "name": "point.me",
+      "origin": "https://www.point.me",
+      "category": "award flight search",
+      "priority": 7,
+      "seedPaths": [
+        "/",
+        "/how-it-works",
+        "/explore",
+        "/blog"
+      ]
+    },
+    {
+      "id": "seatsaero",
+      "name": "Seats.aero",
+      "origin": "https://seats.aero",
+      "category": "award seat search",
+      "priority": 6,
+      "seedPaths": [
+        "/",
+        "/search",
+        "/tools"
+      ]
+    },
+    {
+      "id": "roame",
+      "name": "Roame.travel",
+      "origin": "https://roame.travel",
+      "category": "award flight search",
+      "priority": 6,
+      "seedPaths": [
+        "/",
+        "/discover",
+        "/blog"
+      ]
+    }
+  ]
+}

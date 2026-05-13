@@ -5,8 +5,11 @@ import {
   ArrowUpRight,
   ChevronDown,
   X,
+  Database,
+  ExternalLink,
   MapPinned,
   Search,
+  ShieldCheck,
 } from "lucide-react";
 import type { AirportWaitTimeObservation } from "@/schemas/airport-security";
 import { fetchPublicAirportSecuritySummary } from "@/api/airportSecurity";
@@ -44,16 +47,115 @@ const Page = styled.section`
   padding: var(--space-3);
 `;
 
-const LlmNotice = styled.p`
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+const Hero = styled.header`
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.1rem, 3vw, 1.8rem);
+  border-radius: 1.45rem;
+  border: 1px solid rgba(243, 210, 122, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(231, 35, 64, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(255, 248, 236, 0.07), rgba(255, 248, 236, 0.03)),
+    rgba(17, 13, 10, 0.9);
+`;
+
+const HeroEyebrow = styled.p`
+  margin: 0;
+  color: rgba(243, 210, 122, 0.78);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+`;
+
+const HeroTitle = styled.h1`
+  margin: 0;
+  max-width: 58rem;
+  color: #fff7e7;
+  font-size: clamp(2rem, 5vw, 4.25rem);
+  line-height: 1;
+`;
+
+const HeroText = styled.p`
+  margin: 0;
+  max-width: 50rem;
+  color: rgba(247, 240, 227, 0.72);
+  font-size: clamp(1rem, 2vw, 1.14rem);
+  line-height: 1.62;
+`;
+
+const HeroLinkRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+`;
+
+const HeroLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 210, 122, 0.18);
+  background: rgba(255, 248, 236, 0.06);
+  color: #fff4cc;
+  padding: 0.68rem 0.88rem;
+  font-size: 0.92rem;
+  font-weight: 750;
+  text-decoration: none;
+
+  &:hover {
+    border-color: rgba(243, 210, 122, 0.36);
+    background: rgba(255, 248, 236, 0.1);
+  }
+`;
+
+const SourceDisclosure = styled.aside`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(243, 210, 122, 0.12);
+  background: rgba(255, 248, 236, 0.04);
+  padding: clamp(1rem, 3vw, 1.25rem);
+`;
+
+const SourceDisclosureBody = styled.div`
+  display: grid;
+  gap: 0.28rem;
+`;
+
+const SourceDisclosureTitle = styled.h2`
+  margin: 0;
+  color: #fff7e7;
+  font-size: 1.05rem;
+`;
+
+const SourceDisclosureText = styled.p`
+  margin: 0;
+  color: rgba(247, 240, 227, 0.7);
+  line-height: 1.5;
+`;
+
+const SourceDisclosureLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+`;
+
+const SourceDisclosureLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: #fff0be;
+  font-weight: 750;
+  text-decoration: none;
+
+  &:hover {
+    color: #ffffff;
+  }
 `;
 
 const ActionRow = styled.div`
@@ -482,6 +584,12 @@ const SupportLink = styled.a`
   &:hover {
     color: rgba(247, 240, 227, 0.82);
   }
+`;
+
+const SourceLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 `;
 
 const PaginationWrap = styled.div`
@@ -1656,23 +1764,58 @@ const TsaWaitTimesPage: React.FC = () => {
     suggestedAirports.length > 0;
 
   const currentPageUrl =
-    typeof window === "undefined" ? "https://trypackai.com/tsa/" : window.location.href;
+    typeof window === "undefined" ? "https://www.trypackai.com/tsa/" : window.location.href;
 
   return (
     <Page>
       <PageSeo
-        title="TSA Wait Times | Pack"
-        description="Check airport security wait times and keep live airport timing alongside your broader Pack travel context."
+        title="Live TSA Airport Security Wait Times | Pack"
+        description="Search live airport security wait times by airport, city, country, or code with Pack's public TSA board and crawlable airport pages."
         path="/tsa"
         schema={[TSA_FAQ_SCHEMA]}
       />
-      <LlmNotice>
-        Scraping our website or parsing it? We'd prefer you didn't, but please
-        reach out to{" "}
-        <a href="mailto:friends@trypackai.com">friends@trypackai.com</a> and
-        we'd love to help you build your own with sources. Human? We'd still
-        love to meet you if you're seeing this.
-      </LlmNotice>
+      <Hero>
+        <HeroEyebrow>Pack public airport security board</HeroEyebrow>
+        <HeroTitle>Live TSA airport security wait times by airport</HeroTitle>
+        <HeroText>
+          Search Pack&apos;s public airport security board by airport code, city,
+          region, country, or airport name.
+        </HeroText>
+        <HeroLinkRow>
+          <HeroLink href="#live-board">
+            <Search size={16} />
+            Search current waits
+          </HeroLink>
+          <HeroLink href="https://tsa-board.trypackai.com/tsa">
+            <Database size={16} />
+            Static TSA board
+          </HeroLink>
+          <HeroLink href="/airport-security-wait-times">
+            <ShieldCheck size={16} />
+            Airport security in Pack
+          </HeroLink>
+        </HeroLinkRow>
+      </Hero>
+      <SourceDisclosure aria-labelledby="tsa-source-credit-title">
+        <SourceDisclosureBody>
+          <SourceDisclosureTitle id="tsa-source-credit-title">
+            Data by Pack
+          </SourceDisclosureTitle>
+          <SourceDisclosureText>
+            Airport pages use this same airport-security feed.
+          </SourceDisclosureText>
+        </SourceDisclosureBody>
+        <SourceDisclosureLinks>
+          <SourceDisclosureLink href="https://tsa-board.trypackai.com/tsa">
+            Static board
+            <ExternalLink size={14} />
+          </SourceDisclosureLink>
+          <SourceDisclosureLink href="/airport-security-wait-times">
+            About this feature
+            <ArrowUpRight size={14} />
+          </SourceDisclosureLink>
+        </SourceDisclosureLinks>
+      </SourceDisclosure>
       <SearchWrap id="live-board" ref={resultsTopRef}>
         <ActionRow>
           <UtilityButton type="button" onClick={requestLocation}>
@@ -1931,7 +2074,13 @@ const TsaWaitTimesPage: React.FC = () => {
                           </SourcePill>
                         ) : null}
                       </SourceMetaWrap>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
+                      <SourceLinks>
+                        <SupportLink
+                          href={`https://tsa-board.trypackai.com/tsa/${airport.airportCode.toLowerCase()}`}
+                        >
+                          Static source page
+                          <ExternalLink size={14} />
+                        </SupportLink>
                         <SupportLink
                           href={buildAirportSupportMailtoHref({
                             airportCode: airport.airportCode,
@@ -1944,7 +2093,7 @@ const TsaWaitTimesPage: React.FC = () => {
                           Something wrong?
                           <ArrowUpRight size={14} />
                         </SupportLink>
-                      </div>
+                      </SourceLinks>
                     </SourceRow>
                   </AirportCard>
                 );

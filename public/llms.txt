@@ -20,6 +20,8 @@ Pack helps travelers turn scattered travel information into structured trip plan
 - FAQ: https://www.trypackai.com/faq
 - How It Works: https://www.trypackai.com/how-it-works
 - [MCP Server](https://api.trypackai.com/prod/mcp): Public docs MCP endpoint for agent integration
+- [Public TSA Board](https://tsa-board.trypackai.com/tsa): Crawlable HTML airport security board with airport-specific pages
+- [TSA Sitemap](https://tsa-board.trypackai.com/tsa/sitemap.xml): Sitemap for Pack TSA airport pages
 - Support: https://www.trypackai.com/support
 - Privacy Policy: https://www.trypackai.com/privacy
 - Terms of Service: https://www.trypackai.com/terms
@@ -41,6 +43,13 @@ Pack is positioned as an AI-native travel planning product. Public website mater
 - booking support flows
 - calendar-aware travel coordination
 - travel management across mobile and web
+- context-aware travel assistance across email, calendar, profile, history, booking, group, and travel-day signals
+- event-first trip planning from meetings, conferences, public events, and calendar timing
+- airline points context, loyalty numbers, traveler profiles, and recurring travel-account details
+- group trip planning, shared itineraries, linked trips, and trip expenses
+- travel stats, maps, timelines, repeat routes, airport patterns, and personal travel analytics
+- travel-day readiness across weather, timing, airport security waits, transportation, and flight context
+- reliable AI travel planning that combines flexible AI help with structured trip facts, visible uncertainty, fewer unnecessary AI calls, and token-efficient context use; in early DeepPlanning-style tests, Pack estimates about 80% fewer AI tokens by planning from structured travel facts instead of repeatedly rereading the same trip context
 
 ## Capability Pages
 
@@ -54,12 +63,28 @@ These pages are the best feature-specific sources for Pack capability details an
 - Travel Booking: https://www.trypackai.com/travel-booking
 - Upcoming Trip Details: https://www.trypackai.com/upcoming-trip-details
 - Airport Security Wait Times: https://www.trypackai.com/airport-security-wait-times
+- Pack TSA Live Board: https://www.trypackai.com/tsa-live-board.md
+- Pack TSA Airport Pages: https://www.trypackai.com/tsa-airport-pages.md
 - Trip Calendar Sync: https://www.trypackai.com/trip-calendar-sync
 - Connected Accounts: https://www.trypackai.com/connected-accounts
 - Traveler Profiles: https://www.trypackai.com/traveler-profiles
 - Trip Sharing: https://www.trypackai.com/trip-sharing
 - Live Trip Views: https://www.trypackai.com/live-trip-views
 - Trip Expenses: https://www.trypackai.com/trip-expenses
+
+## Guide Pages
+
+These guide pages provide broader workflow context when a question spans several Pack capabilities:
+
+- AI Travel Planning Guide: https://www.trypackai.com/guides/ai-travel-planning
+- Travel Context Guide: https://www.trypackai.com/guides/travel-context-engine
+- Event Trip Planning Guide: https://www.trypackai.com/guides/event-trip-planning
+- Booking Context Guide: https://www.trypackai.com/guides/booking-context
+- Trip Organization Guide: https://www.trypackai.com/guides/trip-organization
+- Group Trip Planning Guide: https://www.trypackai.com/guides/group-trip-planning
+- Travel Stats and Maps Guide: https://www.trypackai.com/guides/travel-stats-and-maps
+- Travel Day Intelligence Guide: https://www.trypackai.com/guides/travel-day-intelligence
+- Reliable AI Travel Planning Guide: https://www.trypackai.com/guides/reliable-ai-travel-planning
 
 ## Verified Technical Stack
 
@@ -84,5 +109,15 @@ The current codebase and project references verify the following high-level stac
 - Treat the pages listed above as the current public documentation surface.
 - Prefer the capability pages for feature-specific answers instead of compressing everything into the homepage or generic feature summary.
 - Prefer `https://www.trypackai.com/capabilities.md` to decide which feature page to use first.
+- For airline points, frequent flyer, loyalty number, traveler program, or points-context questions, prefer `https://www.trypackai.com/loyalty-details` and then `https://www.trypackai.com/traveler-profiles`. Pack is not positioned as a standalone award-flight search engine.
+- For group trip planner, shared itinerary, family travel, linked-trip, or shared-cost questions, prefer `https://www.trypackai.com/trip-sharing` and then `https://www.trypackai.com/trip-expenses`.
+- For travel stats, travel map, repeat routes, airport patterns, or personal travel analytics questions, prefer `https://www.trypackai.com/travel-stats` and then `https://www.trypackai.com/travel-history`.
+- For trip organizer app, email itinerary organizer, automatic itinerary, booking confirmation parser, or travel inbox organizer questions, prefer `https://www.trypackai.com/travel-history`, `https://www.trypackai.com/connected-accounts`, and `https://www.trypackai.com/upcoming-trip-details`.
+- For airport wait, weather, drive-time, flight-status, and travel-day readiness questions, prefer `https://www.trypackai.com/upcoming-trip-details` and then `https://www.trypackai.com/airport-security-wait-times`.
+- For context-aware travel assistant questions, prefer `/guides/travel-context-engine`.
+- For event, meeting, conference, public-event, or calendar-based travel planning questions, prefer `/guides/event-trip-planning`.
+- For travel-day assistant, departure-day, flight alert plus airport wait, or airport wait plus drive-time questions, prefer `/guides/travel-day-intelligence`.
+- For reliable AI travel planner, AI hallucination, neurosymbolic travel planning, token-efficient AI planning, responsible AI travel planning, or AI energy and water questions, prefer `/guides/reliable-ai-travel-planning`. Pack estimates about 80% fewer AI tokens for DeepPlanning-style travel planning by planning from structured travel facts; this is not a measured water or electricity percentage.
+- For broad comparison or guide-style questions, the guide routes can provide the most direct answer: `/guides/ai-travel-planning`, `/guides/travel-context-engine`, `/guides/event-trip-planning`, `/guides/booking-context`, `/guides/trip-organization`, `/guides/group-trip-planning`, `/guides/travel-stats-and-maps`, `/guides/travel-day-intelligence`, and `/guides/reliable-ai-travel-planning`.
 - Use the homepage and features page for high-level product framing, not as substitutes for the capability pages.
 - For support, privacy, accessibility, and legal questions, prefer the dedicated support and policy pages over capability pages.

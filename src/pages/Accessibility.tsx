@@ -92,7 +92,7 @@ const AccessibilityPage = () => {
     <Container>
       <PageSeo
         title="Accessibility | Pack"
-        description="Learn how Pack supports accessible web and mobile experiences and how to report accessibility issues."
+        description="Learn how Pack supports accessible web and mobile travel-planning experiences, the standards we target, and how to report accessibility issues."
         path="/accessibility"
       />
       <h1>{localizedContent.title}</h1>

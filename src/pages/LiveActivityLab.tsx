@@ -89,6 +89,7 @@ type LiveActivityMock = {
   shownMetrics: MetricCard[];
   hiddenMetrics?: MetricCard[];
   nextItem?: string;
+  nextEventCountdown?: string;
   actionRows: ActionRow[];
   lockScreen: {
     fullMetricLimit: number;
@@ -116,6 +117,13 @@ type ScreenshotSurface = {
   swiftAlt: string;
   websiteImageSrc: string;
   websiteAlt: string;
+};
+
+type ScreenshotGroup = {
+  key: string;
+  label: string;
+  title: string;
+  surfaces: ScreenshotSurface[];
 };
 
 type LiveActivityLabContent = {
@@ -390,6 +398,109 @@ const Intro = styled.p`
   line-height: 1.55;
 `;
 
+const ReviewLayout = styled.div`
+  display: grid;
+  gap: 1.15rem;
+
+  @media (min-width: 1100px) {
+    grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+    align-items: start;
+  }
+`;
+
+const ActivityDirectory = styled.nav`
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0.15rem 0.05rem 0.35rem;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    position: sticky;
+    top: clamp(1rem, 4svh, 2.5rem);
+    z-index: 3;
+    display: grid;
+    gap: 0.35rem;
+    overflow: visible;
+    padding: 0.55rem 0;
+  }
+`;
+
+const ActivityDirectoryItem = styled.a`
+  position: relative;
+  display: grid;
+  gap: 0.18rem;
+  min-width: 10.75rem;
+  padding: 0.65rem 0.78rem 0.65rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.025)),
+    rgba(12, 12, 12, 0.72);
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.16);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0.48rem;
+    top: 50%;
+    width: 0.28rem;
+    height: 0.28rem;
+    border-radius: 999px;
+    background: rgba(240, 198, 45, 0.72);
+    transform: translateY(-50%);
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(240, 198, 45, 0.32);
+    background:
+      radial-gradient(circle at top right, rgba(240, 198, 45, 0.14), transparent 42%),
+      rgba(18, 18, 18, 0.92);
+    outline: none;
+  }
+
+  @media (min-width: 1100px) {
+    min-width: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    opacity: 0.72;
+
+    &:hover,
+    &:focus-visible {
+      background: transparent;
+      opacity: 1;
+    }
+  }
+`;
+
+const ActivityDirectoryTitle = styled.span`
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.18;
+`;
+
+const ActivityDirectoryMeta = styled.span`
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+`;
+
+const ScreenshotGroups = styled.div`
+  display: grid;
+  gap: 1.1rem;
+  min-width: 0;
+`;
+
 const Grid = styled.section`
   display: grid;
   grid-template-columns: 1fr;
@@ -499,6 +610,34 @@ const ScreenshotSection = styled.section`
   max-width: 100%;
 `;
 
+const ScreenshotStateSection = styled.section`
+  display: grid;
+  gap: 0.78rem;
+  min-width: 0;
+  scroll-margin-top: 1.2rem;
+`;
+
+const ScreenshotStateHeader = styled.div`
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.15rem 0.45rem 0;
+`;
+
+const ScreenshotStateTitle = styled.h2`
+  margin: 0;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: clamp(1.35rem, 2.1vw, 2rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+`;
+
+const ScreenshotStateMeta = styled.p`
+  margin: 0;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.74rem;
+  font-weight: 700;
+`;
+
 const ScreenshotSectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -528,6 +667,11 @@ const ScreenshotGrid = styled.div`
   gap: 0.75rem;
   align-items: start;
   width: 100%;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
 `;
 
 const ScreenshotHeader = styled.div`
@@ -538,6 +682,10 @@ const ScreenshotHeader = styled.div`
   color: rgba(255, 255, 255, 0.8);
   padding: 0.35rem 0.45rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+
+  @media (max-width: 860px) {
+    display: none;
+  }
 `;
 
 const ScreenshotImage = styled.img`
@@ -554,6 +702,12 @@ const ScreenshotLabelCell = styled.div`
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
   padding: 0.35rem 0.45rem;
+
+  @media (max-width: 860px) {
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 0.85rem;
+  }
 `;
 
 const ScreenshotImageCell = styled.div`
@@ -1414,6 +1568,14 @@ const WatchTopRow = styled.div`
   gap: 0.5rem;
 `;
 
+const WatchMark = styled.div`
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1;
+  color: rgb(240, 198, 45);
+  letter-spacing: 0.02em;
+`;
+
 const WatchTimerChip = styled.div`
   display: inline-flex;
   align-items: center;
@@ -1429,11 +1591,49 @@ const WatchTimerChip = styled.div`
   font-variant-numeric: tabular-nums;
 `;
 
-const WatchCopy = styled.div`
+const WatchDetailBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.3rem;
   min-width: 0;
+`;
+
+const WatchDetailLine = styled.div<{ $accented?: boolean }>`
+  font-size: 0.6rem;
+  line-height: 1.18;
+  font-weight: ${({ $accented }) => ($accented ? 700 : 500)};
+  color: ${({ $accented }) =>
+    $accented ? "rgb(240, 198, 45)" : "rgba(255, 255, 255, 0.7)"};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const WatchMiniStatusWrap = styled.div`
+  margin-top: 0.04rem;
+`;
+
+const WatchMiniStatusBar = styled.div`
+  display: flex;
+  align-items: center;
+  min-width: 0;
+`;
+
+const WatchMiniTrack = styled.div`
+  position: relative;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+`;
+
+const WatchBottomWrap = styled.div`
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
 `;
 
 const WatchTitle = styled.div`
@@ -1441,34 +1641,18 @@ const WatchTitle = styled.div`
   font-weight: 700;
   line-height: 1.15;
   color: rgba(255, 255, 255, 0.96);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
-const WatchSubtitle = styled.div`
+const WatchDestination = styled.div`
   font-size: 0.6rem;
-  line-height: 1.2;
+  line-height: 1.18;
   color: rgba(255, 255, 255, 0.56);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`;
-
-const WatchExpandedBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.12rem;
-`;
-
-const WatchExpandedLine = styled.div`
-  font-size: 0.58rem;
-  line-height: 1.22;
-  color: rgba(255, 255, 255, 0.72);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const WatchBottomWrap = styled.div`
-  margin-top: auto;
 `;
 
 type FlightDepartureLabSpec = {
@@ -1522,6 +1706,19 @@ function formatMinimalMinuteToken(minutes: number): string {
     return `${minutes}m`;
   }
   return `${Math.floor(minutes / 60)}h`;
+}
+
+function dynamicIslandExpandedTrailingText(state: LiveActivityMock): string | null {
+  if (state.nextEventCountdown) {
+    return state.nextEventCountdown;
+  }
+  if (state.dynamicIsland.expandedTrailingText) {
+    return state.dynamicIsland.expandedTrailingText;
+  }
+  if (state.dynamicIsland.showsCountdown) {
+    return state.statusBar.countdownToken;
+  }
+  return null;
 }
 
 function buildDepartureStatusBarSpec(
@@ -1782,10 +1979,9 @@ const states: LiveActivityMock[] = [
     shownMetrics: [
       { title: "Baggage", value: reactiveBaggageLabel, tone: "accent" },
       {
-        title: "",
-        value: "The TWA Hotel",
-        detail: "1 Idlewild Dr, Queens, NY",
-        hideTitle: true,
+        title: "Next in",
+        value: "1h30m",
+        detail: "The TWA Hotel",
       },
       {
         title: "Drive",
@@ -1813,11 +2009,11 @@ const states: LiveActivityMock[] = [
     dynamicIsland: {
       expandedLeadingText: undefined,
       expandedText: "Baggage 7 • 35°",
-      expandedTrailingText: undefined,
+      expandedTrailingText: "1h30m",
       compactLeadingText: "7",
-      compactTrailingText: "35°",
+      compactTrailingText: "1h30m",
       minimalIcon: "baggage",
-      minimalText: "7",
+      minimalText: "1h30m",
       showsCountdown: false,
     },
   },
@@ -1933,7 +2129,7 @@ const states: LiveActivityMock[] = [
       compactLeadingText: formatCompactMinuteToken(activityMinutesUntilLeave),
       compactTrailingText: "Dinner",
       minimalIcon: undefined,
-      minimalText: formatMinimalMinuteToken(activityMinutesUntilLeave),
+      minimalText: "2h50",
       showsCountdown: false,
     },
   },
@@ -1954,8 +2150,8 @@ const states: LiveActivityMock[] = [
       reservedFraction: 0,
     },
     shownMetrics: [
-      { title: "Starts", value: "14:00", icon: "clock", tone: "accent" },
-      { title: "Next", value: "Hotel check-in", icon: "next" },
+      { title: "Starts in", value: "42m", icon: "clock", tone: "accent" },
+      { title: "Next in", value: "2h", detail: "Hotel check-in", icon: "next" },
     ],
     actionRows: [
       {
@@ -1972,10 +2168,10 @@ const states: LiveActivityMock[] = [
     },
     dynamicIsland: {
       expandedLeadingText: undefined,
-      expandedText: "14:00",
+      expandedText: "Starts in",
       expandedTrailingText: undefined,
       compactLeadingText: "42m",
-      compactTrailingText: "Pickup",
+      compactTrailingText: "2h",
       minimalIcon: undefined,
       minimalText: "42m",
       showsCountdown: false,
@@ -1987,19 +2183,21 @@ const states: LiveActivityMock[] = [
     accent: "flight",
     title: "Scrubber: ViewThatFits",
     supportingText: "1 Infinite Loop, Cupertino, CA",
-    relativeCountdown: "1m away",
+    relativeCountdown: "35m remaining",
+    nextEventCountdown: "1h20m",
     icon: "calendar",
     statusBar: {
       leadingText: undefined,
-      countdownToken: "1m",
-      countdownCaption: "Leave",
+      countdownToken: "35m",
+      countdownCaption: "Remaining",
       endLabel: "09:20",
       progressFraction: 0.84,
-      reservedFraction: 0.08,
+      reservedFraction: 0,
     },
     shownMetrics: [
+      { title: "Remaining", value: "35m", icon: "clock", tone: "accent" },
       { title: "Address", value: "1 Infinite Loop", detail: "Cupertino, CA", tone: "accent" },
-      { title: "Next", value: "QA compare hotel scrubber", detail: "11 Madison Ave" },
+      { title: "Next in", value: "1h20m", detail: "QA compare hotel scrubber" },
     ],
     actionRows: [
       {
@@ -2018,13 +2216,13 @@ const states: LiveActivityMock[] = [
       showStatusBarInCompact: true,
     },
     dynamicIsland: {
-      expandedLeadingText: "Activity",
+      expandedLeadingText: undefined,
       expandedText: "Scrubber activity",
-      expandedTrailingText: "1m",
-      compactLeadingText: "Activity",
-      compactTrailingText: "1m",
+      expandedTrailingText: "1h20m",
+      compactLeadingText: undefined,
+      compactTrailingText: "1h20m",
       minimalIcon: undefined,
-      minimalText: "1m",
+      minimalText: "1h20m",
       showsCountdown: false,
     },
   },
@@ -2034,19 +2232,21 @@ const states: LiveActivityMock[] = [
     accent: "ground",
     title: "Scrubber: Fixed Layout",
     supportingText: "The Ritz-Carlton NoMad • 11 Madison Ave",
-    relativeCountdown: "1m away",
+    relativeCountdown: "35m remaining",
+    nextEventCountdown: "1h20m",
     icon: "bed",
     statusBar: {
       leadingText: undefined,
-      countdownToken: "1m",
-      countdownCaption: "Leave",
+      countdownToken: "35m",
+      countdownCaption: "Remaining",
       endLabel: "16:00",
       progressFraction: 0.82,
-      reservedFraction: 0.09,
+      reservedFraction: 0,
     },
     shownMetrics: [
+      { title: "Remaining", value: "35m", icon: "clock", tone: "accent" },
       { title: "Hotel", value: "The Ritz-Carlton NoMad", detail: "11 Madison Ave", tone: "accent" },
-      { title: "Conf", value: "SCRUB1", tone: "warning" },
+      { title: "Next in", value: "1h20m", detail: "Dinner after check-in" },
     ],
     actionRows: [
       {
@@ -2065,13 +2265,13 @@ const states: LiveActivityMock[] = [
       showStatusBarInCompact: true,
     },
     dynamicIsland: {
-      expandedLeadingText: "Hotel",
+      expandedLeadingText: undefined,
       expandedText: "Fixed layout",
-      expandedTrailingText: "1m",
-      compactLeadingText: "Hotel",
-      compactTrailingText: "1m",
+      expandedTrailingText: "1h20m",
+      compactLeadingText: undefined,
+      compactTrailingText: "1h20m",
       minimalIcon: undefined,
-      minimalText: "1m",
+      minimalText: "1h20m",
       showsCountdown: false,
     },
   },
@@ -2081,19 +2281,21 @@ const states: LiveActivityMock[] = [
     accent: "ground",
     title: "Scrubber: Driven Rail",
     supportingText: "1 Idlewild Dr, Queens, NY 11430",
-    relativeCountdown: "1m away",
+    relativeCountdown: "35m remaining",
+    nextEventCountdown: "1h20m",
     icon: "plane-landing",
     statusBar: {
       leadingText: undefined,
-      countdownToken: "1m",
-      countdownCaption: "Leave",
+      countdownToken: "35m",
+      countdownCaption: "Remaining",
       endLabel: "ARR",
       progressFraction: 0.86,
-      reservedFraction: 0.05,
+      reservedFraction: 0,
     },
     shownMetrics: [
+      { title: "Remaining", value: "35m", icon: "clock", tone: "accent" },
       { title: "Address", value: "1 Idlewild Dr", detail: "Queens, NY", tone: "accent" },
-      { title: "Next", value: "Hotel check-in next", detail: "11 Madison Ave" },
+      { title: "Next in", value: "1h20m", detail: "Hotel check-in next" },
     ],
     actionRows: [
       {
@@ -2113,13 +2315,13 @@ const states: LiveActivityMock[] = [
       showStatusBarInCompact: true,
     },
     dynamicIsland: {
-      expandedLeadingText: "Transfer",
+      expandedLeadingText: undefined,
       expandedText: "Driven rail",
-      expandedTrailingText: "1m",
-      compactLeadingText: "Transfer",
-      compactTrailingText: "1m",
+      expandedTrailingText: "1h20m",
+      compactLeadingText: undefined,
+      compactTrailingText: "1h20m",
       minimalIcon: undefined,
-      minimalText: "1m",
+      minimalText: "1h20m",
       showsCountdown: false,
     },
   },
@@ -2536,13 +2738,16 @@ function getScreenshotSurfaces(
   ];
 }
 
-function getScreenshotItems(
+function getScreenshotGroups(
   localizedStates: LiveActivityMock[],
   localizedContent: LiveActivityLabContent
-): ScreenshotSurface[] {
-  return localizedStates.flatMap((state) =>
-    getScreenshotSurfaces(state, localizedContent)
-  );
+): ScreenshotGroup[] {
+  return localizedStates.map((state) => ({
+    key: state.key,
+    label: state.label,
+    title: state.title,
+    surfaces: getScreenshotSurfaces(state, localizedContent),
+  }));
 }
 
 function markerFraction(statusBar: StatusBarSpec): number {
@@ -2624,6 +2829,9 @@ function watchTimerText(state: LiveActivityMock): string {
   if (state.relativeCountdown === "Now") {
     return "Now";
   }
+  if (state.key === "flight_arrival" && state.statusBar.countdownCaption === "Lands in") {
+    return state.statusBar.countdownToken;
+  }
   if (state.statusBar.countdownCaption) {
     return `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`;
   }
@@ -2643,6 +2851,103 @@ function pickUniqueWatchSubtitle(state: LiveActivityMock): string | undefined {
   }
 
   return undefined;
+}
+
+function watchIsCountdownLikeLine(value: string | undefined): boolean {
+  const normalized = normalizeInfoToken(value);
+  if (!normalized) {
+    return false;
+  }
+  if (
+    normalized.startsWith("leave in ") ||
+    normalized.startsWith("starts in ")
+  ) {
+    return true;
+  }
+  if (normalized === "leave now" || normalized === "starts now") {
+    return true;
+  }
+  if (normalized.startsWith("in ") && normalized.includes("m")) {
+    return true;
+  }
+  return false;
+}
+
+function watchDestinationLine(state: LiveActivityMock): string | undefined {
+  const blockedFragments = [
+    "leave in",
+    "starts in",
+    "drive ",
+    "terminal",
+    "gate ",
+    "seat ",
+    "boarding",
+    "check-in",
+    "check in",
+  ];
+  const expandedLines = watchExpandedLines(state);
+
+  for (const line of expandedLines) {
+    const trimmed = line.trim();
+    if (
+      !trimmed ||
+      watchIsCountdownLikeLine(trimmed) ||
+      isDuplicateInfoValue(trimmed, [state.title])
+    ) {
+      continue;
+    }
+    const normalized = trimmed.toLowerCase();
+    if (blockedFragments.some((fragment) => normalized.includes(fragment))) {
+      continue;
+    }
+    return trimmed;
+  }
+
+  const subtitle = pickUniqueWatchSubtitle(state);
+  if (!subtitle || isDuplicateInfoValue(subtitle, [state.title])) {
+    return undefined;
+  }
+  return subtitle;
+}
+
+function watchDetailLines(
+  state: LiveActivityMock,
+  destinationLine: string | undefined
+): string[] {
+  const blockedValues = [
+    normalizeInfoToken(state.title),
+    normalizeInfoToken(destinationLine),
+    normalizeInfoToken(pickUniqueWatchSubtitle(state)),
+    normalizeInfoToken(state.statusBar.countdownToken),
+    normalizeInfoToken(state.statusBar.countdownCaption),
+    normalizeInfoToken(
+      state.statusBar.countdownCaption
+        ? `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`
+        : undefined
+    ),
+  ].filter((value): value is string => value.length > 0);
+  const blocked = new Set(blockedValues);
+  const detailLines: string[] = [];
+
+  for (const line of watchExpandedLines(state)) {
+    const normalized = normalizeInfoToken(line);
+    if (
+      !normalized ||
+      watchIsCountdownLikeLine(line) ||
+      blocked.has(normalized) ||
+      isDuplicateInfoValue(line, blockedValues)
+    ) {
+      continue;
+    }
+    blocked.add(normalized);
+    blockedValues.push(normalized);
+    detailLines.push(line);
+    if (detailLines.length === 2) {
+      break;
+    }
+  }
+
+  return detailLines;
 }
 
 function watchMetricCandidates(metric: MetricCard): string[] {
@@ -2803,70 +3108,57 @@ function renderStatusBar(state: LiveActivityMock) {
 
 function renderWatchStatusBar(state: LiveActivityMock) {
   const statusAccent = state.statusBar.accent ?? state.accent;
-  const leftText = state.statusBar.leadingText || state.statusBar.startLabel;
-  const rightText = state.statusBar.usesEndpointLabelStyleForEndText
-    ? state.statusBar.endLabel || state.statusBar.countdownToken
-    : state.statusBar.countdownToken;
-  const hasLeadingText = Boolean(leftText);
 
   return (
-    <StatusFrame $accent={statusAccent}>
-      <StatusRow $hasLeading={hasLeadingText}>
-        {hasLeadingText ? (
-          <LeadingWrap>
-            <LeadingText>{leftText}</LeadingText>
-          </LeadingWrap>
-        ) : null}
-        <Track>
-          <TrackClip>
-            <ProgressFill
-              $width={state.statusBar.progressFraction}
-              $accent={statusAccent}
-            />
-            <ReservedFill $width={state.statusBar.reservedFraction} />
-          </TrackClip>
-        </Track>
-        <CountdownRail>
-          {state.statusBar.usesEndpointLabelStyleForEndText ? (
-            <EndpointValue>{rightText}</EndpointValue>
-          ) : (
-            <CountdownValue $accent={statusAccent}>{rightText}</CountdownValue>
-          )}
-        </CountdownRail>
-      </StatusRow>
-    </StatusFrame>
+    <WatchMiniStatusBar>
+      <WatchMiniTrack>
+        <ProgressFill
+          $width={state.statusBar.progressFraction}
+          $accent={statusAccent}
+        />
+        <ReservedFill $width={state.statusBar.reservedFraction} />
+      </WatchMiniTrack>
+    </WatchMiniStatusBar>
   );
 }
 
 function renderWatchSurface(state: LiveActivityMock) {
-  const headerText = pickUniqueWatchSubtitle(state);
-  const expandedLines = watchExpandedLines(state);
+  const destinationLine = watchDestinationLine(state);
+  const detailLines = watchDetailLines(state, destinationLine);
+  const showsMiniBar = shouldRenderCompactStatusMiniBar(state);
 
   return (
     <WatchCard $accent={state.accent}>
       <WatchTopRow>
-        <DoneLogo src={packLogo} alt="Pack logo" $size={16} />
+        <WatchMark>P.</WatchMark>
         <WatchTimerChip>
           {renderIcon(watchTimerIcon(state), 10)}
           <span>{watchTimerText(state)}</span>
         </WatchTimerChip>
       </WatchTopRow>
 
-      <WatchCopy>
-        <WatchTitle>{state.title}</WatchTitle>
-        {headerText ? <WatchSubtitle>{headerText}</WatchSubtitle> : null}
-        {expandedLines.length > 0 ? (
-          <WatchExpandedBlock>
-            {expandedLines.map((line) => (
-              <WatchExpandedLine key={`${state.key}-${line}`}>
-                {line}
-              </WatchExpandedLine>
-            ))}
-          </WatchExpandedBlock>
-        ) : null}
-      </WatchCopy>
+      {detailLines.length > 0 || showsMiniBar ? (
+        <WatchDetailBlock>
+          {detailLines.map((line, index) => (
+            <WatchDetailLine
+              key={`${state.key}-${line}`}
+              $accented={index === 0}
+            >
+              {line}
+            </WatchDetailLine>
+          ))}
+          {showsMiniBar ? (
+            <WatchMiniStatusWrap>{renderWatchStatusBar(state)}</WatchMiniStatusWrap>
+          ) : null}
+        </WatchDetailBlock>
+      ) : null}
 
-      <WatchBottomWrap>{renderWatchStatusBar(state)}</WatchBottomWrap>
+      <WatchBottomWrap>
+        <WatchTitle>{state.title}</WatchTitle>
+        {destinationLine ? (
+          <WatchDestination>{destinationLine}</WatchDestination>
+        ) : null}
+      </WatchBottomWrap>
     </WatchCard>
   );
 }
@@ -2994,6 +3286,8 @@ function renderLockScreenSurface(
 }
 
 function renderExpandedIsland(state: LiveActivityMock) {
+  const trailingText = dynamicIslandExpandedTrailingText(state);
+
   return (
     <IslandExpanded data-capture-target="dynamic-island-expanded-raw">
       <IslandRegion>
@@ -3008,11 +3302,7 @@ function renderExpandedIsland(state: LiveActivityMock) {
         <IslandText>{state.dynamicIsland.expandedText ?? state.title}</IslandText>
       </IslandRegion>
       <IslandRegion $align="end">
-        {state.dynamicIsland.expandedTrailingText ? (
-          <IslandText>{state.dynamicIsland.expandedTrailingText}</IslandText>
-        ) : state.dynamicIsland.showsCountdown ? (
-          <IslandText>{state.statusBar.countdownToken}</IslandText>
-        ) : null}
+        {trailingText ? <IslandText>{trailingText}</IslandText> : null}
       </IslandRegion>
     </IslandExpanded>
   );
@@ -3156,7 +3446,7 @@ const LiveActivityLab: React.FC = () => {
   );
   const localizedContent = LIVE_ACTIVITY_LAB_CONTENT[locale];
   const localizedStates = getLocalizedLiveActivityStates(locale);
-  const screenshotItems = getScreenshotItems(localizedStates, localizedContent);
+  const screenshotGroups = getScreenshotGroups(localizedStates, localizedContent);
   const captureMode =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("capture") === "1";
@@ -3187,37 +3477,70 @@ const LiveActivityLab: React.FC = () => {
         </Header>
 
         <ScreenshotSection data-lab-root="live-activity">
-          <ScreenshotGrid>
-            <ScreenshotHeader>{localizedContent.screenshotHeaders.label}</ScreenshotHeader>
-            <ScreenshotHeader>{localizedContent.screenshotHeaders.swift}</ScreenshotHeader>
-            <ScreenshotHeader>{localizedContent.screenshotHeaders.website}</ScreenshotHeader>
+          <ReviewLayout>
+            <ActivityDirectory aria-label="Live Activity states">
+              {screenshotGroups.map((group) => (
+                <ActivityDirectoryItem
+                  key={group.key}
+                  href={`#live-activity-${group.key}`}
+                >
+                  <ActivityDirectoryTitle>{group.title}</ActivityDirectoryTitle>
+                  <ActivityDirectoryMeta>{group.label}</ActivityDirectoryMeta>
+                </ActivityDirectoryItem>
+              ))}
+            </ActivityDirectory>
 
-            {screenshotItems.map((surface) => (
-              <React.Fragment key={surface.key}>
-                <ScreenshotLabelCell>{surface.label}</ScreenshotLabelCell>
-                <ScreenshotImageCell>
-                  <ScreenshotImageMeta>
-                    {localizedContent.screenshotMeta.swift}
-                  </ScreenshotImageMeta>
-                  <ScreenshotImage
-                    src={`${surface.swiftImageSrc}#v=${nativeReviewVersion}`}
-                    alt={surface.swiftAlt}
-                    loading="lazy"
-                  />
-                </ScreenshotImageCell>
-                <ScreenshotImageCell>
-                  <ScreenshotImageMeta>
-                    {localizedContent.screenshotMeta.website}
-                  </ScreenshotImageMeta>
-                  <ScreenshotImage
-                    src={surface.websiteImageSrc}
-                    alt={surface.websiteAlt}
-                    loading="lazy"
-                  />
-                </ScreenshotImageCell>
-              </React.Fragment>
-            ))}
-          </ScreenshotGrid>
+            <ScreenshotGroups>
+              {screenshotGroups.map((group) => (
+                <ScreenshotStateSection
+                  key={group.key}
+                  id={`live-activity-${group.key}`}
+                >
+                  <ScreenshotStateHeader>
+                    <ScreenshotStateTitle>{group.title}</ScreenshotStateTitle>
+                    <ScreenshotStateMeta>{group.label}</ScreenshotStateMeta>
+                  </ScreenshotStateHeader>
+                  <ScreenshotGrid>
+                    <ScreenshotHeader>
+                      {localizedContent.screenshotHeaders.label}
+                    </ScreenshotHeader>
+                    <ScreenshotHeader>
+                      {localizedContent.screenshotHeaders.swift}
+                    </ScreenshotHeader>
+                    <ScreenshotHeader>
+                      {localizedContent.screenshotHeaders.website}
+                    </ScreenshotHeader>
+
+                    {group.surfaces.map((surface) => (
+                      <React.Fragment key={surface.key}>
+                        <ScreenshotLabelCell>{surface.label}</ScreenshotLabelCell>
+                        <ScreenshotImageCell>
+                          <ScreenshotImageMeta>
+                            {localizedContent.screenshotMeta.swift}
+                          </ScreenshotImageMeta>
+                          <ScreenshotImage
+                            src={`${surface.swiftImageSrc}#v=${nativeReviewVersion}`}
+                            alt={surface.swiftAlt}
+                            loading="lazy"
+                          />
+                        </ScreenshotImageCell>
+                        <ScreenshotImageCell>
+                          <ScreenshotImageMeta>
+                            {localizedContent.screenshotMeta.website}
+                          </ScreenshotImageMeta>
+                          <ScreenshotImage
+                            src={surface.websiteImageSrc}
+                            alt={surface.websiteAlt}
+                            loading="lazy"
+                          />
+                        </ScreenshotImageCell>
+                      </React.Fragment>
+                    ))}
+                  </ScreenshotGrid>
+                </ScreenshotStateSection>
+              ))}
+            </ScreenshotGroups>
+          </ReviewLayout>
         </ScreenshotSection>
       </Shell>
     </Page>

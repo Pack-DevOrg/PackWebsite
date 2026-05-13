@@ -116,7 +116,7 @@ const TermsOfService: React.FC = () => {
     <DocumentContainer aria-label="Terms of Service">
       <PageSeo
         title="Terms of Service | Pack"
-        description="Review the terms that govern Pack, including bookings, accounts, acceptable use, and dispute resolution."
+        description="Review the terms that govern Pack accounts, travel planning, booking support, acceptable use, privacy-adjacent rights, subscriptions, and dispute resolution."
         path="/terms"
       />
       {state === 'loading' && !content ? (

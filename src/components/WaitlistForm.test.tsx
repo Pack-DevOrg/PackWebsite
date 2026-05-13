@@ -88,6 +88,21 @@ jest.mock('../hooks/useConversionTracking', () => {
   };
 });
 
+jest.mock('./TrackingProvider', () => ({
+  useTracking: () => ({
+    hasAnalyticsConsent: false,
+    hasConsent: false,
+    hasMarketingConsent: false,
+    gpcApplies: false,
+    trackEvent: jest.fn(),
+    trackPageView: jest.fn(),
+    grantConsent: jest.fn(),
+    revokeConsent: jest.fn(),
+    applyConsentDecision: jest.fn(),
+    openPrivacyPreferences: jest.fn(),
+  }),
+}));
+
 /**
  * Mock the global fetch function to simulate API responses
  * Default mock returns successful response

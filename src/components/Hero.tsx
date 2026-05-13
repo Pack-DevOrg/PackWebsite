@@ -284,11 +284,19 @@ const RailStatementAccent = styled.span`
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-size: clamp(3.5rem, 12vw, 9rem);
+  font-size: 7rem;
   font-weight: 800;
   line-height: 0.82;
   letter-spacing: -0.08em;
   text-transform: uppercase;
+
+  @media (max-width: 979px) {
+    font-size: 5.2rem;
+  }
+
+  @media (max-width: 739px) {
+    font-size: 3.5rem;
+  }
 `;
 
 const MarqueeViewport = styled.div`
@@ -395,9 +403,9 @@ const CopyColumn = styled.div`
 
 const Headline = styled.h1`
   margin: 0;
-  width: min(95%, 15ch);
+  width: 100%;
   max-width: none;
-  font-size: clamp(3.5rem, 7.2vw, 5.8rem);
+  font-size: 5.2rem;
   line-height: 0.9;
   letter-spacing: -0.055em;
   color: rgba(255, 248, 236, 0.98);
@@ -405,19 +413,17 @@ const Headline = styled.h1`
   animation: ${reveal} 560ms ease-out 140ms both;
 
   @media (max-width: 979px) {
-    width: 100%;
+    font-size: 4.45rem;
   }
 
   @media (max-width: 739px) {
-    width: min(100%, 11.2ch);
-    font-size: clamp(2.9rem, 13vw, 4.15rem);
+    font-size: 3.25rem;
     line-height: 0.96;
     letter-spacing: -0.05em;
   }
 
   @media (max-width: 430px) {
-    width: min(100%, 10.2ch);
-    font-size: clamp(2.6rem, 11.8vw, 3.55rem);
+    font-size: 2.8rem;
   }
 
   @media (prefers-reduced-motion: reduce) {

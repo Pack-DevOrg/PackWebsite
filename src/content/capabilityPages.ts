@@ -38,33 +38,33 @@ export const capabilityPageDefinitions = [
     chipLabel: "History",
     featureTitle: "Extracts and displays past travel history",
     featureDescription:
-      "Pack can help reconstruct flights, hotels, rental cars, and related trip details so past travel becomes visible and reusable.",
-    pageTitle: "Travel history that stays useful after the trip ends",
+      "Pack can help reconstruct flights, hotels, rental cars, confirmation emails, loyalty context, and related trip details so past travel becomes visible and reusable.",
+    pageTitle: "Travel history and automatic itinerary records that stay useful",
     pageSubtitle:
-      "Pack can help organize past flights, hotels, rental cars, and trip details into one readable travel record.",
+      "Pack can help organize past flights, hotels, rental cars, confirmation emails, dates, loyalty context, and trip details into one readable travel record.",
     intro:
-      "Most travel tools stop being useful once a booking is over. Pack is designed to help you bring past travel back into view so earlier trips become part of future planning instead of dead inbox clutter.",
+      "Most travel tools stop being useful once a booking is over. Pack is designed to help you bring past travel back into view so earlier trips become part of future planning instead of dead inbox clutter or one more lost confirmation email.",
     problemStatement:
       "As travelers, we kept losing our own trip history after the trip ended. Confirmations were buried in inboxes, older bookings were hard to recover, and useful travel context disappeared right when we wanted to reuse it.",
     solutionStatement:
-      "Pack solves that by reconstructing past trips into one readable record, so earlier flights, stays, cars, and timing details are easier to review, remember, and use again.",
+      "Pack solves that by reconstructing past trips into one readable itinerary record, so earlier flights, stays, cars, loyalty details, confirmation emails, and timing details are easier to review, remember, and use again.",
     signalsTitle: "What Pack can help bring together",
     signals: [
-      "Past flight, hotel, and rental car details from travel context you already have",
-      "Trip dates, locations, and booking records that are otherwise spread across inboxes and apps",
+      "Past flight, hotel, rental car, and confirmation-email details from travel context you already have",
+      "Trip dates, locations, booking records, and loyalty details that are otherwise spread across inboxes and apps",
       "A more complete record of how you have actually traveled over time",
     ],
     helpTitle: "How this can help",
     helpPoints: [
-      "Review where you stayed, flew, and drove without piecing everything together manually",
+      "Review where you stayed, flew, and drove without piecing together an itinerary organizer by hand",
       "Reuse prior travel context when planning similar trips again",
-      "Keep one clearer view of your travel footprint instead of scattered records",
+      "Keep one clearer view of your travel footprint instead of scattered booking records",
     ],
     outputTitle: "What you can do with it",
     outputPoints: [
-      "See older trips in a form that is easier to review and reuse",
+      "See older trips and automatic itinerary records in a form that is easier to review and reuse",
       "Use past travel as context when a similar trip comes up again",
-      "Keep more of your travel record in one readable place",
+      "Keep more of your travel record, confirmations, and recurring loyalty context in one readable place",
     ],
     faqs: [
       {
@@ -82,6 +82,11 @@ export const capabilityPageDefinitions = [
         answer:
           "Travel history solves the memory problem after a trip ends. Planning solves the coordination problem for the trip that is coming next.",
       },
+      {
+        question: "Can Pack act like a travel itinerary organizer for old confirmation emails?",
+        answer:
+          "Yes. Pack is designed to reconstruct flights, hotels, rental cars, dates, locations, and related confirmation details into a readable travel record instead of leaving each booking buried in a separate email or provider portal.",
+      },
     ],
     related: ["travel-stats", "loyalty-details", "trip-planning-from-events"],
   },
@@ -91,33 +96,33 @@ export const capabilityPageDefinitions = [
     chipLabel: "Stats",
     featureTitle: "Shows travel stats, maps, and trip context",
     featureDescription:
-      "Travel stats, maps, and timelines help show how flights, hotels, rental cars, and trip events connect at a glance.",
-    pageTitle: "Travel stats and maps that go beyond a single itinerary",
+      "Travel stats, maps, timelines, repeat routes, airport patterns, stays, cars, and trip costs help show how travel history connects at a glance.",
+    pageTitle: "Travel stats, maps, and patterns beyond one itinerary",
     pageSubtitle:
-      "Pack can help turn travel records into maps, timelines, and stats across flights, hotels, and rental cars.",
+      "Pack can help turn travel records into maps, timelines, personal travel stats, repeat routes, airport patterns, stays, rental cars, and cost context.",
     intro:
-      "Travel data gets more useful when it is visible, comparable, and easy to scan. Pack is designed to turn trip records into something you can actually understand at a glance.",
+      "Travel data gets more useful when it is visible, comparable, and easy to scan. Pack is designed to turn trip records into maps, travel stats, repeat-route patterns, and cost context you can actually understand at a glance.",
     problemStatement:
-      "We saw the same problem after every few trips: even when the data existed, it was almost impossible to understand the bigger picture of where we had gone, how often, and what patterns were emerging.",
+      "We saw the same problem after every few trips: even when the data existed, it was almost impossible to understand the bigger picture of where we had gone, which airports and hotels repeated, how often routes came back, and what patterns were emerging.",
     solutionStatement:
-      "Pack solves that by turning scattered travel records into maps, timelines, and stats that make routes, repeat behavior, and overall travel patterns easier to see at a glance.",
+      "Pack solves that by turning scattered travel records into maps, timelines, and stats that make routes, airport patterns, repeat behavior, and overall travel habits easier to see at a glance.",
     signalsTitle: "What Pack can show",
     signals: [
       "Trip maps that show where your travel has taken you",
-      "Stats that summarize travel patterns instead of hiding them in separate bookings",
-      "Timelines that make flights, stays, and cars easier to interpret together",
+      "Stats that summarize repeat routes, airport patterns, hotels, cars, and destinations instead of hiding them in separate bookings",
+      "Timelines that make flights, stays, cars, costs, and travel frequency easier to interpret together",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
-      "Show a broader picture of travel activity across categories",
-      "Make repeated routes, destinations, and trip patterns easier to spot",
-      "Turn travel history into something more visual and memorable",
+      "Show a broader picture of travel activity across flights, hotels, rental cars, destinations, and costs",
+      "Make repeated routes, airports, destinations, and trip patterns easier to spot",
+      "Turn travel history into personal travel analytics instead of disconnected itinerary fragments",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
       "A more visual way to understand how your trips connect",
-      "Maps and timelines that make travel patterns easier to spot",
-      "Context that can carry forward into future planning",
+      "Maps, timelines, and travel stats that make patterns easier to spot",
+      "Travel analytics that can carry forward into future planning, loyalty decisions, and budgeting",
     ],
     faqs: [
       {
@@ -135,6 +140,11 @@ export const capabilityPageDefinitions = [
         answer:
           "Travel history reconstructs the record. Travel stats and maps make that record easier to scan, compare, and reuse later.",
       },
+      {
+        question: "Can Pack show personal travel stats like repeat routes and airport patterns?",
+        answer:
+          "Yes. Pack is designed to turn travel history into maps, timelines, repeat routes, airport patterns, destination history, and other personal travel stats instead of only showing one itinerary at a time.",
+      },
     ],
     related: ["travel-history", "trip-expenses", "live-trip-views"],
   },
@@ -144,33 +154,33 @@ export const capabilityPageDefinitions = [
     chipLabel: "Loyalty",
     featureTitle: "Extracts loyalty numbers and program details",
     featureDescription:
-      "Pack can help organize loyalty numbers, traveler program details, and travel-account information across flights, hotels, and rental cars.",
-    pageTitle: "Loyalty details that stay attached to the trip",
+      "Pack can help organize airline points context, loyalty numbers, traveler program details, and travel-account information across flights, hotels, and rental cars.",
+    pageTitle: "Airline points and loyalty details that stay attached to the trip",
     pageSubtitle:
-      "Pack can help organize loyalty numbers and program details across flights, hotels, and rental cars instead of leaving them scattered across bookings.",
+      "Pack can help organize loyalty numbers, frequent flyer context, hotel programs, rental car memberships, and points-related travel details instead of leaving them scattered across bookings.",
     intro:
-      "Loyalty details are easy to lose even though they matter every time you travel. Pack is designed to keep these details closer to the trip and the traveler profile they belong to.",
+      "Loyalty details are easy to lose even though they matter every time you travel. Pack is designed to keep airline points context, frequent flyer numbers, hotel programs, rental car memberships, and trusted traveler details closer to the trip and traveler profile they belong to.",
     problemStatement:
-      "We kept seeing the same friction as travelers: loyalty numbers, trusted traveler details, and membership info were always somewhere else right when we needed them for planning, booking, or check-in.",
+      "We kept seeing the same friction as travelers: loyalty numbers, points context, trusted traveler details, and membership info were always somewhere else right when we needed them for planning, booking, check-in, or deciding which account mattered for a trip.",
     solutionStatement:
-      "Pack solves that by keeping loyalty and traveler-program details attached to the broader trip and profile context, so less of the booking flow depends on hunting through old notes and emails.",
+      "Pack solves that by keeping loyalty and traveler-program details attached to the broader trip and profile context, so less of the booking flow depends on hunting through old notes, emails, screenshots, or program portals.",
     signalsTitle: "What Pack can keep organized",
     signals: [
-      "Traveler numbers and program details across multiple travel categories",
-      "Travel profiles that remember recurring preferences and account context",
-      "A less fragile way to keep loyalty information accessible when plans move",
+      "Airline points context, frequent flyer numbers, and program details across multiple travel categories",
+      "Travel profiles that remember recurring preferences, trusted traveler details, and account context",
+      "A less fragile way to keep loyalty information accessible when plans move or travelers compare booking options",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
-      "Keep loyalty details closer to the travel workflow instead of separate notes",
-      "Reduce repeated searching for the same frequent traveler information",
-      "Make profiles more reusable across future bookings and trip edits",
+      "Keep loyalty details and points context closer to the travel workflow instead of separate notes",
+      "Reduce repeated searching for the same frequent traveler, hotel, rental car, and trusted traveler information",
+      "Make profiles more reusable across future bookings, trip edits, and check-in moments",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
-      "Loyalty details that stay closer to the trip instead of separate notes",
-      "Less repeated searching for the same account information",
-      "Traveler profiles that are easier to reuse later",
+      "Loyalty details and airline points context that stay closer to the trip instead of separate notes",
+      "Less repeated searching for the same account, membership, and trusted traveler information",
+      "Traveler profiles that are easier to reuse when planning, booking, checking in, or reviewing history later",
     ],
     faqs: [
       {
@@ -187,6 +197,11 @@ export const capabilityPageDefinitions = [
         question: "How do loyalty details fit into the rest of the trip?",
         answer:
           "They stay useful before booking, during the trip, and when you plan again later, which is why Pack treats them as part of traveler context instead of one more disconnected note.",
+      },
+      {
+        question: "Is Pack an airline points aggregator or award-flight search engine?",
+        answer:
+          "Pack is not trying to replace dedicated award-flight search tools. The Pack opportunity is keeping airline points context, loyalty numbers, traveler profiles, and booking context attached to the actual trip so the right details are available when planning, booking, checking in, or reviewing travel history.",
       },
     ],
     related: ["traveler-profiles", "travel-history", "travel-booking"],
@@ -315,21 +330,21 @@ export const capabilityPageDefinitions = [
       "Pack solves that by keeping search and booking attached to the trip you already reviewed, so flights, hotels, rental cars, traveler details, and itinerary context stay connected when it matters most.",
     signalsTitle: "What Pack can handle",
     signals: [
-      "Flight, hotel, and rental car workflows as parts of one trip",
-      "A more connected relationship between planning, review, and booking",
+      "Flight, hotel, rental car, cash, points, and loyalty workflows as parts of one trip",
+      "A more connected relationship between planning, review, booking, preferences, and calendar context",
       "Traveler context that can stay attached instead of getting re-entered repeatedly",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
-      "Search across major trip components without treating each one as an isolated task",
+      "Search across major trip components without treating each one as an isolated task or generic OTA session",
       "Keep booking details tied to the broader itinerary view",
-      "Reduce the disconnect between trip planning and trip action",
+      "Reduce the disconnect between trip planning, traveler preferences, loyalty context, and trip action",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
-      "Search and booking that stay tied to the itinerary you already reviewed",
+      "Search and booking that stay tied to the itinerary, traveler profile, and loyalty context you already reviewed",
       "Less disconnect between planning the trip and acting on it",
-      "A clearer view of flights, hotels, and rental cars as one trip",
+      "A clearer view of flights, hotels, rental cars, cash costs, and points-related context as one trip",
     ],
     faqs: [
       {
@@ -346,6 +361,11 @@ export const capabilityPageDefinitions = [
         question: "Why separate travel booking from proactive planning?",
         answer:
           "Planning assembles the trip. Booking is the moment where context usually falls apart, so Pack treats it as a separate problem to solve well.",
+      },
+      {
+        question: "How is Pack different from a generic flight or hotel search site?",
+        answer:
+          "Generic search starts with inventory. Pack is designed to keep the itinerary, traveler profile, loyalty context, calendar constraints, and trip reason close to the booking decision so travelers are not comparing options in a vacuum.",
       },
     ],
     related: ["trip-planning-from-events", "traveler-profiles", "trip-expenses"],
@@ -368,20 +388,20 @@ export const capabilityPageDefinitions = [
       "Pack solves that by gathering the next-trip details that matter most into one readable view, so travelers can answer departure-day questions faster and with less context switching.",
     signalsTitle: "What Pack can surface around the next trip",
     signals: [
-      "Weather, timing, and related trip events",
-      "Airport security signals, drive times, and transportation actions",
-      "A more complete pre-departure view instead of several separate apps",
+      "Weather, timing, calendar context, and related trip events",
+      "Airport security signals, drive times, flight status, and transportation actions",
+      "A more complete pre-departure view instead of several separate apps, alerts, and airport pages",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
-      "Make the upcoming trip easier to scan quickly",
-      "Keep more of the departure-day questions in one place",
+      "Make the upcoming trip easier to scan quickly before leaving for the airport",
+      "Keep more of the departure-day questions, airport context, and next actions in one place",
       "Support a travel workflow that stays useful after booking",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
       "A quicker read on what matters before departure",
-      "More travel-day questions answered in one place",
+      "More travel-day questions answered in one place, from airport waits to timing and transportation",
       "A trip workflow that stays useful after booking",
     ],
     faqs: [
@@ -399,6 +419,11 @@ export const capabilityPageDefinitions = [
         question: "How are upcoming-trip details different from planning?",
         answer:
           "Planning shapes the trip. Upcoming-trip details solve the travel-day readiness problem once timing, traffic, weather, and airport conditions start to matter.",
+      },
+      {
+        question: "Can Pack combine flight alerts, airport waits, weather, and drive time?",
+        answer:
+          "Pack is designed around that combined travel-day readiness problem: the useful answer is not only a flight alert or a wait-time number, but how timing, airport conditions, weather, transportation, and the itinerary fit together.",
       },
     ],
     related: ["airport-security-wait-times", "trip-calendar-sync", "live-trip-views"],
@@ -469,7 +494,7 @@ export const capabilityPageDefinitions = [
     featureTitle: "Syncs trip events to device calendars",
     featureDescription:
       "Pack can sync trip events back to calendars so travel timing stays visible where people already manage the rest of their schedule.",
-    pageTitle: "Trip calendar sync that keeps travel visible in your actual schedule",
+    pageTitle: "Trip calendar sync for travel schedules",
     pageSubtitle:
       "Pack is designed to sync trip events to device calendars so departures, stays, and key travel timing stay visible alongside the rest of life.",
     intro:
@@ -533,21 +558,21 @@ export const capabilityPageDefinitions = [
       "Pack solves that by connecting external accounts and providers so richer trip context comes in automatically, giving planning, updates, history, and profiles a stronger starting point.",
     signalsTitle: "What connected accounts can enable",
     signals: [
-      "Richer planning context from email and calendar sources",
+      "Richer planning context from email, calendar, and travel-account sources",
       "Trip updates that can follow changes happening outside the app",
-      "A stronger base for reconstructing travel history and traveler profiles",
+      "A stronger base for reconstructing travel history, automatic itineraries, loyalty context, and traveler profiles",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
       "Reduce manual forwarding and re-entry across travel workflows",
       "Make planning and organization more context-aware from the start",
-      "Support a broader travel system instead of a standalone search session",
+      "Support a broader travel system instead of a standalone search session, spreadsheet, or inbox search",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
       "Richer travel context from the start of planning",
       "Less manual forwarding and setup across the workflow",
-      "A stronger base for history, profiles, and trip updates",
+      "A stronger base for history, profiles, loyalty details, automatic itineraries, and trip updates",
     ],
     faqs: [
       {
@@ -564,6 +589,11 @@ export const capabilityPageDefinitions = [
         question: "How do connected accounts help the trip stay organized?",
         answer:
           "They let Pack start from richer email, calendar, and travel context so less of the trip has to be assembled manually and fewer details get lost between tools.",
+      },
+      {
+        question: "Can connected accounts help turn booking emails into an itinerary?",
+        answer:
+          "Yes. Connected accounts give Pack a stronger base for finding travel confirmations, calendar context, loyalty details, and trip updates so the itinerary can be organized without relying only on manual forwarding.",
       },
     ],
     related: ["trip-planning-from-events", "trip-calendar-sync", "travel-history"],
@@ -587,20 +617,20 @@ export const capabilityPageDefinitions = [
     signalsTitle: "What can belong in the traveler profile",
     signals: [
       "Preferences that shape how future trips should be planned",
-      "Trusted traveler context and recurring booking details",
-      "Accessibility needs and loyalty information that should not get lost",
+      "Trusted traveler context, passport-adjacent travel details, loyalty numbers, and recurring booking details",
+      "Accessibility needs, points context, and account information that should not get lost",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
       "Keep repeat traveler details in one clearer place",
-      "Make future trip planning and booking more consistent",
+      "Make future trip planning and booking more consistent across cash, points, loyalty, and preference decisions",
       "Reduce friction from re-entering the same context repeatedly",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
       "Traveler details that are easier to reuse across future trips",
       "More consistent planning and booking from one trip to the next",
-      "Less friction from re-entering the same context repeatedly",
+      "Less friction from re-entering the same loyalty, preference, and traveler context repeatedly",
     ],
     faqs: [
       {
@@ -618,6 +648,11 @@ export const capabilityPageDefinitions = [
         answer:
           "Travel history is the record of where you have been. Traveler profiles hold the recurring details that shape future trips and save re-entry later.",
       },
+      {
+        question: "Can traveler profiles help with airline points and loyalty programs?",
+        answer:
+          "Yes. Traveler profiles can keep loyalty numbers, program context, trusted traveler details, and preferences close to planning and booking, which is different from a standalone points balance tracker because the information stays tied to the trip workflow.",
+      },
     ],
     related: ["loyalty-details", "travel-booking", "connected-accounts"],
   },
@@ -630,30 +665,30 @@ export const capabilityPageDefinitions = [
       "Trips can be shared through links, invitations, linked trips, imports, copies, and group travel workflows so planning stays collaborative.",
     pageTitle: "Trip sharing and group travel without losing the thread",
     pageSubtitle:
-      "Pack is designed to support sharing, invitations, linked trips, and group travel workflows so the itinerary can stay collaborative instead of fragmenting.",
+      "Pack is designed to support sharing, invitations, linked trips, group trip planning, family travel, assistant workflows, and collaboration so the itinerary can stay aligned instead of fragmenting.",
     intro:
-      "Group travel becomes messy fast because conversations, copies, and bookings split across too many places. Pack treats collaboration as part of the trip itself.",
+      "Group travel becomes messy fast because conversations, copies, costs, bookings, and responsibilities split across too many places. Pack treats collaboration as part of the trip itself.",
     problemStatement:
-      "Group travel breaks down fast when different people are working from different screenshots, forwarded emails, copied itineraries, and side conversations. The trip starts fragmenting almost immediately.",
+      "Group travel breaks down fast when different people are working from different screenshots, forwarded emails, copied itineraries, budget notes, and side conversations. The trip starts fragmenting almost immediately.",
     solutionStatement:
-      "Pack solves that by giving shared trips, invitations, linked plans, and collaboration workflows a cleaner structure, so multiple travelers can stay closer to the same source of truth.",
+      "Pack solves that by giving shared trips, invitations, linked plans, group-travel context, and collaboration workflows a cleaner structure, so multiple travelers, families, assistants, or coworkers can stay closer to the same source of truth.",
     signalsTitle: "What Pack can keep together",
     signals: [
       "Links and invitations that keep travelers aligned around the same trip",
       "Imports, copies, and linked-trip workflows when plans branch or expand",
-      "A more coherent approach to group travel than scattered messages and screenshots",
+      "A more coherent approach to group trip planning than scattered messages, screenshots, spreadsheets, and budget notes",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
       "Keep multiple travelers closer to the same source of trip context",
-      "Reduce the drift that happens when group travel fans out across channels",
-      "Make linked or copied trips easier to manage when plans diverge",
+      "Reduce the drift that happens when group travel, family travel, or assistant-planned travel fans out across channels",
+      "Make linked or copied trips easier to manage when plans, costs, or travelers diverge",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
       "A cleaner shared view of the trip for multiple travelers",
-      "Less drift across messages, copies, and side conversations",
-      "More structure when one trip turns into several linked plans",
+      "Less drift across messages, copies, side conversations, and expense notes",
+      "More structure when one trip turns into several linked plans for a family, group, or work trip",
     ],
     faqs: [
       {
@@ -670,6 +705,11 @@ export const capabilityPageDefinitions = [
         question: "How is group travel different from solo trip planning?",
         answer:
           "Group travel has a coordination problem that solo travel does not. Shared visibility and linked plans matter much more once multiple people are involved.",
+      },
+      {
+        question: "Can Pack help with group trip planning and shared expenses?",
+        answer:
+          "Pack is designed to keep shared itineraries, linked trips, updates, and trip expenses closer together so group travel does not split into separate spreadsheets, screenshots, and message threads.",
       },
     ],
     related: ["trip-updates", "live-trip-views", "trip-expenses"],
@@ -733,33 +773,33 @@ export const capabilityPageDefinitions = [
     chipLabel: "Expenses",
     featureTitle: "Organizes trip expenses",
     featureDescription:
-      "Pack is designed to organize travel expenses so the full cost of a trip is easier to track, review, and keep attached to the trip record.",
+      "Pack is designed to organize travel expenses, group trip costs, and booking context so the full cost of a trip is easier to track, review, and keep attached to the trip record.",
     pageTitle: "Trip expenses that stay attached to the travel record",
     pageSubtitle:
-      "Pack can help organize trip expenses so the cost of travel is easier to review in the same place as the itinerary.",
+      "Pack can help organize trip expenses, shared travel costs, and booking context so the cost of travel is easier to review in the same place as the itinerary.",
     intro:
-      "Travel costs get harder to understand when they break away from the trip itself. Pack treats expenses as part of the travel record rather than an unrelated afterthought.",
+      "Travel costs get harder to understand when they break away from the trip itself. Pack treats expenses, shared costs, and booking context as part of the travel record rather than an unrelated afterthought.",
     problemStatement:
-      "We kept seeing the same follow-up problem after a trip: the itinerary lived in one place, while the real cost of the trip was scattered across receipts, notes, spreadsheets, and reimbursement workflows.",
+      "We kept seeing the same follow-up problem after a trip: the itinerary lived in one place, while the real cost of the trip was scattered across receipts, notes, spreadsheets, reimbursements, and group expense conversations.",
     solutionStatement:
-      "Pack solves that by keeping trip expenses attached to the travel record itself, so the full cost of travel is easier to review, remember, and use when planning again later.",
+      "Pack solves that by keeping trip expenses attached to the travel record itself, so the full cost of travel is easier to review, split, remember, and use when planning again later.",
     signalsTitle: "What Pack can keep attached to the trip",
     signals: [
-      "Trip expenses as part of the same system as flights, hotels, and cars",
-      "A clearer relationship between the itinerary and what the trip actually cost",
+      "Trip expenses as part of the same system as flights, hotels, cars, and shared plans",
+      "A clearer relationship between the itinerary, the group, and what the trip actually cost",
       "A travel workflow that stays useful after the booking moment",
     ],
     helpTitle: "How Pack can help",
     helpPoints: [
-      "Keep expenses attached to the trip instead of separate spreadsheets or notes",
+      "Keep expenses attached to the trip instead of separate spreadsheets, reimbursement threads, or notes",
       "Make it easier to review the total picture of a trip later",
-      "Support future planning with a better memory of what travel really cost",
+      "Support future planning with a better memory of what travel really cost and how costs changed across travelers",
     ],
     outputTitle: "What you get from it",
     outputPoints: [
       "Trip costs that stay attached to the itinerary instead of separate notes",
       "An easier way to review the full cost of travel later",
-      "Better memory of what trips actually cost when planning again",
+      "Better memory of what trips actually cost when planning again or coordinating a group",
     ],
     faqs: [
       {
@@ -776,6 +816,11 @@ export const capabilityPageDefinitions = [
         question: "How are trip expenses different from itinerary planning?",
         answer:
           "Itinerary planning shapes the trip. Trip expenses solve the follow-up problem of keeping the cost of that trip readable and connected afterward.",
+      },
+      {
+        question: "Can Pack help with group trip costs?",
+        answer:
+          "Pack is designed to keep trip expenses attached to the itinerary and shared trip context, which makes group travel costs easier to understand than when receipts, notes, and reimbursements live separately.",
       },
     ],
     related: ["travel-stats", "travel-booking", "travel-history"],

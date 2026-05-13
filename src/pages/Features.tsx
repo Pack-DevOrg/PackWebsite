@@ -150,6 +150,81 @@ const FeaturesGrid = styled.div`
   }
 `;
 
+const SystemsSection = styled.section`
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  border: 1px solid rgba(243, 210, 122, 0.14);
+  border-radius: var(--border-radius);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 122, 0.07), transparent 46%),
+    rgba(255, 255, 255, 0.03);
+  padding: var(--space-4);
+`;
+
+const SystemsIntro = styled.p`
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  text-align: center;
+`;
+
+const SystemsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+
+  @media (min-width: 760px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1040px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+`;
+
+const SystemCard = styled(PrefetchLink)`
+  display: grid;
+  gap: var(--space-2);
+  min-height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius);
+  background: rgba(0, 0, 0, 0.16);
+  color: inherit;
+  padding: var(--space-3);
+  text-decoration: none;
+  transition: border-color 160ms ease-out, transform 160ms ease-out;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(243, 210, 122, 0.34);
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
+  }
+`;
+
+const SystemTitle = styled.h3`
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-medium);
+`;
+
+const SystemDescription = styled.p`
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  line-height: 1.55;
+`;
+
 const FeatureCard = styled(PrefetchLink)`
   background: rgba(255, 255, 255, 0.03);
   border-radius: var(--border-radius);
@@ -317,6 +392,47 @@ const Features: React.FC = () => {
           ctaTitle: "Mira cómo Pack planearía tu próximo viaje",
           ctaBody:
             "Únete a la lista de espera para obtener acceso anticipado a una forma de viajar más organizada y personalizada.",
+          systemsTitle: "Pack como sistemas de viaje conectados",
+          systemsIntro:
+            "Las funciones individuales importan, pero Pack se vuelve más útil cuando la planificación, el contexto, la coordinación y el día de viaje trabajan juntos.",
+          systems: [
+            {
+              title: "Planificar",
+              description:
+                "Viajes desde prompts, eventos, calendario y contexto real del viajero.",
+              href: "/guides/ai-travel-planning",
+            },
+            {
+              title: "Organizar",
+              description:
+                "Confirmaciones, itinerarios, historial y detalles próximos en una vista más clara.",
+              href: "/guides/trip-organization",
+            },
+            {
+              title: "Coordinar",
+              description:
+                "Viajes compartidos, grupos, perfiles, gastos y enlaces para mantener a todos alineados.",
+              href: "/guides/group-trip-planning",
+            },
+            {
+              title: "Recordar",
+              description:
+                "Historial, mapas, estadísticas, rutas repetidas y contexto que vuelve a servir.",
+              href: "/guides/travel-stats-and-maps",
+            },
+            {
+              title: "Actuar",
+              description:
+                "Alertas, esperas en aeropuerto, clima, calendario y vistas en vivo cuando el viaje se acerca.",
+              href: "/guides/travel-day-intelligence",
+            },
+            {
+              title: "Confiar",
+              description:
+                "Planificación más limitada por hechos verificables y menos parecida a una respuesta genérica.",
+              href: "/guides/reliable-ai-travel-planning",
+            },
+          ],
           schemaName: "Pack - Asistente de viaje con IA",
           schemaDescription:
             "Asistente inteligente de viajes que planifica viajes, te ayuda a completar vuelos y hoteles mediante un checkout seguro dentro de Pack y crea itinerarios personalizados a través de conversación natural.",
@@ -384,6 +500,47 @@ const Features: React.FC = () => {
           ctaTitle: "See how Pack would plan your next trip",
           ctaBody:
             "Join the waitlist to get early access to a more organized, more personalized way to travel.",
+          systemsTitle: "Pack as connected travel systems",
+          systemsIntro:
+            "Individual features matter, but Pack gets more useful when planning, context, coordination, and travel day all work together.",
+          systems: [
+            {
+              title: "Plan",
+              description:
+                "Trips from prompts, events, calendars, and real traveler context.",
+              href: "/guides/ai-travel-planning",
+            },
+            {
+              title: "Organize",
+              description:
+                "Confirmations, itineraries, history, and upcoming details in one clearer view.",
+              href: "/guides/trip-organization",
+            },
+            {
+              title: "Coordinate",
+              description:
+                "Shared trips, groups, profiles, expenses, and links that keep people aligned.",
+              href: "/guides/group-trip-planning",
+            },
+            {
+              title: "Remember",
+              description:
+                "History, maps, stats, repeat routes, and travel context that becomes reusable.",
+              href: "/guides/travel-stats-and-maps",
+            },
+            {
+              title: "Act",
+              description:
+                "Alerts, airport waits, weather, calendars, and live views when travel gets close.",
+              href: "/guides/travel-day-intelligence",
+            },
+            {
+              title: "Trust",
+              description:
+                "Planning that is more constrained by known trip facts and less like a generic answer.",
+              href: "/guides/reliable-ai-travel-planning",
+            },
+          ],
           schemaName: "Pack - AI Travel Assistant",
           schemaDescription:
             "Intelligent AI travel assistant that plans trips, helps you complete flights and hotels through secure in-app checkout in Pack, and creates personalized itineraries through natural conversation.",
@@ -475,6 +632,19 @@ const Features: React.FC = () => {
           {localizedContent.heroDescription}
         </HeroDescription>
       </HeroFeature>
+
+      <SystemsSection>
+        <ComparisonTitle>{localizedContent.systemsTitle}</ComparisonTitle>
+        <SystemsIntro>{localizedContent.systemsIntro}</SystemsIntro>
+        <SystemsGrid>
+          {localizedContent.systems.map((system) => (
+            <SystemCard key={system.href} to={pathFor(system.href)}>
+              <SystemTitle>{system.title}</SystemTitle>
+              <SystemDescription>{system.description}</SystemDescription>
+            </SystemCard>
+          ))}
+        </SystemsGrid>
+      </SystemsSection>
 
       <div>
         <FeaturesGrid>

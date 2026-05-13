@@ -57,9 +57,24 @@ const inferBucketFromOriginDomain = (originDomain) => {
 const resolveDistribution = () => {
   const explicitId = process.env.PACK_APP_DISTRIBUTION_ID?.trim();
   if (explicitId) {
+    const distribution = captureJson("aws", [
+      "cloudfront",
+      "get-distribution",
+      "--id",
+      explicitId,
+      "--query",
+      "Distribution",
+      "--output",
+      "json",
+    ]);
+    const targetOriginId = distribution.DefaultCacheBehavior?.TargetOriginId;
+    const targetOrigin = distribution.Origins?.Items?.find(
+      (origin) => origin.Id === targetOriginId,
+    );
     return {
       id: explicitId,
-      aliases: [],
+      aliases: distribution.Aliases?.Items || [],
+      originDomain: targetOrigin?.DomainName || null,
     };
   }
 
@@ -98,11 +113,15 @@ const resolveDistribution = () => {
     );
   }
 
+  const targetOriginId = matchingDistribution.DefaultCacheBehavior?.TargetOriginId;
+  const targetOrigin = matchingDistribution.Origins?.Items?.find(
+    (origin) => origin.Id === targetOriginId,
+  );
+
   return {
     id: matchingDistribution.Id,
     aliases,
-    originDomain:
-      matchingDistribution.Origins?.Items?.[0]?.DomainName || null,
+    originDomain: targetOrigin?.DomainName || null,
   };
 };
 
@@ -131,8 +150,6 @@ run("aws", [
   "--delete",
   "--exclude",
   "assets/*",
-  "--exclude",
-  "*.html",
 ]);
 run("aws", [
   "s3",

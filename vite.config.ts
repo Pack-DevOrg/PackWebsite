@@ -61,6 +61,7 @@ const packAdsVideoLabExportsDir = path.join(packAdsVideoLabProjectDir, 'exports'
 const packAdsVideoLabTemplatesPath = path.join(
   packAdsVideoLabProjectDir,
   'templates.json',
+);
 const packAppDir = path.join(repoRootDir, 'PackApp');
 const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
@@ -101,10 +102,19 @@ const getLocalDevBypassAction = (requestPath: string): string | null => {
   return null;
 };
 
-const readRequestBody = async (request: IncomingMessage): Promise<string> => {
+const readRequestBody = async (
+  request: IncomingMessage,
+  maxBytes = 128 * 1024,
+): Promise<string> => {
   const chunks: Buffer[] = [];
+  let bytesRead = 0;
   for await (const chunk of request) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    bytesRead += buffer.length;
+    if (bytesRead > maxBytes) {
+      throw new Error('Request body too large.');
+    }
+    chunks.push(buffer);
   }
   return Buffer.concat(chunks).toString('utf8');
 };
@@ -117,6 +127,34 @@ const writeJson = (
   response.statusCode = statusCode;
   response.setHeader('Content-Type', 'application/json');
   response.end(JSON.stringify(body));
+};
+
+const isAllowedDevSideEffectRequest = (request: IncomingMessage): boolean => {
+  const host = String(request.headers.host ?? '').toLowerCase();
+  const origin = String(request.headers.origin ?? '').toLowerCase();
+  if (!/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(host)) {
+    return false;
+  }
+  if (!origin) {
+    return true;
+  }
+  return /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(origin);
+};
+
+const guardDevSideEffectRequest = (
+  request: IncomingMessage,
+  response: ServerResponse,
+): boolean => {
+  if (isAllowedDevSideEffectRequest(request)) {
+    return true;
+  }
+  writeJson(response, 403, {
+    success: false,
+    error: {
+      message: 'Dev lab generation is only available to same-origin localhost requests.',
+    },
+  });
+  return false;
 };
 
 const resolveLogoLabPythonCommand = (): {
@@ -843,6 +881,9 @@ export default defineConfig(({ mode, ssrBuild }) => {
             (request, response, next) => {
               if (request.method !== 'POST') {
                 next();
+                return;
+              }
+              if (!guardDevSideEffectRequest(request, response)) {
                 return;
               }
 

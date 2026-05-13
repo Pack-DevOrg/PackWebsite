@@ -3,9 +3,15 @@ import { createEncryptedStorage } from "@/utils/encryptedBrowserStorage";
 import { deleteCookie, getCookie, setCookie } from "@/utils/cookies";
 
 const SESSION_STORAGE_KEY = "pack.auth.session.v1";
-const LEGACY_LOCAL_STORAGE_KEY = "pack.auth.session.v1";
+const LEGACY_SESSION_STORAGE_KEYS = [
+  "pack.auth.session.v1",
+  "doneai.auth.session.v1",
+] as const;
+const LEGACY_LOCAL_STORAGE_KEYS = LEGACY_SESSION_STORAGE_KEYS;
 const PKCE_STORAGE_KEY = "pack.auth.pkce.v1";
 const PKCE_COOKIE_KEY = "pack.auth.pkce.shared.v1";
+const LEGACY_PKCE_STORAGE_KEYS = ["doneai.auth.pkce.v1"] as const;
+const LEGACY_PKCE_COOKIE_KEYS = ["doneai.auth.pkce.shared.v1"] as const;
 const LOGOUT_INTENT_KEY = "pack.auth.logout.intent.v1";
 const AUTH_RETRY_BLOCK_KEY = "pack.auth.retry.block.v1";
 const AUTH_HINT_COOKIE_KEY = "pack.auth.hint.v1";
@@ -14,6 +20,10 @@ const PKCE_MAX_AGE_MS = 10 * 60 * 1000;
 const isBrowser = typeof window !== "undefined";
 const encryptedSessionStore = createEncryptedStorage({
   namespace: SESSION_STORAGE_KEY,
+  area: "session",
+});
+const legacyDoneAiEncryptedSessionStore = createEncryptedStorage({
+  namespace: "doneai.auth.session.v1",
   area: "session",
 });
 
@@ -102,7 +112,9 @@ export const loadSession = async (): Promise<AuthSession | null> => {
   }
 
   const legacySession = withStorage(() =>
-    parseSession(window.sessionStorage.getItem(SESSION_STORAGE_KEY))
+    LEGACY_SESSION_STORAGE_KEYS
+      .map((key) => parseSession(window.sessionStorage.getItem(key)))
+      .find((session): session is AuthSession => Boolean(session)) ?? null
   );
   if (legacySession) {
     await persistSession(legacySession);
@@ -110,15 +122,21 @@ export const loadSession = async (): Promise<AuthSession | null> => {
   }
 
   const legacyLocalSession = withStorage(() =>
-    parseSession(window.localStorage.getItem(LEGACY_LOCAL_STORAGE_KEY))
+    LEGACY_LOCAL_STORAGE_KEYS
+      .map((key) => parseSession(window.localStorage.getItem(key)))
+      .find((session): session is AuthSession => Boolean(session)) ?? null
   );
   if (!legacyLocalSession) {
-    withStorage(() => window.localStorage.removeItem(LEGACY_LOCAL_STORAGE_KEY));
+    withStorage(() => {
+      LEGACY_LOCAL_STORAGE_KEYS.forEach((key) => window.localStorage.removeItem(key));
+    });
     return null;
   }
 
   await persistSession(legacyLocalSession);
-  withStorage(() => window.localStorage.removeItem(LEGACY_LOCAL_STORAGE_KEY));
+  withStorage(() => {
+    LEGACY_LOCAL_STORAGE_KEYS.forEach((key) => window.localStorage.removeItem(key));
+  });
   return legacyLocalSession;
 };
 
@@ -133,7 +151,7 @@ export const persistSession = async (session: AuthSession): Promise<void> => {
   });
 
   try {
-    window.localStorage.removeItem(LEGACY_LOCAL_STORAGE_KEY);
+    LEGACY_LOCAL_STORAGE_KEYS.forEach((key) => window.localStorage.removeItem(key));
   } catch {
     // Ignore local storage clear failures.
   }
@@ -153,11 +171,12 @@ export const clearSession = (): void => {
   }
 
   void encryptedSessionStore.removeItem();
+  void legacyDoneAiEncryptedSessionStore.removeItem();
   clearAuthSessionHint();
 
   try {
-    window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
-    window.localStorage.removeItem(LEGACY_LOCAL_STORAGE_KEY);
+    LEGACY_SESSION_STORAGE_KEYS.forEach((key) => window.sessionStorage.removeItem(key));
+    LEGACY_LOCAL_STORAGE_KEYS.forEach((key) => window.localStorage.removeItem(key));
   } catch {
     // Ignore storage clear failures.
   }
@@ -221,7 +240,11 @@ export const getPendingPkce = (): PendingPkceSession | null => {
   const raw =
     window.sessionStorage.getItem(PKCE_STORAGE_KEY) ??
     window.localStorage.getItem(PKCE_STORAGE_KEY) ??
-    getCookie(PKCE_COOKIE_KEY);
+    getCookie(PKCE_COOKIE_KEY) ??
+    LEGACY_PKCE_STORAGE_KEYS
+      .map((key) => window.sessionStorage.getItem(key) ?? window.localStorage.getItem(key))
+      .find(Boolean) ??
+    LEGACY_PKCE_COOKIE_KEYS.map((key) => getCookie(key)).find(Boolean);
   const pending = parsePendingPkce(raw);
 
   if (!pending) {
@@ -250,9 +273,19 @@ export const clearPendingPkce = (): void => {
   }
   window.sessionStorage.removeItem(PKCE_STORAGE_KEY);
   window.localStorage.removeItem(PKCE_STORAGE_KEY);
+  LEGACY_PKCE_STORAGE_KEYS.forEach((key) => {
+    window.sessionStorage.removeItem(key);
+    window.localStorage.removeItem(key);
+  });
   deleteCookie(PKCE_COOKIE_KEY, {
     domain: getCrossSubdomainCookieDomain(),
     sameSite: "Lax",
+  });
+  LEGACY_PKCE_COOKIE_KEYS.forEach((key) => {
+    deleteCookie(key, {
+      domain: getCrossSubdomainCookieDomain(),
+      sameSite: "Lax",
+    });
   });
 };
 

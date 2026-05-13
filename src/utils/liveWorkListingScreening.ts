@@ -148,6 +148,13 @@ const ImportedListingSchema = z.object({
   rawText: z.string().min(1),
 });
 
+const HTTP_URL_SCHEMA = z.string().url().transform((value) => {
+  const parsed = new URL(value);
+  return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+    ? parsed.toString()
+    : null;
+});
+
 const ListingImportResultSchema = z.object({
   listings: z.array(ImportedListingSchema),
   warnings: z.array(z.string()),
@@ -443,7 +450,7 @@ function buildImportedListing(
     sourceLabel: getListingSourceLabel(source),
     address,
     normalizedAddress,
-    url: url || null,
+    url: url ? HTTP_URL_SCHEMA.parse(url) : null,
     squareFeet: parsePositiveNumber(row.squareFeet),
     bedrooms: parsePositiveNumber(row.bedrooms),
     bathrooms: parsePositiveNumber(row.bathrooms),
@@ -451,7 +458,7 @@ function buildImportedListing(
     description,
     notes,
     priceText,
-    photoUrl,
+    photoUrl: photoUrl ? HTTP_URL_SCHEMA.parse(photoUrl) : null,
     rawText,
   });
 }

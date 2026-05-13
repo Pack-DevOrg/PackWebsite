@@ -43,6 +43,65 @@ export const LogoLabRunSchema = z.object({
 
 export type LogoLabRun = z.infer<typeof LogoLabRunSchema>;
 
+export const VideoLabGenerateRequestSchema = z.object({
+  templateId: z.string().trim().min(1),
+  count: z.number().int().min(1).max(8).default(2),
+  autoSubtitles: z.boolean().default(false),
+  subtitleBurn: z.boolean().default(false),
+});
+
+export type VideoLabGenerateRequest = z.infer<
+  typeof VideoLabGenerateRequestSchema
+>;
+
+export const VideoLabTemplateSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  tags: z.array(z.string()),
+  channelLabel: z.string(),
+});
+
+export type VideoLabTemplate = z.infer<typeof VideoLabTemplateSchema>;
+
+export const VideoLabVariantSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  description: z.string(),
+  tags: z.array(z.string()),
+  localPath: z.string(),
+  previewUrl: z.string(),
+  fileUrl: z.string(),
+  templateId: z.string(),
+  fileName: z.string(),
+});
+
+export type VideoLabVariant = z.infer<typeof VideoLabVariantSchema>;
+
+export const VideoLabGroupSchema = z.object({
+  slug: z.string(),
+  templateId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  tags: z.array(z.string()),
+  channelLabel: z.string(),
+  featuredVideoSlug: z.string().nullable(),
+  variants: z.array(VideoLabVariantSchema),
+});
+
+export type VideoLabGroup = z.infer<typeof VideoLabGroupSchema>;
+
+export const VideoLabManifestSchema = z.object({
+  projectDir: z.string(),
+  exportsDir: z.string(),
+  generatedAt: z.string(),
+  templates: z.array(VideoLabTemplateSchema),
+  groups: z.array(VideoLabGroupSchema),
+});
+
+export type VideoLabManifest = z.infer<typeof VideoLabManifestSchema>;
+
 const TravelDetailReviewLocationSchema = z.object({
   label: z.string(),
   cityCode: z.string().nullable().optional(),

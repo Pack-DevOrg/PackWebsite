@@ -5,7 +5,9 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
   fetchLatestLogoLabRun,
+  fetchLatestVideoLabManifest,
   fetchTravelDetailReviewAggregate,
+  generateVideoLabRun,
   generateLogoLabRun,
 } from "@/api/labs";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -14,6 +16,8 @@ import type {
   LogoLabRun,
   TravelDetailReviewOutput,
   TravelDetailReviewResult,
+  VideoLabManifest,
+  VideoLabVariant,
 } from "@/schemas/labs";
 import {
   LOGO_BRANDING_RESEARCH_PRINCIPLES,
@@ -981,6 +985,7 @@ const StudioGrid = styled.div`
 `;
 
 const StudioPanel = styled.article`
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1085,6 +1090,11 @@ const Notice = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   font-size: 0.86rem;
   line-height: 1.6;
+
+  code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 `;
 
 const ErrorNotice = styled(Notice)`
@@ -1097,6 +1107,42 @@ const StudioActionRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+`;
+
+const WorkspaceMetaGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const WorkspaceStatCard = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-radius: 18px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.04);
+  padding: 0.9rem 0.95rem;
+`;
+
+const WorkspaceStatLabel = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
+
+const WorkspaceStatValue = styled.span`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
 `;
 
 const ButtonLikeLink = styled.button`
@@ -1873,6 +1919,90 @@ export const LabsHomePage: React.FC = () => {
 export const LabsVideosPage: React.FC = () => {
   const { locale, pathFor } = useI18n();
   const localizedContent = labsContent[locale];
+  const [templateId, setTemplateId] = React.useState("");
+  const [count, setCount] = React.useState("2");
+  const [autoSubtitles, setAutoSubtitles] = React.useState(false);
+  const [subtitleBurn, setSubtitleBurn] = React.useState(false);
+  const [currentManifest, setCurrentManifest] = React.useState<VideoLabManifest | null>(
+    null,
+  );
+  const latestManifestQuery = useQuery({
+    queryKey: ["labs", "videos", "latest-manifest"],
+    queryFn: fetchLatestVideoLabManifest,
+    staleTime: 1000 * 15,
+    retry: false,
+  });
+  const generateMutation = useMutation({
+    mutationFn: generateVideoLabRun,
+    onSuccess: (manifest) => {
+      setCurrentManifest(manifest);
+      if (manifest.templates.length > 0 && !templateId) {
+        setTemplateId(manifest.templates[0].id);
+      }
+    },
+  });
+  const displayedManifest = currentManifest ?? latestManifestQuery.data ?? null;
+
+  React.useEffect(() => {
+    if (!displayedManifest || displayedManifest.templates.length === 0 || templateId) {
+      return;
+    }
+
+    setTemplateId(displayedManifest.templates[0].id);
+  }, [displayedManifest, templateId]);
+
+  const selectedTemplate =
+    displayedManifest?.templates.find((template) => template.id === templateId) ?? null;
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!templateId) {
+      return;
+    }
+
+    void generateMutation.mutateAsync({
+      templateId,
+      count: Number(count),
+      autoSubtitles,
+      subtitleBurn,
+    });
+  };
+
+  const renderVideoCard = (
+    video: VideoLabVariant,
+    featuredSlug: string | null,
+  ): React.ReactNode => {
+    const isFeatured = video.slug === featuredSlug;
+
+    return (
+      <VideoVariantCard key={video.id}>
+        <VideoFrame>
+          <InlineVideo controls preload="metadata" playsInline src={video.previewUrl} />
+        </VideoFrame>
+        <Meta>
+          <VariantHeader>
+            <VariantTitle>{video.title}</VariantTitle>
+            {isFeatured ? <Tag>Featured</Tag> : null}
+          </VariantHeader>
+          <CardBody>{video.description}</CardBody>
+          <TagRow>
+            {video.tags.map((tag) => (
+              <Tag key={`${video.id}-${tag}`}>{tag}</Tag>
+            ))}
+          </TagRow>
+          <LinkRow>
+            <PrimaryLink href={video.previewUrl} target="_blank" rel="noreferrer">
+              {localizedContent.openPreview}
+            </PrimaryLink>
+            <SecondaryLink href={video.previewUrl} download>
+              {localizedContent.downloadLocalCopy}
+            </SecondaryLink>
+          </LinkRow>
+          <PathLabel>{video.localPath}</PathLabel>
+        </Meta>
+      </VideoVariantCard>
+    );
+  };
 
   return (
     <LabsShell
@@ -1883,11 +2013,157 @@ export const LabsVideosPage: React.FC = () => {
         <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
         <BreadcrumbLink to={pathFor("/labs/videos")}>{localizedContent.crumbs.videos}</BreadcrumbLink>
       </BreadcrumbRow>
+      <StudioGrid>
+        <StudioPanel>
+          <SectionHeading>
+            <SectionTitle>Local video workspace</SectionTitle>
+            <SectionDescription>
+              {displayedManifest
+                ? "Your local PackAds workspace is connected. Generate new short-form ads here, then review them below as soon as they land in exports."
+                : "Load the local PackAds export manifest, then generate or review ads in place."}
+            </SectionDescription>
+          </SectionHeading>
+          {latestManifestQuery.isError && !currentManifest ? (
+            <ErrorNotice>
+              {latestManifestQuery.error instanceof Error
+                ? latestManifestQuery.error.message
+                : "Failed to load the local video workspace."}
+            </ErrorNotice>
+          ) : null}
+          <Notice>
+            Templates are read from <code>PackAds/demo_project/templates.json</code> and
+            exports are shown from <code>PackAds/demo_project/exports</code>. This is a
+            local-only dev bridge between the website and PackAds.
+          </Notice>
+          {displayedManifest ? (
+            <WorkspaceMetaGrid>
+              <WorkspaceStatCard>
+                <WorkspaceStatLabel>Templates</WorkspaceStatLabel>
+                <WorkspaceStatValue>{displayedManifest.templates.length}</WorkspaceStatValue>
+              </WorkspaceStatCard>
+              <WorkspaceStatCard>
+                <WorkspaceStatLabel>Export Groups</WorkspaceStatLabel>
+                <WorkspaceStatValue>{displayedManifest.groups.length}</WorkspaceStatValue>
+              </WorkspaceStatCard>
+            </WorkspaceMetaGrid>
+          ) : null}
+          {displayedManifest ? (
+            <>
+              <FieldBlock>
+                <FieldLabel>Templates Registry</FieldLabel>
+                <PathLabel>{displayedManifest.projectDir}/templates.json</PathLabel>
+              </FieldBlock>
+              <FieldBlock>
+                <FieldLabel>Exports Directory</FieldLabel>
+                <PathLabel>{displayedManifest.exportsDir}</PathLabel>
+              </FieldBlock>
+            </>
+          ) : null}
+          {selectedTemplate ? (
+            <Notice>
+              <strong>{selectedTemplate.channelLabel}</strong>: {selectedTemplate.description}
+            </Notice>
+          ) : null}
+        </StudioPanel>
+        <StudioPanel>
+          <SectionHeading>
+            <SectionTitle>Generate new exports</SectionTitle>
+            <SectionDescription>
+              Use the local PackAds builder to render TikTok, Meta Reels, and other short-form
+              template variants directly into the exports directory.
+            </SectionDescription>
+          </SectionHeading>
+          <StudioForm onSubmit={handleSubmit}>
+            <FieldGrid>
+              <FieldBlock>
+                <FieldLabel>Template</FieldLabel>
+                <FieldSelect
+                  value={templateId}
+                  onChange={(event) => setTemplateId(event.target.value)}
+                  disabled={!displayedManifest || generateMutation.isPending}
+                >
+                  {displayedManifest?.templates.length ? null : (
+                    <option value="">No templates found</option>
+                  )}
+                  {(displayedManifest?.templates ?? []).map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.title} · {template.channelLabel}
+                    </option>
+                  ))}
+                </FieldSelect>
+                <FieldHint>
+                  Template tags stay visible below so you can distinguish TikTok-style and Meta
+                  Reels outputs before generating.
+                </FieldHint>
+              </FieldBlock>
+              <FieldBlock>
+                <FieldLabel>Ad count</FieldLabel>
+                <FieldSelect
+                  value={count}
+                  onChange={(event) => setCount(event.target.value)}
+                  disabled={generateMutation.isPending}
+                >
+                  {["1", "2", "3", "4", "5", "6"].map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </FieldSelect>
+                <FieldHint>
+                  Each run writes <code>ad_XXX.mp4</code> files into the template export folder.
+                </FieldHint>
+              </FieldBlock>
+            </FieldGrid>
+            <CheckboxRow>
+              <input
+                type="checkbox"
+                checked={autoSubtitles}
+                onChange={(event) => setAutoSubtitles(event.target.checked)}
+                disabled={generateMutation.isPending}
+              />
+              Generate subtitle files for this run
+            </CheckboxRow>
+            <CheckboxRow>
+              <input
+                type="checkbox"
+                checked={subtitleBurn}
+                onChange={(event) => setSubtitleBurn(event.target.checked)}
+                disabled={generateMutation.isPending || !autoSubtitles}
+              />
+              Burn subtitles into extra <code>.subtitled.mp4</code> exports
+            </CheckboxRow>
+            <StudioActionRow>
+              <PrimaryButton type="submit" disabled={generateMutation.isPending || !templateId}>
+                {generateMutation.isPending ? "Generating…" : "Generate videos"}
+              </PrimaryButton>
+              <SecondaryButton
+                type="button"
+                disabled={latestManifestQuery.isFetching}
+                onClick={() => {
+                  void latestManifestQuery.refetch();
+                }}
+              >
+                Refresh exports
+              </SecondaryButton>
+            </StudioActionRow>
+          </StudioForm>
+          {generateMutation.isError ? (
+            <ErrorNotice>
+              {generateMutation.error instanceof Error
+                ? generateMutation.error.message
+                : "Video generation failed."}
+            </ErrorNotice>
+          ) : null}
+        </StudioPanel>
+      </StudioGrid>
       <Grid>
-        {localizedContent.videos.videoGroups.map((group) => (
+        {(displayedManifest?.groups ?? []).map((group) => (
           <VideoGroupCard key={group.slug}>
             <Meta>
-              <Kicker>{group.tags.join(" · ")}</Kicker>
+              <Kicker>
+                {group.channelLabel}
+                {group.tags.length > 0 ? ` · ${group.tags.join(" · ")}` : ""}
+              </Kicker>
               <CardTitle>{group.title}</CardTitle>
               <CardBody>{group.description}</CardBody>
               <TagRow>
@@ -1896,43 +2172,23 @@ export const LabsVideosPage: React.FC = () => {
                 ))}
               </TagRow>
             </Meta>
-            <VariantGrid>
-              {group.variants.map((video) => {
-                const previewUrl = toViteFsUrl(video.localPath);
-                const isFeatured = video.slug === group.featuredVideoSlug;
-
-                return (
-                  <VideoVariantCard key={video.slug}>
-                    <VideoFrame>
-                      <InlineVideo controls preload="metadata" playsInline src={previewUrl} />
-                    </VideoFrame>
-                    <Meta>
-                      <VariantHeader>
-                        <VariantTitle>{video.title}</VariantTitle>
-                        {isFeatured ? <Tag>Featured</Tag> : null}
-                      </VariantHeader>
-                      <CardBody>{video.description}</CardBody>
-                      <TagRow>
-                        {video.tags.map((tag) => (
-                          <Tag key={tag}>{tag}</Tag>
-                        ))}
-                      </TagRow>
-                      <LinkRow>
-                        <PrimaryLink href={previewUrl} target="_blank" rel="noreferrer">
-                          {localizedContent.openPreview}
-                        </PrimaryLink>
-                        <SecondaryLink href={previewUrl} download>
-                          {localizedContent.downloadLocalCopy}
-                        </SecondaryLink>
-                      </LinkRow>
-                      <PathLabel>{video.localPath}</PathLabel>
-                    </Meta>
-                  </VideoVariantCard>
-                );
-              })}
-            </VariantGrid>
+            {group.variants.length > 0 ? (
+              <VariantGrid>
+                {group.variants.map((video) =>
+                  renderVideoCard(video, group.featuredVideoSlug),
+                )}
+              </VariantGrid>
+            ) : (
+              <Notice>
+                No exports have been generated for <code>{group.templateId}</code> on this
+                machine yet. Use the generator above to write a local run into this folder.
+              </Notice>
+            )}
           </VideoGroupCard>
         ))}
+        {displayedManifest && displayedManifest.groups.length === 0 ? (
+          <Notice>No video templates were found in the local PackAds workspace.</Notice>
+        ) : null}
       </Grid>
     </LabsShell>
   );

@@ -9,7 +9,12 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {promisify} from 'node:util';
 import type {IncomingMessage, ServerResponse} from 'node:http';
-import {LogoLabGenerateRequestSchema, LogoLabRunSchema} from './src/schemas/labs';
+import {
+  LogoLabGenerateRequestSchema,
+  LogoLabRunSchema,
+  VideoLabGenerateRequestSchema,
+  VideoLabManifestSchema,
+} from './src/schemas/labs';
 import {
   LOGO_BRANDING_RESEARCH_PRINCIPLES,
   createLogoVariationPlan,
@@ -50,6 +55,12 @@ const packAdsLogoLabOutputDir = path.join(
   'assets',
   'generated_images',
   'logo_lab',
+);
+const packAdsVideoLabProjectDir = path.join(packAdsDir, 'demo_project');
+const packAdsVideoLabExportsDir = path.join(packAdsVideoLabProjectDir, 'exports');
+const packAdsVideoLabTemplatesPath = path.join(
+  packAdsVideoLabProjectDir,
+  'templates.json',
 );
 const execFileAsync = promisify(execFile);
 
@@ -121,6 +132,20 @@ const resolveLogoLabPythonCommand = (): {
   };
 };
 
+const resolvePackAdsPythonCommand = (): string => {
+  const venv311Python = path.join(packAdsDir, '.venv311', 'bin', 'python');
+  if (fs.existsSync(venv311Python)) {
+    return venv311Python;
+  }
+
+  const venvPython = path.join(packAdsDir, '.venv', 'bin', 'python');
+  if (fs.existsSync(venvPython)) {
+    return venvPython;
+  }
+
+  return 'python3';
+};
+
 const toViteFsUrl = (absolutePath: string): string =>
   `/@fs${encodeURI(absolutePath)}`;
 
@@ -143,6 +168,176 @@ const hydrateLogoLabManifest = (
       })
     : [],
 });
+
+const slugify = (value: string): string =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const titleCaseTemplateId = (templateId: string): string =>
+  templateId
+    .split('_')
+    .filter(Boolean)
+    .map((part) => {
+      if (/^\d+s$/i.test(part)) {
+        return part.toUpperCase();
+      }
+
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join(' ');
+
+const inferChannelLabel = (tags: string[]): string => {
+  const normalizedTags = tags.map((tag) => tag.trim().toLowerCase());
+  if (normalizedTags.includes('tiktok')) {
+    return 'TikTok';
+  }
+  if (normalizedTags.includes('reels')) {
+    return 'Meta Reels';
+  }
+  return 'Short-form';
+};
+
+const describeTemplate = (
+  templateId: string,
+  template: Record<string, unknown>,
+): string => {
+  const tags = Array.isArray(template['tags'])
+    ? template['tags'].filter((tag): tag is string => typeof tag === 'string')
+    : [];
+  const segments = Array.isArray(template['segments'])
+    ? template['segments'].filter(
+        (segment): segment is Record<string, unknown> =>
+          typeof segment === 'object' && segment !== null,
+      )
+    : [];
+  const endcard = segments.find((segment) => segment['type'] === 'endcard');
+  const endcardText =
+    typeof endcard?.['text'] === 'string' ? endcard['text'].trim() : '';
+  const ctaText = typeof endcard?.['cta'] === 'string' ? endcard['cta'].trim() : '';
+  const aspectTag = tags.find((tag) => /^\d+:\d+$/.test(tag.trim()));
+  const notableTags = tags.filter((tag) => !/^\d+:\d+$/.test(tag.trim())).slice(0, 3);
+  const parts = [
+    `${inferChannelLabel(tags)}${aspectTag ? ` ${aspectTag}` : ''}`.trim(),
+    notableTags.length > 0 ? notableTags.join(' · ') : '',
+    endcardText ? `End card: ${endcardText}` : '',
+    ctaText ? `CTA: ${ctaText}` : '',
+  ].filter((part) => part.length > 0);
+
+  return parts.join(' | ') || `Generated exports for ${titleCaseTemplateId(templateId)}.`;
+};
+
+const buildVideoLabManifest = (): Record<string, unknown> => {
+  if (!fs.existsSync(packAdsVideoLabTemplatesPath)) {
+    throw new Error(`Missing PackAds templates registry: ${packAdsVideoLabTemplatesPath}`);
+  }
+
+  const rawRegistry = JSON.parse(
+    fs.readFileSync(packAdsVideoLabTemplatesPath, 'utf8'),
+  ) as Record<string, unknown>;
+  const templatesRecord =
+    typeof rawRegistry['templates'] === 'object' && rawRegistry['templates'] !== null
+      ? (rawRegistry['templates'] as Record<string, Record<string, unknown>>)
+      : {};
+
+  fs.mkdirSync(packAdsVideoLabExportsDir, {recursive: true});
+
+  const templates = Object.entries(templatesRecord)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([templateId, template]) => {
+      const tags = Array.isArray(template['tags'])
+        ? template['tags'].filter((tag): tag is string => typeof tag === 'string')
+        : [];
+      return {
+        id: templateId,
+        title: titleCaseTemplateId(templateId),
+        description: describeTemplate(templateId, template),
+        tags,
+        channelLabel: inferChannelLabel(tags),
+      };
+    });
+
+  const groups = templates.map((template) => {
+    const groupDir = path.join(packAdsVideoLabExportsDir, template.id);
+    const variants = fs.existsSync(groupDir)
+      ? fs
+          .readdirSync(groupDir, {withFileTypes: true})
+          .filter((entry) => entry.isFile() && entry.name.endsWith('.mp4'))
+          .map((entry) => {
+            const absolutePath = path.join(groupDir, entry.name);
+            const stats = fs.statSync(absolutePath);
+            return {
+              absolutePath,
+              fileName: entry.name,
+              modifiedAt: stats.mtimeMs,
+            };
+          })
+          .sort((left, right) => right.modifiedAt - left.modifiedAt)
+          .map((entry) => {
+            const baseName = entry.fileName.replace(/\.mp4$/i, '');
+            const chosenPath = path.join(groupDir, `${baseName}.chosen.json`);
+            const chosen =
+              fs.existsSync(chosenPath) && fs.statSync(chosenPath).isFile()
+                ? (JSON.parse(fs.readFileSync(chosenPath, 'utf8')) as Record<string, unknown>)
+                : null;
+            const assetTags = [...template.tags];
+            if (entry.fileName.includes('.subtitled.')) {
+              assetTags.push('subtitled');
+            }
+            const chosenSummary =
+              chosen && typeof chosen['template_id'] === 'string'
+                ? Object.entries(chosen)
+                    .filter(
+                      ([key, value]) =>
+                        key !== 'template_id' &&
+                        typeof value === 'string' &&
+                        value.trim().length > 0,
+                    )
+                    .slice(0, 3)
+                    .map(([key, value]) => `${key}: ${String(value)}`)
+                    .join(' · ')
+                : '';
+
+            return {
+              id: `${template.id}:${baseName}`,
+              slug: slugify(`${template.id}-${baseName}`),
+              title: entry.fileName.includes('.subtitled.')
+                ? `${baseName.replace(/_/g, ' ')} · Subtitled`
+                : baseName.replace(/_/g, ' '),
+              description:
+                chosenSummary || `Rendered export from ${template.title}.`,
+              tags: assetTags,
+              localPath: entry.absolutePath,
+              previewUrl: toViteFsUrl(entry.absolutePath),
+              fileUrl: encodeURI(`file://${entry.absolutePath}`),
+              templateId: template.id,
+              fileName: entry.fileName,
+            };
+          })
+      : [];
+
+    return {
+      slug: slugify(template.id),
+      templateId: template.id,
+      title: template.title,
+      description: template.description,
+      tags: template.tags,
+      channelLabel: template.channelLabel,
+      featuredVideoSlug: variants[0]?.slug ?? null,
+      variants,
+    };
+  });
+
+  return {
+    projectDir: packAdsVideoLabProjectDir,
+    exportsDir: packAdsVideoLabExportsDir,
+    generatedAt: new Date().toISOString(),
+    templates,
+    groups,
+  };
+};
 
 const handleLatestLogoLabRun = async (
   _request: IncomingMessage,
@@ -243,6 +438,81 @@ const handleLogoLabGenerate = async (
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Logo studio generation failed.';
+    writeJson(response, 500, {
+      success: false,
+      error: {
+        message,
+      },
+    });
+  }
+};
+
+const handleLatestVideoLabRun = async (
+  _request: IncomingMessage,
+  response: ServerResponse,
+): Promise<void> => {
+  try {
+    const validated = VideoLabManifestSchema.parse(buildVideoLabManifest());
+    writeJson(response, 200, {
+      success: true,
+      data: validated,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Failed to load video lab manifest.';
+    writeJson(response, 500, {
+      success: false,
+      error: {
+        message,
+      },
+    });
+  }
+};
+
+const handleVideoLabGenerate = async (
+  request: IncomingMessage,
+  response: ServerResponse,
+): Promise<void> => {
+  try {
+    const rawBody = await readRequestBody(request);
+    const parsedBody = VideoLabGenerateRequestSchema.parse(
+      rawBody.length > 0 ? JSON.parse(rawBody) : {},
+    );
+    const python = resolvePackAdsPythonCommand();
+    const args = [
+      '-m',
+      'doneaiads',
+      'ads',
+      'build',
+      '--project-dir',
+      packAdsVideoLabProjectDir,
+      '--template-id',
+      parsedBody.templateId,
+      '--count',
+      String(parsedBody.count),
+    ];
+
+    if (parsedBody.autoSubtitles) {
+      args.push('--auto-subtitles');
+    }
+    if (parsedBody.subtitleBurn) {
+      args.push('--subtitle-burn');
+    }
+
+    await execFileAsync(python, args, {
+      cwd: packAdsDir,
+      timeout: 1000 * 60 * 8,
+      maxBuffer: 1024 * 1024 * 10,
+    });
+
+    const validated = VideoLabManifestSchema.parse(buildVideoLabManifest());
+    writeJson(response, 200, {
+      success: true,
+      data: validated,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Video generation failed.';
     writeJson(response, 500, {
       success: false,
       error: {
@@ -515,6 +785,28 @@ export default defineConfig(({ mode, ssrBuild }) => {
       {
         name: 'logo-lab-dev-api',
         configureServer(server) {
+          server.middlewares.use(
+            '/dev/labs/videos/latest',
+            (request, response, next) => {
+              if (request.method !== 'GET') {
+                next();
+                return;
+              }
+
+              void handleLatestVideoLabRun(request, response);
+            },
+          );
+          server.middlewares.use(
+            '/dev/labs/videos/generate',
+            (request, response, next) => {
+              if (request.method !== 'POST') {
+                next();
+                return;
+              }
+
+              void handleVideoLabGenerate(request, response);
+            },
+          );
           server.middlewares.use(
             '/dev/labs/logo-studio/latest',
             (request, response, next) => {

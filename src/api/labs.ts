@@ -3,9 +3,13 @@ import {
   LogoLabGenerateRequestSchema,
   LogoLabRunSchema,
   TravelDetailReviewAggregateSchema,
+  VideoLabGenerateRequestSchema,
+  VideoLabManifestSchema,
   type LogoLabGenerateRequest,
   type LogoLabRun,
   type TravelDetailReviewAggregate,
+  type VideoLabGenerateRequest,
+  type VideoLabManifest,
 } from "@/schemas/labs";
 import { ApiRequestError, requestPublicApi } from "@/api/client";
 
@@ -68,6 +72,57 @@ export const fetchLatestLogoLabRun = async (): Promise<LogoLabRun> => {
   });
 
   return parseLogoLabResponse(response);
+};
+
+const parseVideoLabResponse = (payload: unknown): VideoLabManifest => {
+  const standard = StandardResponseSchema.safeParse(payload);
+  if (standard.success && standard.data.success) {
+    const parsed = VideoLabManifestSchema.safeParse(standard.data.data);
+    if (parsed.success) {
+      return parsed.data;
+    }
+
+    throw new ApiRequestError(
+      500,
+      "Unexpected video lab response shape.",
+      parsed.error.issues,
+    );
+  }
+
+  const fallback = VideoLabManifestSchema.safeParse(payload);
+  if (fallback.success) {
+    return fallback.data;
+  }
+
+  throw new ApiRequestError(
+    500,
+    standard.success
+      ? standard.data.error?.message ?? "Video lab request failed."
+      : "Video lab request failed.",
+    payload,
+  );
+};
+
+export const generateVideoLabRun = async (
+  input: VideoLabGenerateRequest,
+): Promise<VideoLabManifest> => {
+  const payload = VideoLabGenerateRequestSchema.parse(input);
+  const response = await requestPublicApi<unknown, VideoLabGenerateRequest>({
+    path: "/labs/videos/generate",
+    method: "POST",
+    body: payload,
+  });
+
+  return parseVideoLabResponse(response);
+};
+
+export const fetchLatestVideoLabManifest = async (): Promise<VideoLabManifest> => {
+  const response = await requestPublicApi<unknown>({
+    path: "/labs/videos/latest",
+    method: "GET",
+  });
+
+  return parseVideoLabResponse(response);
 };
 
 const DEFAULT_TRAVEL_DETAIL_REVIEW_PATH =

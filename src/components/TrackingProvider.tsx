@@ -157,6 +157,46 @@ const summarizePathForLogs = (path: string): { path: string; hasQuery: boolean }
   return { path: pathOnly, hasQuery: Boolean(query) };
 };
 
+const SENSITIVE_ROUTE_PREFIXES = [
+  '/auth/callback',
+  '/unsubscribe',
+  '/privacy/requests/verify',
+  '/trip/',
+  '/share/',
+] as const;
+
+const sanitizeTrackedPagePath = (page: string): string => {
+  const fallbackPath = page.split('#', 1)[0]?.split('?', 1)[0] || '/';
+  try {
+    const url = new URL(page, window.location.origin);
+    const isSensitiveRoute = SENSITIVE_ROUTE_PREFIXES.some((prefix) =>
+      url.pathname.startsWith(prefix),
+    );
+    if (isSensitiveRoute) {
+      return url.pathname;
+    }
+
+    const safeParams = new URLSearchParams();
+    for (const parameter of TRACKING_QUERY_PARAMETERS) {
+      const value = url.searchParams.get(parameter);
+      if (value) {
+        safeParams.set(parameter, 'present');
+      }
+    }
+    const query = safeParams.toString();
+    return `${url.pathname}${query ? `?${query}` : ''}`;
+  } catch {
+    return fallbackPath;
+  }
+};
+
+const buildTrackedPageLocation = (trackedPath: string): string | undefined => {
+  if (typeof window === 'undefined') {
+    return undefined;
+  }
+  return new URL(trackedPath, window.location.origin).toString();
+};
+
 const pushDataLayerEvent = (
   eventName: string,
   parameters: Record<string, unknown>,
@@ -689,21 +729,22 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       return;
     }
 
+    const trackedPage = sanitizeTrackedPagePath(page);
     const pageTitle = typeof document !== 'undefined' ? document.title : undefined;
-    const pageLocation = typeof window !== 'undefined' ? window.location.href : undefined;
+    const pageLocation = buildTrackedPageLocation(trackedPage);
     const pageReferrer = typeof document !== 'undefined' ? document.referrer || undefined : undefined;
 
     if (
       (hasAnalyticsConsent || hasMarketingConsent) &&
-      lastDataLayerPagePathRef.current !== page
+      lastDataLayerPagePathRef.current !== trackedPage
     ) {
       pushDataLayerEvent('page_view', {
-        page_path: page,
+        page_path: trackedPage,
         page_title: pageTitle,
         page_location: pageLocation,
         page_referrer: pageReferrer,
       });
-      lastDataLayerPagePathRef.current = page;
+      lastDataLayerPagePathRef.current = trackedPage;
     }
 
     if (
@@ -712,15 +753,15 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       typeof window !== 'undefined' &&
       typeof window.gtag === 'function' &&
       ga4MeasurementId &&
-      lastGa4PagePathRef.current !== page
+      lastGa4PagePathRef.current !== trackedPage
     ) {
       window.gtag('event', 'page_view', {
-        page_path: page,
+        page_path: trackedPage,
         page_title: pageTitle,
         page_location: pageLocation,
         page_referrer: pageReferrer,
       });
-      lastGa4PagePathRef.current = page;
+      lastGa4PagePathRef.current = trackedPage;
     }
 
     if (
@@ -728,10 +769,10 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       isMetaPixelLoaded &&
       typeof window !== 'undefined' &&
       typeof window.fbq === 'function' &&
-      lastMetaPageViewPathRef.current !== page
+      lastMetaPageViewPathRef.current !== trackedPage
     ) {
         window.fbq('track', 'PageView');
-        lastMetaPageViewPathRef.current = page;
+        lastMetaPageViewPathRef.current = trackedPage;
     }
 
     if (
@@ -739,14 +780,14 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       isTikTokPixelLoaded &&
       typeof window !== 'undefined' &&
       typeof window.ttq?.page === 'function' &&
-      lastTikTokPagePathRef.current !== page
+      lastTikTokPagePathRef.current !== trackedPage
     ) {
       window.ttq.page();
-      lastTikTokPagePathRef.current = page;
+      lastTikTokPagePathRef.current = trackedPage;
     }
 
     if (env.DEV) {
-      const summary = summarizePathForLogs(page);
+      const summary = summarizePathForLogs(trackedPage);
       console.log(`Tracking page view: ${summary.path}`, {hasQuery: summary.hasQuery});
     }
   }, [ga4MeasurementId, hasAnalyticsConsent, hasMarketingConsent, isGA4Loaded, isMetaPixelLoaded, isTikTokPixelLoaded]);
@@ -756,8 +797,9 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
    * Persist the latest route so late-loading consented runtimes still receive it.
    */
   const trackPageView = useCallback((page: string) => {
-    setCurrentPagePath(page);
-    dispatchPageView(page);
+    const trackedPage = sanitizeTrackedPagePath(page);
+    setCurrentPagePath(trackedPage);
+    dispatchPageView(trackedPage);
   }, [dispatchPageView]);
 
   useEffect(() => {

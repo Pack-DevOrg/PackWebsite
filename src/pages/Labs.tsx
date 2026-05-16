@@ -1606,8 +1606,23 @@ const DeviceScreen = styled.div`
   border-radius: 24px;
   border: 1px solid rgba(255, 248, 236, 0.1);
   background:
+    radial-gradient(circle at 86% 0%, rgba(243, 210, 122, 0.12), transparent 30%),
     linear-gradient(145deg, rgba(255, 248, 236, 0.08), transparent 32%),
     linear-gradient(180deg, #191510 0%, #0d0c0b 100%);
+`;
+
+const PhoneStatusBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem 0.25rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.78rem;
+  font-weight: 800;
+`;
+
+const StatusGlyphs = styled.span`
+  letter-spacing: 0.16em;
 `;
 
 const PhoneHeader = styled.div`
@@ -1654,6 +1669,38 @@ const PhoneBody = styled.div`
   padding: 1rem;
 `;
 
+const PhoneScrollBody = styled(PhoneBody)`
+  align-content: start;
+  min-height: 31rem;
+  max-height: 42rem;
+  overflow: hidden;
+`;
+
+const PhoneBottomNav = styled.nav`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0.25rem 1rem 1rem;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background: rgba(2, 2, 2, 0.42);
+  padding: 0.4rem;
+`;
+
+const PhoneNavItem = styled.span<{ $active?: boolean }>`
+  display: inline-flex;
+  min-height: 2.4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: ${({ $active }) =>
+    $active ? "rgba(243, 210, 122, 0.16)" : "transparent"};
+  color: ${({ theme, $active }) =>
+    $active ? theme.colors.primary.light : theme.colors.text.secondary};
+  font-size: 0.72rem;
+  font-weight: 800;
+`;
+
 const TravelMap = styled.div`
   min-height: 8.5rem;
   border-radius: 22px;
@@ -1664,6 +1711,34 @@ const TravelMap = styled.div`
     radial-gradient(circle at 72% 28%, rgba(231, 35, 64, 0.45) 0 0.35rem, transparent 0.38rem),
     radial-gradient(circle at 24% 70%, rgba(243, 210, 122, 0.65) 0 0.34rem, transparent 0.37rem),
     #242019;
+`;
+
+const HeroMap = styled(TravelMap)`
+  position: relative;
+  min-height: 12rem;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(38, 173, 198, 0.24), transparent 30%),
+    linear-gradient(28deg, transparent 47%, rgba(255, 248, 236, 0.18) 48%, rgba(255, 248, 236, 0.18) 50%, transparent 51%),
+    linear-gradient(112deg, transparent 46%, rgba(243, 210, 122, 0.2) 47%, rgba(243, 210, 122, 0.2) 49%, transparent 50%),
+    radial-gradient(circle at 68% 32%, rgba(231, 35, 64, 0.72) 0 0.42rem, transparent 0.45rem),
+    radial-gradient(circle at 30% 72%, rgba(243, 210, 122, 0.78) 0 0.42rem, transparent 0.45rem),
+    radial-gradient(circle at 52% 54%, rgba(38, 173, 198, 0.72) 0 0.36rem, transparent 0.39rem),
+    #211e18;
+`;
+
+const MapOverlayCard = styled.div`
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  display: grid;
+  gap: 0.35rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 248, 236, 0.13);
+  background: rgba(7, 7, 7, 0.68);
+  padding: 0.75rem;
+  backdrop-filter: blur(18px);
 `;
 
 const TravelRail = styled.div`
@@ -1720,7 +1795,7 @@ const SourceList = styled.div`
 
 const SourceRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
   gap: 0.75rem;
   align-items: center;
   border-radius: 18px;
@@ -1815,6 +1890,35 @@ const TicketCard = styled.div<{ $accent?: "gold" | "red" }>`
   padding: 0.95rem;
 `;
 
+const PassCard = styled(TicketCard)`
+  position: relative;
+  overflow: hidden;
+  min-height: 16rem;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 248, 236, 0.16), transparent 26%),
+    radial-gradient(circle at 78% 10%, rgba(243, 210, 122, 0.2), transparent 28%),
+    linear-gradient(180deg, rgba(38, 34, 29, 0.95), rgba(10, 9, 8, 0.95));
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 58%;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: #0d0c0b;
+  }
+
+  &::before {
+    left: -0.6rem;
+  }
+
+  &::after {
+    right: -0.6rem;
+  }
+`;
+
 const TicketRoute = styled.div`
   display: flex;
   align-items: center;
@@ -1839,6 +1943,13 @@ const Barcode = styled.div`
       transparent 0.45rem 0.7rem
     );
   opacity: 0.55;
+`;
+
+const LargeBarcode = styled(Barcode)`
+  height: 4.4rem;
+  margin-top: 0.9rem;
+  border-radius: 12px;
+  opacity: 0.78;
 `;
 
 const PassportGrid = styled.div`
@@ -1917,6 +2028,153 @@ const ToggleMock = styled.span<{ $on?: boolean }>`
     border-radius: 50%;
     background: ${({ $on }) => ($on ? "#15110d" : "rgba(255, 248, 236, 0.82)")};
   }
+`;
+
+const FloatingPrimaryAction = styled.div`
+  display: inline-flex;
+  min-height: 3.2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.primary.gradient};
+  color: #14110d;
+  padding: 0 1rem;
+  font-size: 0.92rem;
+  font-weight: 900;
+  box-shadow: 0 18px 36px rgba(243, 210, 122, 0.24);
+`;
+
+const PillSegment = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 248, 236, 0.11);
+  background: rgba(255, 248, 236, 0.055);
+  padding: 0.3rem;
+`;
+
+const PillSegmentItem = styled.span<{ $active?: boolean }>`
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: ${({ $active }) =>
+    $active ? "rgba(255, 248, 236, 0.92)" : "transparent"};
+  color: ${({ theme, $active }) =>
+    $active ? "#17130f" : theme.colors.text.secondary};
+  font-size: 0.78rem;
+  font-weight: 900;
+`;
+
+const DayHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-end;
+`;
+
+const LargeDisplay = styled.strong`
+  display: block;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: clamp(2rem, 8vw, 3.3rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+`;
+
+const MiniMetricGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+`;
+
+const SourceIcon = styled.span<{ $tone?: "mail" | "calendar" | "photos" }>`
+  display: inline-flex;
+  width: 2.65rem;
+  height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  background: ${({ $tone }) =>
+    $tone === "mail"
+      ? "linear-gradient(135deg, #4285f4, #ea4335)"
+      : $tone === "calendar"
+        ? "linear-gradient(135deg, #33a852, #4285f4)"
+        : "linear-gradient(135deg, #fbbc04, #ea4335)"};
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 900;
+`;
+
+const PassportCover = styled.div`
+  overflow: hidden;
+  border-radius: 26px;
+  border: 1px solid rgba(243, 210, 122, 0.25);
+  background:
+    radial-gradient(circle at 50% 12%, rgba(243, 210, 122, 0.28), transparent 22%),
+    linear-gradient(145deg, #33291c, #14110d 72%);
+  padding: 1rem;
+`;
+
+const StampMark = styled.span`
+  display: inline-flex;
+  width: 3.3rem;
+  height: 3.3rem;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(243, 210, 122, 0.58);
+  border-radius: 50%;
+  color: ${({ theme }) => theme.colors.primary.light};
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-10deg);
+`;
+
+const MemoryPhotoGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-rows: repeat(2, minmax(5.3rem, 1fr));
+  gap: 0.65rem;
+`;
+
+const MemoryPhotoTile = styled.div<{ $variant?: "wide" | "warm" | "cool" }>`
+  border-radius: 20px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background: ${({ $variant }) =>
+    $variant === "warm"
+      ? "linear-gradient(145deg, rgba(243, 210, 122, 0.36), rgba(231, 35, 64, 0.16)), #211b15"
+      : $variant === "cool"
+        ? "linear-gradient(145deg, rgba(38, 173, 198, 0.36), rgba(255, 248, 236, 0.08)), #151d20"
+        : "linear-gradient(145deg, rgba(255, 248, 236, 0.16), rgba(243, 210, 122, 0.2)), #261f17"};
+  ${({ $variant }) => ($variant === "wide" ? "grid-row: span 2;" : "")}
+`;
+
+const AvatarStack = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const AvatarDot = styled.span<{ $index: number }>`
+  display: inline-flex;
+  width: 2.05rem;
+  height: 2.05rem;
+  align-items: center;
+  justify-content: center;
+  margin-left: ${({ $index }) => ($index === 0 ? "0" : "-0.45rem")};
+  border: 2px solid #17130f;
+  border-radius: 50%;
+  background: ${({ $index }) =>
+    $index === 0
+      ? "linear-gradient(135deg, #f0c62d, #e72340)"
+      : $index === 1
+        ? "linear-gradient(135deg, #26adc6, #f0c62d)"
+        : "rgba(255, 248, 236, 0.16)"};
+  color: #17130f;
+  font-size: 0.7rem;
+  font-weight: 900;
 `;
 
 const DesignTabs = styled.div`
@@ -2955,6 +3213,13 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
       case "command-center":
         return (
           <>
+            <HeroMap aria-hidden="true">
+              <MapOverlayCard>
+                <RailLabel>Live command center</RailLabel>
+                <RailValue>JFK Terminal 8 is 32 min away</RailValue>
+                <SourceValue>Traffic is clear. Leave by 6:10a to keep a 38 min airport buffer.</SourceValue>
+              </MapOverlayCard>
+            </HeroMap>
             <TravelRail>
               <RailTile>
                 <RailLabel>Now</RailLabel>
@@ -2993,7 +3258,7 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
               </TimelineItem>
             </TimelineList>
             <ActionChipRow>
-              <ActionChip>Book ride</ActionChip>
+              <FloatingPrimaryAction>Book ride</FloatingPrimaryAction>
               <ActionChip>Share live ETA</ActionChip>
               <ActionChip>Show source proof</ActionChip>
             </ActionChipRow>
@@ -3002,7 +3267,22 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
       case "trip-sheet":
         return (
           <>
-            <TravelMap aria-hidden="true" />
+            <HeroMap aria-hidden="true">
+              <MapOverlayCard>
+                <DayHeader>
+                  <div>
+                    <RailLabel>Tokyo route sheet</RailLabel>
+                    <RailValue>3 days · 2 cities · 9 places</RailValue>
+                  </div>
+                  <PhoneBadge>Live</PhoneBadge>
+                </DayHeader>
+              </MapOverlayCard>
+            </HeroMap>
+            <PillSegment>
+              <PillSegmentItem $active>Day 1</PillSegmentItem>
+              <PillSegmentItem>Day 2</PillSegmentItem>
+              <PillSegmentItem>Day 3</PillSegmentItem>
+            </PillSegment>
             <TimelineList>
               <TimelineItem $tone="primary">
                 <TimeBlock>Day 1</TimeBlock>
@@ -3026,12 +3306,13 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
                 </div>
               </TimelineItem>
             </TimelineList>
+            <FloatingPrimaryAction>Resolve today’s timing</FloatingPrimaryAction>
           </>
         );
       case "artifact-cards":
         return (
           <TicketGrid>
-            <TicketCard>
+            <PassCard>
               <PhoneLabel>Boarding pass</PhoneLabel>
               <TicketRoute>
                 <span>JFK</span>
@@ -3051,21 +3332,32 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
                   <RailValue>3</RailValue>
                 </RailTile>
               </TravelRail>
-              <Barcode />
-            </TicketCard>
-            <TicketCard $accent="red">
-              <PhoneLabel>Stay receipt</PhoneLabel>
+              <LargeBarcode />
+            </PassCard>
+            <PassCard $accent="red">
+              <PhoneLabel>Stay artifact</PhoneLabel>
               <RailValue>Trunk Hotel Yoyogi Park</RailValue>
               <CanvasMeta>Check-in after 3p. Confirmation and address stay attached to the card.</CanvasMeta>
               <ArtifactCode>PIN 4821</ArtifactCode>
-              <Barcode />
-            </TicketCard>
+              <MiniMetricGrid>
+                <RailTile>
+                  <RailLabel>Room</RailLabel>
+                  <RailValue>King</RailValue>
+                </RailTile>
+                <RailTile>
+                  <RailLabel>Nights</RailLabel>
+                  <RailValue>4</RailValue>
+                </RailTile>
+              </MiniMetricGrid>
+              <LargeBarcode />
+            </PassCard>
           </TicketGrid>
         );
       case "connected-sources":
         return (
           <SourceList>
             <SourceRow>
+              <SourceIcon $tone="mail">G</SourceIcon>
               <div>
                 <RailValue>Gmail</RailValue>
                 <SourceValue>Last imported: AA 181 flight change. Powers trips, artifacts, and live alerts.</SourceValue>
@@ -3073,6 +3365,7 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
               <PhoneBadge>On</PhoneBadge>
             </SourceRow>
             <SourceRow>
+              <SourceIcon $tone="calendar">Cal</SourceIcon>
               <div>
                 <RailValue>Calendar</RailValue>
                 <SourceValue>Reads travel holds only. Prevents route conflicts and missed booking windows.</SourceValue>
@@ -3080,6 +3373,7 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
               <PhoneBadge>Scoped</PhoneBadge>
             </SourceRow>
             <SourceRow>
+              <SourceIcon $tone="photos">Ph</SourceIcon>
               <div>
                 <RailValue>Photos</RailValue>
                 <SourceValue>Private recap suggestions after a trip. Never shared into Packs by default.</SourceValue>
@@ -3095,12 +3389,19 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
       case "setup-passport":
         return (
           <>
-            <MockSection>
-              <RailValue>Traveler readiness</RailValue>
+            <PassportCover>
+              <DayHeader>
+                <div>
+                  <PhoneLabel>Pack Passport</PhoneLabel>
+                  <LargeDisplay>72%</LargeDisplay>
+                  <CanvasMeta>Traveler readiness for international trips.</CanvasMeta>
+                </div>
+                <StampMark>Ready</StampMark>
+              </DayHeader>
               <ProgressTrack>
                 <ProgressFill $width="72%" />
               </ProgressTrack>
-            </MockSection>
+            </PassportCover>
             <PassportGrid>
               <StampTile $done>
                 <RailLabel>Home airport</RailLabel>
@@ -3141,6 +3442,11 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
               <CanvasTitle>Japan spring loop</CanvasTitle>
               <CanvasMeta>4 cities, 11 saved places, 38 imported memories.</CanvasMeta>
             </MemoryHero>
+            <MemoryPhotoGrid>
+              <MemoryPhotoTile $variant="wide" />
+              <MemoryPhotoTile $variant="warm" />
+              <MemoryPhotoTile $variant="cool" />
+            </MemoryPhotoGrid>
             <PassportGrid>
               {["Tokyo", "Kyoto", "Naoshima", "Osaka", "Best meal", "Next time"].map(
                 (stamp) => (
@@ -3162,7 +3468,14 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
           <>
             <TicketCard>
               <PhoneLabel>Invite preview</PhoneLabel>
-              <RailValue>Mia can coordinate Tokyo arrival</RailValue>
+              <DayHeader>
+                <RailValue>Mia can coordinate Tokyo arrival</RailValue>
+                <AvatarStack>
+                  <AvatarDot $index={0}>M</AvatarDot>
+                  <AvatarDot $index={1}>N</AvatarDot>
+                  <AvatarDot $index={2}>+</AvatarDot>
+                </AvatarStack>
+              </DayHeader>
               <CanvasMeta>She sees live arrival, hotel address, and dinner holds. Payment, passport, and private notes stay hidden.</CanvasMeta>
             </TicketCard>
             <SourceList>
@@ -3198,6 +3511,10 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
   return (
     <DeviceChrome>
       <DeviceScreen>
+        <PhoneStatusBar>
+          <span>9:41</span>
+          <StatusGlyphs>●●▰</StatusGlyphs>
+        </PhoneStatusBar>
         <PhoneHeader>
           <div>
             <PhoneLabel>Pack redesign</PhoneLabel>
@@ -3205,9 +3522,15 @@ const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) 
           </div>
           <PhoneBadge>{badgeBySlug[concept.slug] ?? "Lab"}</PhoneBadge>
         </PhoneHeader>
-        <PhoneBody>
+        <PhoneScrollBody>
           {renderSurface()}
-        </PhoneBody>
+        </PhoneScrollBody>
+        <PhoneBottomNav aria-label="Mock Pack tabs">
+          <PhoneNavItem $active>Today</PhoneNavItem>
+          <PhoneNavItem>Trips</PhoneNavItem>
+          <PhoneNavItem>Packs</PhoneNavItem>
+          <PhoneNavItem>Profile</PhoneNavItem>
+        </PhoneBottomNav>
       </DeviceScreen>
     </DeviceChrome>
   );

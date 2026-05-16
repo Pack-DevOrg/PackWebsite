@@ -2254,9 +2254,9 @@ const VisualLabHeader = styled.header`
 const VisualLabTitle = styled.h1`
   margin: 0;
   color: ${({ theme }) => theme.colors.text.primary};
-  font-size: clamp(2.2rem, 5vw, 4.25rem);
-  line-height: 0.9;
-  letter-spacing: -0.055em;
+  font-size: clamp(1.65rem, 3vw, 2.75rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
 `;
 
 const VisualLabSubhead = styled.p`
@@ -2467,6 +2467,15 @@ const GalleryPhone = styled.div<{ $surface?: string }>`
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 `;
 
+const ScreenWallPhone = styled(GalleryPhone)`
+  width: min(100%, 21.25rem);
+  min-height: 34rem;
+  border-width: 0.65rem;
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+`;
+
 const GalleryStatus = styled.div<{ $dark?: boolean }>`
   display: flex;
   justify-content: space-between;
@@ -2541,6 +2550,15 @@ const CommandStep = styled.div<{ $urgent?: boolean }>`
   color: ${({ $urgent }) => ($urgent ? "#fff8ec" : "#15100b")};
   padding: 0.8rem;
   box-shadow: 0 10px 32px rgba(35, 24, 12, 0.13);
+
+  ${RailValue} {
+    color: ${({ $urgent }) => ($urgent ? "#fff8ec" : "#15100b")};
+  }
+
+  ${SourceValue} {
+    color: ${({ $urgent }) =>
+      $urgent ? "rgba(255, 248, 236, 0.72)" : "rgba(21, 16, 11, 0.62)"};
+  }
 `;
 
 const StepDot = styled.span<{ $tone?: string }>`
@@ -2564,6 +2582,18 @@ const MapSheet = styled.div`
   color: #15100b;
   padding: 1rem 1.2rem;
   box-shadow: 0 -18px 50px rgba(35, 24, 12, 0.2);
+
+  ${RailLabel} {
+    color: rgba(21, 16, 11, 0.5);
+  }
+
+  ${RailValue} {
+    color: #15100b;
+  }
+
+  ${SourceValue} {
+    color: rgba(21, 16, 11, 0.58);
+  }
 `;
 
 const DayTabs = styled.div`
@@ -2629,6 +2659,17 @@ const WalletPass = styled.div<{ $kind?: string }>`
   color: ${({ $kind }) => ($kind === "hero" ? "#15100b" : "#fff8ec")};
   padding: 1rem;
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.18);
+
+  ${RailLabel} {
+    color: ${({ $kind }) =>
+      $kind === "hero" ? "rgba(21, 16, 11, 0.48)" : "rgba(255, 248, 236, 0.7)"};
+  }
+
+  ${RailValue},
+  ${SourceValue} {
+    color: ${({ $kind }) =>
+      $kind === "hero" ? "#15100b" : "rgba(255, 248, 236, 0.92)"};
+  }
 `;
 
 const AirportRow = styled.div`
@@ -2654,6 +2695,14 @@ const FakeQr = styled.div<{ $dark?: boolean }>`
 const SourceCanvas = styled.div`
   padding: 1.15rem;
   color: #15100b;
+
+  ${RailValue} {
+    color: #15100b;
+  }
+
+  ${SourceValue} {
+    color: rgba(21, 16, 11, 0.62);
+  }
 `;
 
 const SourceHero = styled.div`
@@ -2676,6 +2725,14 @@ const SourcePipeCard = styled.div`
   background: #fff;
   padding: 0.85rem;
   box-shadow: 0 12px 28px rgba(32, 62, 96, 0.11);
+
+  ${RailValue} {
+    color: #15100b;
+  }
+
+  ${SourceValue} {
+    color: rgba(21, 16, 11, 0.6);
+  }
 `;
 
 const OutputChip = styled.span`
@@ -2694,6 +2751,15 @@ const PassportSpread = styled.div`
   color: #f8e7bd;
   padding: 1.2rem;
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.36);
+
+  ${RailLabel},
+  ${SourceValue} {
+    color: rgba(248, 231, 189, 0.7);
+  }
+
+  ${RailValue} {
+    color: #f8e7bd;
+  }
 `;
 
 const PassportSeal = styled.div`
@@ -2733,6 +2799,27 @@ const JournalCanvas = styled.div`
   padding: 1rem;
 `;
 
+const JournalMomentTitle = styled.strong`
+  display: block;
+  margin-top: 0.45rem;
+  color: #fff;
+  font-size: 4.1rem;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+`;
+
+const JournalMomentWord = styled.span`
+  display: block;
+`;
+
+const JournalCaption = styled.p`
+  margin: 0.75rem 0 0;
+  max-width: 17rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.08rem;
+  line-height: 1.35;
+`;
+
 const JournalGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2756,6 +2843,18 @@ const ShareCanvas = styled.div`
   background: #fff8ec;
   color: #15100b;
   padding: 1.15rem;
+
+  ${RailLabel} {
+    color: rgba(21, 16, 11, 0.48);
+  }
+
+  ${RailValue} {
+    color: #15100b;
+  }
+
+  ${SourceValue} {
+    color: rgba(255, 248, 236, 0.7);
+  }
 `;
 
 const InviteCard = styled.div`
@@ -2764,6 +2863,10 @@ const InviteCard = styled.div`
   background: #fff;
   padding: 1rem;
   box-shadow: 0 18px 44px rgba(42, 24, 12, 0.14);
+
+  > ${RailLabel} {
+    color: rgba(21, 16, 11, 0.48);
+  }
 `;
 
 const MiniPreview = styled.div`
@@ -2787,6 +2890,14 @@ const VisibilityCard = styled.div<{ $hidden?: boolean }>`
   border-radius: 1.25rem;
   background: ${({ $hidden }) => ($hidden ? "#f0e6d7" : "#e8f6ec")};
   padding: 0.8rem;
+
+  ${RailLabel} {
+    color: rgba(21, 16, 11, 0.48);
+  }
+
+  ${RailValue} {
+    color: #15100b;
+  }
 `;
 
 const StudioActionRow = styled.div`
@@ -4111,32 +4222,31 @@ export const LabsHomePage: React.FC = () => {
 
 export const LabsDesignLabsPage: React.FC = () => {
   const { pathFor } = useI18n();
-  const [activeSlug, setActiveSlug] = React.useState(designLabConcepts[0].slug);
-  const activeConcept =
-    designLabConcepts.find((concept) => concept.slug === activeSlug) ??
-    designLabConcepts[0];
-  const copyShouldInvert =
-    activeConcept.slug === "memory-mode" ||
-    activeConcept.slug === "setup-passport";
-  const phoneSurface =
-    activeConcept.slug === "artifact-cards"
+
+  const phoneSurfaceFor = (concept: DesignLabConcept): string | undefined =>
+    concept.slug === "artifact-cards"
       ? "wallet"
-      : activeConcept.slug === "setup-passport"
+      : concept.slug === "setup-passport"
         ? "passport"
-        : activeConcept.slug === "memory-mode"
+        : concept.slug === "memory-mode"
           ? "journal"
-          : activeConcept.slug === "connected-sources" ||
-              activeConcept.slug === "packs-permissions" ||
-              activeConcept.slug === "trip-sheet" ||
-              activeConcept.slug === "command-center"
+          : concept.slug === "connected-sources" ||
+              concept.slug === "packs-permissions" ||
+              concept.slug === "trip-sheet" ||
+              concept.slug === "command-center"
             ? "light"
             : undefined;
 
-  const renderGallerySurface = () => {
-    switch (activeConcept.slug) {
+  const screenIsDark = (concept: DesignLabConcept): boolean =>
+    concept.slug === "memory-mode" || concept.slug === "setup-passport";
+
+  const renderGallerySurface = (concept: DesignLabConcept) => {
+    const phoneSurface = phoneSurfaceFor(concept);
+
+    switch (concept.slug) {
       case "command-center":
         return (
-          <GalleryPhone $surface={phoneSurface}>
+          <ScreenWallPhone $surface={phoneSurface}>
             <GalleryStatus $dark>
               <span>9:41</span>
               <span>LTE 100%</span>
@@ -4165,11 +4275,11 @@ export const LabsDesignLabsPage: React.FC = () => {
                 <SourceValue>Live arrival only. Hotel and receipts stay private.</SourceValue>
               </div>
             </CommandStep>
-          </GalleryPhone>
+          </ScreenWallPhone>
         );
       case "trip-sheet":
         return (
-          <GalleryPhone $surface={phoneSurface}>
+          <ScreenWallPhone $surface={phoneSurface}>
             <GalleryStatus $dark>
               <span>9:41</span>
               <span>Tokyo</span>
@@ -4204,11 +4314,11 @@ export const LabsDesignLabsPage: React.FC = () => {
                 </TimelineStop>
               </MapTimeline>
             </MapSheet>
-          </GalleryPhone>
+          </ScreenWallPhone>
         );
       case "artifact-cards":
         return (
-          <GalleryPhone $surface={phoneSurface}>
+          <ScreenWallPhone $surface={phoneSurface}>
             <GalleryStatus $dark>
               <span>9:41</span>
               <span>Wallet</span>
@@ -4242,11 +4352,11 @@ export const LabsDesignLabsPage: React.FC = () => {
                 <RailValue>Narisawa · 7:30 PM · 2 guests</RailValue>
               </WalletPass>
             </WalletStack>
-          </GalleryPhone>
+          </ScreenWallPhone>
         );
       case "connected-sources":
         return (
-          <GalleryPhone $surface={phoneSurface}>
+          <ScreenWallPhone $surface={phoneSurface}>
             <GalleryStatus $dark>
               <span>9:41</span>
               <span>Private</span>
@@ -4283,11 +4393,11 @@ export const LabsDesignLabsPage: React.FC = () => {
                 </SourcePipeCard>
               </SourcePipeGrid>
             </SourceCanvas>
-          </GalleryPhone>
+          </ScreenWallPhone>
         );
       case "setup-passport":
         return (
-          <GalleryPhone $surface={phoneSurface}>
+          <ScreenWallPhone $surface={phoneSurface}>
             <GalleryStatus>
               <span>9:41</span>
               <span>Ready</span>
@@ -4316,21 +4426,24 @@ export const LabsDesignLabsPage: React.FC = () => {
                 </PassportStamp>
               </PassportStampGrid>
             </PassportSpread>
-          </GalleryPhone>
+          </ScreenWallPhone>
         );
       case "memory-mode":
         return (
-          <GalleryPhone $surface={phoneSurface}>
+          <ScreenWallPhone $surface={phoneSurface}>
             <GalleryStatus>
               <span>9:41</span>
               <span>Private</span>
             </GalleryStatus>
             <JournalCanvas>
               <VisualPosterIndex $light>Japan spring loop</VisualPosterIndex>
-              <VisualPosterTitle>38 moments</VisualPosterTitle>
-              <VisualPosterSentence $light>
+              <JournalMomentTitle>
+                38
+                <JournalMomentWord>moments</JournalMomentWord>
+              </JournalMomentTitle>
+              <JournalCaption>
                 A trip becomes something you want to reopen.
-              </VisualPosterSentence>
+              </JournalCaption>
               <JournalGrid>
                 <JournalPhoto $size="large" />
                 <JournalPhoto />
@@ -4339,11 +4452,11 @@ export const LabsDesignLabsPage: React.FC = () => {
                 <JournalPhoto />
               </JournalGrid>
             </JournalCanvas>
-          </GalleryPhone>
+          </ScreenWallPhone>
         );
       case "packs-permissions":
         return (
-          <GalleryPhone $surface={phoneSurface}>
+          <ScreenWallPhone $surface={phoneSurface}>
             <GalleryStatus $dark>
               <span>9:41</span>
               <span>Send</span>
@@ -4368,7 +4481,7 @@ export const LabsDesignLabsPage: React.FC = () => {
                 </VisibilityGrid>
               </InviteCard>
             </ShareCanvas>
-          </GalleryPhone>
+          </ScreenWallPhone>
         );
       default:
         return null;
@@ -4378,10 +4491,10 @@ export const LabsDesignLabsPage: React.FC = () => {
   return (
     <VisualLabPage>
       <Helmet>
-        <title>{buildVideoTitle("Design futures")}</title>
+        <title>{buildVideoTitle("Design screens")}</title>
         <meta
           name="description"
-          content="Visual-first Pack product design concepts for travel command, itinerary, artifacts, sources, readiness, memories, and sharing."
+          content="Pack app redesign screen studies for command, itinerary, artifacts, sources, readiness, memories, and sharing."
         />
       </Helmet>
       <VisualLabShell>
@@ -4391,47 +4504,26 @@ export const LabsDesignLabsPage: React.FC = () => {
         </BreadcrumbRow>
         <VisualLabHeader>
           <div>
-            <VisualLabTitle>Make travel obvious.</VisualLabTitle>
+            <VisualLabTitle>Pack screens.</VisualLabTitle>
             <VisualLabSubhead>
-              Seven surfaces. No settings soup. No dashboard cosplay. Each one
-              turns a stressful travel moment into something legible, calm, and
-              worth touching.
+              Seven product surfaces as concrete mobile screens.
             </VisualLabSubhead>
           </div>
-          <VisualLabMark>Pk</VisualLabMark>
         </VisualLabHeader>
-        <VisualLabTabs aria-label="Design concepts">
+        <ScreenWall aria-label="Design screen studies">
           {designLabConcepts.map((concept) => (
-            <VisualLabTab
+            <ScreenStudyCard
               key={concept.slug}
-              type="button"
-              $active={concept.slug === activeSlug}
-              aria-pressed={concept.slug === activeSlug}
-              onClick={() => setActiveSlug(concept.slug)}
+              $tone={concept.slug}
             >
-              {concept.title}
-            </VisualLabTab>
+              <ScreenStudyHeader $dark={screenIsDark(concept)}>
+                <ScreenStudyTitle>{concept.title}</ScreenStudyTitle>
+                <ScreenStudyKicker>{concept.label}</ScreenStudyKicker>
+              </ScreenStudyHeader>
+              <ScreenStudyBody>{renderGallerySurface(concept)}</ScreenStudyBody>
+            </ScreenStudyCard>
           ))}
-        </VisualLabTabs>
-        <VisualShowcase $tone={activeConcept.slug}>
-          <VisualPosterCopy $light={copyShouldInvert}>
-            <VisualPosterIndex $light={copyShouldInvert}>
-              {activeConcept.label} / Pack surface
-            </VisualPosterIndex>
-            <VisualPosterTitle>{activeConcept.title}</VisualPosterTitle>
-            <VisualPosterSentence $light={copyShouldInvert}>
-              {activeConcept.thesis}
-            </VisualPosterSentence>
-            <VisualProofStrip>
-              {activeConcept.focus.map((focus) => (
-                <VisualProofPill key={focus} $light={copyShouldInvert}>
-                  {focus}
-                </VisualProofPill>
-              ))}
-            </VisualProofStrip>
-          </VisualPosterCopy>
-          <DeviceGallery>{renderGallerySurface()}</DeviceGallery>
-        </VisualShowcase>
+        </ScreenWall>
       </VisualLabShell>
     </VisualLabPage>
   );

@@ -94,6 +94,12 @@ const LabsVideosPage = labsEnabled
       return { default: module.LabsVideosPage };
     })
   : null;
+const LabsDesignLabsPage = labsEnabled
+  ? React.lazy(async () => {
+      const module = await import("../pages/Labs");
+      return { default: module.LabsDesignLabsPage };
+    })
+  : null;
 const LabsLogoStudioPage = labsEnabled
   ? React.lazy(async () => {
       const module = await import("../pages/Labs");
@@ -629,6 +635,18 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
         ) : null}
+        {LabsDesignLabsPage ? (
+          <Route
+            path="/labs/design-labs"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <LabsDesignLabsPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ) : null}
         {LabsLogoStudioPage ? (
           <Route
             path="/labs/logo-studio"
@@ -991,6 +1009,9 @@ const NonHomeRoutes: React.FC = () => {
           ) : null}
           {LabsVideosPage ? (
             <Route path="labs/videos" element={<Layout><Suspense fallback={null}><LabsVideosPage /></Suspense></Layout>} />
+          ) : null}
+          {LabsDesignLabsPage ? (
+            <Route path="labs/design-labs" element={<Layout><Suspense fallback={null}><LabsDesignLabsPage /></Suspense></Layout>} />
           ) : null}
           {LabsLogoStudioPage ? (
             <Route path="labs/logo-studio" element={<Layout><Suspense fallback={null}><LabsLogoStudioPage /></Suspense></Layout>} />

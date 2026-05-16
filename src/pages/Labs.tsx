@@ -81,6 +81,20 @@ type SoundmarkScenario = {
   soundmarkSlug: Soundmark["slug"];
 };
 
+type DesignLabConcept = {
+  slug: string;
+  label: string;
+  title: string;
+  thesis: string;
+  focus: string[];
+};
+
+type DesignLabSignal = {
+  label: string;
+  value: string;
+  detail: string;
+};
+
 type ReferenceSoundmark = Soundmark & {
   sourceUrl: string;
   username: string;
@@ -483,6 +497,83 @@ const refinedOgConcepts: OgConcept[] = [
     verdict: "closest",
     prompt:
       "Final treatment: use the real Pack logo over a near-black field with gentle ember glows around the perimeter, preserving negative space and avoiding literal travel objects or centered spectacle.",
+  },
+];
+
+const designLabConcepts: DesignLabConcept[] = [
+  {
+    slug: "command-center",
+    label: "01",
+    title: "Command Center",
+    thesis:
+      "Make the home screen a travel operations board: now, next, and later are visible without opening a trip.",
+    focus: ["Live timing rail", "Next best action", "Human-readable source trail"],
+  },
+  {
+    slug: "trip-sheet",
+    label: "02",
+    title: "Trip Sheet",
+    thesis:
+      "Replace app-panel stacking with a route-aware itinerary sheet that behaves like a live travel document.",
+    focus: ["Map-first header", "Day bands", "Confirmation and timing hierarchy"],
+  },
+  {
+    slug: "artifact-cards",
+    label: "03",
+    title: "Artifact Cards",
+    thesis:
+      "Show reservations as inspectable travel artifacts, not generic cards with dates and icons.",
+    focus: ["Boarding pass language", "Stay receipt language", "Action context"],
+  },
+  {
+    slug: "connected-sources",
+    label: "04",
+    title: "Connected Sources",
+    thesis:
+      "Make connected accounts feel like useful input pipes with clear boundaries and visible output value.",
+    focus: ["What it powers", "Privacy boundary", "Last useful import"],
+  },
+  {
+    slug: "setup-passport",
+    label: "05",
+    title: "Setup Passport",
+    thesis:
+      "Turn onboarding and profile completion into a compact readiness passport instead of a settings checklist.",
+    focus: ["Completion stamps", "Missing detail routing", "Trust-building copy"],
+  },
+  {
+    slug: "memory-mode",
+    label: "06",
+    title: "Memory Mode",
+    thesis:
+      "Give past trips a lightweight archive surface that feels collectible without becoming a social feed.",
+    focus: ["Trip stamps", "Place memory", "Private-by-default recap"],
+  },
+  {
+    slug: "packs-permissions",
+    label: "07",
+    title: "Packs Permissions",
+    thesis:
+      "Make shared trips understandable through outcomes and boundaries instead of abstract role labels.",
+    focus: ["Outcome language", "Preview before send", "Companion-specific controls"],
+  },
+];
+
+const designLabSignals: DesignLabSignal[] = [
+  {
+    label: "Quality bar",
+    value: "Specific travel surfaces",
+    detail: "Every module has to earn its shape from a traveler job, not from a dashboard template.",
+  },
+  {
+    label: "Prototype intent",
+    value: "Decision-ready",
+    detail: "This lab is built to compare directions and pick implementation slices for mobile.",
+  },
+  {
+    label: "Product value",
+    value: "Less generic, more Pack",
+    detail: "The redesign foregrounds imported proof, timing, route context, and collaboration boundaries.",
   },
 ];
 
@@ -1439,6 +1530,459 @@ const ErrorNotice = styled(Notice)`
   background: rgba(231, 35, 64, 0.08);
 `;
 
+const DesignLabBoard = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+  gap: 1.25rem;
+
+  @media (max-width: 1080px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const DesignLabStage = styled.article`
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 80% 8%, rgba(243, 210, 122, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 248, 236, 0.07), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.78);
+  box-shadow: ${({ theme }) => theme.colors.shadow.medium};
+`;
+
+const TravelCanvas = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 38rem;
+  padding: clamp(1rem, 3vw, 1.4rem);
+  gap: 1rem;
+`;
+
+const CanvasTopBar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: flex-start;
+`;
+
+const CanvasTitleBlock = styled.div`
+  min-width: 0;
+`;
+
+const CanvasTitle = styled.h2`
+  margin: 0.25rem 0 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: clamp(1.65rem, 4vw, 2.45rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+`;
+
+const CanvasMeta = styled.p`
+  margin: 0.65rem 0 0;
+  max-width: 42rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.96rem;
+  line-height: 1.65;
+`;
+
+const DeviceChrome = styled.div`
+  align-self: stretch;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 248, 236, 0.13);
+  background:
+    linear-gradient(180deg, rgba(8, 8, 8, 0.95), rgba(3, 3, 3, 0.98)),
+    #050505;
+  padding: 0.75rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 28px 80px rgba(0, 0, 0, 0.36);
+`;
+
+const DeviceScreen = styled.div`
+  min-height: 29rem;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background:
+    linear-gradient(145deg, rgba(255, 248, 236, 0.08), transparent 32%),
+    linear-gradient(180deg, #191510 0%, #0d0c0b 100%);
+`;
+
+const PhoneHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 248, 236, 0.09);
+`;
+
+const PhoneLabel = styled.span`
+  color: ${({ theme }) => theme.colors.primary.light};
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+`;
+
+const PhoneTitle = styled.strong`
+  display: block;
+  margin-top: 0.25rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 1.1rem;
+  line-height: 1.2;
+`;
+
+const PhoneBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 210, 122, 0.24);
+  background: rgba(243, 210, 122, 0.1);
+  padding: 0 0.75rem;
+  color: ${({ theme }) => theme.colors.primary.light};
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+`;
+
+const PhoneBody = styled.div`
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+`;
+
+const TravelMap = styled.div`
+  min-height: 8.5rem;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 122, 0.2), transparent 28%),
+    linear-gradient(45deg, transparent 48%, rgba(255, 248, 236, 0.16) 49%, rgba(255, 248, 236, 0.16) 51%, transparent 52%),
+    radial-gradient(circle at 72% 28%, rgba(231, 35, 64, 0.45) 0 0.35rem, transparent 0.38rem),
+    radial-gradient(circle at 24% 70%, rgba(243, 210, 122, 0.65) 0 0.34rem, transparent 0.37rem),
+    #242019;
+`;
+
+const TravelRail = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const RailTile = styled.div`
+  min-width: 0;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 248, 236, 0.11);
+  background: rgba(255, 248, 236, 0.05);
+  padding: 0.75rem;
+`;
+
+const RailLabel = styled.span`
+  display: block;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
+
+const RailValue = styled.strong`
+  display: block;
+  margin-top: 0.35rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.95rem;
+  line-height: 1.25;
+`;
+
+const ArtifactCode = styled.span`
+  display: inline-flex;
+  margin-bottom: 0.75rem;
+  border-radius: 999px;
+  background: rgba(243, 210, 122, 0.13);
+  padding: 0.32rem 0.55rem;
+  color: ${({ theme }) => theme.colors.primary.light};
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+`;
+
+const SourceList = styled.div`
+  display: grid;
+  gap: 0.65rem;
+`;
+
+const SourceRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background: rgba(255, 248, 236, 0.045);
+  padding: 0.75rem;
+`;
+
+const SourceValue = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 0.8rem;
+`;
+
+const MockSection = styled.section`
+  display: grid;
+  gap: 0.8rem;
+`;
+
+const ActionChipRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+`;
+
+const ActionChip = styled.span`
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 248, 236, 0.12);
+  background: rgba(255, 248, 236, 0.055);
+  padding: 0 0.75rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 0.78rem;
+  font-weight: 700;
+`;
+
+const TimelineList = styled.div`
+  display: grid;
+  gap: 0.65rem;
+`;
+
+const TimelineItem = styled.div<{ $tone?: "primary" | "warn" | "calm" }>`
+  display: grid;
+  grid-template-columns: 4.1rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  border-radius: 18px;
+  border: 1px solid
+    ${({ $tone }) =>
+      $tone === "primary"
+        ? "rgba(243, 210, 122, 0.32)"
+        : $tone === "warn"
+          ? "rgba(231, 35, 64, 0.32)"
+          : "rgba(255, 248, 236, 0.1)"};
+  background: ${({ $tone }) =>
+    $tone === "primary"
+      ? "rgba(243, 210, 122, 0.09)"
+      : $tone === "warn"
+        ? "rgba(231, 35, 64, 0.08)"
+        : "rgba(255, 248, 236, 0.045)"};
+  padding: 0.75rem;
+`;
+
+const TimeBlock = styled.span`
+  color: ${({ theme }) => theme.colors.primary.light};
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+`;
+
+const TicketGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 0.75rem;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const TicketCard = styled.div<{ $accent?: "gold" | "red" }>`
+  min-width: 0;
+  border-radius: 22px;
+  border: 1px solid
+    ${({ $accent }) =>
+      $accent === "red" ? "rgba(231, 35, 64, 0.32)" : "rgba(243, 210, 122, 0.26)"};
+  background:
+    linear-gradient(90deg, rgba(255, 248, 236, 0.08), transparent 58%),
+    ${({ $accent }) =>
+      $accent === "red" ? "rgba(231, 35, 64, 0.08)" : "rgba(243, 210, 122, 0.08)"};
+  padding: 0.95rem;
+`;
+
+const TicketRoute = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin: 0.7rem 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: clamp(1.25rem, 4vw, 1.9rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+`;
+
+const Barcode = styled.div`
+  height: 2.3rem;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 248, 236, 0.78) 0 0.12rem,
+      transparent 0.12rem 0.28rem,
+      rgba(255, 248, 236, 0.52) 0.28rem 0.45rem,
+      transparent 0.45rem 0.7rem
+    );
+  opacity: 0.55;
+`;
+
+const PassportGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+`;
+
+const StampTile = styled.div<{ $done?: boolean }>`
+  min-height: 5.7rem;
+  border-radius: 18px;
+  border: 1px dashed
+    ${({ $done }) =>
+      $done ? "rgba(243, 210, 122, 0.45)" : "rgba(255, 248, 236, 0.15)"};
+  background: ${({ $done }) =>
+    $done ? "rgba(243, 210, 122, 0.11)" : "rgba(255, 248, 236, 0.035)"};
+  padding: 0.7rem;
+`;
+
+const ProgressTrack = styled.div`
+  overflow: hidden;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 248, 236, 0.09);
+`;
+
+const ProgressFill = styled.div<{ $width: string }>`
+  height: 100%;
+  width: ${({ $width }) => $width};
+  border-radius: inherit;
+  background: ${({ theme }) => theme.colors.primary.gradient};
+`;
+
+const MemoryHero = styled.div`
+  min-height: 11rem;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 248, 236, 0.12);
+  background:
+    radial-gradient(circle at 72% 28%, rgba(243, 210, 122, 0.32), transparent 24%),
+    linear-gradient(135deg, rgba(231, 35, 64, 0.2), transparent 36%),
+    linear-gradient(180deg, #2a231b, #0f0d0b);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+`;
+
+const PermissionRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background: rgba(255, 248, 236, 0.045);
+  padding: 0.8rem;
+`;
+
+const ToggleMock = styled.span<{ $on?: boolean }>`
+  position: relative;
+  display: inline-flex;
+  width: 3.25rem;
+  height: 1.85rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: ${({ $on }) =>
+    $on ? "rgba(243, 210, 122, 0.9)" : "rgba(255, 248, 236, 0.12)"};
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0.22rem;
+    left: ${({ $on }) => ($on ? "1.62rem" : "0.25rem")};
+    width: 1.38rem;
+    height: 1.38rem;
+    border-radius: 50%;
+    background: ${({ $on }) => ($on ? "#15110d" : "rgba(255, 248, 236, 0.82)")};
+  }
+`;
+
+const DesignTabs = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+`;
+
+const DesignTab = styled.button<{ $active?: boolean }>`
+  min-height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid
+    ${({ theme, $active }) =>
+      $active ? theme.colors.primary.main : theme.colors.border.light};
+  background: ${({ $active }) =>
+    $active ? "rgba(243, 210, 122, 0.14)" : "rgba(255, 248, 236, 0.05)"};
+  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 0.55rem 0.85rem;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid rgba(243, 210, 122, 0.45);
+    outline-offset: 3px;
+  }
+`;
+
+const DesignSidePanel = styled.aside`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const DesignSignalGrid = styled.div`
+  display: grid;
+  gap: 0.85rem;
+`;
+
+const DesignSignalCard = styled.article`
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.06), rgba(255, 248, 236, 0.03)),
+    rgba(15, 13, 11, 0.72);
+  padding: 1rem;
+`;
+
+const DesignFocusList = styled.ul`
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+`;
+
+const DesignFocusItem = styled.li`
+  border-radius: 16px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background: rgba(255, 248, 236, 0.045);
+  padding: 0.75rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  line-height: 1.45;
+`;
+
 const StudioActionRow = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -1778,6 +2322,14 @@ const labsContent = {
         "Use labs as the internal review surface for creative output. Each section is separated so you can inspect surfaces, review exports, and compare variants without mixing contexts.",
       sections: [
         {
+          slug: "design-labs",
+          title: "Design Labs",
+          description:
+            "Review the travel-native redesign system for command center, trip sheet, artifacts, sources, passport setup, memories, and Packs permissions.",
+          href: "/labs/design-labs",
+          kicker: "Product redesign",
+        },
+        {
           slug: "logo-studio",
           title: "Logo Studio",
           description:
@@ -1958,8 +2510,16 @@ const labsContent = {
       promptLabel: "Prompt",
       detailLabel: "Raw detail output",
     },
+    designLabs: {
+      title: "Travel-native design labs.",
+      description:
+        "A proper review surface for the Pack app redesign direction: product-specific screens, interaction systems, and implementation-ready slices without flattening everything into generic panels.",
+      concepts: designLabConcepts,
+      signals: designLabSignals,
+    },
     crumbs: {
       labs: "Labs",
+      designLabs: "Design labs",
       logoStudio: "Logo studio",
       videos: "Videos",
       comparisons: "Comparisons",
@@ -1981,6 +2541,14 @@ const labsContent = {
       description:
         "Usa labs como la superficie interna de revisión para el trabajo creativo. Cada sección está separada para que puedas inspeccionar superficies, revisar exports y comparar variantes sin mezclar contextos.",
       sections: [
+        {
+          slug: "design-labs",
+          title: "Design Labs",
+          description:
+            "Revisa el sistema de rediseño travel-native para command center, trip sheet, artifacts, sources, setup passport, memories y permisos de Packs.",
+          href: "/labs/design-labs",
+          kicker: "Rediseño de producto",
+        },
         {
           slug: "logo-studio",
           title: "Logo Studio",
@@ -2175,8 +2743,16 @@ const labsContent = {
       promptLabel: "Prompt",
       detailLabel: "Salida raw de detail",
     },
+    designLabs: {
+      title: "Labs de diseño travel-native.",
+      description:
+        "Una superficie de revisión propia para la dirección de rediseño de Pack: pantallas específicas del producto, sistemas de interacción y cortes listos para implementación sin convertir todo en paneles genéricos.",
+      concepts: designLabConcepts,
+      signals: designLabSignals,
+    },
     crumbs: {
       labs: "Labs",
+      designLabs: "Design labs",
       logoStudio: "Logo studio",
       videos: "Videos",
       comparisons: "Comparaciones",
@@ -2363,6 +2939,280 @@ const LabsShell: React.FC<{
   );
 };
 
+const DesignLabPreview: React.FC<{ concept: DesignLabConcept }> = ({ concept }) => {
+  const badgeBySlug: Record<string, string> = {
+    "command-center": "Today",
+    "trip-sheet": "Tokyo",
+    "artifact-cards": "Proof",
+    "connected-sources": "Sources",
+    "setup-passport": "Ready",
+    "memory-mode": "Private",
+    "packs-permissions": "Shared",
+  };
+
+  const renderSurface = () => {
+    switch (concept.slug) {
+      case "command-center":
+        return (
+          <>
+            <TravelRail>
+              <RailTile>
+                <RailLabel>Now</RailLabel>
+                <RailValue>Leave for JFK in 18 min</RailValue>
+              </RailTile>
+              <RailTile>
+                <RailLabel>Next</RailLabel>
+                <RailValue>AA 181 boarding at B22</RailValue>
+              </RailTile>
+              <RailTile>
+                <RailLabel>Watch</RailLabel>
+                <RailValue>Rain may push arrival 24 min</RailValue>
+              </RailTile>
+            </TravelRail>
+            <TimelineList>
+              <TimelineItem $tone="primary">
+                <TimeBlock>6:10a</TimeBlock>
+                <div>
+                  <RailValue>Car pickup window</RailValue>
+                  <SourceValue>MapKit ETA plus calendar buffer. Prompt: confirm checked bags.</SourceValue>
+                </div>
+              </TimelineItem>
+              <TimelineItem>
+                <TimeBlock>8:05a</TimeBlock>
+                <div>
+                  <RailValue>Flight AA 181</RailValue>
+                  <SourceValue>Gate B22 imported from Gmail. Seat 12A from airline receipt.</SourceValue>
+                </div>
+              </TimelineItem>
+              <TimelineItem $tone="warn">
+                <TimeBlock>1 tap</TimeBlock>
+                <div>
+                  <RailValue>Share airport pickup with Mia</RailValue>
+                  <SourceValue>Pack can send only landing time, terminal, and live delay status.</SourceValue>
+                </div>
+              </TimelineItem>
+            </TimelineList>
+            <ActionChipRow>
+              <ActionChip>Book ride</ActionChip>
+              <ActionChip>Share live ETA</ActionChip>
+              <ActionChip>Show source proof</ActionChip>
+            </ActionChipRow>
+          </>
+        );
+      case "trip-sheet":
+        return (
+          <>
+            <TravelMap aria-hidden="true" />
+            <TimelineList>
+              <TimelineItem $tone="primary">
+                <TimeBlock>Day 1</TimeBlock>
+                <div>
+                  <RailValue>New York to Tokyo</RailValue>
+                  <SourceValue>Flight, airport transfer, hotel check-in, and first reservation in one route sheet.</SourceValue>
+                </div>
+              </TimelineItem>
+              <TimelineItem>
+                <TimeBlock>Day 2</TimeBlock>
+                <div>
+                  <RailValue>Shibuya base day</RailValue>
+                  <SourceValue>Breakfast hold, museum ticket, dinner reservation, transit timing.</SourceValue>
+                </div>
+              </TimelineItem>
+              <TimelineItem>
+                <TimeBlock>Day 3</TimeBlock>
+                <div>
+                  <RailValue>Kyoto rail move</RailValue>
+                  <SourceValue>Shinkansen ticket, luggage transfer note, ryokan arrival window.</SourceValue>
+                </div>
+              </TimelineItem>
+            </TimelineList>
+          </>
+        );
+      case "artifact-cards":
+        return (
+          <TicketGrid>
+            <TicketCard>
+              <PhoneLabel>Boarding pass</PhoneLabel>
+              <TicketRoute>
+                <span>JFK</span>
+                <span>HND</span>
+              </TicketRoute>
+              <TravelRail>
+                <RailTile>
+                  <RailLabel>Gate</RailLabel>
+                  <RailValue>B22</RailValue>
+                </RailTile>
+                <RailTile>
+                  <RailLabel>Seat</RailLabel>
+                  <RailValue>12A</RailValue>
+                </RailTile>
+                <RailTile>
+                  <RailLabel>Group</RailLabel>
+                  <RailValue>3</RailValue>
+                </RailTile>
+              </TravelRail>
+              <Barcode />
+            </TicketCard>
+            <TicketCard $accent="red">
+              <PhoneLabel>Stay receipt</PhoneLabel>
+              <RailValue>Trunk Hotel Yoyogi Park</RailValue>
+              <CanvasMeta>Check-in after 3p. Confirmation and address stay attached to the card.</CanvasMeta>
+              <ArtifactCode>PIN 4821</ArtifactCode>
+              <Barcode />
+            </TicketCard>
+          </TicketGrid>
+        );
+      case "connected-sources":
+        return (
+          <SourceList>
+            <SourceRow>
+              <div>
+                <RailValue>Gmail</RailValue>
+                <SourceValue>Last imported: AA 181 flight change. Powers trips, artifacts, and live alerts.</SourceValue>
+              </div>
+              <PhoneBadge>On</PhoneBadge>
+            </SourceRow>
+            <SourceRow>
+              <div>
+                <RailValue>Calendar</RailValue>
+                <SourceValue>Reads travel holds only. Prevents route conflicts and missed booking windows.</SourceValue>
+              </div>
+              <PhoneBadge>Scoped</PhoneBadge>
+            </SourceRow>
+            <SourceRow>
+              <div>
+                <RailValue>Photos</RailValue>
+                <SourceValue>Private recap suggestions after a trip. Never shared into Packs by default.</SourceValue>
+              </div>
+              <PhoneBadge>Review</PhoneBadge>
+            </SourceRow>
+            <Notice>
+              Privacy boundary: each pipe states what it can read, what it creates,
+              and which surfaces can use the output.
+            </Notice>
+          </SourceList>
+        );
+      case "setup-passport":
+        return (
+          <>
+            <MockSection>
+              <RailValue>Traveler readiness</RailValue>
+              <ProgressTrack>
+                <ProgressFill $width="72%" />
+              </ProgressTrack>
+            </MockSection>
+            <PassportGrid>
+              <StampTile $done>
+                <RailLabel>Home airport</RailLabel>
+                <RailValue>JFK</RailValue>
+              </StampTile>
+              <StampTile $done>
+                <RailLabel>Passport</RailLabel>
+                <RailValue>Saved</RailValue>
+              </StampTile>
+              <StampTile>
+                <RailLabel>Seat pref</RailLabel>
+                <RailValue>Add</RailValue>
+              </StampTile>
+              <StampTile $done>
+                <RailLabel>Payment</RailLabel>
+                <RailValue>Ready</RailValue>
+              </StampTile>
+              <StampTile>
+                <RailLabel>Diet</RailLabel>
+                <RailValue>Missing</RailValue>
+              </StampTile>
+              <StampTile $done>
+                <RailLabel>Companion</RailLabel>
+                <RailValue>Mia</RailValue>
+              </StampTile>
+            </PassportGrid>
+            <ActionChipRow>
+              <ActionChip>Add seat preference</ActionChip>
+              <ActionChip>Send companion setup</ActionChip>
+            </ActionChipRow>
+          </>
+        );
+      case "memory-mode":
+        return (
+          <>
+            <MemoryHero>
+              <PhoneLabel>Private recap</PhoneLabel>
+              <CanvasTitle>Japan spring loop</CanvasTitle>
+              <CanvasMeta>4 cities, 11 saved places, 38 imported memories.</CanvasMeta>
+            </MemoryHero>
+            <PassportGrid>
+              {["Tokyo", "Kyoto", "Naoshima", "Osaka", "Best meal", "Next time"].map(
+                (stamp) => (
+                  <StampTile key={stamp} $done>
+                    <RailLabel>Stamp</RailLabel>
+                    <RailValue>{stamp}</RailValue>
+                  </StampTile>
+                ),
+              )}
+            </PassportGrid>
+            <Notice>
+              Memories are private by default, with selective cards that can be reused
+              for planning the next trip.
+            </Notice>
+          </>
+        );
+      case "packs-permissions":
+        return (
+          <>
+            <TicketCard>
+              <PhoneLabel>Invite preview</PhoneLabel>
+              <RailValue>Mia can coordinate Tokyo arrival</RailValue>
+              <CanvasMeta>She sees live arrival, hotel address, and dinner holds. Payment, passport, and private notes stay hidden.</CanvasMeta>
+            </TicketCard>
+            <SourceList>
+              <PermissionRow>
+                <div>
+                  <RailValue>Live flight and delay status</RailValue>
+                  <SourceValue>Useful for pickup coordination.</SourceValue>
+                </div>
+                <ToggleMock $on />
+              </PermissionRow>
+              <PermissionRow>
+                <div>
+                  <RailValue>Hotel address and check-in window</RailValue>
+                  <SourceValue>Visible, but confirmation code stays private.</SourceValue>
+                </div>
+                <ToggleMock $on />
+              </PermissionRow>
+              <PermissionRow>
+                <div>
+                  <RailValue>Payment receipts and profile details</RailValue>
+                  <SourceValue>Hidden from this Pack by default.</SourceValue>
+                </div>
+                <ToggleMock />
+              </PermissionRow>
+            </SourceList>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <DeviceChrome>
+      <DeviceScreen>
+        <PhoneHeader>
+          <div>
+            <PhoneLabel>Pack redesign</PhoneLabel>
+            <PhoneTitle>{concept.title}</PhoneTitle>
+          </div>
+          <PhoneBadge>{badgeBySlug[concept.slug] ?? "Lab"}</PhoneBadge>
+        </PhoneHeader>
+        <PhoneBody>
+          {renderSurface()}
+        </PhoneBody>
+      </DeviceScreen>
+    </DeviceChrome>
+  );
+};
+
 export const LabsHomePage: React.FC = () => {
   const { locale, pathFor } = useI18n();
   const localizedContent = labsContent[locale];
@@ -2384,6 +3234,85 @@ export const LabsHomePage: React.FC = () => {
           </SectionCard>
         ))}
       </Grid>
+    </LabsShell>
+  );
+};
+
+export const LabsDesignLabsPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+  const [activeSlug, setActiveSlug] = React.useState(designLabConcepts[0].slug);
+  const activeConcept =
+    designLabConcepts.find((concept) => concept.slug === activeSlug) ??
+    designLabConcepts[0];
+
+  return (
+    <LabsShell
+      title={localizedContent.designLabs.title}
+      description={localizedContent.designLabs.description}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
+        <BreadcrumbLink to={pathFor("/labs/design-labs")}>
+          {localizedContent.crumbs.designLabs}
+        </BreadcrumbLink>
+      </BreadcrumbRow>
+
+      <DesignLabBoard>
+        <DesignLabStage>
+          <TravelCanvas>
+            <CanvasTopBar>
+              <CanvasTitleBlock>
+                <Kicker>{activeConcept.label}</Kicker>
+                <CanvasTitle>{activeConcept.title}</CanvasTitle>
+                <CanvasMeta>{activeConcept.thesis}</CanvasMeta>
+              </CanvasTitleBlock>
+              <PhoneBadge>Implementation slice</PhoneBadge>
+            </CanvasTopBar>
+            <DesignLabPreview concept={activeConcept} />
+            <DesignTabs aria-label="Design lab concepts">
+              {localizedContent.designLabs.concepts.map((concept) => (
+                <DesignTab
+                  key={concept.slug}
+                  type="button"
+                  $active={concept.slug === activeSlug}
+                  aria-pressed={concept.slug === activeSlug}
+                  onClick={() => setActiveSlug(concept.slug)}
+                >
+                  {concept.title}
+                </DesignTab>
+              ))}
+            </DesignTabs>
+          </TravelCanvas>
+        </DesignLabStage>
+
+        <DesignSidePanel>
+          <Notice>
+            This page is the web review home for the mobile redesign work. It keeps the
+            directions visible in the same internal labs flow as brand, video, and QA
+            surfaces.
+          </Notice>
+          <DesignSignalGrid>
+            {localizedContent.designLabs.signals.map((signal) => (
+              <DesignSignalCard key={signal.label}>
+                <Kicker>{signal.label}</Kicker>
+                <CardTitle>{signal.value}</CardTitle>
+                <CardBody>{signal.detail}</CardBody>
+              </DesignSignalCard>
+            ))}
+          </DesignSignalGrid>
+          <DesignSignalCard>
+            <Kicker>Active direction</Kicker>
+            <CardTitle>{activeConcept.title}</CardTitle>
+            <CardBody>{activeConcept.thesis}</CardBody>
+            <DesignFocusList>
+              {activeConcept.focus.map((focus) => (
+                <DesignFocusItem key={focus}>{focus}</DesignFocusItem>
+              ))}
+            </DesignFocusList>
+          </DesignSignalCard>
+        </DesignSidePanel>
+      </DesignLabBoard>
     </LabsShell>
   );
 };

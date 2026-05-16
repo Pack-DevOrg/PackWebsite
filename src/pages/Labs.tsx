@@ -505,57 +505,50 @@ const designLabConcepts: DesignLabConcept[] = [
     slug: "command-center",
     label: "01",
     title: "Command Center",
-    thesis:
-      "Make the home screen a travel operations board: now, next, and later are visible without opening a trip.",
-    focus: ["Live timing rail", "Next best action", "Human-readable source trail"],
+    thesis: "One instruction. One live route. No hunting.",
+    focus: ["What now", "What changed", "What to share"],
   },
   {
     slug: "trip-sheet",
     label: "02",
     title: "Trip Sheet",
-    thesis:
-      "Replace app-panel stacking with a route-aware itinerary sheet that behaves like a live travel document.",
-    focus: ["Map-first header", "Day bands", "Confirmation and timing hierarchy"],
+    thesis: "A day reads like a map, not a spreadsheet.",
+    focus: ["Route first", "Day rhythm", "Travel gaps"],
   },
   {
     slug: "artifact-cards",
     label: "03",
     title: "Artifact Cards",
-    thesis:
-      "Show reservations as inspectable travel artifacts, not generic cards with dates and icons.",
-    focus: ["Boarding pass language", "Stay receipt language", "Action context"],
+    thesis: "Every reservation becomes an object you recognize instantly.",
+    focus: ["Wallet stack", "Real proof", "Material memory"],
   },
   {
     slug: "connected-sources",
     label: "04",
     title: "Connected Sources",
-    thesis:
-      "Make connected accounts feel like useful input pipes with clear boundaries and visible output value.",
-    focus: ["What it powers", "Privacy boundary", "Last useful import"],
+    thesis: "Show the output before asking for trust.",
+    focus: ["Input -> output", "Bounded access", "Latest win"],
   },
   {
     slug: "setup-passport",
     label: "05",
     title: "Setup Passport",
-    thesis:
-      "Turn onboarding and profile completion into a compact readiness passport instead of a settings checklist.",
-    focus: ["Completion stamps", "Missing detail routing", "Trust-building copy"],
+    thesis: "Setup feels like becoming trip-ready, not doing chores.",
+    focus: ["Passport cover", "Stamps", "Blank visas"],
   },
   {
     slug: "memory-mode",
     label: "06",
     title: "Memory Mode",
-    thesis:
-      "Give past trips a lightweight archive surface that feels collectible without becoming a social feed.",
-    focus: ["Trip stamps", "Place memory", "Private-by-default recap"],
+    thesis: "Past trips feel private, warm, and worth reopening.",
+    focus: ["Photo rhythm", "Quiet captions", "Locked by default"],
   },
   {
     slug: "packs-permissions",
     label: "07",
     title: "Packs Permissions",
-    thesis:
-      "Make shared trips understandable through outcomes and boundaries instead of abstract role labels.",
-    focus: ["Outcome language", "Preview before send", "Companion-specific controls"],
+    thesis: "Sharing shows the exact result before anything leaves.",
+    focus: ["Recipient view", "Visible", "Hidden"],
   },
 ];
 
@@ -2241,6 +2234,561 @@ const DesignFocusItem = styled.li`
   line-height: 1.45;
 `;
 
+const VisualLabPage = styled.section`
+  min-height: 100vh;
+  padding: clamp(1.25rem, 3vw, 2.75rem) 0 clamp(4rem, 7vw, 6rem);
+  color: #18130d;
+`;
+
+const VisualLabShell = styled.div`
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+`;
+
+const VisualLabHeader = styled.header`
+  display: grid;
+  gap: 0.45rem;
+  max-width: 56rem;
+`;
+
+const VisualLabTitle = styled.h1`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: clamp(2.2rem, 5vw, 4.25rem);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+`;
+
+const VisualLabSubhead = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 1rem;
+  line-height: 1.55;
+`;
+
+const VisualLabTabs = styled.nav`
+  display: flex;
+  gap: 0.7rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 0.5rem;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const VisualLabTab = styled.button<{ $active?: boolean }>`
+  flex: 0 0 auto;
+  min-height: 3.2rem;
+  border: 1px solid ${({ $active }) => ($active ? "#15100b" : "rgba(21, 16, 11, 0.14)")};
+  border-radius: 999px;
+  background: ${({ $active }) => ($active ? "#15100b" : "rgba(255, 248, 236, 0.72)")};
+  color: ${({ $active }) => ($active ? "#fff8ec" : "#18130d")};
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: ${({ $active }) =>
+    $active ? "0 18px 42px rgba(21, 16, 11, 0.22)" : "none"};
+
+  &:focus-visible {
+    outline: 3px solid rgba(240, 198, 45, 0.65);
+    outline-offset: 3px;
+  }
+`;
+
+const ScreenWall = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 23rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+`;
+
+const ScreenStudyCard = styled.article<{ $tone: string }>`
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 248, 236, 0.1);
+  background:
+    ${({ $tone }) =>
+      $tone === "memory-mode"
+        ? "linear-gradient(145deg, #050505, #161010)"
+        : $tone === "artifact-cards"
+          ? "linear-gradient(145deg, #efedf1, #d6d4da)"
+          : $tone === "setup-passport"
+            ? "linear-gradient(145deg, #173725, #06140e)"
+            : $tone === "connected-sources"
+              ? "linear-gradient(145deg, #f8fbff, #eef4ff)"
+              : $tone === "packs-permissions"
+                ? "linear-gradient(145deg, #fff7e8, #f7ecd8)"
+                : "linear-gradient(145deg, #fbf6ed, #e9edf4)"};
+  padding: 0.9rem;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.22);
+`;
+
+const ScreenStudyHeader = styled.div<{ $dark?: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.15rem 0.2rem 0.75rem;
+  color: ${({ $dark }) => ($dark ? "#fff8ec" : "#15100b")};
+`;
+
+const ScreenStudyTitle = styled.h2`
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+`;
+
+const ScreenStudyKicker = styled.span`
+  color: currentColor;
+  opacity: 0.48;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+`;
+
+const ScreenStudyBody = styled.div`
+  display: grid;
+  place-items: center;
+`;
+
+const VisualShowcase = styled.article<{ $tone: string }>`
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(22rem, 1fr);
+  gap: clamp(1rem, 4vw, 2.5rem);
+  align-items: center;
+  min-height: 41rem;
+  overflow: hidden;
+  border-radius: 36px;
+  background:
+    ${({ $tone }) =>
+      $tone === "memory-mode"
+        ? "radial-gradient(circle at 72% 18%, rgba(231, 35, 64, 0.24), transparent 24%), linear-gradient(135deg, #080707, #1b1214 56%, #080707)"
+        : $tone === "artifact-cards"
+          ? "radial-gradient(circle at 78% 18%, rgba(92, 255, 143, 0.18), transparent 22%), linear-gradient(135deg, #efedf1, #d6d4da)"
+          : $tone === "setup-passport"
+            ? "radial-gradient(circle at 20% 16%, rgba(240, 198, 45, 0.24), transparent 23%), linear-gradient(135deg, #183829, #07140f)"
+            : $tone === "connected-sources"
+              ? "linear-gradient(135deg, #f8fbff, #eef4ff)"
+              : $tone === "packs-permissions"
+                ? "linear-gradient(135deg, #fff7e8, #f7ecd8)"
+                : "linear-gradient(135deg, #fbf6ed, #e9edf4)"};
+  padding: clamp(1rem, 3vw, 1.5rem);
+  box-shadow: 0 34px 100px rgba(20, 12, 5, 0.24);
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+`;
+
+const VisualPosterCopy = styled.div<{ $light?: boolean }>`
+  display: grid;
+  gap: 1rem;
+  align-content: center;
+  color: ${({ $light }) => ($light ? "#fff8ec" : "#15100b")};
+`;
+
+const VisualPosterIndex = styled.span<{ $light?: boolean }>`
+  color: ${({ $light }) => ($light ? "rgba(255, 248, 236, 0.64)" : "rgba(21, 16, 11, 0.48)")};
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+`;
+
+const VisualPosterTitle = styled.h2`
+  margin: 0;
+  max-width: 9ch;
+  font-size: clamp(2.5rem, 8vw, 6.25rem);
+  line-height: 0.84;
+  letter-spacing: -0.07em;
+`;
+
+const VisualPosterSentence = styled.p<{ $light?: boolean }>`
+  margin: 0;
+  max-width: 28rem;
+  color: ${({ $light }) => ($light ? "rgba(255, 248, 236, 0.74)" : "rgba(21, 16, 11, 0.68)")};
+  font-size: clamp(1rem, 2vw, 1.22rem);
+  line-height: 1.5;
+`;
+
+const VisualProofStrip = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+`;
+
+const VisualProofPill = styled.span<{ $light?: boolean }>`
+  border-radius: 999px;
+  border: 1px solid ${({ $light }) => ($light ? "rgba(255, 248, 236, 0.22)" : "rgba(21, 16, 11, 0.14)")};
+  background: ${({ $light }) => ($light ? "rgba(255, 248, 236, 0.08)" : "rgba(255, 255, 255, 0.5)")};
+  padding: 0.55rem 0.8rem;
+  color: ${({ $light }) => ($light ? "rgba(255, 248, 236, 0.88)" : "rgba(21, 16, 11, 0.72)")};
+  font-size: 0.78rem;
+  font-weight: 850;
+`;
+
+const DeviceGallery = styled.div`
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 38rem;
+
+  @media (max-width: 980px) {
+    min-height: 38rem;
+  }
+`;
+
+const GalleryPhone = styled.div<{ $surface?: string }>`
+  position: relative;
+  width: min(100%, 24rem);
+  min-height: 36rem;
+  overflow: hidden;
+  border-radius: 3rem;
+  border: 0.75rem solid #080808;
+  background: ${({ $surface }) =>
+    $surface === "light"
+      ? "#f8f6f1"
+      : $surface === "wallet"
+        ? "#ececf1"
+        : $surface === "passport"
+          ? "#092017"
+          : $surface === "journal"
+            ? "#050505"
+            : "#101010"};
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.36),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+`;
+
+const GalleryStatus = styled.div<{ $dark?: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  padding: 0.85rem 1.15rem 0;
+  color: ${({ $dark }) => ($dark ? "#15100b" : "#fff")};
+  font-size: 0.8rem;
+  font-weight: 900;
+`;
+
+const SoftMap = styled.div<{ $dark?: boolean }>`
+  position: relative;
+  min-height: 17rem;
+  overflow: hidden;
+  background:
+    linear-gradient(32deg, transparent 48%, ${({ $dark }) => ($dark ? "rgba(255,255,255,0.18)" : "rgba(20, 80, 130, 0.16)")} 49%, transparent 51%),
+    linear-gradient(118deg, transparent 44%, ${({ $dark }) => ($dark ? "rgba(255,255,255,0.12)" : "rgba(37, 118, 168, 0.14)")} 45%, transparent 47%),
+    radial-gradient(circle at 24% 62%, #2aa86f 0 0.55rem, transparent 0.58rem),
+    radial-gradient(circle at 74% 34%, #e72340 0 0.55rem, transparent 0.58rem),
+    ${({ $dark }) =>
+      $dark
+        ? "linear-gradient(135deg, #1c2531, #0b1118)"
+        : "linear-gradient(135deg, #dcecf0, #f8f2e5)"};
+`;
+
+const RouteGlow = styled.div<{ $left?: string; $top?: string; $rotate?: string }>`
+  position: absolute;
+  left: ${({ $left }) => $left ?? "20%"};
+  top: ${({ $top }) => $top ?? "48%"};
+  width: 64%;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #eb3349, #f45c43);
+  transform: rotate(${({ $rotate }) => $rotate ?? "-18deg"});
+  box-shadow: 0 0 22px rgba(231, 35, 64, 0.35);
+`;
+
+const FloatingSheet = styled.div`
+  position: relative;
+  margin: -3.4rem 1rem 0;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.96);
+  color: #15100b;
+  padding: 1.05rem;
+  box-shadow: 0 18px 50px rgba(35, 24, 12, 0.24);
+`;
+
+const MassiveInstruction = styled.strong`
+  display: block;
+  font-size: clamp(2rem, 7vw, 3.35rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+`;
+
+const SheetSubline = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.45rem;
+  color: rgba(21, 16, 11, 0.58);
+  font-size: 1.1rem;
+  font-weight: 850;
+`;
+
+const CommandStep = styled.div<{ $urgent?: boolean }>`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0.85rem 1rem 0;
+  border-radius: 1.35rem;
+  background: ${({ $urgent }) => ($urgent ? "#15100b" : "#ffffff")};
+  color: ${({ $urgent }) => ($urgent ? "#fff8ec" : "#15100b")};
+  padding: 0.8rem;
+  box-shadow: 0 10px 32px rgba(35, 24, 12, 0.13);
+`;
+
+const StepDot = styled.span<{ $tone?: string }>`
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 1rem;
+  background: ${({ $tone }) =>
+    $tone === "red" ? "#e72340" : $tone === "blue" ? "#2578d5" : "#f0c62d"};
+  color: ${({ $tone }) => ($tone === "yellow" ? "#15100b" : "#fff")};
+  font-weight: 950;
+`;
+
+const MapSheet = styled.div`
+  position: absolute;
+  inset: auto 0 0;
+  min-height: 27rem;
+  border-radius: 2rem 2rem 0 0;
+  background: #fff;
+  color: #15100b;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 -18px 50px rgba(35, 24, 12, 0.2);
+`;
+
+const DayTabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
+  border-radius: 999px;
+  background: #f0f1f4;
+  padding: 0.25rem;
+`;
+
+const DayTab = styled.span<{ $active?: boolean }>`
+  display: grid;
+  place-items: center;
+  min-height: 2.25rem;
+  border-radius: 999px;
+  background: ${({ $active }) => ($active ? "#15100b" : "transparent")};
+  color: ${({ $active }) => ($active ? "#fff" : "rgba(21,16,11,0.58)")};
+  font-size: 0.78rem;
+  font-weight: 900;
+`;
+
+const MapTimeline = styled.div`
+  display: grid;
+  gap: 0.95rem;
+  margin-top: 1rem;
+  padding-left: 1.3rem;
+  border-left: 3px solid #2578d5;
+`;
+
+const TimelineStop = styled.div`
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -1.75rem;
+    top: 0.15rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: #2578d5;
+    box-shadow: 0 0 0 4px #e7f0ff;
+  }
+`;
+
+const WalletStack = styled.div`
+  display: grid;
+  gap: 0;
+  padding: 5rem 1rem 1rem;
+`;
+
+const WalletPass = styled.div<{ $kind?: string }>`
+  min-height: ${({ $kind }) => ($kind === "hero" ? "17rem" : "8.5rem")};
+  margin-top: ${({ $kind }) => ($kind === "hero" ? "0" : "-2.2rem")};
+  border-radius: 2rem;
+  background: ${({ $kind }) =>
+    $kind === "hotel"
+      ? "linear-gradient(135deg, #b76b46, #6d341d)"
+      : $kind === "dinner"
+        ? "linear-gradient(135deg, #15100b, #35302a)"
+        : "linear-gradient(135deg, #ffffff, #f5f5f2)"};
+  color: ${({ $kind }) => ($kind === "hero" ? "#15100b" : "#fff8ec")};
+  padding: 1rem;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.18);
+`;
+
+const AirportRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.4rem 0;
+  font-size: 3rem;
+  font-weight: 950;
+  letter-spacing: -0.08em;
+`;
+
+const FakeQr = styled.div<{ $dark?: boolean }>`
+  height: 5.4rem;
+  border-radius: 0.7rem;
+  background:
+    repeating-linear-gradient(90deg, ${({ $dark }) => ($dark ? "#fff" : "#15100b")} 0 0.18rem, transparent 0.18rem 0.38rem),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0 0.22rem, transparent 0.22rem 0.5rem);
+  opacity: 0.75;
+`;
+
+const SourceCanvas = styled.div`
+  padding: 1.15rem;
+  color: #15100b;
+`;
+
+const SourceHero = styled.div`
+  display: grid;
+  gap: 0.35rem;
+  margin: 1.25rem 0;
+`;
+
+const SourcePipeGrid = styled.div`
+  display: grid;
+  gap: 0.75rem;
+`;
+
+const SourcePipeCard = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.8rem;
+  align-items: center;
+  border-radius: 1.4rem;
+  background: #fff;
+  padding: 0.85rem;
+  box-shadow: 0 12px 28px rgba(32, 62, 96, 0.11);
+`;
+
+const OutputChip = styled.span`
+  border-radius: 999px;
+  background: #edf5ff;
+  color: #1d65b7;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+`;
+
+const PassportSpread = styled.div`
+  margin: 4.4rem 1rem 1rem;
+  border-radius: 2rem;
+  background: linear-gradient(135deg, #2d5c43, #0d2b1d);
+  color: #f8e7bd;
+  padding: 1.2rem;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.36);
+`;
+
+const PassportSeal = styled.div`
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+  margin: 1.4rem auto;
+  border: 2px solid rgba(248, 231, 189, 0.58);
+  border-radius: 50%;
+  color: #f8e7bd;
+  font-size: 0.84rem;
+  font-weight: 950;
+  text-align: center;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
+
+const PassportStampGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+`;
+
+const PassportStamp = styled.div<{ $empty?: boolean }>`
+  min-height: 4.6rem;
+  border: 1px dashed rgba(248, 231, 189, 0.48);
+  border-radius: 1rem;
+  padding: 0.7rem;
+  opacity: ${({ $empty }) => ($empty ? 0.42 : 1)};
+`;
+
+const JournalCanvas = styled.div`
+  min-height: 40rem;
+  background: #050505;
+  color: #fff;
+  padding: 1rem;
+`;
+
+const JournalGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-top: 1.2rem;
+`;
+
+const JournalPhoto = styled.div<{ $size?: string }>`
+  min-height: ${({ $size }) => ($size === "large" ? "14rem" : "7rem")};
+  grid-column: ${({ $size }) => ($size === "large" ? "span 2" : "span 1")};
+  border-radius: 1.25rem;
+  background:
+    ${({ $size }) =>
+      $size === "large"
+        ? "linear-gradient(135deg, rgba(240, 198, 45, 0.52), rgba(231, 35, 64, 0.24)), #23130f"
+        : "linear-gradient(135deg, rgba(38, 173, 198, 0.42), rgba(240, 198, 45, 0.18)), #131313"};
+`;
+
+const ShareCanvas = styled.div`
+  min-height: 40rem;
+  background: #fff8ec;
+  color: #15100b;
+  padding: 1.15rem;
+`;
+
+const InviteCard = styled.div`
+  margin-top: 1rem;
+  border-radius: 1.7rem;
+  background: #fff;
+  padding: 1rem;
+  box-shadow: 0 18px 44px rgba(42, 24, 12, 0.14);
+`;
+
+const MiniPreview = styled.div`
+  display: grid;
+  gap: 0.55rem;
+  margin: 1rem 0;
+  border-radius: 1.25rem;
+  background: #15100b;
+  color: #fff8ec;
+  padding: 0.9rem;
+`;
+
+const VisibilityGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+`;
+
+const VisibilityCard = styled.div<{ $hidden?: boolean }>`
+  min-height: 8rem;
+  border-radius: 1.25rem;
+  background: ${({ $hidden }) => ($hidden ? "#f0e6d7" : "#e8f6ec")};
+  padding: 0.8rem;
+`;
+
 const StudioActionRow = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -3562,81 +4110,330 @@ export const LabsHomePage: React.FC = () => {
 };
 
 export const LabsDesignLabsPage: React.FC = () => {
-  const { locale, pathFor } = useI18n();
-  const localizedContent = labsContent[locale];
+  const { pathFor } = useI18n();
   const [activeSlug, setActiveSlug] = React.useState(designLabConcepts[0].slug);
   const activeConcept =
     designLabConcepts.find((concept) => concept.slug === activeSlug) ??
     designLabConcepts[0];
+  const copyShouldInvert =
+    activeConcept.slug === "memory-mode" ||
+    activeConcept.slug === "setup-passport";
+  const phoneSurface =
+    activeConcept.slug === "artifact-cards"
+      ? "wallet"
+      : activeConcept.slug === "setup-passport"
+        ? "passport"
+        : activeConcept.slug === "memory-mode"
+          ? "journal"
+          : activeConcept.slug === "connected-sources" ||
+              activeConcept.slug === "packs-permissions" ||
+              activeConcept.slug === "trip-sheet" ||
+              activeConcept.slug === "command-center"
+            ? "light"
+            : undefined;
+
+  const renderGallerySurface = () => {
+    switch (activeConcept.slug) {
+      case "command-center":
+        return (
+          <GalleryPhone $surface={phoneSurface}>
+            <GalleryStatus $dark>
+              <span>9:41</span>
+              <span>LTE 100%</span>
+            </GalleryStatus>
+            <SoftMap>
+              <RouteGlow $left="15%" $top="54%" $rotate="-16deg" />
+            </SoftMap>
+            <FloatingSheet>
+              <MassiveInstruction>Leave at 7:47 AM</MassiveInstruction>
+              <SheetSubline>
+                <span>Arrive 8:30</span>
+                <span>43 min</span>
+              </SheetSubline>
+            </FloatingSheet>
+            <CommandStep $urgent>
+              <StepDot $tone="red">!</StepDot>
+              <div>
+                <RailValue>Gate changed to B22</RailValue>
+                <SourceValue>Walk 5 min after security. Boarding starts at 8:05.</SourceValue>
+              </div>
+            </CommandStep>
+            <CommandStep>
+              <StepDot $tone="blue">M</StepDot>
+              <div>
+                <RailValue>Share pickup ETA with Mia</RailValue>
+                <SourceValue>Live arrival only. Hotel and receipts stay private.</SourceValue>
+              </div>
+            </CommandStep>
+          </GalleryPhone>
+        );
+      case "trip-sheet":
+        return (
+          <GalleryPhone $surface={phoneSurface}>
+            <GalleryStatus $dark>
+              <span>9:41</span>
+              <span>Tokyo</span>
+            </GalleryStatus>
+            <SoftMap>
+              <RouteGlow $left="10%" $top="46%" $rotate="12deg" />
+              <RouteGlow $left="31%" $top="58%" $rotate="-24deg" />
+            </SoftMap>
+            <MapSheet>
+              <DayTabs>
+                <DayTab $active>Mon</DayTab>
+                <DayTab>Tue</DayTab>
+                <DayTab>Wed</DayTab>
+                <DayTab>Thu</DayTab>
+              </DayTabs>
+              <SheetSubline>
+                <span>Day 1</span>
+                <span>3 transfers</span>
+              </SheetSubline>
+              <MapTimeline>
+                <TimelineStop>
+                  <RailValue>JFK to HND</RailValue>
+                  <SourceValue>AA 181 · Terminal 8 · seat 12A</SourceValue>
+                </TimelineStop>
+                <TimelineStop>
+                  <RailValue>Airport train to Shibuya</RailValue>
+                  <SourceValue>63 min · Suica works · platform 2</SourceValue>
+                </TimelineStop>
+                <TimelineStop>
+                  <RailValue>Trunk Hotel Yoyogi Park</RailValue>
+                  <SourceValue>Check-in after 3 PM · PIN saved</SourceValue>
+                </TimelineStop>
+              </MapTimeline>
+            </MapSheet>
+          </GalleryPhone>
+        );
+      case "artifact-cards":
+        return (
+          <GalleryPhone $surface={phoneSurface}>
+            <GalleryStatus $dark>
+              <span>9:41</span>
+              <span>Wallet</span>
+            </GalleryStatus>
+            <WalletStack>
+              <WalletPass $kind="hero">
+                <RailLabel>AA 181</RailLabel>
+                <AirportRow>
+                  <span>JFK</span>
+                  <span>HND</span>
+                </AirportRow>
+                <MiniMetricGrid>
+                  <RailTile>
+                    <RailLabel>Seat</RailLabel>
+                    <RailValue>12A</RailValue>
+                  </RailTile>
+                  <RailTile>
+                    <RailLabel>Gate</RailLabel>
+                    <RailValue>B22</RailValue>
+                  </RailTile>
+                </MiniMetricGrid>
+                <FakeQr />
+              </WalletPass>
+              <WalletPass $kind="hotel">
+                <RailLabel>Hotel key</RailLabel>
+                <LargeDisplay>4821</LargeDisplay>
+                <SourceValue>Trunk Hotel Yoyogi Park</SourceValue>
+              </WalletPass>
+              <WalletPass $kind="dinner">
+                <RailLabel>Dinner hold</RailLabel>
+                <RailValue>Narisawa · 7:30 PM · 2 guests</RailValue>
+              </WalletPass>
+            </WalletStack>
+          </GalleryPhone>
+        );
+      case "connected-sources":
+        return (
+          <GalleryPhone $surface={phoneSurface}>
+            <GalleryStatus $dark>
+              <span>9:41</span>
+              <span>Private</span>
+            </GalleryStatus>
+            <SourceCanvas>
+              <SourceHero>
+                <MassiveInstruction>Connect the trip brain.</MassiveInstruction>
+                <SourceValue>Each source shows what it reads, then what it creates.</SourceValue>
+              </SourceHero>
+              <SourcePipeGrid>
+                <SourcePipeCard>
+                  <SourceIcon $tone="mail">G</SourceIcon>
+                  <div>
+                    <RailValue>Gmail</RailValue>
+                    <SourceValue>Reads travel confirmations only.</SourceValue>
+                  </div>
+                  <OutputChip>Flight pass</OutputChip>
+                </SourcePipeCard>
+                <SourcePipeCard>
+                  <SourceIcon $tone="calendar">Cal</SourceIcon>
+                  <div>
+                    <RailValue>Calendar</RailValue>
+                    <SourceValue>Finds conflicts and buffer windows.</SourceValue>
+                  </div>
+                  <OutputChip>Timing rail</OutputChip>
+                </SourcePipeCard>
+                <SourcePipeCard>
+                  <SourceIcon $tone="photos">Ph</SourceIcon>
+                  <div>
+                    <RailValue>Photos</RailValue>
+                    <SourceValue>Builds private recaps after travel.</SourceValue>
+                  </div>
+                  <OutputChip>Memory book</OutputChip>
+                </SourcePipeCard>
+              </SourcePipeGrid>
+            </SourceCanvas>
+          </GalleryPhone>
+        );
+      case "setup-passport":
+        return (
+          <GalleryPhone $surface={phoneSurface}>
+            <GalleryStatus>
+              <span>9:41</span>
+              <span>Ready</span>
+            </GalleryStatus>
+            <PassportSpread>
+              <RailLabel>Pack Passport</RailLabel>
+              <PassportSeal>Japan ready</PassportSeal>
+              <LargeDisplay>72%</LargeDisplay>
+              <SourceValue>One missing detail before this traveler is fully trip-ready.</SourceValue>
+              <PassportStampGrid>
+                <PassportStamp>
+                  <RailLabel>Home airport</RailLabel>
+                  <RailValue>JFK</RailValue>
+                </PassportStamp>
+                <PassportStamp>
+                  <RailLabel>Passport</RailLabel>
+                  <RailValue>Saved</RailValue>
+                </PassportStamp>
+                <PassportStamp $empty>
+                  <RailLabel>Seat pref</RailLabel>
+                  <RailValue>Blank</RailValue>
+                </PassportStamp>
+                <PassportStamp>
+                  <RailLabel>Companion</RailLabel>
+                  <RailValue>Mia</RailValue>
+                </PassportStamp>
+              </PassportStampGrid>
+            </PassportSpread>
+          </GalleryPhone>
+        );
+      case "memory-mode":
+        return (
+          <GalleryPhone $surface={phoneSurface}>
+            <GalleryStatus>
+              <span>9:41</span>
+              <span>Private</span>
+            </GalleryStatus>
+            <JournalCanvas>
+              <VisualPosterIndex $light>Japan spring loop</VisualPosterIndex>
+              <VisualPosterTitle>38 moments</VisualPosterTitle>
+              <VisualPosterSentence $light>
+                A trip becomes something you want to reopen.
+              </VisualPosterSentence>
+              <JournalGrid>
+                <JournalPhoto $size="large" />
+                <JournalPhoto />
+                <JournalPhoto />
+                <JournalPhoto />
+                <JournalPhoto />
+              </JournalGrid>
+            </JournalCanvas>
+          </GalleryPhone>
+        );
+      case "packs-permissions":
+        return (
+          <GalleryPhone $surface={phoneSurface}>
+            <GalleryStatus $dark>
+              <span>9:41</span>
+              <span>Send</span>
+            </GalleryStatus>
+            <ShareCanvas>
+              <MassiveInstruction>Send this Pack to Mia?</MassiveInstruction>
+              <InviteCard>
+                <RailLabel>She will see</RailLabel>
+                <MiniPreview>
+                  <RailValue>AA 181 lands at 4:45 AM</RailValue>
+                  <SourceValue>Terminal 3 · hotel area · dinner hold</SourceValue>
+                </MiniPreview>
+                <VisibilityGrid>
+                  <VisibilityCard>
+                    <RailLabel>Visible</RailLabel>
+                    <RailValue>Flight status, hotel area, dinner time</RailValue>
+                  </VisibilityCard>
+                  <VisibilityCard $hidden>
+                    <RailLabel>Hidden</RailLabel>
+                    <RailValue>Payment, passport, private notes</RailValue>
+                  </VisibilityCard>
+                </VisibilityGrid>
+              </InviteCard>
+            </ShareCanvas>
+          </GalleryPhone>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <LabsShell
-      title={localizedContent.designLabs.title}
-      description={localizedContent.designLabs.description}
-    >
-      <BreadcrumbRow aria-label="Labs breadcrumb">
-        <BreadcrumbLink to={pathFor("/labs")}>{localizedContent.crumbs.labs}</BreadcrumbLink>
-        <BreadcrumbLink to={pathFor("/labs/design-labs")}>
-          {localizedContent.crumbs.designLabs}
-        </BreadcrumbLink>
-      </BreadcrumbRow>
-
-      <DesignLabBoard>
-        <DesignLabStage>
-          <TravelCanvas>
-            <CanvasTopBar>
-              <CanvasTitleBlock>
-                <Kicker>{activeConcept.label}</Kicker>
-                <CanvasTitle>{activeConcept.title}</CanvasTitle>
-                <CanvasMeta>{activeConcept.thesis}</CanvasMeta>
-              </CanvasTitleBlock>
-              <PhoneBadge>Implementation slice</PhoneBadge>
-            </CanvasTopBar>
-            <DesignLabPreview concept={activeConcept} />
-            <DesignTabs aria-label="Design lab concepts">
-              {localizedContent.designLabs.concepts.map((concept) => (
-                <DesignTab
-                  key={concept.slug}
-                  type="button"
-                  $active={concept.slug === activeSlug}
-                  aria-pressed={concept.slug === activeSlug}
-                  onClick={() => setActiveSlug(concept.slug)}
-                >
-                  {concept.title}
-                </DesignTab>
-              ))}
-            </DesignTabs>
-          </TravelCanvas>
-        </DesignLabStage>
-
-        <DesignSidePanel>
-          <Notice>
-            This page is the web review home for the mobile redesign work. It keeps the
-            directions visible in the same internal labs flow as brand, video, and QA
-            surfaces.
-          </Notice>
-          <DesignSignalGrid>
-            {localizedContent.designLabs.signals.map((signal) => (
-              <DesignSignalCard key={signal.label}>
-                <Kicker>{signal.label}</Kicker>
-                <CardTitle>{signal.value}</CardTitle>
-                <CardBody>{signal.detail}</CardBody>
-              </DesignSignalCard>
-            ))}
-          </DesignSignalGrid>
-          <DesignSignalCard>
-            <Kicker>Active direction</Kicker>
-            <CardTitle>{activeConcept.title}</CardTitle>
-            <CardBody>{activeConcept.thesis}</CardBody>
-            <DesignFocusList>
+    <VisualLabPage>
+      <Helmet>
+        <title>{buildVideoTitle("Design futures")}</title>
+        <meta
+          name="description"
+          content="Visual-first Pack product design concepts for travel command, itinerary, artifacts, sources, readiness, memories, and sharing."
+        />
+      </Helmet>
+      <VisualLabShell>
+        <BreadcrumbRow aria-label="Labs breadcrumb">
+          <BreadcrumbLink to={pathFor("/labs")}>Labs</BreadcrumbLink>
+          <BreadcrumbLink to={pathFor("/labs/design-labs")}>Design labs</BreadcrumbLink>
+        </BreadcrumbRow>
+        <VisualLabHeader>
+          <div>
+            <VisualLabTitle>Make travel obvious.</VisualLabTitle>
+            <VisualLabSubhead>
+              Seven surfaces. No settings soup. No dashboard cosplay. Each one
+              turns a stressful travel moment into something legible, calm, and
+              worth touching.
+            </VisualLabSubhead>
+          </div>
+          <VisualLabMark>Pk</VisualLabMark>
+        </VisualLabHeader>
+        <VisualLabTabs aria-label="Design concepts">
+          {designLabConcepts.map((concept) => (
+            <VisualLabTab
+              key={concept.slug}
+              type="button"
+              $active={concept.slug === activeSlug}
+              aria-pressed={concept.slug === activeSlug}
+              onClick={() => setActiveSlug(concept.slug)}
+            >
+              {concept.title}
+            </VisualLabTab>
+          ))}
+        </VisualLabTabs>
+        <VisualShowcase $tone={activeConcept.slug}>
+          <VisualPosterCopy $light={copyShouldInvert}>
+            <VisualPosterIndex $light={copyShouldInvert}>
+              {activeConcept.label} / Pack surface
+            </VisualPosterIndex>
+            <VisualPosterTitle>{activeConcept.title}</VisualPosterTitle>
+            <VisualPosterSentence $light={copyShouldInvert}>
+              {activeConcept.thesis}
+            </VisualPosterSentence>
+            <VisualProofStrip>
               {activeConcept.focus.map((focus) => (
-                <DesignFocusItem key={focus}>{focus}</DesignFocusItem>
+                <VisualProofPill key={focus} $light={copyShouldInvert}>
+                  {focus}
+                </VisualProofPill>
               ))}
-            </DesignFocusList>
-          </DesignSignalCard>
-        </DesignSidePanel>
-      </DesignLabBoard>
-    </LabsShell>
+            </VisualProofStrip>
+          </VisualPosterCopy>
+          <DeviceGallery>{renderGallerySurface()}</DeviceGallery>
+        </VisualShowcase>
+      </VisualLabShell>
+    </VisualLabPage>
   );
 };
 

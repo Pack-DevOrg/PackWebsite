@@ -4,8 +4,8 @@ import { GitBranch } from "lucide-react";
 import {
   benchmarkOverview,
   latestVerifiedPackRun,
+  neurosymbolicComparison,
   phaseCards,
-  rawAgentComparison,
   scoreCards,
 } from "@/data/travelContextBenchmark";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
@@ -252,6 +252,69 @@ const FindingText = styled.p`
   }
 `;
 
+const ComparisonGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-3);
+`;
+
+const ComparisonCard = styled.article`
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius);
+  background: rgba(255, 255, 255, 0.035);
+  padding: var(--space-3);
+
+  h4 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-large);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+  }
+`;
+
+const ComparisonBadge = styled.span<{ $outcome: string }>`
+  width: fit-content;
+  border: 1px solid
+    ${({ $outcome }) =>
+      $outcome === "Pass"
+        ? "rgba(111, 220, 166, 0.34)"
+        : $outcome === "Fail"
+          ? "rgba(255, 132, 132, 0.34)"
+          : "rgba(243, 210, 122, 0.3)"};
+  border-radius: 999px;
+  background: ${({ $outcome }) =>
+    $outcome === "Pass"
+      ? "rgba(111, 220, 166, 0.12)"
+      : $outcome === "Fail"
+        ? "rgba(255, 132, 132, 0.12)"
+        : "rgba(243, 210, 122, 0.1)"};
+  color: var(--color-text-primary);
+  padding: 0.25rem 0.6rem;
+  font-size: var(--font-size-small);
+  font-weight: 800;
+`;
+
+const ComparisonCost = styled.strong`
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+`;
+
+const ComparisonMeta = styled.div`
+  display: grid;
+  gap: 0.3rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+`;
+
 const CommandBlock = styled.pre`
   overflow-x: auto;
   margin: 0;
@@ -317,8 +380,8 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>{benchmarkOverview.officialRunStatus}.</strong>
-        The local page shows current Pack planner corpus evidence and the first
-        raw GPT-5.5 spot check under the stricter superset rubric.
+        Pack passes the representative Japan case for $0.047; the measured raw
+        GPT-5.5 agent costs $0.91 and fails the same evidence-grounded case.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -408,36 +471,28 @@ const TravelContextBenchmark = () => (
             <strong>{latestVerifiedPackRun.fixtureCorpus}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Hard-100 combined</span>
+            <span>Hard-100 evidence set</span>
             <strong>{latestVerifiedPackRun.hard100Composite}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Hard-100 full artifact rescore</span>
-            <strong>{latestVerifiedPackRun.hard100FullRunRescore}</strong>
+            <span>Hard-100 total cost</span>
+            <strong>{latestVerifiedPackRun.hard100TotalCost}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Full artifact avg superset score</span>
-            <strong>{latestVerifiedPackRun.hard100FullRunAverageScore}</strong>
+            <span>Average hard-100 case cost</span>
+            <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Prior hard-100 full run</span>
-            <strong>{latestVerifiedPackRun.priorHard100FullRun}</strong>
+            <span>Japan demo case cost</span>
+            <strong>{latestVerifiedPackRun.representativeCaseCost}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Hard-100 targeted retest</span>
-            <strong>{latestVerifiedPackRun.hardTailRetest}</strong>
+            <span>Japan demo case runtime</span>
+            <strong>{latestVerifiedPackRun.representativeCaseRuntime}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Targeted retest avg superset score</span>
-            <strong>{latestVerifiedPackRun.hardTailRetestAverageScore}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>New live retest cost</span>
-            <strong>{latestVerifiedPackRun.newLiveRetestCost}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>New live retest runtime</span>
-            <strong>{latestVerifiedPackRun.newLiveRetestRuntime}</strong>
+            <span>Japan demo model calls</span>
+            <strong>{latestVerifiedPackRun.representativeCaseCalls}</strong>
           </ResultItem>
         </ResultGrid>
         <CorpusRunList>
@@ -453,74 +508,47 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Raw Agent Comparison</SectionTitle>
+      <SectionTitle>{neurosymbolicComparison.label}</SectionTitle>
       <ResultPanel>
         <ResultHeader>
-          <h3>{rawAgentComparison.label}</h3>
-          <p>{rawAgentComparison.summary}</p>
+          <h3>{neurosymbolicComparison.headline}</h3>
+          <p>{neurosymbolicComparison.summary}</p>
         </ResultHeader>
-        <ResultGrid>
-          <ResultItem>
-            <span>Case</span>
-            <strong>{rawAgentComparison.caseId}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Model</span>
-            <strong>{rawAgentComparison.modelLabel}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Current superset score</span>
-            <strong>{rawAgentComparison.currentSupersetScore}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Current superset pass</span>
-            <strong>{rawAgentComparison.currentSupersetPassed}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Stored score before stricter evidence checks</span>
-            <strong>{rawAgentComparison.storedScore}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Estimated cost</span>
-            <strong>{rawAgentComparison.cost}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Runtime</span>
-            <strong>{rawAgentComparison.runtime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Model calls</span>
-            <strong>{rawAgentComparison.modelCalls}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Tool calls</span>
-            <strong>{rawAgentComparison.toolCalls}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Input tokens</span>
-            <strong>{rawAgentComparison.inputTokens}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Output tokens</span>
-            <strong>{rawAgentComparison.outputTokens}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Cached tokens</span>
-            <strong>{rawAgentComparison.cachedTokens}</strong>
-          </ResultItem>
-        </ResultGrid>
+        <MetricGrid>
+          <Metric>
+            <dt>Demo case</dt>
+            <dd>{neurosymbolicComparison.measuredCase}</dd>
+          </Metric>
+          <Metric>
+            <dt>Pack corpus evidence</dt>
+            <dd>{neurosymbolicComparison.packCorpusResult}</dd>
+          </Metric>
+          <Metric>
+            <dt>Pack hard-100 cost</dt>
+            <dd>{neurosymbolicComparison.packCorpusCost}</dd>
+          </Metric>
+        </MetricGrid>
+        <ComparisonGrid>
+          {neurosymbolicComparison.rows.map((row) => (
+            <ComparisonCard key={row.system}>
+              <ComparisonBadge $outcome={row.outcome}>{row.outcome}</ComparisonBadge>
+              <h4>{row.system}</h4>
+              <ComparisonCost>{row.cost}</ComparisonCost>
+              <ComparisonMeta>
+                <span>{row.costMultiple} Pack cost</span>
+                <span>{row.runtime}</span>
+                <span>{row.calls}</span>
+              </ComparisonMeta>
+              <p>{row.note}</p>
+            </ComparisonCard>
+          ))}
+        </ComparisonGrid>
         <FindingText>
-          <strong>Passed checks:</strong> {rawAgentComparison.passedChecks}
-        </FindingText>
-        <FindingText>
-          <strong>Failed checks:</strong> {rawAgentComparison.failedChecks}
-        </FindingText>
-        <FindingText>
-          <strong>Reasoning effort:</strong> {rawAgentComparison.reasoningEffort}.
+          {neurosymbolicComparison.estimateNote}
         </FindingText>
         <CorpusRun>
-          <strong>Artifact</strong>
-          <code>{rawAgentComparison.artifactPath}</code>
+          <strong>Measured raw-agent artifact</strong>
+          <code>{neurosymbolicComparison.artifactPath}</code>
         </CorpusRun>
       </ResultPanel>
     </Section>

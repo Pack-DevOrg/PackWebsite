@@ -34,14 +34,18 @@ export const benchmarkOverview = {
 export const latestVerifiedPackRun = {
   label: "Latest local Pack planner validation",
   summary:
-    "Current local evidence clears the broad corpus, fixture corpus, and hard-100 set. The hard-100 total combines the May 17 full run with the May 18 targeted retest of the exact six failing cases, not a fresh one-shot 100-case rerun.",
-  artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v4/summary.json",
+    "Current local evidence clears the broad corpus, fixture corpus, and hard-100 set under the stricter superset rubric. The hard-100 total combines the May 17 full run with the May 18 targeted retest of the exact six failing cases, not a fresh one-shot 100-case rerun.",
+  artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v5/aggregate.json",
   validatedCases: "378/378",
   broadRegression: "222/222",
   fixtureCorpus: "56/56",
   hard100Composite: "100/100",
+  hard100FullRunRescore: "97/100",
+  hard100FullRunAverageScore: "0.988",
   hardTailRetest: "6/6",
-  priorHard100FullRun: "94/100 full run",
+  hardTailRetestAverageScore: "1.000",
+  priorHard100FullRun: "94/100 original scoring",
+  currentRubricStatus: "100/100 merged evidence",
   newLiveRetestCost: "$0.2353",
   newLiveRetestRuntime: "2m 21s",
   corpusRuns: [
@@ -61,15 +65,40 @@ export const latestVerifiedPackRun = {
       label: "Hard-100 failing-tail retest",
       result: "6/6",
       generatedAt: "May 18, 2026",
-      artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v4/summary.json",
+      artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v5/aggregate.json",
     },
     {
-      label: "Prior full hard-100 run",
-      result: "94/100",
+      label: "Full hard-100 run rescored with current rubric",
+      result: "97/100",
       generatedAt: "May 17, 2026",
-      artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-current-20260517-v1/summary.json",
+      artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-current-20260517-v1/aggregate.json",
     },
   ],
+};
+
+export const rawAgentComparison = {
+  label: "Raw GPT-5.5 tool agent spot check",
+  summary:
+    "A raw tool-using GPT-5.5 agent was run on the representative family Japan case with the same synthetic email, calendar, public-event, flight, and hotel tools. It selected viable travel products, but failed the stricter evidence hygiene checks.",
+  caseId: "family-japan-for-about-a-week-but-work-around-whatever-sch",
+  modelLabel: "GPT-5.5 raw tool agent",
+  reasoningEffort: "not persisted by the local adapter",
+  artifactPath:
+    "PackServer/benchmarks/travel-context/tmp/pack-deeperbench/fakerson-metered-gpt55-20260518-v4/run-bundle.json",
+  currentSupersetScore: "0.786",
+  currentSupersetPassed: "No",
+  storedScore: "0.875",
+  cost: "$0.909",
+  runtime: "1m 30s",
+  modelCalls: "7",
+  toolCalls: "44",
+  inputTokens: "401,608",
+  outputTokens: "2,920",
+  cachedTokens: "263,680",
+  passedChecks:
+    "Destination, dates/window, duration, travelers, flights, hotels, and selected search value.",
+  failedChecks:
+    "Missed case_japan_school_break_email_2027 and cited stale cancelled hotel evidence adam_fakerson_hotel_cancellation_0007.",
 };
 
 export const phaseCards = [

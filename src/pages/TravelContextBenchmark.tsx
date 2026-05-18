@@ -5,6 +5,7 @@ import {
   benchmarkOverview,
   latestVerifiedPackRun,
   phaseCards,
+  rawAgentComparison,
   scoreCards,
 } from "@/data/travelContextBenchmark";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
@@ -241,6 +242,16 @@ const ResultItem = styled.div`
   }
 `;
 
+const FindingText = styled.p`
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+
+  strong {
+    color: var(--color-text-primary);
+  }
+`;
+
 const CommandBlock = styled.pre`
   overflow-x: auto;
   margin: 0;
@@ -306,8 +317,8 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>{benchmarkOverview.officialRunStatus}.</strong>
-        The local page now shows current Pack planner corpus evidence. External-provider
-        leaderboard runs are still pending.
+        The local page shows current Pack planner corpus evidence and the first
+        raw GPT-5.5 spot check under the stricter superset rubric.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -401,12 +412,24 @@ const TravelContextBenchmark = () => (
             <strong>{latestVerifiedPackRun.hard100Composite}</strong>
           </ResultItem>
           <ResultItem>
+            <span>Hard-100 full artifact rescore</span>
+            <strong>{latestVerifiedPackRun.hard100FullRunRescore}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Full artifact avg superset score</span>
+            <strong>{latestVerifiedPackRun.hard100FullRunAverageScore}</strong>
+          </ResultItem>
+          <ResultItem>
             <span>Prior hard-100 full run</span>
             <strong>{latestVerifiedPackRun.priorHard100FullRun}</strong>
           </ResultItem>
           <ResultItem>
             <span>Hard-100 targeted retest</span>
             <strong>{latestVerifiedPackRun.hardTailRetest}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Targeted retest avg superset score</span>
+            <strong>{latestVerifiedPackRun.hardTailRetestAverageScore}</strong>
           </ResultItem>
           <ResultItem>
             <span>New live retest cost</span>
@@ -426,6 +449,79 @@ const TravelContextBenchmark = () => (
             </CorpusRun>
           ))}
         </CorpusRunList>
+      </ResultPanel>
+    </Section>
+
+    <Section>
+      <SectionTitle>Raw Agent Comparison</SectionTitle>
+      <ResultPanel>
+        <ResultHeader>
+          <h3>{rawAgentComparison.label}</h3>
+          <p>{rawAgentComparison.summary}</p>
+        </ResultHeader>
+        <ResultGrid>
+          <ResultItem>
+            <span>Case</span>
+            <strong>{rawAgentComparison.caseId}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Model</span>
+            <strong>{rawAgentComparison.modelLabel}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Current superset score</span>
+            <strong>{rawAgentComparison.currentSupersetScore}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Current superset pass</span>
+            <strong>{rawAgentComparison.currentSupersetPassed}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Stored score before stricter evidence checks</span>
+            <strong>{rawAgentComparison.storedScore}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Estimated cost</span>
+            <strong>{rawAgentComparison.cost}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Runtime</span>
+            <strong>{rawAgentComparison.runtime}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Model calls</span>
+            <strong>{rawAgentComparison.modelCalls}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Tool calls</span>
+            <strong>{rawAgentComparison.toolCalls}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Input tokens</span>
+            <strong>{rawAgentComparison.inputTokens}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Output tokens</span>
+            <strong>{rawAgentComparison.outputTokens}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Cached tokens</span>
+            <strong>{rawAgentComparison.cachedTokens}</strong>
+          </ResultItem>
+        </ResultGrid>
+        <FindingText>
+          <strong>Passed checks:</strong> {rawAgentComparison.passedChecks}
+        </FindingText>
+        <FindingText>
+          <strong>Failed checks:</strong> {rawAgentComparison.failedChecks}
+        </FindingText>
+        <FindingText>
+          <strong>Reasoning effort:</strong> {rawAgentComparison.reasoningEffort}.
+        </FindingText>
+        <CorpusRun>
+          <strong>Artifact</strong>
+          <code>{rawAgentComparison.artifactPath}</code>
+        </CorpusRun>
       </ResultPanel>
     </Section>
 

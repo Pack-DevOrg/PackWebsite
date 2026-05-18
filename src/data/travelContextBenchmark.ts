@@ -12,7 +12,7 @@ import {
 export const benchmarkOverview = {
   name: "Pack DeeperBench",
   version: "pack-deeperbench-v0",
-  officialRunStatus: "Full 100-case Pack run pending",
+  officialRunStatus: "Local Pack planner validation updated May 18, 2026",
   corpus: {
     household: "Fakerson household",
     people: 4,
@@ -32,33 +32,44 @@ export const benchmarkOverview = {
 };
 
 export const latestVerifiedPackRun = {
-  label: "Latest verified local Pack smoke",
-  artifactPath: "PackServer/tmp/hartwell-pack-phased-calendar-smoke/aggregate.json",
-  caseCount: 1,
-  prompt:
-    "Book two weeks in Japan for @family in June 2027. Start with Tokyo and keep our usual two-room family split.",
-  extractionProfiles: 4,
-  historicalTrips: 8,
-  scannedFlights: "2,000,000",
-  scannedHotels: "1,000,000",
-  selectedFlights: 2,
-  selectedHotels: 1,
-  costs: {
-    extraction: "$0.1352",
-    planning: "$0.2111",
-    search: "$0.0000",
-    total: "$0.3464",
-  },
-  runtime: {
-    planning: "38.9s",
-    search: "5.7s",
-  },
-  scores: {
-    planningAccuracy: "1.00",
-    searchAccuracy: "1.00",
-    userValue: "1.00",
-    caseCompletion: "1.00",
-  },
+  label: "Latest local Pack planner validation",
+  summary:
+    "Current local evidence clears the broad corpus, fixture corpus, and hard-100 set. The hard-100 total combines the May 17 full run with the May 18 targeted retest of the exact six failing cases, not a fresh one-shot 100-case rerun.",
+  artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v4/summary.json",
+  validatedCases: "378/378",
+  broadRegression: "222/222",
+  fixtureCorpus: "56/56",
+  hard100Composite: "100/100",
+  hardTailRetest: "6/6",
+  priorHard100FullRun: "94/100 full run",
+  newLiveRetestCost: "$0.2353",
+  newLiveRetestRuntime: "2m 21s",
+  corpusRuns: [
+    {
+      label: "Broad regression corpus",
+      result: "222/222",
+      generatedAt: "May 17, 2026",
+      artifactPath: "PackServer/tmp/travel-planner-corpus/local-broad222-structured-20260517-v4/summary.json",
+    },
+    {
+      label: "Fixture corpus",
+      result: "56/56",
+      generatedAt: "May 17, 2026",
+      artifactPath: "PackServer/tmp/travel-planner-corpus/local-fixture56-current-20260517-v2/summary.json",
+    },
+    {
+      label: "Hard-100 failing-tail retest",
+      result: "6/6",
+      generatedAt: "May 18, 2026",
+      artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v4/summary.json",
+    },
+    {
+      label: "Prior full hard-100 run",
+      result: "94/100",
+      generatedAt: "May 17, 2026",
+      artifactPath: "PackServer/tmp/travel-planner-corpus/local-hard100-current-20260517-v1/summary.json",
+    },
+  ],
 };
 
 export const phaseCards = [

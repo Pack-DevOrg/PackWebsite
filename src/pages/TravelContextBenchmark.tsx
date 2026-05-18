@@ -196,6 +196,33 @@ const ResultGrid = styled.div`
   gap: var(--space-2);
 `;
 
+const CorpusRunList = styled.div`
+  display: grid;
+  gap: var(--space-2);
+`;
+
+const CorpusRun = styled.div`
+  display: grid;
+  gap: var(--space-1);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-2);
+
+  strong {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-large);
+  }
+
+  span,
+  code {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+  }
+
+  code {
+    overflow-wrap: anywhere;
+  }
+`;
+
 const ResultItem = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: var(--space-2);
@@ -279,9 +306,8 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>{benchmarkOverview.officialRunStatus}.</strong>
-        The current published page is wired for final Pack and external-provider
-        runs, but only verified smoke results are shown until the full 100-case
-        run completes.
+        The local page now shows current Pack planner corpus evidence. External-provider
+        leaderboard runs are still pending.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -355,50 +381,68 @@ const TravelContextBenchmark = () => (
       <ResultPanel>
         <ResultHeader>
           <h3>{latestVerifiedPackRun.label}</h3>
-          <p>{latestVerifiedPackRun.prompt}</p>
+          <p>{latestVerifiedPackRun.summary}</p>
         </ResultHeader>
         <ResultGrid>
           <ResultItem>
-            <span>Cases</span>
-            <strong>{latestVerifiedPackRun.caseCount}</strong>
+            <span>Current local pass set</span>
+            <strong>{latestVerifiedPackRun.validatedCases}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Extractor profiles</span>
-            <strong>{latestVerifiedPackRun.extractionProfiles}</strong>
+            <span>Broad regression</span>
+            <strong>{latestVerifiedPackRun.broadRegression}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Historical trips</span>
-            <strong>{latestVerifiedPackRun.historicalTrips}</strong>
+            <span>Fixture corpus</span>
+            <strong>{latestVerifiedPackRun.fixtureCorpus}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Flight scan</span>
-            <strong>{latestVerifiedPackRun.scannedFlights}</strong>
+            <span>Hard-100 combined</span>
+            <strong>{latestVerifiedPackRun.hard100Composite}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Hotel scan</span>
-            <strong>{latestVerifiedPackRun.scannedHotels}</strong>
+            <span>Prior hard-100 full run</span>
+            <strong>{latestVerifiedPackRun.priorHard100FullRun}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Total cost</span>
-            <strong>{latestVerifiedPackRun.costs.total}</strong>
+            <span>Hard-100 targeted retest</span>
+            <strong>{latestVerifiedPackRun.hardTailRetest}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Planning accuracy</span>
-            <strong>{latestVerifiedPackRun.scores.planningAccuracy}</strong>
+            <span>New live retest cost</span>
+            <strong>{latestVerifiedPackRun.newLiveRetestCost}</strong>
           </ResultItem>
           <ResultItem>
-            <span>User value</span>
-            <strong>{latestVerifiedPackRun.scores.userValue}</strong>
+            <span>New live retest runtime</span>
+            <strong>{latestVerifiedPackRun.newLiveRetestRuntime}</strong>
           </ResultItem>
         </ResultGrid>
+        <CorpusRunList>
+          {latestVerifiedPackRun.corpusRuns.map((run) => (
+            <CorpusRun key={run.artifactPath}>
+              <strong>{run.label}: {run.result}</strong>
+              <span>{run.generatedAt}</span>
+              <code>{run.artifactPath}</code>
+            </CorpusRun>
+          ))}
+        </CorpusRunList>
       </ResultPanel>
     </Section>
 
     <Section>
       <SectionTitle>Run Path</SectionTitle>
       <CommandBlock>{`cd PackServer
-npm run bench:travel-context:pack-extractor-hartwell -- --email-task-concurrency 2 --out-dir tmp/hartwell-pack-real-extractor-full
-npm run bench:travel-context:pack-phased-hartwell -- --extraction-dir tmp/hartwell-pack-real-extractor-full --limit 100 --flight-count 1000000 --hotel-count 1000000`}</CommandBlock>
+npm run verify:travel-planner-corpus -- --local-handler --corpus scripts/travel-planner-broad-regression-corpus.json --out-dir tmp/travel-planner-corpus/local-broad222-structured-20260517-v4 --allow-local-broad-run
+npm run verify:travel-planner-corpus -- --local-handler --corpus scripts/travel-planner-fixture-corpus.json --out-dir tmp/travel-planner-corpus/local-fixture56-current-20260517-v2 --allow-local-broad-run
+npm run verify:travel-planner-corpus -- --local-handler --corpus benchmarks/travel-context/corpus-seeds/hard-100.json \\
+  --include danny-wants-a-theme-park-weekend-don-t-miss-the-orthodonti \\
+  --include miami-for-adam-and-bel-but-bel-stays-two-extra-nights-and- \\
+  --include use-the-forwarded-hotel-email-only-if-it-actually-belongs- \\
+  --include bel-and-adam-to-paris-around-nyfw-but-adam-can-t-miss-the- \\
+  --include figure-out-my-week-around-those-meetings-including-whether \\
+  --include lisbon-four-nights-inside-the-pto-window-not-before-or-aft \\
+  --out-dir tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v4 \\
+  --allow-local-live-extraction --allow-local-broad-run`}</CommandBlock>
       <TextLink href="https://github.com/Pack-DevOrg" rel="noopener noreferrer" target="_blank">
         <GitBranch aria-hidden="true" />
         Release repository coming next

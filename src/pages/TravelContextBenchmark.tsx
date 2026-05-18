@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {
   benchmarkOverview,
   hard100Cases,
-  hardestTenCases,
+  hardestTenShootoutRows,
   latestVerifiedPackRun,
   neurosymbolicComparison,
   phaseCards,
@@ -198,43 +198,6 @@ const ResultGrid = styled.div`
   gap: var(--space-2);
 `;
 
-const CaseGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-3);
-`;
-
-const CaseCard = styled.article`
-  display: grid;
-  align-content: start;
-  gap: var(--space-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--border-radius);
-  background: rgba(255, 255, 255, 0.035);
-  padding: var(--space-3);
-
-  strong {
-    color: var(--color-text-primary);
-    font-size: var(--font-size-large);
-  }
-
-  span {
-    width: fit-content;
-    border-radius: 999px;
-    background: rgba(243, 210, 122, 0.1);
-    color: var(--color-accent);
-    padding: 0.2rem 0.55rem;
-    font-size: var(--font-size-small);
-    font-weight: 800;
-  }
-
-  p {
-    margin: 0;
-    color: var(--color-text-secondary);
-    line-height: 1.55;
-  }
-`;
-
 const FullCaseList = styled.div`
   display: grid;
   max-height: 520px;
@@ -363,6 +326,60 @@ const ComparisonMeta = styled.div`
   font-size: var(--font-size-small);
 `;
 
+const TableWrap = styled.div`
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius);
+  background: rgba(0, 0, 0, 0.18);
+`;
+
+const ShootoutTable = styled.table`
+  width: 100%;
+  min-width: 920px;
+  border-collapse: collapse;
+
+  th,
+  td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.85rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-small);
+    text-transform: uppercase;
+  }
+
+  td {
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+`;
+
+const ScoreValue = styled.strong<{ $status?: "pass" | "fail" | "pending" }>`
+  display: block;
+  color: ${({ $status }) =>
+    $status === "pass"
+      ? "rgb(111, 220, 166)"
+      : $status === "fail"
+        ? "rgb(255, 132, 132)"
+        : "var(--color-text-primary)"};
+  font-size: var(--font-size-large);
+`;
+
+const CostNote = styled.span`
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+`;
+
 const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
@@ -396,8 +413,8 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>{benchmarkOverview.officialRunStatus}.</strong>
-        Pack passes the representative Japan case for $0.047; the measured raw
-        GPT-5.5 agent costs $0.91 and fails the same evidence-grounded case.
+        Pack passes the hard-100 run and all 10 hardest shootout cases; raw
+        max-thinking agents did not complete a valid shootout case.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -491,7 +508,7 @@ const TravelContextBenchmark = () => (
             <strong>{latestVerifiedPackRun.selectedComparisonSet}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Planned raw-model run</span>
+            <span>Raw-model shootout</span>
             <strong>{latestVerifiedPackRun.selectedComparisonScope}</strong>
           </ResultItem>
         </ResultGrid>
@@ -541,22 +558,44 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Hardest 10 Selected for Raw Runs</SectionTitle>
-      <SectionText>
-        These are the cases we should run first because they combine private
-        inbox discovery, calendar constraints, stale or wrong-owner evidence,
-        partial itinerary edits, and cases where the correct answer can be no.
-      </SectionText>
-      <CaseGrid>
-        {hardestTenCases.map((caseItem) => (
-          <CaseCard key={caseItem.number}>
-            <span>{caseItem.number}</span>
-            <strong>{caseItem.title}</strong>
-            <p>{caseItem.summary}</p>
-            <p>{caseItem.hardestTenReason}</p>
-          </CaseCard>
-        ))}
-      </CaseGrid>
+      <SectionTitle>Hardest-10 Scores and Price</SectionTitle>
+      <TableWrap>
+        <ShootoutTable>
+          <thead>
+            <tr>
+              <th>Case</th>
+              <th>Pack</th>
+              <th>GPT-5.5 xhigh</th>
+              <th>Claude Opus 4.7 max-thinking</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hardestTenShootoutRows.map((row) => (
+              <tr key={row.number}>
+                <td>
+                  <strong>{row.number}. {row.title}</strong>
+                </td>
+                <td>
+                  <ScoreValue $status="pass">{row.packScore}</ScoreValue>
+                  <CostNote>{row.packCost}</CostNote>
+                </td>
+                <td>
+                  <ScoreValue $status={row.gptScore === "0.00" ? "fail" : "pending"}>
+                    {row.gptScore}
+                  </ScoreValue>
+                  <CostNote>{row.gptCost}</CostNote>
+                  <CostNote>{row.gptResult}</CostNote>
+                </td>
+                <td>
+                  <ScoreValue $status="fail">{row.opusScore}</ScoreValue>
+                  <CostNote>{row.opusCost}</CostNote>
+                  <CostNote>{row.opusResult}</CostNote>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </ShootoutTable>
+      </TableWrap>
     </Section>
 
     <Section>

@@ -610,8 +610,6 @@ const TravelContextBenchmark = () => (
             <span>{caseItem.number}</span>
             <div>
               <strong>{caseItem.title}</strong>
-              <p>{caseItem.challenge}</p>
-              <p>{caseItem.summary}</p>
             </div>
           </FullCaseRow>
         ))}

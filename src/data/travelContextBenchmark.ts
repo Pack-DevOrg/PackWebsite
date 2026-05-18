@@ -85,7 +85,7 @@ export const neurosymbolicComparison = {
 export const hardestTenShootoutRows = [
   {
     number: "007",
-    title: "Wedding plus Tulum extension",
+    title: "Avery and Jamie wedding, then Tulum.",
     packScore: "1.00",
     packCost: "$0.094",
     gptScore: "0.00",
@@ -97,7 +97,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "008",
-    title: "Bachelor weekend partial rebook",
+    title: "Riley's bachelor weekend for @adam.",
     packScore: "1.00",
     packCost: "$0.043",
     gptScore: "Not run",
@@ -109,7 +109,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "019",
-    title: "Forwarded hotel ownership trap",
+    title: "Forwarded hotel for the upcoming trip.",
     packScore: "1.00",
     packCost: "$0.006",
     gptScore: "Not run",
@@ -121,7 +121,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "029",
-    title: "Email-only PTO overlap",
+    title: "@adam and @bel Japan during their shared time off.",
     packScore: "1.00",
     packCost: "$0.052",
     gptScore: "Not run",
@@ -133,7 +133,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "047",
-    title: "Miami race traveler ambiguity",
+    title: "Miami F1 trip.",
     packScore: "1.00",
     packCost: "$0.027",
     gptScore: "Not run",
@@ -145,7 +145,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "050",
-    title: "School break plus camp conflict",
+    title: "San Diego for all four of us.",
     packScore: "1.00",
     packCost: "$0.053",
     gptScore: "Not run",
@@ -157,7 +157,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "051",
-    title: "Maui adult PTO overlap",
+    title: "@adam and @bel Maui.",
     packScore: "1.00",
     packCost: "$0.038",
     gptScore: "Not run",
@@ -169,7 +169,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "060",
-    title: "Unknown chapel location",
+    title: "Ceremony near the Tahoe chapel.",
     packScore: "1.00",
     packCost: "$0.039",
     gptScore: "Not run",
@@ -181,7 +181,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "064",
-    title: "Watches event to Annecy",
+    title: "Watches and Wonders, then Annecy one night.",
     packScore: "1.00",
     packCost: "$0.059",
     gptScore: "Not run",
@@ -193,7 +193,7 @@ export const hardestTenShootoutRows = [
   },
   {
     number: "088",
-    title: "Wedding flight and hotel only",
+    title: "Cancun wedding flight and hotel for @adam and @bel.",
     packScore: "1.00",
     packCost: "$0.032",
     gptScore: "Not run",
@@ -207,625 +207,405 @@ export const hardestTenShootoutRows = [
 
 export const hard100Cases = [
   {
-    number: "001",
-    title: "Japan school/PTO trip",
-    challenge: "Calendar conflict + stale evidence",
-    summary: "Family Japan planning must fit school and PTO evidence while ignoring stale Japan bookings.",
+    "number": "001",
+    "title": "@family Japan for about a week."
   },
   {
-    number: "002",
-    title: "Paris fashion-week timing",
-    challenge: "Private/public timing mismatch",
-    summary: "A Paris event request has public-date noise, private shipment constraints, and promo honeypots.",
+    "number": "002",
+    "title": "@bel Paris fashion week."
   },
   {
-    number: "003",
-    title: "Tokyo airline credit chain",
-    challenge: "Cancellation chain + fare honeypot",
-    summary: "An old airline credit only counts if the email chain proves it survived later changes.",
+    "number": "003",
+    "title": "@adam to Tokyo, use the airline credit if we still can."
   },
   {
-    number: "004",
-    title: "Denver show school conflict",
-    challenge: "Expected impossible",
-    summary: "A child wants a Denver show, but real school conflicts can make the correct answer no.",
+    "number": "004",
+    "title": "@chase to Denver for that show."
   },
   {
-    number: "005",
-    title: "Theme park appointment conflict",
-    challenge: "Email-only conflict + marketing honeypot",
-    summary: "An Orlando weekend must avoid an email-only appointment and a fake confirmation nearby.",
+    "number": "005",
+    "title": "@danny Orlando theme park weekend."
   },
   {
-    number: "006",
-    title: "Tahoe wedding stale save-date",
-    challenge: "Stale invite + cancelled lodging",
-    summary: "A wedding trip must use the real invite date, not stale save-date or cancelled hotel evidence.",
+    "number": "006",
+    "title": "James wedding near Tahoe."
   },
   {
-    number: "007",
-    title: "Wedding plus Tulum extension",
-    challenge: "Chained discovery + partial duplication",
-    summary: "The planner must combine wedding evidence, an existing room block, and changed flight emails without duplicating anything.",
-    hardestTenReason:
-      "This is one of the cleanest raw LLM traps: the answer depends on joining active wedding evidence, forwarded lodging coverage, and changed flights across separate private messages.",
+    "number": "007",
+    "title": "Avery and Jamie wedding, then Tulum."
   },
   {
-    number: "008",
-    title: "Bachelor weekend partial rebook",
-    challenge: "Calendar block + local decoy + scope control",
-    summary: "A bachelor weekend must respect a work block, ignore a local dinner decoy, and change only the missing leg.",
-    hardestTenReason:
-      "It requires partial itinerary surgery. A raw agent can easily overbook the whole trip, leave before the work block, or mistake the local dinner for the destination.",
+    "number": "008",
+    "title": "Riley's bachelor weekend for @adam."
   },
   {
-    number: "009",
-    title: "NYC long-stay plus tennis",
-    challenge: "No duplicate local travel",
-    summary: "A public event may fit only if existing NYC lodging already covers the traveler.",
+    "number": "009",
+    "title": "US Open weekend for @adam."
   },
   {
-    number: "010",
-    title: "Local business event",
-    challenge: "Expected no-travel",
-    summary: "Noisy business messages should produce no travel when they only describe a local day.",
+    "number": "010",
+    "title": "@adam Betaworks trip."
   },
   {
-    number: "011",
-    title: "Rome family room split",
-    challenge: "Multi-person lodging + cancelled hotel",
-    summary: "A family Rome trip must use the correct room split and ignore cancelled lodging.",
+    "number": "011",
+    "title": "Rome for @family."
   },
   {
-    number: "012",
-    title: "London theatre preferences",
-    challenge: "Preference search + scope control",
-    summary: "London theatre planning must use real hotel preferences and avoid padding extra nights.",
+    "number": "012",
+    "title": "@bel London trip."
   },
   {
-    number: "013",
-    title: "Offsite venue-city disagreement",
-    challenge: "Email/calendar disagreement + airport noise",
-    summary: "The venue city wins over airport receipts, old local meetings, and ambiguous Bay Area noise.",
+    "number": "013",
+    "title": "Book the offsite travel."
   },
   {
-    number: "014",
-    title: "Denver to Vail extension",
-    challenge: "Calendar conflict + extension scope",
-    summary: "A ski extension after Denver only works if the next school item leaves enough room.",
+    "number": "014",
+    "title": "Broncos in Denver, then Vail ski nights for @chase."
   },
   {
-    number: "015",
-    title: "Museum trip fare trap",
-    challenge: "Search value + no-seat fare",
-    summary: "A direct trip should reject basic fares without seats and ignore someone else's forwarded hotel.",
+    "number": "015",
+    "title": "@danny museum weekend."
   },
   {
-    number: "016",
-    title: "Miami staggered return",
-    challenge: "Split itinerary + promo red herring",
-    summary: "Two adults share outbound travel, one stays longer, and a sports promo only matters if it matches reality.",
+    "number": "016",
+    "title": "Miami for @adam and @bel, with @bel staying longer."
   },
   {
-    number: "017",
-    title: "Japan spring break blocked week",
-    challenge: "Multi-person calendar + leap-year drift",
-    summary: "Family Japan dates must avoid a blocked week, handle public-date drift, and avoid kids' red-eyes.",
+    "number": "017",
+    "title": "@family spring break in Japan."
   },
   {
-    number: "018",
-    title: "Cancelled Tokyo flight",
-    challenge: "Stale evidence",
-    summary: "An old cancelled Tokyo flight looks useful but must not be treated as active.",
+    "number": "018",
+    "title": "Japan trip with the reservations we have."
   },
   {
-    number: "019",
-    title: "Forwarded hotel ownership trap",
-    challenge: "Wrong-owner evidence",
-    summary: "A forwarded hotel email only counts if it belongs to the traveler, not if it was forwarded as an FYI.",
-    hardestTenReason:
-      "The city and date can match while the owner is wrong. Raw agents often anchor on matching travel-looking evidence instead of proving ownership and traveler identity.",
+    "number": "019",
+    "title": "Forwarded hotel for the upcoming trip."
   },
   {
-    number: "020",
-    title: "Schedule-change overwrite",
-    challenge: "Email recency",
-    summary: "A changed flight time should override the original confirmation.",
+    "number": "020",
+    "title": "Fix the changed flight time."
   },
   {
-    number: "021",
-    title: "Risky connection pattern",
-    challenge: "Historical preference + fare honeypot",
-    summary: "A cheap itinerary repeats a known bad connection pattern from prior inbox evidence.",
+    "number": "021",
+    "title": "Japan again, but avoid that bad connection from last time."
   },
   {
-    number: "022",
-    title: "Expiring points and credits",
-    challenge: "Credit validity + value tradeoff",
-    summary: "Credits only matter if real and useful; expired promos and surveys do not count.",
+    "number": "022",
+    "title": "Use expiring points or credits for the next trip."
   },
   {
-    number: "023",
-    title: "Paris refundable event",
-    challenge: "Private/public date mismatch",
-    summary: "A Paris event needs refundable travel unless private evidence proves the commitment is locked.",
+    "number": "023",
+    "title": "@bel's Paris event weekend."
   },
   {
-    number: "024",
-    title: "Loyalty preference versus family seating",
-    challenge: "Preference hierarchy",
-    summary: "Airline loyalty cannot override family seating, price, and change-fee constraints.",
+    "number": "024",
+    "title": "@adam flight using Alaska or Delta if it makes sense."
   },
   {
-    number: "025",
-    title: "Long-haul window seat tradeoff",
-    challenge: "Search value",
-    summary: "A window preference should not justify a red-eye, basic fare, or impossible short connection.",
+    "number": "025",
+    "title": "@chase gets a window seat if possible."
   },
   {
-    number: "026",
-    title: "Family seating beats window",
-    challenge: "Multi-person inventory",
-    summary: "A child's window preference loses to keeping the family seated together.",
+    "number": "026",
+    "title": "@danny gets a window seat if possible."
   },
   {
-    number: "027",
-    title: "Current home-airport evidence",
-    challenge: "Stale profile data",
-    summary: "Home airports must come from current evidence, not old forwarded confirmations.",
+    "number": "027",
+    "title": "@adam and @bel Japan."
   },
   {
-    number: "028",
-    title: "Pending friend exclusion",
-    challenge: "Traveler resolution",
-    summary: "A pending friend is excluded unless acceptance is proven by evidence.",
+    "number": "028",
+    "title": "@family Japan with the friend if that works."
   },
   {
-    number: "029",
-    title: "Email-only PTO overlap",
-    challenge: "Email/calendar conflict",
-    summary: "PTO exists only in email and conflicts with calendar blocks; the narrower overlap wins.",
-    hardestTenReason:
-      "This is exactly the kind of constraint a raw model misses unless it retrieves the right private email and compares it against calendar evidence before search.",
+    "number": "029",
+    "title": "@adam and @bel Japan during their shared time off."
   },
   {
-    number: "030",
-    title: "Event city source conflict",
-    challenge: "Recency + old-city hotel trap",
-    summary: "Email and calendar disagree on event city, and the newer source must beat old hotel evidence.",
+    "number": "030",
+    "title": "@bel's conference travel."
   },
   {
-    number: "031",
-    title: "Airbnb security-email noise",
-    challenge: "Non-travel email noise",
-    summary: "Login and security emails mention locations but are not reservations.",
+    "number": "031",
+    "title": "Airbnb for the upcoming trip."
   },
   {
-    number: "032",
-    title: "Airline survey non-booking",
-    challenge: "Expected no-travel",
-    summary: "Airline surveys are past-trip evidence, not active bookings.",
+    "number": "032",
+    "title": "Airline follow-up for the next trip."
   },
   {
-    number: "033",
-    title: "Fare sale non-booking",
-    challenge: "Marketing noise + scope control",
-    summary: "A fare sale email is not a booking and its blackout dates should not become trip dates.",
+    "number": "033",
+    "title": "Use that fare sale if it helps."
   },
   {
-    number: "034",
-    title: "Conference moved cities",
-    challenge: "Later email overrides plan",
-    summary: "A later move email invalidates the old city, hotel path, and airport.",
+    "number": "034",
+    "title": "Conference travel after the city changed."
   },
   {
-    number: "035",
-    title: "Missing hotel only",
-    challenge: "Partial completion",
-    summary: "Flights already exist, so only the missing hotel should be planned after checking flight changes.",
+    "number": "035",
+    "title": "Finish the hotel for the trip."
   },
   {
-    number: "036",
-    title: "Hotel booked, flights missing",
-    challenge: "Partial completion + stale city",
-    summary: "Flights are needed unless the existing hotel is stale from an old city.",
+    "number": "036",
+    "title": "Finish the flights for the trip."
   },
   {
-    number: "037",
-    title: "Return-only event fix",
-    challenge: "Partial rebooking",
-    summary: "Only the too-early return should change; the correct outbound and hotel should stay intact.",
+    "number": "037",
+    "title": "Fix the return flight after the event."
   },
   {
-    number: "038",
-    title: "Fixed outbound, movable return",
-    challenge: "PTO boundary + connection trap",
-    summary: "The return can move for value, but not across PTO boundaries or into overnight connection traps.",
+    "number": "038",
+    "title": "Move the return flight if there is a better option."
   },
   {
-    number: "039",
-    title: "NYC meeting during long stay",
-    challenge: "Expected no-travel + temporary home",
-    summary: "Existing long-stay evidence means no duplicate lodging or flights should be added.",
+    "number": "039",
+    "title": "@adam NYC meeting trip."
   },
   {
-    number: "040",
-    title: "One-way after active conference",
-    challenge: "One-way scope + cancelled invite",
-    summary: "A one-way leg is valid only if the conference is active, with no invented return.",
+    "number": "040",
+    "title": "One way after the conference."
   },
   {
-    number: "041",
-    title: "Paris public-week drift",
-    challenge: "Multi-person timing + cached public date",
-    summary: "Public-week date drift and a pre-event commitment constrain a two-adult Paris trip.",
+    "number": "041",
+    "title": "@bel and @adam to Paris around NYFW."
   },
   {
-    number: "042",
-    title: "Milan kids school veto",
-    challenge: "Expected impossible + search value",
-    summary: "A Milan trip with kids must stop if school or prices make it invalid.",
+    "number": "042",
+    "title": "Milan design week with @chase and @danny."
   },
   {
-    number: "043",
-    title: "NYC marathon borough",
-    challenge: "Event-email grounding",
-    summary: "Family marathon lodging must be near the real borough from event emails.",
+    "number": "043",
+    "title": "NYC marathon weekend for @family."
   },
   {
-    number: "044",
-    title: "Tokyo cherry-blossom flexibility",
-    challenge: "Shifting public timing",
-    summary: "Cherry-blossom dates can shift, so hotel flexibility matters.",
+    "number": "044",
+    "title": "Tokyo cherry blossoms."
   },
   {
-    number: "045",
-    title: "London cancelled theatre thread",
-    challenge: "Cancelled evidence + newsletter trap",
-    summary: "Cancelled theatre plans and newsletters should not become active booking evidence.",
+    "number": "045",
+    "title": "@bel London theatre weekend."
   },
   {
-    number: "046",
-    title: "Solo Austin race trip",
-    challenge: "Credit applicability + traveler scope",
-    summary: "A solo race trip should use credit only if applicable and avoid family-room assumptions.",
+    "number": "046",
+    "title": "@bel to Austin GP."
   },
   {
-    number: "047",
-    title: "Miami race traveler ambiguity",
-    challenge: "Needs clarification + promo honeypot",
-    summary: "The system must ask if messages do not prove whether this is solo or family travel.",
-    hardestTenReason:
-      "A strong agent must know when not to book. This case punishes confident guesses because family-ticket promo noise is not proof of traveler scope.",
+    "number": "047",
+    "title": "Miami F1 trip."
   },
   {
-    number: "048",
-    title: "Wedding versus investor breakfast",
-    challenge: "Expected impossible",
-    summary: "A beach wedding should be rejected if the return cannot preserve a near-term work commitment.",
+    "number": "048",
+    "title": "Beach wedding, then investor breakfast."
   },
   {
-    number: "049",
-    title: "Bachelor weekend destination decoy",
-    challenge: "Local decoy + cancelled return",
-    summary: "A local Friday dinner and old cancelled return should not pull the bachelor trip off course.",
+    "number": "049",
+    "title": "Riley's bachelor weekend in Nashville."
   },
   {
-    number: "050",
-    title: "School break plus camp conflict",
-    challenge: "Multi-person calendar conflict",
-    summary: "A school-break trip fails if the break applies to one child but another child's camp email is real.",
-    hardestTenReason:
-      "This combines family-member-specific availability with email-only conflict evidence. Search inventory can look valid while the family plan is invalid.",
+    "number": "050",
+    "title": "San Diego for all four of us."
   },
   {
-    number: "051",
-    title: "Maui adult PTO overlap",
-    challenge: "Expected impossible + value trap",
-    summary: "A Maui trip must stay inside overlapping adult PTO and be rejected if no overlap exists.",
-    hardestTenReason:
-      "The correct answer can be rejection despite attractive flights or hotels. It tests whether the model treats private availability as a hard constraint.",
+    "number": "051",
+    "title": "@adam and @bel Maui."
   },
   {
-    number: "052",
-    title: "Barcelona blocked week",
-    challenge: "Expected impossible",
-    summary: "A fixed family Barcelona request should be rejected if a blocked week is real.",
+    "number": "052",
+    "title": "Barcelona Apr 4-7 for all four of us."
   },
   {
-    number: "053",
-    title: "Grandparents meet-up boundary",
-    challenge: "Traveler scope",
-    summary: "Grandparents can meet the family, but their rooms and flights are out of scope.",
+    "number": "053",
+    "title": "Grandparents meet us in Orlando."
   },
   {
-    number: "054",
-    title: "Boston appointment virtual check",
-    challenge: "Expected no-travel",
-    summary: "A recurring appointment should not become a trip if this week's instance is virtual.",
+    "number": "054",
+    "title": "Boston appointment travel."
   },
   {
-    number: "055",
-    title: "Conference-to-Lisbon one-way",
-    challenge: "Active-event check",
-    summary: "A Lisbon one-way leg only exists if the conference is really happening in person.",
+    "number": "055",
+    "title": "@adam to Lisbon after the conference."
   },
   {
-    number: "056",
-    title: "Customer summit airport choice",
-    challenge: "Venue grounding + wrong-metro trap",
-    summary: "Airport choice should follow the actual venue, not old receipts or famous nearby cities.",
+    "number": "056",
+    "title": "Customer summit travel."
   },
   {
-    number: "057",
-    title: "Seattle exact-date PTO trap",
-    challenge: "Calendar conflict + no padding",
-    summary: "Wide PTO does not permit trip padding around a tax appointment or exact-date request.",
+    "number": "057",
+    "title": "Seattle Apr 10-14."
   },
   {
-    number: "058",
-    title: "NYC meetings no-travel decision",
-    challenge: "Expected no-travel",
-    summary: "Same-day local meetings should produce no travel instead of an invented trip.",
+    "number": "058",
+    "title": "@adam Midtown and Roam week."
   },
   {
-    number: "059",
-    title: "NYC dinners local check",
-    challenge: "Scope control",
-    summary: "Travel is needed only if the traveler is not already local; old hotel receipts are noise.",
+    "number": "059",
+    "title": "NYC dinners next week."
   },
   {
-    number: "060",
-    title: "Unknown chapel location",
-    challenge: "Needs clarification",
-    summary: "The system must not invent a chapel address if private emails do not prove which chapel.",
-    hardestTenReason:
-      "This case measures anti-hallucination under pressure. A raw model can produce a plausible venue, but the correct behavior is to stop and ask.",
+    "number": "060",
+    "title": "Ceremony near the Tahoe chapel."
   },
   {
-    number: "061",
-    title: "Old-city hotel after move",
-    challenge: "Stale destination evidence",
-    summary: "Existing hotel evidence is bad if a later event move makes the city obsolete.",
+    "number": "061",
+    "title": "Event trip after the city moved."
   },
   {
-    number: "062",
-    title: "Pitti private-date override",
-    challenge: "Private/public timing",
-    summary: "If public dates and invite dates disagree, newer private evidence wins.",
+    "number": "062",
+    "title": "@bel to Pitti."
   },
   {
-    number: "063",
-    title: "Sundance cabin extension",
-    challenge: "Extension timing + stale lodging",
-    summary: "A cabin extension must not overlap screenings or reuse last year's lodging.",
+    "number": "063",
+    "title": "Sundance, then a quiet cabin."
   },
   {
-    number: "064",
-    title: "Watches event to Annecy",
-    challenge: "Chained trip + transfer cutoff",
-    summary: "A cross-border one-night extension must respect changed dates, stale lodging, and late rail limits.",
-    hardestTenReason:
-      "It forces chained discovery across event timing, stale hotel evidence, geography, and transfer feasibility instead of just selecting cheap inventory.",
+    "number": "064",
+    "title": "Watches and Wonders, then Annecy one night."
   },
   {
-    number: "065",
-    title: "Montreal festival calm extension",
-    challenge: "Public timing + far-away retreat trap",
-    summary: "A calm extension should start after the actual festival and avoid fake far-away retreats.",
+    "number": "065",
+    "title": "Osheaga, then somewhere calmer nearby."
   },
   {
-    number: "066",
-    title: "Austin festival colder extension",
-    challenge: "School/work blocker",
-    summary: "A post-festival extension must be rejected if it breaks Monday obligations.",
+    "number": "066",
+    "title": "ACL, then somewhere cold and quiet."
   },
   {
-    number: "067",
-    title: "NYC gala plus basketball",
-    challenge: "Local stay + promo calendar trap",
-    summary: "Add a game only if real timing fits, with no duplicate hotel if already local.",
+    "number": "067",
+    "title": "Met Gala, then Knicks."
   },
   {
-    number: "068",
-    title: "Barcelona festival to island",
-    challenge: "Post-event sequencing",
-    summary: "An island extension starts only after the real festival end and cannot reuse last year's hotel.",
+    "number": "068",
+    "title": "Primavera, then Menorca."
   },
   {
-    number: "069",
-    title: "Tokyo race then Kyoto",
-    challenge: "Race logistics + public-date drift",
-    summary: "Race morning hotel logistics must survive public-date drift before moving onward.",
+    "number": "069",
+    "title": "Tokyo Marathon, then Kyoto."
   },
   {
-    number: "070",
-    title: "Kyoto festival to Nara",
-    challenge: "Calendar transfer blocker",
-    summary: "A transfer day must avoid calendar blocks, and promo emails are not hotel reservations.",
+    "number": "070",
+    "title": "Gion Matsuri, then Nara."
   },
   {
-    number: "071",
-    title: "Nashville solo music event",
-    challenge: "Preference search + irrelevant bachelor noise",
-    summary: "A solo refundable, no-red-eye trip must ignore another Nashville bachelor thread.",
+    "number": "071",
+    "title": "Nashville CMA for @bel."
   },
   {
-    number: "072",
-    title: "Santa Fe family school veto",
-    challenge: "Multi-person calendar conflict",
-    summary: "A family market trip can be killed by one child's school block.",
+    "number": "072",
+    "title": "Santa Fe Indian Market with @family."
   },
   {
-    number: "073",
-    title: "Zurich expired-credit trap",
-    challenge: "Expired credit + cancelled hotel",
-    summary: "A Zurich event cannot use expired Europe credit or cancelled hotel evidence.",
+    "number": "073",
+    "title": "@adam Zurich Street Parade."
   },
   {
-    number: "074",
-    title: "Lake Como versus Milan",
-    challenge: "Location grounding + private invite",
-    summary: "A hotel must be in Como, not Milan, and private invite timing can beat public sports timing.",
+    "number": "074",
+    "title": "Lake Como during Milan derby."
   },
   {
-    number: "075",
-    title: "Charleston far-hotel trap",
-    challenge: "Preference search",
-    summary: "Cheap far-away hotels, rental-car assumptions, and old room blocks must be rejected.",
+    "number": "075",
+    "title": "@adam and @bel Charleston weekend."
   },
   {
-    number: "076",
-    title: "Direct-only family beach",
-    challenge: "Expected impossible if no inventory",
-    summary: "If no direct seats exist for all four travelers, the correct answer is no viable option.",
+    "number": "076",
+    "title": "Memorial Day beach in San Diego."
   },
   {
-    number: "077",
-    title: "Palm Springs PTO blackout",
-    challenge: "Hidden private constraint",
-    summary: "A warm three-night trip must not cross a PTO blackout hidden in email.",
+    "number": "077",
+    "title": "@bel Palm Springs long weekend."
   },
   {
-    number: "078",
-    title: "Family value ranking",
-    challenge: "Search value + seat availability",
-    summary: "The best destination is by real value, with rejection if neither option has enough seats.",
+    "number": "078",
+    "title": "@family long weekend to Vancouver or San Francisco."
   },
   {
-    number: "079",
-    title: "NYC theater local check",
-    challenge: "Public availability + no duplicate travel",
-    summary: "Show availability should drive dates, but no travel should be booked if already local.",
+    "number": "079",
+    "title": "Hamilton in NYC this summer."
   },
   {
-    number: "080",
-    title: "Chicago concert extension",
-    challenge: "Ticket evidence only",
-    summary: "A quiet extension only exists if real ticket or order evidence proves the concert date.",
+    "number": "080",
+    "title": "Louis the Child in Chicago, then three quiet days nearby."
   },
   {
-    number: "081",
-    title: "Vegas plus nearby game",
-    challenge: "Newsletter fake-event trap",
-    summary: "Add a game only if the real schedule fits, not because a newsletter suggests it.",
+    "number": "081",
+    "title": "Vegas two nights, maybe Warriors too."
   },
   {
-    number: "082",
-    title: "Salt Lake family fare trap",
-    challenge: "Multi-person direct-flight constraint",
-    summary: "Family direct-flight requirements can beat a cheap basic-fare inventory trap.",
+    "number": "082",
+    "title": "Salt Lake weekend with snow and hot springs."
   },
   {
-    number: "083",
-    title: "Boston return-only extension",
-    challenge: "Partial rebooking",
-    summary: "A Tuesday extension should change only the return unless the hotel checkout conflicts.",
+    "number": "083",
+    "title": "Extend Boston through Tuesday."
   },
   {
-    number: "084",
-    title: "NYC meetings duplicate-travel trap",
-    challenge: "Locality resolution",
-    summary: "Multiple NYC meetings should not create travel if they are local same-day holds.",
+    "number": "084",
+    "title": "NYC around Roam and Tanooki."
   },
   {
-    number: "085",
-    title: "Reno holiday minimum stay",
-    challenge: "Red herring + inventory rule",
-    summary: "A Reno trip must ignore unrelated NYC meeting clutter and handle holiday minimum-stay traps.",
+    "number": "085",
+    "title": "Reno July Fourth."
   },
   {
-    number: "086",
-    title: "Wedding flight only",
-    challenge: "Scope control + stale resort",
-    summary: "Only flights should be booked; hotel completion and stale resort evidence are traps.",
+    "number": "086",
+    "title": "Cancun wedding flight only."
   },
   {
-    number: "087",
-    title: "Wedding hotel only",
-    challenge: "Scope control + forwarded guest itinerary",
-    summary: "Only lodging should be booked, without inferring flights from guest itineraries.",
+    "number": "087",
+    "title": "Cancun wedding hotel only."
   },
   {
-    number: "088",
-    title: "Wedding flight and hotel only",
-    challenge: "Scope control + wrong-person evidence",
-    summary: "Book only the adult travelers' flight and hotel, not family travelers, stale rooms, or guest flights.",
-    hardestTenReason:
-      "This is a dense public-demo case: correct scope, traveler identity, stale resort evidence, and forwarded guest flights all have to be separated cleanly.",
+    "number": "088",
+    "title": "Cancun wedding flight and hotel for @adam and @bel."
   },
   {
-    number: "089",
-    title: "Cold extension after wedding",
-    challenge: "Extension timing + cancelled hotel",
-    summary: "A cold four-night extension must preserve wedding checkout and avoid cancelled ski lodging.",
+    "number": "089",
+    "title": "After the wedding, somewhere cold for four nights."
   },
   {
-    number: "090",
-    title: "Scenic extension after wedding",
-    challenge: "Search value + room-block overlap",
-    summary: "A quiet scenic extension should not overlap an existing wedding block or choose a party hotel.",
+    "number": "090",
+    "title": "After the Cancun wedding, quiet scenic two nights."
   },
   {
-    number: "091",
-    title: "Lisbon inside PTO only",
-    challenge: "Expected impossible",
-    summary: "A four-night Lisbon trip must fit entirely inside PTO or be rejected.",
+    "number": "091",
+    "title": "Lisbon four nights."
   },
   {
-    number: "092",
-    title: "Paris one-way only",
-    challenge: "One-way scope",
-    summary: "A one-way Paris request should not trigger a return leg or follow-up loop.",
+    "number": "092",
+    "title": "One way to Paris."
   },
   {
-    number: "093",
-    title: "Chicago after work Friday",
-    challenge: "Calendar conflict",
-    summary: "A cheaper noon departure is invalid when work blocks travel until Friday evening.",
+    "number": "093",
+    "title": "Chicago weekend trip after work Friday."
   },
   {
-    number: "094",
-    title: "Knicks after Midtown meetings",
-    challenge: "Locality resolution",
-    summary: "A post-meeting game should stay local if the traveler is already in NYC.",
+    "number": "094",
+    "title": "After Midtown meetings, see if Knicks works."
   },
   {
-    number: "095",
-    title: "Porto event-date disambiguation",
-    challenge: "Public-event confusion",
-    summary: "A Porto event week should not inherit Barcelona festival dates by mistake.",
+    "number": "095",
+    "title": "Porto during Primavera Pro."
   },
   {
-    number: "096",
-    title: "Taipei stale confirmation",
-    challenge: "Stale evidence",
-    summary: "A lantern festival request must avoid old Taipei confirmation evidence.",
+    "number": "096",
+    "title": "Taipei Lantern Festival."
   },
   {
-    number: "097",
-    title: "Vienna opera nearby extension",
-    challenge: "Stale waitlist + extension value",
-    summary: "A nearby rainy/bookish extension should not force a second country or trust a stale waitlist.",
+    "number": "097",
+    "title": "Vienna opera, then somewhere rainy and bookish nearby."
   },
   {
-    number: "098",
-    title: "Montreal concert to Quebec City",
-    challenge: "Plausibility check",
-    summary: "A romantic extension only works if the concert city and date make it plausible.",
+    "number": "098",
+    "title": "Rosalia in Montreal, then Quebec City."
   },
   {
-    number: "099",
-    title: "Orlando family value",
-    challenge: "Multi-person search value",
-    summary: "Seats together and breakfast hotel matter more than a small saving.",
+    "number": "099",
+    "title": "Orlando family trip."
   },
   {
-    number: "100",
-    title: "Tokyo food week family",
-    challenge: "Multi-person inventory honeypot",
-    summary: "A family food-week trip must avoid kid red-eyes, stale public dates, and split-family inventory.",
-  },
+    "number": "100",
+    "title": "Tokyo food week with @family."
+  }
 ] as const;
 
 export const phaseCards = [
@@ -833,14 +613,14 @@ export const phaseCards = [
     title: "1. Travel Extractor",
     metric: "40k emails",
     body:
-      "Runs Pack's real streaming extractor over Gmail-shaped messages and calendar events, then emits profile JSON for trips, cancellations, stale evidence, loyalty, preferences, and costs.",
+      "Runs Pack's real streaming extractor over Gmail-shaped messages and calendar events, then emits profile JSON for trips, cancellations, changes, loyalty, preferences, and costs.",
     icon: MailSearch,
   },
   {
     title: "2. Trip Planner",
     metric: "100 hard prompts",
     body:
-      "Runs Pack's real planner on human-written requests with extracted family context, obligations, public-event timing, prior travel, and red-herring private context.",
+      "Runs Pack's real planner on human-written requests with extracted family context, obligations, public-event timing, prior travel, and noisy private context.",
     icon: CalendarCheck,
   },
   {
@@ -855,7 +635,7 @@ export const phaseCards = [
 export const scoreCards = [
   {
     label: "Extraction Accuracy",
-    body: "Correct trips, travelers, cancellations, changes, stale bookings, loyalty, and preference evidence.",
+    body: "Correct trips, travelers, cancellations, changes, active bookings, loyalty, and preference evidence.",
     icon: SearchCheck,
   },
   {

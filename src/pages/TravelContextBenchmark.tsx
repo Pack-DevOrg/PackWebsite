@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { GitBranch } from "lucide-react";
 import {
   benchmarkOverview,
+  hard100Cases,
+  hardestTenCases,
   latestVerifiedPackRun,
   neurosymbolicComparison,
   phaseCards,
@@ -197,30 +198,77 @@ const ResultGrid = styled.div`
   gap: var(--space-2);
 `;
 
-const CorpusRunList = styled.div`
+const CaseGrid = styled.div`
   display: grid;
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-3);
 `;
 
-const CorpusRun = styled.div`
+const CaseCard = styled.article`
   display: grid;
-  gap: var(--space-1);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: var(--space-2);
+  align-content: start;
+  gap: var(--space-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius);
+  background: rgba(255, 255, 255, 0.035);
+  padding: var(--space-3);
 
   strong {
     color: var(--color-text-primary);
     font-size: var(--font-size-large);
   }
 
-  span,
-  code {
-    color: var(--color-text-secondary);
+  span {
+    width: fit-content;
+    border-radius: 999px;
+    background: rgba(243, 210, 122, 0.1);
+    color: var(--color-accent);
+    padding: 0.2rem 0.55rem;
     font-size: var(--font-size-small);
+    font-weight: 800;
   }
 
-  code {
-    overflow-wrap: anywhere;
+  p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+  }
+`;
+
+const FullCaseList = styled.div`
+  display: grid;
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius);
+  background: rgba(0, 0, 0, 0.18);
+`;
+
+const FullCaseRow = styled.article`
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: var(--space-2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--space-3);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  span {
+    color: var(--color-accent);
+    font-weight: 800;
+  }
+
+  strong {
+    display: block;
+    color: var(--color-text-primary);
+  }
+
+  p {
+    margin: 0.35rem 0 0;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
   }
 `;
 
@@ -313,38 +361,6 @@ const ComparisonMeta = styled.div`
   gap: 0.3rem;
   color: var(--color-text-secondary);
   font-size: var(--font-size-small);
-`;
-
-const CommandBlock = styled.pre`
-  overflow-x: auto;
-  margin: 0;
-  border: 1px solid rgba(243, 210, 122, 0.12);
-  border-radius: var(--border-radius);
-  background: rgba(0, 0, 0, 0.32);
-  color: var(--color-text-primary);
-  padding: var(--space-4);
-  font-size: var(--font-size-small);
-  line-height: 1.7;
-`;
-
-const TextLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  width: fit-content;
-  color: var(--color-accent);
-  text-decoration: none;
-  font-weight: 700;
-
-  &:hover,
-  &:focus-visible {
-    text-decoration: underline;
-  }
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
 `;
 
 const TravelContextBenchmark = () => (
@@ -459,18 +475,6 @@ const TravelContextBenchmark = () => (
         </ResultHeader>
         <ResultGrid>
           <ResultItem>
-            <span>Current local pass set</span>
-            <strong>{latestVerifiedPackRun.validatedCases}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Broad regression</span>
-            <strong>{latestVerifiedPackRun.broadRegression}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Fixture corpus</span>
-            <strong>{latestVerifiedPackRun.fixtureCorpus}</strong>
-          </ResultItem>
-          <ResultItem>
             <span>Hard-100 evidence set</span>
             <strong>{latestVerifiedPackRun.hard100Composite}</strong>
           </ResultItem>
@@ -483,27 +487,14 @@ const TravelContextBenchmark = () => (
             <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Japan demo case cost</span>
-            <strong>{latestVerifiedPackRun.representativeCaseCost}</strong>
+            <span>Raw comparison set</span>
+            <strong>{latestVerifiedPackRun.selectedComparisonSet}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Japan demo case runtime</span>
-            <strong>{latestVerifiedPackRun.representativeCaseRuntime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Japan demo model calls</span>
-            <strong>{latestVerifiedPackRun.representativeCaseCalls}</strong>
+            <span>Planned raw-model run</span>
+            <strong>{latestVerifiedPackRun.selectedComparisonScope}</strong>
           </ResultItem>
         </ResultGrid>
-        <CorpusRunList>
-          {latestVerifiedPackRun.corpusRuns.map((run) => (
-            <CorpusRun key={run.artifactPath}>
-              <strong>{run.label}: {run.result}</strong>
-              <span>{run.generatedAt}</span>
-              <code>{run.artifactPath}</code>
-            </CorpusRun>
-          ))}
-        </CorpusRunList>
       </ResultPanel>
     </Section>
 
@@ -546,31 +537,46 @@ const TravelContextBenchmark = () => (
         <FindingText>
           {neurosymbolicComparison.estimateNote}
         </FindingText>
-        <CorpusRun>
-          <strong>Measured raw-agent artifact</strong>
-          <code>{neurosymbolicComparison.artifactPath}</code>
-        </CorpusRun>
       </ResultPanel>
     </Section>
 
     <Section>
-      <SectionTitle>Run Path</SectionTitle>
-      <CommandBlock>{`cd PackServer
-npm run verify:travel-planner-corpus -- --local-handler --corpus scripts/travel-planner-broad-regression-corpus.json --out-dir tmp/travel-planner-corpus/local-broad222-structured-20260517-v4 --allow-local-broad-run
-npm run verify:travel-planner-corpus -- --local-handler --corpus scripts/travel-planner-fixture-corpus.json --out-dir tmp/travel-planner-corpus/local-fixture56-current-20260517-v2 --allow-local-broad-run
-npm run verify:travel-planner-corpus -- --local-handler --corpus benchmarks/travel-context/corpus-seeds/hard-100.json \\
-  --include danny-wants-a-theme-park-weekend-don-t-miss-the-orthodonti \\
-  --include miami-for-adam-and-bel-but-bel-stays-two-extra-nights-and- \\
-  --include use-the-forwarded-hotel-email-only-if-it-actually-belongs- \\
-  --include bel-and-adam-to-paris-around-nyfw-but-adam-can-t-miss-the- \\
-  --include figure-out-my-week-around-those-meetings-including-whether \\
-  --include lisbon-four-nights-inside-the-pto-window-not-before-or-aft \\
-  --out-dir tmp/travel-planner-corpus/local-hard100-last6-current-20260518-v4 \\
-  --allow-local-live-extraction --allow-local-broad-run`}</CommandBlock>
-      <TextLink href="https://github.com/Pack-DevOrg" rel="noopener noreferrer" target="_blank">
-        <GitBranch aria-hidden="true" />
-        Release repository coming next
-      </TextLink>
+      <SectionTitle>Hardest 10 Selected for Raw Runs</SectionTitle>
+      <SectionText>
+        These are the cases we should run first because they combine private
+        inbox discovery, calendar constraints, stale or wrong-owner evidence,
+        partial itinerary edits, and cases where the correct answer can be no.
+      </SectionText>
+      <CaseGrid>
+        {hardestTenCases.map((caseItem) => (
+          <CaseCard key={caseItem.number}>
+            <span>{caseItem.number}</span>
+            <strong>{caseItem.title}</strong>
+            <p>{caseItem.summary}</p>
+            <p>{caseItem.hardestTenReason}</p>
+          </CaseCard>
+        ))}
+      </CaseGrid>
+    </Section>
+
+    <Section>
+      <SectionTitle>Hard-100 Case Browser</SectionTitle>
+      <SectionText>
+        The full hard-100 set is shown here for transparency. The chosen 10 are
+        a deliberately adversarial subset, not the only hard cases.
+      </SectionText>
+      <FullCaseList>
+        {hard100Cases.map((caseItem) => (
+          <FullCaseRow key={caseItem.number}>
+            <span>{caseItem.number}</span>
+            <div>
+              <strong>{caseItem.title}</strong>
+              <p>{caseItem.challenge}</p>
+              <p>{caseItem.summary}</p>
+            </div>
+          </FullCaseRow>
+        ))}
+      </FullCaseList>
     </Section>
   </Page>
 );

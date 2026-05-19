@@ -514,121 +514,62 @@ const TravelContextBenchmark = () => (
     </Header>
 
     <Section>
-      <SectionTitle>Benchmark Phases</SectionTitle>
-      <SectionText>
-        Each phase is scored separately and then rolled into an end-to-end case
-        score. Pack runs through its native code path; external systems run
-        against the same tool protocol and result schemas.
-      </SectionText>
-      <CardGrid>
-        {phaseCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <Card key={card.title}>
-              <Icon aria-hidden="true" />
-              <CardMetric>{card.metric}</CardMetric>
-              <h3>{card.title}</h3>
-              <p>{card.body}</p>
-            </Card>
-          );
-        })}
-      </CardGrid>
-    </Section>
-
-    <Section>
-      <SectionTitle>Official Protocol</SectionTitle>
-      <ProtocolList>
-        {benchmarkOverview.protocol.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ProtocolList>
-    </Section>
-
-    <Section>
-      <SectionTitle>Scoring</SectionTitle>
-      <CardGrid>
-        {scoreCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <Card key={card.label}>
-              <Icon aria-hidden="true" />
-              <h3>{card.label}</h3>
-              <p>{card.body}</p>
-            </Card>
-          );
-        })}
-      </CardGrid>
-    </Section>
-
-    <Section>
-      <SectionTitle>Latest Verified Pack Run</SectionTitle>
-      <ResultPanel>
-        <ResultHeader>
-          <h3>{latestVerifiedPackRun.label}</h3>
-          <p>{latestVerifiedPackRun.summary}</p>
-        </ResultHeader>
-        <ResultGrid>
-          <ResultItem>
-            <span>Hard-100 evidence set</span>
-            <strong>{latestVerifiedPackRun.hard100Composite}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Hard-100 total cost</span>
-            <strong>{latestVerifiedPackRun.hard100TotalCost}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Average hard-100 case cost</span>
-            <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Hard-100 runtime</span>
-            <strong>{latestVerifiedPackRun.hard100Runtime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Average hard-100 runtime</span>
-            <strong>{latestVerifiedPackRun.averageHard100Runtime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Raw comparison set</span>
-            <strong>{latestVerifiedPackRun.selectedComparisonSet}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Hardest-10 Pack runtime</span>
-            <strong>{latestVerifiedPackRun.selectedComparisonRuntime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Raw-model shootout</span>
-            <strong>{latestVerifiedPackRun.selectedComparisonScope}</strong>
-          </ResultItem>
-        </ResultGrid>
-      </ResultPanel>
-    </Section>
-
-    <Section>
       <SectionTitle>{neurosymbolicComparison.label}</SectionTitle>
       <ResultPanel>
         <ResultHeader>
           <h3>{neurosymbolicComparison.headline}</h3>
           <p>{neurosymbolicComparison.summary}</p>
         </ResultHeader>
-        <MetricGrid>
-          <Metric>
-            <dt>Demo case</dt>
-            <dd>{neurosymbolicComparison.measuredCase}</dd>
-          </Metric>
-          <Metric>
-            <dt>Pack corpus evidence</dt>
-            <dd>{neurosymbolicComparison.packCorpusResult}</dd>
-          </Metric>
-          <Metric>
-            <dt>Pack hard-10 cost</dt>
-            <dd>{neurosymbolicComparison.packCorpusCost}</dd>
-          </Metric>
-          <Metric>
-            <dt>Pack hard-10 runtime</dt>
-            <dd>{neurosymbolicComparison.packCorpusRuntime}</dd>
-          </Metric>
-        </MetricGrid>
+        <ChartGrid aria-label="Hardest-10 score, cost, and runtime charts">
+          <ChartBlock>
+            <h4>Cases Solved</h4>
+            <BarList>
+              {shootoutChartRows.map((row) => (
+                <BarRow key={`solved-${row.system}`}>
+                  <BarLabel>{row.system}</BarLabel>
+                  <BarTrack aria-hidden="true">
+                    <BarFill $percent={(row.solved / 10) * 100} $tone={row.tone} />
+                  </BarTrack>
+                  <BarValue>{row.solvedLabel}</BarValue>
+                </BarRow>
+              ))}
+            </BarList>
+          </ChartBlock>
+          <ChartBlock>
+            <h4>Dollars Spent</h4>
+            <BarList>
+              {shootoutChartRows.map((row) => (
+                <BarRow key={`cost-${row.system}`}>
+                  <BarLabel>{row.system}</BarLabel>
+                  <BarTrack aria-hidden="true">
+                    <BarFill
+                      $percent={(row.costUsd / maxShootoutCost) * 100}
+                      $tone={row.tone}
+                    />
+                  </BarTrack>
+                  <BarValue>{row.costLabel}</BarValue>
+                </BarRow>
+              ))}
+            </BarList>
+          </ChartBlock>
+          <ChartBlock>
+            <h4>Minutes Waited</h4>
+            <BarList>
+              {shootoutChartRows.map((row) => (
+                <BarRow key={`runtime-${row.system}`}>
+                  <BarLabel>{row.system}</BarLabel>
+                  <BarTrack aria-hidden="true">
+                    <BarFill
+                      $percent={(row.runtimeMinutes / maxShootoutRuntime) * 100}
+                      $tone={row.tone}
+                    />
+                  </BarTrack>
+                  <BarValue>{row.runtimeLabel}</BarValue>
+                </BarRow>
+              ))}
+            </BarList>
+          </ChartBlock>
+        </ChartGrid>
         <ComparisonGrid>
           {neurosymbolicComparison.rows.map((row) => (
             <ComparisonCard key={row.system}>
@@ -644,14 +585,17 @@ const TravelContextBenchmark = () => (
             </ComparisonCard>
           ))}
         </ComparisonGrid>
-        <FindingText>
-          {neurosymbolicComparison.estimateNote}
-        </FindingText>
+        <FindingText>{neurosymbolicComparison.estimateNote}</FindingText>
       </ResultPanel>
     </Section>
 
     <Section>
-      <SectionTitle>Hardest-10 Scores, Price, and Runtime</SectionTitle>
+      <SectionTitle>Hardest-10 Case Results</SectionTitle>
+      <SectionText>
+        Every row is one hard user request. A score of 1.00 means the answer was
+        grounded in the right private evidence and selected the right travel
+        outcome.
+      </SectionText>
       <TableWrap>
         <ShootoutTable>
           <thead>
@@ -695,10 +639,101 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
+      <SectionTitle>What The Test Includes</SectionTitle>
+      <SectionText>
+        These are not toy prompts. Each case asks the agent to use private
+        inbox and calendar clues, avoid traps, and choose real flight and hotel
+        inventory.
+      </SectionText>
+      <CardGrid>
+        {phaseCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Card key={card.title}>
+              <Icon aria-hidden="true" />
+              <CardMetric>{card.metric}</CardMetric>
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </Card>
+          );
+        })}
+      </CardGrid>
+    </Section>
+
+    <Section>
+      <SectionTitle>Rules</SectionTitle>
+      <ProtocolList>
+        {benchmarkOverview.protocol.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ProtocolList>
+    </Section>
+
+    <Section>
+      <SectionTitle>How A Case Passes</SectionTitle>
+      <CardGrid>
+        {scoreCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Card key={card.label}>
+              <Icon aria-hidden="true" />
+              <h3>{card.label}</h3>
+              <p>{card.body}</p>
+            </Card>
+          );
+        })}
+      </CardGrid>
+    </Section>
+
+    <Section>
+      <SectionTitle>Full Pack Run</SectionTitle>
+      <ResultPanel>
+        <ResultHeader>
+          <h3>{latestVerifiedPackRun.label}</h3>
+          <p>{latestVerifiedPackRun.summary}</p>
+        </ResultHeader>
+        <ResultGrid>
+          <ResultItem>
+            <span>Hard-100 evidence set</span>
+            <strong>{latestVerifiedPackRun.hard100Composite}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Hard-100 total cost</span>
+            <strong>{latestVerifiedPackRun.hard100TotalCost}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Average hard-100 case cost</span>
+            <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.hard100Runtime}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Average hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.averageHard100Runtime}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Raw comparison set</span>
+            <strong>{latestVerifiedPackRun.selectedComparisonSet}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Hardest-10 Pack runtime</span>
+            <strong>{latestVerifiedPackRun.selectedComparisonRuntime}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Raw-model shootout</span>
+            <strong>{latestVerifiedPackRun.selectedComparisonScope}</strong>
+          </ResultItem>
+        </ResultGrid>
+      </ResultPanel>
+    </Section>
+
+    <Section>
       <SectionTitle>Hard-100 Case Browser</SectionTitle>
       <SectionText>
-        The full hard-100 set is shown here for transparency. The chosen 10 are
-        a deliberately adversarial subset, not the only hard cases.
+        The ten-case shootout is drawn from this full set of 100 hard travel
+        requests.
       </SectionText>
       <FullCaseList>
         {hard100Cases.map((caseItem) => (

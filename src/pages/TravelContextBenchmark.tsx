@@ -518,7 +518,7 @@ const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtim
 const metricChartGroups = [
   {
     title: "Cases solved",
-    helper: "Final passing cases before each system's budget cap.",
+    helper: "Final content passes on the selected hard cases.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.solvedLabel,
@@ -539,7 +539,7 @@ const metricChartGroups = [
   },
   {
     title: "Runtime",
-    helper: "Observed runtime before completion or budget cap.",
+    helper: "Observed runtime across all ten selected cases.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.runtimeLabel,
@@ -549,9 +549,13 @@ const metricChartGroups = [
   },
 ];
 
-const statusForRawScore = (score: string): "fail" | "unscored" => {
+const statusForScore = (score: string): "pass" | "fail" | "unscored" => {
   if (score === "Not run" || score === "Unscored") {
     return "unscored";
+  }
+
+  if (score === "1.00" || score.includes("1.00")) {
+    return "pass";
   }
 
   return "fail";
@@ -588,9 +592,9 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>Hardest-10 comparison.</strong>
-        Pack: 10/10 for $0.45 in 3m52s. GPT-5.5 xhigh: 0/1 after
-        $13.22 fresh-run estimated spend. Opus 4.7: 0/5 after $12.77
-        fresh-run estimated spend.
+        Pack: 10/10 for $0.45 in 3m52s. GPT-5.5 xhigh: 2/10 for
+        $86.60 fresh-run estimated spend. Opus 4.7: 2/10 manual content
+        pass, 0/10 schema-valid, for $17.15.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -606,8 +610,12 @@ const TravelContextBenchmark = () => (
           <dd>{neurosymbolicComparison.packCorpusCost}</dd>
         </Metric>
         <Metric>
-          <dt>Raw-agent attempts passed</dt>
-          <dd>0/6</dd>
+          <dt>Raw content pass</dt>
+          <dd>GPT 2/10; Opus 2/10</dd>
+        </Metric>
+        <Metric>
+          <dt>Raw schema-valid</dt>
+          <dd>GPT 9/10; Opus 0/10</dd>
         </Metric>
       </MetricGrid>
     </Header>
@@ -684,10 +692,10 @@ const TravelContextBenchmark = () => (
         </ComparisonGrid>
         <FindingText>{neurosymbolicComparison.estimateNote}</FindingText>
         <FindingText>
-          We are judging plan content, not just schemas. The first gate only
-          asks whether the answer is scorable. After that, the same evidence,
-          constraint, search, and final-outcome gates apply to Pack, GPT-5.5
-          xhigh, and Opus 4.7.
+          Scores judge plan content, not only schemas. The first gate asks
+          whether the answer is readable enough to score. Schema validity is
+          still reported separately because production agents need reliable
+          machine-readable output.
         </FindingText>
       </ResultPanel>
     </Section>
@@ -696,7 +704,8 @@ const TravelContextBenchmark = () => (
       <SectionTitle>Hardest-10 Case Results</SectionTitle>
       <SectionText>
         Each row is one selected hard case. A final score of 1.00 means the
-        case passed all rubric gates.
+        case passed all content gates. Opus rows use manual content scores
+        because every Opus answer was readable but off-schema.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -720,13 +729,13 @@ const TravelContextBenchmark = () => (
                   <CostNote>Runtime: {row.packRuntime}</CostNote>
                 </td>
                 <td>
-                  <ScoreValue $status={statusForRawScore(row.gptScore)}>{row.gptScore}</ScoreValue>
+                  <ScoreValue $status={statusForScore(row.gptScore)}>{row.gptScore}</ScoreValue>
                   <CostNote>Cost: {row.gptCost}</CostNote>
                   <CostNote>Runtime: {row.gptRuntime}</CostNote>
                   <CostNote>{row.gptResult}</CostNote>
                 </td>
                 <td>
-                  <ScoreValue $status={statusForRawScore(row.opusScore)}>{row.opusScore}</ScoreValue>
+                  <ScoreValue $status={statusForScore(row.opusScore)}>{row.opusScore}</ScoreValue>
                   <CostNote>Cost: {row.opusCost}</CostNote>
                   <CostNote>Runtime: {row.opusRuntime}</CostNote>
                   <CostNote>{row.opusResult}</CostNote>

@@ -115,7 +115,7 @@ describe("SSR-like render smoke", () => {
           <Layout>
             <TravelContextBenchmark />
           </Layout>,
-          ["/benchmark/travel-context"],
+          ["/pack-deeperbench"],
         )
       )
     ).not.toThrow();

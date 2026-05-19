@@ -14,7 +14,7 @@ const routesToPrerender = [
   "/features",
   "/faq",
   "/how-it-works",
-  "/benchmark/travel-context",
+  "/pack-deeperbench",
   "/travel-history",
   "/travel-stats",
   "/loyalty-details",

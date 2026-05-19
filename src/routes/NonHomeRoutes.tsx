@@ -410,6 +410,10 @@ const NonHomeRoutes: React.FC = () => {
         />
         <Route
           path="/benchmark/travel-context"
+          element={<Navigate to="/pack-deeperbench" replace />}
+        />
+        <Route
+          path="/pack-deeperbench"
           element={
             <Layout>
               <Suspense fallback={null}>
@@ -849,6 +853,10 @@ const NonHomeRoutes: React.FC = () => {
           />
           <Route
             path="benchmark/travel-context"
+            element={<Navigate to="../pack-deeperbench" replace />}
+          />
+          <Route
+            path="pack-deeperbench"
             element={
               <Layout>
                 <Suspense fallback={null}>

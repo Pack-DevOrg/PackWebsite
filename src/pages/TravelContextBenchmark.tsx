@@ -552,16 +552,16 @@ const metricChartGroups = [
 const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
-      title="Pack DeeperBench | Pack"
-      description="Pack's runnable benchmark for evaluating travel agents on noisy household email, calendar context, public timing, flight search, hotel search, runtime, and cost."
-      path="/benchmark/travel-context"
+      title="Pack DeeperBench | Travel Agent Benchmark"
+      description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, and model cost."
+      path="/pack-deeperbench"
       schema={[
         {
           "@type": "Dataset",
           name: "Pack DeeperBench",
           description:
             "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory.",
-          url: buildAbsoluteUrl("/benchmark/travel-context"),
+          url: buildAbsoluteUrl("/pack-deeperbench"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {
             "@type": "Organization",
@@ -573,7 +573,7 @@ const TravelContextBenchmark = () => (
 
     <Header>
       <Kicker>Benchmark {benchmarkOverview.version}</Kicker>
-      <Title>Travel Context Benchmark</Title>
+      <Title>Pack DeeperBench</Title>
       <Intro>
         Evaluation results for travel-planning systems on synthetic private
         email, calendar, flight-search, and hotel-search tasks.

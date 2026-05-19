@@ -125,6 +125,93 @@ export const shootoutChartRows = [
   },
 ] as const;
 
+export const shootoutMetricOptions = [
+  {
+    key: "solved",
+    label: "Cases solved",
+    helper: "Final passing cases out of the same 10 hard prompts.",
+  },
+  {
+    key: "cost",
+    label: "Cost",
+    helper: "Metered model cost for the hardest-10 attempt.",
+  },
+  {
+    key: "runtime",
+    label: "Runtime",
+    helper: "Total observed or capped runtime across the hardest 10.",
+  },
+  {
+    key: "rubric",
+    label: "Rubric",
+    helper: "The same gates applied to each system before a case can pass.",
+  },
+] as const;
+
+export const rubricCategories = [
+  {
+    key: "validOutput",
+    label: "Valid output",
+    description: "Returned a plan in the required schema before the cutoff.",
+  },
+  {
+    key: "evidence",
+    label: "Evidence",
+    description: "Cited private evidence that actually exists in the corpus.",
+  },
+  {
+    key: "constraints",
+    label: "Constraints",
+    description: "Respected travelers, dates, conflicts, and hidden conditions.",
+  },
+  {
+    key: "search",
+    label: "Search",
+    description: "Selected valid flight and hotel inventory when travel was required.",
+  },
+  {
+    key: "finalPass",
+    label: "Final pass",
+    description: "Passed every required gate for the case.",
+  },
+] as const;
+
+export const shootoutRubricRows = [
+  {
+    system: "Pack",
+    fullName: "Pack neurosymbolic planner",
+    tone: "pack",
+    validOutput: 10,
+    evidence: 10,
+    constraints: 10,
+    search: 10,
+    finalPass: 10,
+    note: "Pack is not given partial credit here; the final pass requires every gate.",
+  },
+  {
+    system: "GPT-5.5 xhigh",
+    fullName: "GPT-5.5 xhigh raw agent",
+    tone: "raw",
+    validOutput: 1,
+    evidence: 0,
+    constraints: 0,
+    search: 0,
+    finalPass: 0,
+    note: "One schema-valid plan was produced, but it cited evidence and search IDs that were not in the corpus.",
+  },
+  {
+    system: "Opus 4.7",
+    fullName: "Claude Opus 4.7 max-thinking raw agent",
+    tone: "raw",
+    validOutput: 0,
+    evidence: 0,
+    constraints: 0,
+    search: 0,
+    finalPass: 0,
+    note: "No schema-valid plan survived the rubric; three attempts returned malformed plans.",
+  },
+] as const;
+
 export const hardestTenShootoutRows = [
   {
     number: "007",

@@ -7,8 +7,11 @@ import {
   latestVerifiedPackRun,
   neurosymbolicComparison,
   phaseCards,
+  rubricCategories,
   scoreCards,
   shootoutChartRows,
+  shootoutMetricOptions,
+  shootoutRubricRows,
 } from "@/data/travelContextBenchmark";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 
@@ -389,6 +392,38 @@ const ChartGrid = styled.div`
   gap: var(--space-3);
 `;
 
+const MetricControls = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+`;
+
+const MetricButton = styled.button<{ $active: boolean }>`
+  min-height: 44px;
+  border: 1px solid ${({ $active }) =>
+    $active ? "rgba(243, 210, 122, 0.6)" : "rgba(255, 255, 255, 0.12)"};
+  border-radius: 999px;
+  background: ${({ $active }) =>
+    $active ? "rgba(243, 210, 122, 0.16)" : "rgba(255, 255, 255, 0.04)"};
+  color: var(--color-text-primary);
+  padding: 0.55rem 0.85rem;
+  font: inherit;
+  font-size: var(--font-size-small);
+  font-weight: 800;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+`;
+
+const ActiveMetricNote = styled.p`
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+`;
+
 const ChartBlock = styled.div`
   display: grid;
   gap: var(--space-2);
@@ -455,10 +490,172 @@ const BarFill = styled.span<{ $percent: number; $tone: "pack" | "raw" }>`
       : "rgba(255, 132, 132, 0.8)"};
 `;
 
+const RubricGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-3);
+`;
+
+const RubricCard = styled.article`
+  display: grid;
+  gap: var(--space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-3);
+`;
+
+const RubricHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  align-items: baseline;
+
+  h4 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-large);
+  }
+
+  strong {
+    color: var(--color-accent);
+  }
+`;
+
+const RubricCategoryList = styled.div`
+  display: grid;
+  gap: 0.75rem;
+`;
+
+const RubricCategory = styled.div`
+  display: grid;
+  gap: 0.35rem;
+`;
+
+const RubricCategoryHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+
+  strong {
+    color: var(--color-text-primary);
+  }
+`;
+
+const RubricDescription = styled.span`
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  line-height: 1.45;
+`;
+
+const CaseSelect = styled.select`
+  width: min(100%, 420px);
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--border-radius);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--color-text-primary);
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+`;
+
+const CaseDetailGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-3);
+`;
+
+const CaseDetailCard = styled.article`
+  display: grid;
+  gap: var(--space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-3);
+
+  h4 {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+`;
+
+const GateGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+`;
+
+const GatePill = styled.span<{ $passed: boolean }>`
+  border: 1px solid ${({ $passed }) =>
+    $passed ? "rgba(111, 220, 166, 0.34)" : "rgba(255, 132, 132, 0.34)"};
+  border-radius: 999px;
+  background: ${({ $passed }) =>
+    $passed ? "rgba(111, 220, 166, 0.12)" : "rgba(255, 132, 132, 0.1)"};
+  color: var(--color-text-primary);
+  padding: 0.25rem 0.55rem;
+  font-size: var(--font-size-small);
+  font-weight: 800;
+`;
+
 const maxShootoutCost = Math.max(...shootoutChartRows.map((row) => row.costUsd));
 const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtimeMinutes));
 
-const TravelContextBenchmark = () => (
+type ShootoutMetricKey = (typeof shootoutMetricOptions)[number]["key"];
+type GateScore = {
+  readonly label: string;
+  readonly passed: boolean;
+};
+
+function buildCaseGateScores(
+  system: "pack" | "gpt" | "opus",
+  caseNumber: string,
+): GateScore[] {
+  const gptProducedInvalidPlan = caseNumber === "029";
+  const gates = rubricCategories.map((category) => ({
+    label: category.label,
+    passed: system === "pack" || (system === "gpt" && gptProducedInvalidPlan && category.key === "validOutput"),
+  }));
+  return gates;
+}
+
+const TravelContextBenchmark = () => {
+  const [selectedMetric, setSelectedMetric] = React.useState<ShootoutMetricKey>("solved");
+  const [selectedCaseNumber, setSelectedCaseNumber] = React.useState(
+    hardestTenShootoutRows[0].number,
+  );
+  const selectedMetricOption =
+    shootoutMetricOptions.find((option) => option.key === selectedMetric) ??
+    shootoutMetricOptions[0];
+  const selectedCase =
+    hardestTenShootoutRows.find((row) => row.number === selectedCaseNumber) ??
+    hardestTenShootoutRows[0];
+  const metricChartRows = selectedMetric === "solved"
+    ? shootoutChartRows.map((row) => ({
+      system: row.system,
+      label: row.solvedLabel,
+      percent: (row.solved / 10) * 100,
+      tone: row.tone,
+    }))
+    : selectedMetric === "cost"
+      ? shootoutChartRows.map((row) => ({
+        system: row.system,
+        label: row.costLabel,
+        percent: (row.costUsd / maxShootoutCost) * 100,
+        tone: row.tone,
+      }))
+      : selectedMetric === "runtime"
+        ? shootoutChartRows.map((row) => ({
+          system: row.system,
+          label: row.runtimeLabel,
+          percent: (row.runtimeMinutes / maxShootoutRuntime) * 100,
+          tone: row.tone,
+        }))
+        : [];
+
+  return (
   <Page>
     <PageSeo
       title="Pack DeeperBench | Pack"
@@ -520,56 +717,67 @@ const TravelContextBenchmark = () => (
           <h3>{neurosymbolicComparison.headline}</h3>
           <p>{neurosymbolicComparison.summary}</p>
         </ResultHeader>
-        <ChartGrid aria-label="Hardest-10 score, cost, and runtime charts">
-          <ChartBlock>
-            <h4>Cases Solved</h4>
-            <BarList>
-              {shootoutChartRows.map((row) => (
-                <BarRow key={`solved-${row.system}`}>
-                  <BarLabel>{row.system}</BarLabel>
-                  <BarTrack aria-hidden="true">
-                    <BarFill $percent={(row.solved / 10) * 100} $tone={row.tone} />
-                  </BarTrack>
-                  <BarValue>{row.solvedLabel}</BarValue>
-                </BarRow>
-              ))}
-            </BarList>
-          </ChartBlock>
-          <ChartBlock>
-            <h4>Dollars Spent</h4>
-            <BarList>
-              {shootoutChartRows.map((row) => (
-                <BarRow key={`cost-${row.system}`}>
-                  <BarLabel>{row.system}</BarLabel>
-                  <BarTrack aria-hidden="true">
-                    <BarFill
-                      $percent={(row.costUsd / maxShootoutCost) * 100}
-                      $tone={row.tone}
-                    />
-                  </BarTrack>
-                  <BarValue>{row.costLabel}</BarValue>
-                </BarRow>
-              ))}
-            </BarList>
-          </ChartBlock>
-          <ChartBlock>
-            <h4>Minutes Waited</h4>
-            <BarList>
-              {shootoutChartRows.map((row) => (
-                <BarRow key={`runtime-${row.system}`}>
-                  <BarLabel>{row.system}</BarLabel>
-                  <BarTrack aria-hidden="true">
-                    <BarFill
-                      $percent={(row.runtimeMinutes / maxShootoutRuntime) * 100}
-                      $tone={row.tone}
-                    />
-                  </BarTrack>
-                  <BarValue>{row.runtimeLabel}</BarValue>
-                </BarRow>
-              ))}
-            </BarList>
-          </ChartBlock>
-        </ChartGrid>
+        <MetricControls aria-label="Choose shootout view">
+          {shootoutMetricOptions.map((option) => (
+            <MetricButton
+              key={option.key}
+              type="button"
+              $active={selectedMetric === option.key}
+              aria-pressed={selectedMetric === option.key}
+              onClick={() => setSelectedMetric(option.key)}
+            >
+              {option.label}
+            </MetricButton>
+          ))}
+        </MetricControls>
+        <ActiveMetricNote>{selectedMetricOption.helper}</ActiveMetricNote>
+        {selectedMetric === "rubric" ? (
+          <RubricGrid aria-label="Shared rubric category scores">
+            {shootoutRubricRows.map((row) => (
+              <RubricCard key={row.system}>
+                <RubricHeader>
+                  <h4>{row.system}</h4>
+                  <strong>{row.finalPass}/10 pass</strong>
+                </RubricHeader>
+                <RubricCategoryList>
+                  {rubricCategories.map((category) => {
+                    const value = row[category.key];
+                    return (
+                      <RubricCategory key={`${row.system}-${category.key}`}>
+                        <RubricCategoryHeader>
+                          <strong>{category.label}</strong>
+                          <span>{value}/10</span>
+                        </RubricCategoryHeader>
+                        <BarTrack aria-hidden="true">
+                          <BarFill $percent={(value / 10) * 100} $tone={row.tone} />
+                        </BarTrack>
+                        <RubricDescription>{category.description}</RubricDescription>
+                      </RubricCategory>
+                    );
+                  })}
+                </RubricCategoryList>
+                <FindingText>{row.note}</FindingText>
+              </RubricCard>
+            ))}
+          </RubricGrid>
+        ) : (
+          <ChartGrid aria-label={`${selectedMetricOption.label} chart`}>
+            <ChartBlock>
+              <h4>{selectedMetricOption.label}</h4>
+              <BarList>
+                {metricChartRows.map((row) => (
+                  <BarRow key={`${selectedMetric}-${row.system}`}>
+                    <BarLabel>{row.system}</BarLabel>
+                    <BarTrack aria-hidden="true">
+                      <BarFill $percent={row.percent} $tone={row.tone} />
+                    </BarTrack>
+                    <BarValue>{row.label}</BarValue>
+                  </BarRow>
+                ))}
+              </BarList>
+            </ChartBlock>
+          </ChartGrid>
+        )}
         <ComparisonGrid>
           {neurosymbolicComparison.rows.map((row) => (
             <ComparisonCard key={row.system}>
@@ -586,16 +794,82 @@ const TravelContextBenchmark = () => (
           ))}
         </ComparisonGrid>
         <FindingText>{neurosymbolicComparison.estimateNote}</FindingText>
+        <FindingText>
+          The 1.00 scores are not a lighter Pack rubric. They mean every
+          required gate passed on that case. The rubric view shows the same
+          gates for Pack, GPT-5.5 xhigh, and Opus 4.7.
+        </FindingText>
       </ResultPanel>
     </Section>
 
     <Section>
       <SectionTitle>Hardest-10 Case Results</SectionTitle>
       <SectionText>
-        Every row is one hard user request. A score of 1.00 means the answer was
-        grounded in the right private evidence and selected the right travel
-        outcome.
+        Every row is one hard user request. A final score of 1.00 means the
+        same rubric gates all passed: valid output, real evidence, correct
+        constraints, valid search, and final outcome.
       </SectionText>
+      <CaseSelect
+        aria-label="Choose a hard case to inspect"
+        value={selectedCaseNumber}
+        onChange={(event) => setSelectedCaseNumber(event.target.value)}
+      >
+        {hardestTenShootoutRows.map((row) => (
+          <option key={row.number} value={row.number}>
+            {row.number}. {row.title}
+          </option>
+        ))}
+      </CaseSelect>
+      <CaseDetailGrid>
+        <CaseDetailCard>
+          <ComparisonBadge $outcome="Pass">Pack</ComparisonBadge>
+          <h4>{selectedCase.packScore} final score</h4>
+          <GateGrid aria-label="Pack rubric gates">
+            {buildCaseGateScores("pack", selectedCase.number).map((gate) => (
+              <GatePill key={gate.label} $passed={gate.passed}>
+                {gate.passed ? "Pass" : "Fail"}: {gate.label}
+              </GatePill>
+            ))}
+          </GateGrid>
+          <ComparisonMeta>
+            <span>Cost: {selectedCase.packCost}</span>
+            <span>Runtime: {selectedCase.packRuntime}</span>
+            <span>All shared rubric gates passed.</span>
+          </ComparisonMeta>
+        </CaseDetailCard>
+        <CaseDetailCard>
+          <ComparisonBadge $outcome="Fail">GPT-5.5 xhigh</ComparisonBadge>
+          <h4>{selectedCase.gptScore} final score</h4>
+          <GateGrid aria-label="GPT-5.5 xhigh rubric gates">
+            {buildCaseGateScores("gpt", selectedCase.number).map((gate) => (
+              <GatePill key={gate.label} $passed={gate.passed}>
+                {gate.passed ? "Pass" : "Fail"}: {gate.label}
+              </GatePill>
+            ))}
+          </GateGrid>
+          <ComparisonMeta>
+            <span>Cost: {selectedCase.gptCost}</span>
+            <span>Runtime: {selectedCase.gptRuntime}</span>
+            <span>{selectedCase.gptResult}</span>
+          </ComparisonMeta>
+        </CaseDetailCard>
+        <CaseDetailCard>
+          <ComparisonBadge $outcome="Fail">Opus 4.7</ComparisonBadge>
+          <h4>{selectedCase.opusScore} final score</h4>
+          <GateGrid aria-label="Opus 4.7 rubric gates">
+            {buildCaseGateScores("opus", selectedCase.number).map((gate) => (
+              <GatePill key={gate.label} $passed={gate.passed}>
+                {gate.passed ? "Pass" : "Fail"}: {gate.label}
+              </GatePill>
+            ))}
+          </GateGrid>
+          <ComparisonMeta>
+            <span>Cost: {selectedCase.opusCost}</span>
+            <span>Runtime: {selectedCase.opusRuntime}</span>
+            <span>{selectedCase.opusResult}</span>
+          </ComparisonMeta>
+        </CaseDetailCard>
+      </CaseDetailGrid>
       <TableWrap>
         <ShootoutTable>
           <thead>
@@ -747,6 +1021,7 @@ const TravelContextBenchmark = () => (
       </FullCaseList>
     </Section>
   </Page>
-);
+  );
+};
 
 export default TravelContextBenchmark;

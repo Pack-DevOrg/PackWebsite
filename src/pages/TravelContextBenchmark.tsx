@@ -703,13 +703,27 @@ const componentLabels = [
 
 type RubricComponents = (typeof hardestTenShootoutRows)[number]["packComponents"];
 
-const scoreValue = (score: string): number => {
-  if (score === "Unscored" || score === "Not run") {
-    return 0;
-  }
+const componentScoreValues: Record<RubricComponents[keyof RubricComponents], number> = {
+  fail: 0,
+  partial: 0.5,
+  pass: 1,
+};
 
-  const numericScore = Number(score);
-  return Number.isFinite(numericScore) ? numericScore : 0;
+const componentScoreWeights: Record<keyof RubricComponents, number> = {
+  output: 0.03,
+  evidence: 0.07,
+  constraints: 0.3,
+  search: 0.1,
+  final: 0.5,
+};
+
+const scoreValue = (components: RubricComponents): number => {
+  const score = Object.entries(componentScoreWeights).reduce(
+    (total, [key, weight]) =>
+      total + weight * componentScoreValues[components[key as keyof RubricComponents]],
+    0,
+  );
+  return Math.min(score, components.final === "fail" ? 0.5 : 1);
 };
 
 const costValue = (cost: string): number => {
@@ -717,27 +731,30 @@ const costValue = (cost: string): number => {
   return Number.isFinite(numericCost) ? numericCost : 0;
 };
 
-const scorePerDollar = (score: string, cost: string): number => {
+const formatScore = (components: RubricComponents): string =>
+  scoreValue(components).toFixed(2);
+
+const scorePerDollar = (components: RubricComponents, cost: string): number => {
   const costUsd = costValue(cost);
-  return costUsd > 0 ? scoreValue(score) / costUsd : 0;
+  return costUsd > 0 ? scoreValue(components) / costUsd : 0;
 };
 
-const formatScorePerDollar = (score: string, cost: string): string =>
-  scorePerDollar(score, cost).toFixed(2);
+const formatScorePerDollar = (components: RubricComponents, cost: string): string =>
+  scorePerDollar(components, cost).toFixed(2);
 
 const bestScorePerDollar = (row: (typeof hardestTenShootoutRows)[number]): number =>
   Math.max(
-    scorePerDollar(row.packScore, row.packCost),
-    scorePerDollar(row.gptScore, row.gptCost),
-    scorePerDollar(row.opusScore, row.opusCost),
+    scorePerDollar(row.packComponents, row.packCost),
+    scorePerDollar(row.gptComponents, row.gptCost),
+    scorePerDollar(row.opusComponents, row.opusCost),
   );
 
 const isBestScorePerDollar = (
   row: (typeof hardestTenShootoutRows)[number],
-  score: string,
+  components: RubricComponents,
   cost: string,
 ): boolean => {
-  const value = scorePerDollar(score, cost);
+  const value = scorePerDollar(components, cost);
   return value > 0 && value === bestScorePerDollar(row);
 };
 
@@ -752,7 +769,6 @@ const ComponentBreakdown = ({ components }: { components: RubricComponents }) =>
 );
 
 interface CaseModelResultProps {
-  readonly score: string;
   readonly cost: string;
   readonly runtime: string;
   readonly components: RubricComponents;
@@ -761,7 +777,6 @@ interface CaseModelResultProps {
 }
 
 const CaseModelResult = ({
-  score,
   cost,
   runtime,
   components,
@@ -769,11 +784,13 @@ const CaseModelResult = ({
   highlightScorePerDollar,
 }: CaseModelResultProps) => (
   <ModelResultCell>
-    <ScoreValue $status={statusForScore(score)}>{score}</ScoreValue>
+    <ScoreValue $status={statusForScore(formatScore(components))}>
+      {formatScore(components)}
+    </ScoreValue>
     <ModelMetric>Cost: {cost}</ModelMetric>
     <ModelMetric>Runtime: {runtime}</ModelMetric>
     <ScorePerDollar $highlight={highlightScorePerDollar}>
-      {formatScorePerDollar(score, cost)} score/$
+      {formatScorePerDollar(components, cost)} score/$
     </ScorePerDollar>
     <ComponentBreakdownSlot>
       <ComponentBreakdown components={components} />
@@ -943,32 +960,29 @@ const TravelContextBenchmark = () => (
                 </td>
                 <td>
                   <CaseModelResult
-                    score={row.packScore}
                     cost={row.packCost}
                     runtime={row.packRuntime}
                     components={row.packComponents}
                     result={row.packResult}
-                    highlightScorePerDollar={isBestScorePerDollar(row, row.packScore, row.packCost)}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.packComponents, row.packCost)}
                   />
                 </td>
                 <td>
                   <CaseModelResult
-                    score={row.gptScore}
                     cost={row.gptCost}
                     runtime={row.gptRuntime}
                     components={row.gptComponents}
                     result={row.gptResult}
-                    highlightScorePerDollar={isBestScorePerDollar(row, row.gptScore, row.gptCost)}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.gptComponents, row.gptCost)}
                   />
                 </td>
                 <td>
                   <CaseModelResult
-                    score={row.opusScore}
                     cost={row.opusCost}
                     runtime={row.opusRuntime}
                     components={row.opusComponents}
                     result={row.opusResult}
-                    highlightScorePerDollar={isBestScorePerDollar(row, row.opusScore, row.opusCost)}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.opusComponents, row.opusCost)}
                   />
                 </td>
               </tr>

@@ -528,8 +528,7 @@ const metricChartGroups = [
   },
   {
     title: "Total spend",
-    helper:
-      "Pack shows measured metered spend; raw agents show fresh no-cache estimated spend.",
+    helper: "Full cost for each run across all ten selected cases.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.costLabel,
@@ -592,10 +591,9 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>Hardest-10 comparison.</strong>
-        Pack exact rerun: 0/10 final content pass for $2.76 fresh-estimated
-        spend in 5m31s planning + search. GPT-5.5 xhigh: 2/10 for $86.60
-        fresh-run estimated spend. Opus 4.7: 2/10 manual content pass,
-        0/10 schema-valid, for $17.15.
+        Pack exact rerun: 0/10 final content pass for $2.76 in 5m31s
+        planning + search. GPT-5.5 xhigh: 2/10 for $86.60. Opus 4.7:
+        2/10 manual content pass, 0/10 schema-valid, for $17.15.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -695,7 +693,7 @@ const TravelContextBenchmark = () => (
         <FindingText>
           Scores judge plan content, not only schemas. The first gate asks
           whether the answer is readable enough to score. Schema validity is
-          still reported separately because production agents need reliable
+          still shown separately because production agents need reliable
           machine-readable output.
         </FindingText>
       </ResultPanel>
@@ -727,7 +725,7 @@ const TravelContextBenchmark = () => (
                 </td>
                 <td>
                   <ScoreValue $status={statusForScore(row.packScore)}>{row.packScore}</ScoreValue>
-                  <CostNote>Planner cost: {row.packCost}</CostNote>
+                  <CostNote>Cost: {row.packCost}</CostNote>
                   <CostNote>Runtime: {row.packRuntime}</CostNote>
                   <CostNote>{row.packResult}</CostNote>
                 </td>

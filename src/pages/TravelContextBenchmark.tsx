@@ -592,9 +592,10 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>Hardest-10 comparison.</strong>
-        Pack: 10/10 for $0.45 in 3m52s. GPT-5.5 xhigh: 2/10 for
-        $86.60 fresh-run estimated spend. Opus 4.7: 2/10 manual content
-        pass, 0/10 schema-valid, for $17.15.
+        Pack exact rerun: 0/10 final content pass for $2.76 fresh-estimated
+        spend in 5m31s planning + search. GPT-5.5 xhigh: 2/10 for $86.60
+        fresh-run estimated spend. Opus 4.7: 2/10 manual content pass,
+        0/10 schema-valid, for $17.15.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -602,11 +603,11 @@ const TravelContextBenchmark = () => (
           <dd>{latestVerifiedPackRun.hard100Composite}</dd>
         </Metric>
         <Metric>
-          <dt>Hardest-10 Pack score</dt>
+          <dt>Pack exact rerun</dt>
           <dd>{neurosymbolicComparison.packCorpusResult}</dd>
         </Metric>
         <Metric>
-          <dt>Pack hard-10 cost</dt>
+          <dt>Pack exact rerun cost</dt>
           <dd>{neurosymbolicComparison.packCorpusCost}</dd>
         </Metric>
         <Metric>
@@ -705,7 +706,8 @@ const TravelContextBenchmark = () => (
       <SectionText>
         Each row is one selected hard case. A final score of 1.00 means the
         case passed all content gates. Opus rows use manual content scores
-        because every Opus answer was readable but off-schema.
+        because every Opus answer was readable but off-schema. Pack rows use
+        the May 19 exact-case rerun, not the earlier stale per-case values.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -724,9 +726,10 @@ const TravelContextBenchmark = () => (
                   <strong>{row.number}. {row.title}</strong>
                 </td>
                 <td>
-                  <ScoreValue $status="pass">{row.packScore}</ScoreValue>
-                  <CostNote>Cost: {row.packCost}</CostNote>
+                  <ScoreValue $status={statusForScore(row.packScore)}>{row.packScore}</ScoreValue>
+                  <CostNote>Planner cost: {row.packCost}</CostNote>
                   <CostNote>Runtime: {row.packRuntime}</CostNote>
+                  <CostNote>{row.packResult}</CostNote>
                 </td>
                 <td>
                   <ScoreValue $status={statusForScore(row.gptScore)}>{row.gptScore}</ScoreValue>

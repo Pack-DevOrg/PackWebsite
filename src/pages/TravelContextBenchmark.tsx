@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import {
   benchmarkOverview,
@@ -10,7 +9,6 @@ import {
   rubricCategories,
   scoreCards,
   shootoutChartRows,
-  shootoutMetricOptions,
   shootoutRubricRows,
 } from "@/data/travelContextBenchmark";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
@@ -204,8 +202,6 @@ const ResultGrid = styled.div`
 
 const FullCaseList = styled.div`
   display: grid;
-  max-height: 520px;
-  overflow: auto;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--border-radius);
   background: rgba(0, 0, 0, 0.18);
@@ -392,38 +388,6 @@ const ChartGrid = styled.div`
   gap: var(--space-3);
 `;
 
-const MetricControls = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-`;
-
-const MetricButton = styled.button<{ $active: boolean }>`
-  min-height: 44px;
-  border: 1px solid ${({ $active }) =>
-    $active ? "rgba(243, 210, 122, 0.6)" : "rgba(255, 255, 255, 0.12)"};
-  border-radius: 999px;
-  background: ${({ $active }) =>
-    $active ? "rgba(243, 210, 122, 0.16)" : "rgba(255, 255, 255, 0.04)"};
-  color: var(--color-text-primary);
-  padding: 0.55rem 0.85rem;
-  font: inherit;
-  font-size: var(--font-size-small);
-  font-weight: 800;
-  cursor: pointer;
-
-  &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-  }
-`;
-
-const ActiveMetricNote = styled.p`
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-`;
-
 const ChartBlock = styled.div`
   display: grid;
   gap: var(--space-2);
@@ -548,114 +512,44 @@ const RubricDescription = styled.span`
   line-height: 1.45;
 `;
 
-const CaseSelect = styled.select`
-  width: min(100%, 420px);
-  min-height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: var(--border-radius);
-  background: rgba(0, 0, 0, 0.28);
-  color: var(--color-text-primary);
-  padding: 0.6rem 0.75rem;
-  font: inherit;
-
-  &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-  }
-`;
-
-const CaseDetailGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: var(--space-3);
-`;
-
-const CaseDetailCard = styled.article`
-  display: grid;
-  gap: var(--space-2);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: var(--space-3);
-
-  h4 {
-    margin: 0;
-    color: var(--color-text-primary);
-  }
-`;
-
-const GateGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-`;
-
-const GatePill = styled.span<{ $passed: boolean }>`
-  border: 1px solid ${({ $passed }) =>
-    $passed ? "rgba(111, 220, 166, 0.34)" : "rgba(255, 132, 132, 0.34)"};
-  border-radius: 999px;
-  background: ${({ $passed }) =>
-    $passed ? "rgba(111, 220, 166, 0.12)" : "rgba(255, 132, 132, 0.1)"};
-  color: var(--color-text-primary);
-  padding: 0.25rem 0.55rem;
-  font-size: var(--font-size-small);
-  font-weight: 800;
-`;
-
 const maxShootoutCost = Math.max(...shootoutChartRows.map((row) => row.costUsd));
 const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtimeMinutes));
 
-type ShootoutMetricKey = (typeof shootoutMetricOptions)[number]["key"];
-type GateScore = {
-  readonly label: string;
-  readonly passed: boolean;
-};
-
-function buildCaseGateScores(
-  system: "pack" | "gpt" | "opus",
-  caseNumber: string,
-): GateScore[] {
-  const gptProducedInvalidPlan = caseNumber === "029";
-  const gates = rubricCategories.map((category) => ({
-    label: category.label,
-    passed: system === "pack" || (system === "gpt" && gptProducedInvalidPlan && category.key === "validOutput"),
-  }));
-  return gates;
-}
-
-const TravelContextBenchmark = () => {
-  const [selectedMetric, setSelectedMetric] = React.useState<ShootoutMetricKey>("solved");
-  const [selectedCaseNumber, setSelectedCaseNumber] = React.useState(
-    hardestTenShootoutRows[0].number,
-  );
-  const selectedMetricOption =
-    shootoutMetricOptions.find((option) => option.key === selectedMetric) ??
-    shootoutMetricOptions[0];
-  const selectedCase =
-    hardestTenShootoutRows.find((row) => row.number === selectedCaseNumber) ??
-    hardestTenShootoutRows[0];
-  const metricChartRows = selectedMetric === "solved"
-    ? shootoutChartRows.map((row) => ({
+const metricChartGroups = [
+  {
+    title: "Cases solved",
+    helper: "Final passing cases out of the same 10 hard prompts.",
+    rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.solvedLabel,
       percent: (row.solved / 10) * 100,
       tone: row.tone,
-    }))
-    : selectedMetric === "cost"
-      ? shootoutChartRows.map((row) => ({
-        system: row.system,
-        label: row.costLabel,
-        percent: (row.costUsd / maxShootoutCost) * 100,
-        tone: row.tone,
-      }))
-      : selectedMetric === "runtime"
-        ? shootoutChartRows.map((row) => ({
-          system: row.system,
-          label: row.runtimeLabel,
-          percent: (row.runtimeMinutes / maxShootoutRuntime) * 100,
-          tone: row.tone,
-        }))
-        : [];
+    })),
+  },
+  {
+    title: "Total spend",
+    helper:
+      "Metered model spend across finished answers, failed answers, timeouts, and provider-limit attempts.",
+    rows: shootoutChartRows.map((row) => ({
+      system: row.system,
+      label: row.costLabel,
+      percent: (row.costUsd / maxShootoutCost) * 100,
+      tone: row.tone,
+    })),
+  },
+  {
+    title: "Runtime",
+    helper: "Total observed or capped runtime across the hardest 10.",
+    rows: shootoutChartRows.map((row) => ({
+      system: row.system,
+      label: row.runtimeLabel,
+      percent: (row.runtimeMinutes / maxShootoutRuntime) * 100,
+      tone: row.tone,
+    })),
+  },
+];
 
-  return (
+const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
       title="Pack DeeperBench | Pack"
@@ -679,16 +573,16 @@ const TravelContextBenchmark = () => {
 
     <Header>
       <Kicker>Benchmark {benchmarkOverview.version}</Kicker>
-      <Title>Pack solves hard travel planning for cents, not dollars.</Title>
+      <Title>Travel Context Benchmark</Title>
       <Intro>
-        We gave Pack and raw frontier agents the same hard travel requests,
-        the same private context, and the same search tools. Pack solved the
-        hardest set. The raw agents spent more and still did not pass a case.
+        Evaluation results for travel-planning systems on synthetic private
+        email, calendar, flight-search, and hotel-search tasks.
       </Intro>
       <StatusBar>
-        <strong>Hardest-10 result.</strong>
+        <strong>Hardest-10 comparison.</strong>
         Pack: 10/10 for $0.44 in 8m59s. GPT-5.5 xhigh and Opus 4.7:
-        0/20 combined after $9.66 and about 96 minutes of capped runtime.
+        0/20 combined after $9.66 in metered comparison spend and about 96
+        minutes of capped runtime.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -717,56 +611,14 @@ const TravelContextBenchmark = () => {
           <h3>{neurosymbolicComparison.headline}</h3>
           <p>{neurosymbolicComparison.summary}</p>
         </ResultHeader>
-        <MetricControls aria-label="Choose shootout view">
-          {shootoutMetricOptions.map((option) => (
-            <MetricButton
-              key={option.key}
-              type="button"
-              $active={selectedMetric === option.key}
-              aria-pressed={selectedMetric === option.key}
-              onClick={() => setSelectedMetric(option.key)}
-            >
-              {option.label}
-            </MetricButton>
-          ))}
-        </MetricControls>
-        <ActiveMetricNote>{selectedMetricOption.helper}</ActiveMetricNote>
-        {selectedMetric === "rubric" ? (
-          <RubricGrid aria-label="Shared rubric category scores">
-            {shootoutRubricRows.map((row) => (
-              <RubricCard key={row.system}>
-                <RubricHeader>
-                  <h4>{row.system}</h4>
-                  <strong>{row.finalPass}/10 pass</strong>
-                </RubricHeader>
-                <RubricCategoryList>
-                  {rubricCategories.map((category) => {
-                    const value = row[category.key];
-                    return (
-                      <RubricCategory key={`${row.system}-${category.key}`}>
-                        <RubricCategoryHeader>
-                          <strong>{category.label}</strong>
-                          <span>{value}/10</span>
-                        </RubricCategoryHeader>
-                        <BarTrack aria-hidden="true">
-                          <BarFill $percent={(value / 10) * 100} $tone={row.tone} />
-                        </BarTrack>
-                        <RubricDescription>{category.description}</RubricDescription>
-                      </RubricCategory>
-                    );
-                  })}
-                </RubricCategoryList>
-                <FindingText>{row.note}</FindingText>
-              </RubricCard>
-            ))}
-          </RubricGrid>
-        ) : (
-          <ChartGrid aria-label={`${selectedMetricOption.label} chart`}>
-            <ChartBlock>
-              <h4>{selectedMetricOption.label}</h4>
+        <ChartGrid aria-label="Comparison metric charts">
+          {metricChartGroups.map((group) => (
+            <ChartBlock key={group.title}>
+              <h4>{group.title}</h4>
+              <FindingText>{group.helper}</FindingText>
               <BarList>
-                {metricChartRows.map((row) => (
-                  <BarRow key={`${selectedMetric}-${row.system}`}>
+                {group.rows.map((row) => (
+                  <BarRow key={`${group.title}-${row.system}`}>
                     <BarLabel>{row.system}</BarLabel>
                     <BarTrack aria-hidden="true">
                       <BarFill $percent={row.percent} $tone={row.tone} />
@@ -776,8 +628,36 @@ const TravelContextBenchmark = () => {
                 ))}
               </BarList>
             </ChartBlock>
-          </ChartGrid>
-        )}
+          ))}
+        </ChartGrid>
+        <RubricGrid aria-label="Shared rubric category scores">
+          {shootoutRubricRows.map((row) => (
+            <RubricCard key={row.system}>
+              <RubricHeader>
+                <h4>{row.system}</h4>
+                <strong>{row.finalPass}/10 pass</strong>
+              </RubricHeader>
+              <RubricCategoryList>
+                {rubricCategories.map((category) => {
+                  const value = row[category.key];
+                  return (
+                    <RubricCategory key={`${row.system}-${category.key}`}>
+                      <RubricCategoryHeader>
+                        <strong>{category.label}</strong>
+                        <span>{value}/10</span>
+                      </RubricCategoryHeader>
+                      <BarTrack aria-hidden="true">
+                        <BarFill $percent={(value / 10) * 100} $tone={row.tone} />
+                      </BarTrack>
+                      <RubricDescription>{category.description}</RubricDescription>
+                    </RubricCategory>
+                  );
+                })}
+              </RubricCategoryList>
+              <FindingText>{row.note}</FindingText>
+            </RubricCard>
+          ))}
+        </RubricGrid>
         <ComparisonGrid>
           {neurosymbolicComparison.rows.map((row) => (
             <ComparisonCard key={row.system}>
@@ -795,9 +675,10 @@ const TravelContextBenchmark = () => {
         </ComparisonGrid>
         <FindingText>{neurosymbolicComparison.estimateNote}</FindingText>
         <FindingText>
-          The 1.00 scores are not a lighter Pack rubric. They mean every
-          required gate passed on that case. The rubric view shows the same
-          gates for Pack, GPT-5.5 xhigh, and Opus 4.7.
+          We are judging plan content, not just schemas. The first gate only
+          asks whether the answer is scorable. After that, the same evidence,
+          constraint, search, and final-outcome gates apply to Pack, GPT-5.5
+          xhigh, and Opus 4.7.
         </FindingText>
       </ResultPanel>
     </Section>
@@ -805,71 +686,9 @@ const TravelContextBenchmark = () => {
     <Section>
       <SectionTitle>Hardest-10 Case Results</SectionTitle>
       <SectionText>
-        Every row is one hard user request. A final score of 1.00 means the
-        same rubric gates all passed: valid output, real evidence, correct
-        constraints, valid search, and final outcome.
+        Each row is one selected hard case. A final score of 1.00 means the
+        case passed all rubric gates.
       </SectionText>
-      <CaseSelect
-        aria-label="Choose a hard case to inspect"
-        value={selectedCaseNumber}
-        onChange={(event) => setSelectedCaseNumber(event.target.value)}
-      >
-        {hardestTenShootoutRows.map((row) => (
-          <option key={row.number} value={row.number}>
-            {row.number}. {row.title}
-          </option>
-        ))}
-      </CaseSelect>
-      <CaseDetailGrid>
-        <CaseDetailCard>
-          <ComparisonBadge $outcome="Pass">Pack</ComparisonBadge>
-          <h4>{selectedCase.packScore} final score</h4>
-          <GateGrid aria-label="Pack rubric gates">
-            {buildCaseGateScores("pack", selectedCase.number).map((gate) => (
-              <GatePill key={gate.label} $passed={gate.passed}>
-                {gate.passed ? "Pass" : "Fail"}: {gate.label}
-              </GatePill>
-            ))}
-          </GateGrid>
-          <ComparisonMeta>
-            <span>Cost: {selectedCase.packCost}</span>
-            <span>Runtime: {selectedCase.packRuntime}</span>
-            <span>All shared rubric gates passed.</span>
-          </ComparisonMeta>
-        </CaseDetailCard>
-        <CaseDetailCard>
-          <ComparisonBadge $outcome="Fail">GPT-5.5 xhigh</ComparisonBadge>
-          <h4>{selectedCase.gptScore} final score</h4>
-          <GateGrid aria-label="GPT-5.5 xhigh rubric gates">
-            {buildCaseGateScores("gpt", selectedCase.number).map((gate) => (
-              <GatePill key={gate.label} $passed={gate.passed}>
-                {gate.passed ? "Pass" : "Fail"}: {gate.label}
-              </GatePill>
-            ))}
-          </GateGrid>
-          <ComparisonMeta>
-            <span>Cost: {selectedCase.gptCost}</span>
-            <span>Runtime: {selectedCase.gptRuntime}</span>
-            <span>{selectedCase.gptResult}</span>
-          </ComparisonMeta>
-        </CaseDetailCard>
-        <CaseDetailCard>
-          <ComparisonBadge $outcome="Fail">Opus 4.7</ComparisonBadge>
-          <h4>{selectedCase.opusScore} final score</h4>
-          <GateGrid aria-label="Opus 4.7 rubric gates">
-            {buildCaseGateScores("opus", selectedCase.number).map((gate) => (
-              <GatePill key={gate.label} $passed={gate.passed}>
-                {gate.passed ? "Pass" : "Fail"}: {gate.label}
-              </GatePill>
-            ))}
-          </GateGrid>
-          <ComparisonMeta>
-            <span>Cost: {selectedCase.opusCost}</span>
-            <span>Runtime: {selectedCase.opusRuntime}</span>
-            <span>{selectedCase.opusResult}</span>
-          </ComparisonMeta>
-        </CaseDetailCard>
-      </CaseDetailGrid>
       <TableWrap>
         <ShootoutTable>
           <thead>
@@ -915,9 +734,8 @@ const TravelContextBenchmark = () => {
     <Section>
       <SectionTitle>What The Test Includes</SectionTitle>
       <SectionText>
-        These are not toy prompts. Each case asks the agent to use private
-        inbox and calendar clues, avoid traps, and choose real flight and hotel
-        inventory.
+        The benchmark combines private inbox context, calendar context, and
+        deterministic flight and hotel inventory.
       </SectionText>
       <CardGrid>
         {phaseCards.map((card) => {
@@ -996,7 +814,7 @@ const TravelContextBenchmark = () => {
             <strong>{latestVerifiedPackRun.selectedComparisonRuntime}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Raw-model shootout</span>
+            <span>Comparison set</span>
             <strong>{latestVerifiedPackRun.selectedComparisonScope}</strong>
           </ResultItem>
         </ResultGrid>
@@ -1006,7 +824,7 @@ const TravelContextBenchmark = () => {
     <Section>
       <SectionTitle>Hard-100 Case Browser</SectionTitle>
       <SectionText>
-        The ten-case shootout is drawn from this full set of 100 hard travel
+        The ten-case comparison is drawn from this full set of 100 hard travel
         requests.
       </SectionText>
       <FullCaseList>
@@ -1021,7 +839,6 @@ const TravelContextBenchmark = () => {
       </FullCaseList>
     </Section>
   </Page>
-  );
-};
+);
 
 export default TravelContextBenchmark;

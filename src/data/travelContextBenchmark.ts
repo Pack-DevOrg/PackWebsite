@@ -12,7 +12,7 @@ import {
 export const benchmarkOverview = {
   name: "Pack DeeperBench",
   version: "pack-deeperbench-v0",
-  officialRunStatus: "Local Pack planner validation updated May 18, 2026; raw-model shootout refreshed May 19, 2026",
+  officialRunStatus: "Local Pack validation updated May 18, 2026; comparison runs refreshed May 19, 2026",
   corpus: {
     household: "Synthetic household",
     people: 4,
@@ -26,15 +26,16 @@ export const benchmarkOverview = {
   protocol: [
     "Every system gets the same private inbox, calendar, and travel-search tools.",
     "The user prompt is short; the missing details have to be found in the private context.",
+    "A response does not need Pack's internal schema to get content credit; it only needs to be scorable.",
     "A case only passes when the answer is grounded in the right evidence and returns the right travel outcome.",
-    "Bad IDs, missing evidence, malformed plans, timeouts, and provider limits score 0.",
+    "Missing answers, unscorable formatting, bad IDs, missing evidence, timeouts, and provider limits score 0.",
   ],
 };
 
 export const latestVerifiedPackRun = {
   label: "Hard-100 Pack validation",
   summary:
-    "Pack solved every hard case by reading the private context once, turning it into clean state, and planning from that state.",
+    "Pack completed all 100 hard cases in the local validation run.",
   hard100Composite: "100/100 hard cases",
   hard100TotalCost: "$3.70",
   averageHard100Cost: "$0.037",
@@ -42,46 +43,46 @@ export const latestVerifiedPackRun = {
   averageHard100Runtime: "46.7s avg/case",
   selectedComparisonSet: "10 hardest cases",
   selectedComparisonRuntime: "8m59s cumulative",
-  selectedComparisonScope: "Pack vs raw GPT-5.5 xhigh and Claude Opus 4.7 max-thinking",
+  selectedComparisonScope: "Pack, GPT-5.5 xhigh, and Claude Opus 4.7 max-thinking",
 };
 
 export const neurosymbolicComparison = {
-  label: "Hardest-10 Shootout",
-  headline: "Same 10 hard cases. Same tools. Pack solved them for $0.44.",
+  label: "Hardest-10 Comparison",
+  headline: "Results from the 10 selected hard cases.",
   summary:
-    "Raw LLM agents had to find the clues, remember them, plan the trip, and prove the answer in one long loop. Pack separates those jobs: first it builds the facts, then it plans.",
-  measuredCase: "10 hardest hard-100 cases, 5-minute raw-agent cutoff",
+    "Each system received the same prompts, private-context tools, travel-search tools, scoring rubric, and 5-minute per-case cutoff for GPT-5.5 xhigh and Opus 4.7.",
+  measuredCase: "10 selected hard-100 cases, 5-minute cutoff for GPT-5.5 xhigh and Opus 4.7",
   packCorpusResult: "10/10 on the hardest subset",
-  packCorpusCost: "$0.44 total on the hardest subset",
+  packCorpusCost: "$0.44 total metered spend",
   packCorpusRuntime: "8m59s cumulative Pack processing time",
-  estimateNote: "Each raw-agent case had a 5-minute cutoff. If it timed out, hit a provider limit, returned broken JSON, or cited evidence that was not in the corpus, it scored 0.",
+  estimateNote: "Per-model spend is total metered spend across that model's 10 selected-case attempts, including finished answers, failed answers, timeout attempts, and provider-limit attempts when usage was recorded. A readable plan can be scored even if it does not match Pack's internal schema; missing or unscorable output cannot pass the valid-output gate.",
   rows: [
     {
-      system: "Pack neurosymbolic planner",
+      system: "Pack",
       outcome: "Pass",
-      cost: "$0.44 total",
+      cost: "$0.44 metered total",
       costMultiple: "1x",
       runtime: "8m59s cumulative",
       calls: "10/10 hardest cases; $0.044 avg/case",
-      note: "Reads once, plans from clean state, then searches.",
+      note: "Completed all selected cases.",
     },
     {
-      system: "GPT-5.5 xhigh raw agent",
+      system: "GPT-5.5 xhigh",
       outcome: "Fail",
-      cost: "$1.88 metered before failure",
+      cost: "$1.88 metered total",
       costMultiple: "4.3x",
       runtime: "0/10 passed; one produced plan scored 0.00",
-      calls: "Same tools, no Pack symbolic state",
-      note: "Mostly timed out; one answer cited IDs that did not exist.",
+      calls: "Same tools and cutoff",
+      note: "One scorable answer cited IDs that were not in the corpus; other cases did not produce passing answers.",
     },
     {
-      system: "Claude Opus 4.7 max-thinking raw agent",
+      system: "Claude Opus 4.7 max-thinking",
       outcome: "Fail",
-      cost: "$7.78 metered before failure",
+      cost: "$7.78 metered total",
       costMultiple: "17.7x",
       runtime: "0/10 passed",
-      calls: "Same tools, no Pack symbolic state",
-      note: "Mostly timed out; three answers were malformed.",
+      calls: "Same tools and cutoff",
+      note: "No selected case produced a passing answer; three attempts returned malformed output.",
     },
   ],
 };
@@ -89,7 +90,7 @@ export const neurosymbolicComparison = {
 export const shootoutChartRows = [
   {
     system: "Pack",
-    fullName: "Pack neurosymbolic planner",
+    fullName: "Pack",
     solved: 10,
     costUsd: 0.44,
     runtimeMinutes: 9.0,
@@ -101,7 +102,7 @@ export const shootoutChartRows = [
   },
   {
     system: "GPT-5.5 xhigh",
-    fullName: "GPT-5.5 xhigh raw agent",
+    fullName: "GPT-5.5 xhigh",
     solved: 0,
     costUsd: 1.88,
     runtimeMinutes: 49.2,
@@ -113,7 +114,7 @@ export const shootoutChartRows = [
   },
   {
     system: "Opus 4.7",
-    fullName: "Claude Opus 4.7 max-thinking raw agent",
+    fullName: "Claude Opus 4.7 max-thinking",
     solved: 0,
     costUsd: 7.78,
     runtimeMinutes: 46.3,
@@ -125,34 +126,11 @@ export const shootoutChartRows = [
   },
 ] as const;
 
-export const shootoutMetricOptions = [
-  {
-    key: "solved",
-    label: "Cases solved",
-    helper: "Final passing cases out of the same 10 hard prompts.",
-  },
-  {
-    key: "cost",
-    label: "Cost",
-    helper: "Metered model cost for the hardest-10 attempt.",
-  },
-  {
-    key: "runtime",
-    label: "Runtime",
-    helper: "Total observed or capped runtime across the hardest 10.",
-  },
-  {
-    key: "rubric",
-    label: "Rubric",
-    helper: "The same gates applied to each system before a case can pass.",
-  },
-] as const;
-
 export const rubricCategories = [
   {
     key: "validOutput",
-    label: "Valid output",
-    description: "Returned a plan in the required schema before the cutoff.",
+    label: "Scorable output",
+    description: "Returned a readable plan before cutoff. It did not have to match Pack's internal schema.",
   },
   {
     key: "evidence",
@@ -179,36 +157,36 @@ export const rubricCategories = [
 export const shootoutRubricRows = [
   {
     system: "Pack",
-    fullName: "Pack neurosymbolic planner",
+    fullName: "Pack",
     tone: "pack",
     validOutput: 10,
     evidence: 10,
     constraints: 10,
     search: 10,
     finalPass: 10,
-    note: "Pack is not given partial credit here; the final pass requires every gate.",
+    note: "Pack is not given partial credit here; the final pass requires every content gate.",
   },
   {
     system: "GPT-5.5 xhigh",
-    fullName: "GPT-5.5 xhigh raw agent",
+    fullName: "GPT-5.5 xhigh",
     tone: "raw",
     validOutput: 1,
     evidence: 0,
     constraints: 0,
     search: 0,
     finalPass: 0,
-    note: "One schema-valid plan was produced, but it cited evidence and search IDs that were not in the corpus.",
+    note: "One scorable plan was produced, but it cited evidence and search IDs that were not in the corpus.",
   },
   {
     system: "Opus 4.7",
-    fullName: "Claude Opus 4.7 max-thinking raw agent",
+    fullName: "Claude Opus 4.7 max-thinking",
     tone: "raw",
     validOutput: 0,
     evidence: 0,
     constraints: 0,
     search: 0,
     finalPass: 0,
-    note: "No schema-valid plan survived the rubric; three attempts returned malformed plans.",
+    note: "No scorable plan survived the rubric; three attempts returned malformed or unusable plans.",
   },
 ] as const;
 

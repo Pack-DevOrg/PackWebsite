@@ -265,19 +265,30 @@ const FindingText = styled.p`
 
 const ComparisonGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(5, auto);
   gap: var(--space-3);
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
 `;
 
 const ComparisonCard = styled.article`
   display: grid;
-  grid-template-rows: auto minmax(2.9rem, auto) auto minmax(4.2rem, auto) 1fr;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
   align-content: start;
   gap: var(--space-2);
+  min-width: 0;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--border-radius);
   background: rgba(255, 255, 255, 0.035);
   padding: var(--space-3);
+
+  @supports not (grid-template-rows: subgrid) {
+    grid-template-rows: auto minmax(3.2rem, auto) auto minmax(4.8rem, auto) 1fr;
+  }
 
   h4 {
     margin: 0;
@@ -316,6 +327,9 @@ const ComparisonBadge = styled.span<{ $outcome: string }>`
 `;
 
 const ComparisonCost = styled.strong`
+  display: flex;
+  align-items: end;
+  min-height: 2.25rem;
   color: var(--color-text-primary);
   font-size: var(--font-size-2xl);
   line-height: 1;
@@ -323,7 +337,9 @@ const ComparisonCost = styled.strong`
 
 const ComparisonMeta = styled.div`
   display: grid;
+  align-content: start;
   gap: 0.3rem;
+  min-height: 4.8rem;
   color: var(--color-text-secondary);
   font-size: var(--font-size-small);
 `;
@@ -337,8 +353,9 @@ const TableWrap = styled.div`
 
 const ShootoutTable = styled.table`
   width: 100%;
-  min-width: 920px;
+  min-width: 1080px;
   border-collapse: collapse;
+  table-layout: fixed;
 
   th,
   td {
@@ -355,8 +372,19 @@ const ShootoutTable = styled.table`
   }
 
   td {
+    height: 1px;
     color: var(--color-text-secondary);
     line-height: 1.45;
+  }
+
+  th:first-child,
+  td:first-child {
+    width: 28%;
+  }
+
+  th:not(:first-child),
+  td:not(:first-child) {
+    width: 24%;
   }
 
   tr:last-child td {
@@ -365,7 +393,9 @@ const ShootoutTable = styled.table`
 `;
 
 const ScoreValue = styled.strong<{ $status?: "pass" | "partial" | "fail" | "unscored" }>`
-  display: block;
+  display: flex;
+  align-items: baseline;
+  min-height: 2rem;
   color: ${({ $status }) =>
     $status === "pass"
       ? "rgb(111, 220, 166)"
@@ -374,22 +404,18 @@ const ScoreValue = styled.strong<{ $status?: "pass" | "partial" | "fail" | "unsc
       : $status === "fail"
         ? "rgb(255, 132, 132)"
         : $status === "unscored"
-          ? "rgb(255, 211, 121)"
-        : "var(--color-text-primary)"};
+      ? "rgb(255, 211, 121)"
+      : "var(--color-text-primary)"};
   font-size: var(--font-size-large);
-`;
-
-const CostNote = styled.span`
-  display: block;
-  margin-top: 0.2rem;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
+  line-height: 1.15;
 `;
 
 const ScorePerDollar = styled.span<{ $highlight?: boolean }>`
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: fit-content;
-  margin-top: 0.45rem;
+  min-height: 1.55rem;
   border: 1px solid
     ${({ $highlight }) =>
       $highlight ? "rgba(111, 220, 166, 0.36)" : "rgba(255, 255, 255, 0.08)"};
@@ -413,15 +439,19 @@ const CaseHardReason = styled.span`
 `;
 
 const ComponentList = styled.ul`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.3rem;
-  margin: 0.55rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 `;
 
 const ComponentChip = styled.li<{ $status: "pass" | "partial" | "fail" }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.35rem;
   border: 1px solid
     ${({ $status }) =>
       $status === "pass"
@@ -441,11 +471,43 @@ const ComponentChip = styled.li<{ $status: "pass" | "partial" | "fail" }>`
       ? "rgb(111, 220, 166)"
       : $status === "partial"
         ? "rgb(255, 211, 121)"
-        : "rgb(255, 132, 132)"};
+      : "rgb(255, 132, 132)"};
   padding: 0.1rem 0.42rem;
   font-size: 0.68rem;
   font-weight: 800;
   line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+`;
+
+const ModelResultCell = styled.div`
+  display: grid;
+  grid-template-rows: 2rem 1.25rem 1.25rem 1.75rem 4.65rem minmax(4.25rem, auto);
+  align-content: start;
+  gap: 0.35rem;
+  min-width: 0;
+  min-height: 100%;
+`;
+
+const ModelMetric = styled.span`
+  display: block;
+  min-width: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  line-height: 1.35;
+`;
+
+const ComponentBreakdownSlot = styled.div`
+  display: grid;
+  align-content: start;
+  min-width: 0;
+`;
+
+const ModelResultText = styled.p`
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  line-height: 1.45;
 `;
 
 const ChartGrid = styled.div`
@@ -689,6 +751,37 @@ const ComponentBreakdown = ({ components }: { components: RubricComponents }) =>
   </ComponentList>
 );
 
+interface CaseModelResultProps {
+  readonly score: string;
+  readonly cost: string;
+  readonly runtime: string;
+  readonly components: RubricComponents;
+  readonly result: string;
+  readonly highlightScorePerDollar: boolean;
+}
+
+const CaseModelResult = ({
+  score,
+  cost,
+  runtime,
+  components,
+  result,
+  highlightScorePerDollar,
+}: CaseModelResultProps) => (
+  <ModelResultCell>
+    <ScoreValue $status={statusForScore(score)}>{score}</ScoreValue>
+    <ModelMetric>Cost: {cost}</ModelMetric>
+    <ModelMetric>Runtime: {runtime}</ModelMetric>
+    <ScorePerDollar $highlight={highlightScorePerDollar}>
+      {formatScorePerDollar(score, cost)} score/$
+    </ScorePerDollar>
+    <ComponentBreakdownSlot>
+      <ComponentBreakdown components={components} />
+    </ComponentBreakdownSlot>
+    <ModelResultText>{result}</ModelResultText>
+  </ModelResultCell>
+);
+
 const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
@@ -849,34 +942,34 @@ const TravelContextBenchmark = () => (
                   <CaseHardReason>{row.hardReason}</CaseHardReason>
                 </td>
                 <td>
-                  <ScoreValue $status={statusForScore(row.packScore)}>{row.packScore}</ScoreValue>
-                  <CostNote>Cost: {row.packCost}</CostNote>
-                  <CostNote>Runtime: {row.packRuntime}</CostNote>
-                  <ScorePerDollar $highlight={isBestScorePerDollar(row, row.packScore, row.packCost)}>
-                    {formatScorePerDollar(row.packScore, row.packCost)} score/$
-                  </ScorePerDollar>
-                  <ComponentBreakdown components={row.packComponents} />
-                  <CostNote>{row.packResult}</CostNote>
+                  <CaseModelResult
+                    score={row.packScore}
+                    cost={row.packCost}
+                    runtime={row.packRuntime}
+                    components={row.packComponents}
+                    result={row.packResult}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.packScore, row.packCost)}
+                  />
                 </td>
                 <td>
-                  <ScoreValue $status={statusForScore(row.gptScore)}>{row.gptScore}</ScoreValue>
-                  <CostNote>Cost: {row.gptCost}</CostNote>
-                  <CostNote>Runtime: {row.gptRuntime}</CostNote>
-                  <ScorePerDollar $highlight={isBestScorePerDollar(row, row.gptScore, row.gptCost)}>
-                    {formatScorePerDollar(row.gptScore, row.gptCost)} score/$
-                  </ScorePerDollar>
-                  <ComponentBreakdown components={row.gptComponents} />
-                  <CostNote>{row.gptResult}</CostNote>
+                  <CaseModelResult
+                    score={row.gptScore}
+                    cost={row.gptCost}
+                    runtime={row.gptRuntime}
+                    components={row.gptComponents}
+                    result={row.gptResult}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.gptScore, row.gptCost)}
+                  />
                 </td>
                 <td>
-                  <ScoreValue $status={statusForScore(row.opusScore)}>{row.opusScore}</ScoreValue>
-                  <CostNote>Cost: {row.opusCost}</CostNote>
-                  <CostNote>Runtime: {row.opusRuntime}</CostNote>
-                  <ScorePerDollar $highlight={isBestScorePerDollar(row, row.opusScore, row.opusCost)}>
-                    {formatScorePerDollar(row.opusScore, row.opusCost)} score/$
-                  </ScorePerDollar>
-                  <ComponentBreakdown components={row.opusComponents} />
-                  <CostNote>{row.opusResult}</CostNote>
+                  <CaseModelResult
+                    score={row.opusScore}
+                    cost={row.opusCost}
+                    runtime={row.opusRuntime}
+                    components={row.opusComponents}
+                    result={row.opusResult}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.opusScore, row.opusCost)}
+                  />
                 </td>
               </tr>
             ))}

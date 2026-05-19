@@ -8,6 +8,7 @@ import {
   neurosymbolicComparison,
   phaseCards,
   scoreCards,
+  shootoutChartRows,
 } from "@/data/travelContextBenchmark";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 
@@ -382,6 +383,81 @@ const CostNote = styled.span`
   font-size: var(--font-size-small);
 `;
 
+const ChartGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-3);
+`;
+
+const ChartBlock = styled.div`
+  display: grid;
+  gap: var(--space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-3);
+
+  h4 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-large);
+  }
+`;
+
+const BarList = styled.div`
+  display: grid;
+  gap: var(--space-2);
+`;
+
+const BarRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(7.25rem, 0.7fr) minmax(7rem, 1fr) 4.75rem;
+  gap: var(--space-2);
+  align-items: center;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+`;
+
+const BarLabel = styled.span`
+  color: var(--color-text-primary);
+  font-size: var(--font-size-small);
+  font-weight: 800;
+`;
+
+const BarValue = styled.span`
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  text-align: right;
+
+  @media (max-width: 520px) {
+    text-align: left;
+  }
+`;
+
+const BarTrack = styled.span`
+  display: block;
+  height: 0.8rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+`;
+
+const BarFill = styled.span<{ $percent: number; $tone: "pack" | "raw" }>`
+  display: block;
+  width: ${({ $percent }) => `${Math.max(0, Math.min(100, $percent))}%`};
+  height: 100%;
+  border-radius: inherit;
+  background: ${({ $tone }) =>
+    $tone === "pack"
+      ? "linear-gradient(90deg, rgb(111, 220, 166), rgb(243, 210, 122))"
+      : "rgba(255, 132, 132, 0.8)"};
+`;
+
+const maxShootoutCost = Math.max(...shootoutChartRows.map((row) => row.costUsd));
+const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtimeMinutes));
+
 const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
@@ -406,34 +482,33 @@ const TravelContextBenchmark = () => (
 
     <Header>
       <Kicker>Benchmark {benchmarkOverview.version}</Kicker>
-      <Title>{benchmarkOverview.name}: travel agents should survive the inbox before they book the trip.</Title>
+      <Title>Pack solves hard travel planning for cents, not dollars.</Title>
       <Intro>
-        Pack DeeperBench measures the complete workflow: extracting a
-        household travel history from realistic email and calendar data,
-        planning from a short human prompt, and selecting flights and hotels
-        from large deterministic inventories.
+        We gave Pack and raw frontier agents the same hard travel requests,
+        the same private context, and the same search tools. Pack solved the
+        hardest set. The raw agents spent more and still did not pass a case.
       </Intro>
       <StatusBar>
-        <strong>{benchmarkOverview.officialRunStatus}.</strong>
-        Pack passes the hard-100 run and all 10 hardest shootout cases; raw
-        max-thinking agents did not pass a shootout case.
+        <strong>Hardest-10 result.</strong>
+        Pack: 10/10 for $0.44 in 8m59s. GPT-5.5 xhigh and Opus 4.7:
+        0/20 combined after $9.66 and about 96 minutes of capped runtime.
       </StatusBar>
       <MetricGrid>
         <Metric>
-          <dt>Household</dt>
-          <dd>{benchmarkOverview.corpus.people} people</dd>
+          <dt>Hard-100 Pack run</dt>
+          <dd>{latestVerifiedPackRun.hard100Composite}</dd>
         </Metric>
         <Metric>
-          <dt>Inbox</dt>
-          <dd>{benchmarkOverview.corpus.totalEmails}</dd>
+          <dt>Hardest-10 Pack score</dt>
+          <dd>{neurosymbolicComparison.packCorpusResult}</dd>
         </Metric>
         <Metric>
-          <dt>Travel items</dt>
-          <dd>{benchmarkOverview.corpus.travelEmails}</dd>
+          <dt>Pack hard-10 cost</dt>
+          <dd>{neurosymbolicComparison.packCorpusCost}</dd>
         </Metric>
         <Metric>
-          <dt>Search inventory</dt>
-          <dd>1M + 1M</dd>
+          <dt>Raw-agent passes</dt>
+          <dd>0/20</dd>
         </Metric>
       </MetricGrid>
     </Header>
@@ -506,8 +581,20 @@ const TravelContextBenchmark = () => (
             <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
           </ResultItem>
           <ResultItem>
+            <span>Hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.hard100Runtime}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Average hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.averageHard100Runtime}</strong>
+          </ResultItem>
+          <ResultItem>
             <span>Raw comparison set</span>
             <strong>{latestVerifiedPackRun.selectedComparisonSet}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Hardest-10 Pack runtime</span>
+            <strong>{latestVerifiedPackRun.selectedComparisonRuntime}</strong>
           </ResultItem>
           <ResultItem>
             <span>Raw-model shootout</span>
@@ -534,8 +621,12 @@ const TravelContextBenchmark = () => (
             <dd>{neurosymbolicComparison.packCorpusResult}</dd>
           </Metric>
           <Metric>
-            <dt>Pack hard-100 cost</dt>
+            <dt>Pack hard-10 cost</dt>
             <dd>{neurosymbolicComparison.packCorpusCost}</dd>
+          </Metric>
+          <Metric>
+            <dt>Pack hard-10 runtime</dt>
+            <dd>{neurosymbolicComparison.packCorpusRuntime}</dd>
           </Metric>
         </MetricGrid>
         <ComparisonGrid>
@@ -560,7 +651,7 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Hardest-10 Scores and Price</SectionTitle>
+      <SectionTitle>Hardest-10 Scores, Price, and Runtime</SectionTitle>
       <TableWrap>
         <ShootoutTable>
           <thead>
@@ -579,18 +670,21 @@ const TravelContextBenchmark = () => (
                 </td>
                 <td>
                   <ScoreValue $status="pass">{row.packScore}</ScoreValue>
-                  <CostNote>{row.packCost}</CostNote>
+                  <CostNote>Cost: {row.packCost}</CostNote>
+                  <CostNote>Runtime: {row.packRuntime}</CostNote>
                 </td>
                 <td>
                   <ScoreValue $status={row.gptScore === "0.00" ? "fail" : "unscored"}>
                     {row.gptScore}
                   </ScoreValue>
-                  <CostNote>{row.gptCost}</CostNote>
+                  <CostNote>Cost: {row.gptCost}</CostNote>
+                  <CostNote>Runtime: {row.gptRuntime}</CostNote>
                   <CostNote>{row.gptResult}</CostNote>
                 </td>
                 <td>
                   <ScoreValue $status="fail">{row.opusScore}</ScoreValue>
-                  <CostNote>{row.opusCost}</CostNote>
+                  <CostNote>Cost: {row.opusCost}</CostNote>
+                  <CostNote>Runtime: {row.opusRuntime}</CostNote>
                   <CostNote>{row.opusResult}</CostNote>
                 </td>
               </tr>

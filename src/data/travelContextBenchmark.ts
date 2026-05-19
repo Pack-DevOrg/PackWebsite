@@ -24,10 +24,10 @@ export const benchmarkOverview = {
     hotelInventory: "1,000,000",
   },
   protocol: [
-    "Extractor receives Gmail-like and Calendar-like APIs over the synthetic household corpus.",
-    "Planner receives the extracted private travel context plus the natural user prompt.",
-    "Search receives Pack planner outlines and ranks deterministic flight and hotel inventory.",
-    "Official scoring gives no grace for failed phases, invalid IDs, missing evidence, or malformed outputs.",
+    "Every system gets the same private inbox, calendar, and travel-search tools.",
+    "The user prompt is short; the missing details have to be found in the private context.",
+    "A case only passes when the answer is grounded in the right evidence and returns the right travel outcome.",
+    "Bad IDs, missing evidence, malformed plans, timeouts, and provider limits score 0.",
   ],
 };
 
@@ -54,7 +54,7 @@ export const neurosymbolicComparison = {
   packCorpusResult: "10/10 on the hardest subset",
   packCorpusCost: "$0.44 total on the hardest subset",
   packCorpusRuntime: "8m59s cumulative Pack processing time",
-  estimateNote: "Raw LLM attempts used the same tools and a 5-minute per-case cutoff. Produced plans were scored against the same evidence discipline; invalid IDs, malformed output, provider limits, and cutoffs score 0.",
+  estimateNote: "Each raw-agent case had a 5-minute cutoff. If it timed out, hit a provider limit, returned broken JSON, or cited evidence that was not in the corpus, it scored 0.",
   rows: [
     {
       system: "Pack neurosymbolic planner",
@@ -63,7 +63,7 @@ export const neurosymbolicComparison = {
       costMultiple: "1x",
       runtime: "8m59s cumulative",
       calls: "10/10 hardest cases; $0.044 avg/case",
-      note: "Structured extraction, typed planning, and deterministic search.",
+      note: "Reads once, plans from clean state, then searches.",
     },
     {
       system: "GPT-5.5 xhigh raw agent",
@@ -72,7 +72,7 @@ export const neurosymbolicComparison = {
       costMultiple: "4.3x",
       runtime: "0/10 passed; one produced plan scored 0.00",
       calls: "Same tools, no Pack symbolic state",
-      note: "Eight cases hit the 5-minute cutoff, one hit a TPM limit after 4m38s, and one returned invalid evidence/search IDs after 4m36s.",
+      note: "Mostly timed out; one answer cited IDs that did not exist.",
     },
     {
       system: "Claude Opus 4.7 max-thinking raw agent",
@@ -81,7 +81,7 @@ export const neurosymbolicComparison = {
       costMultiple: "17.7x",
       runtime: "0/10 passed",
       calls: "Same tools, no Pack symbolic state",
-      note: "Seven cases hit the 5-minute cutoff and three returned malformed plans after multi-dollar tool loops.",
+      note: "Mostly timed out; three answers were malformed.",
     },
   ],
 };

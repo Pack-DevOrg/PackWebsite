@@ -271,6 +271,7 @@ const ComparisonGrid = styled.div`
 
 const ComparisonCard = styled.article`
   display: grid;
+  grid-template-rows: auto minmax(2.9rem, auto) auto minmax(4.2rem, auto) 1fr;
   align-content: start;
   gap: var(--space-2);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -282,6 +283,7 @@ const ComparisonCard = styled.article`
     margin: 0;
     color: var(--color-text-primary);
     font-size: var(--font-size-large);
+    line-height: 1.25;
   }
 
   p {
@@ -362,11 +364,13 @@ const ShootoutTable = styled.table`
   }
 `;
 
-const ScoreValue = styled.strong<{ $status?: "pass" | "fail" | "unscored" }>`
+const ScoreValue = styled.strong<{ $status?: "pass" | "partial" | "fail" | "unscored" }>`
   display: block;
   color: ${({ $status }) =>
     $status === "pass"
       ? "rgb(111, 220, 166)"
+      : $status === "partial"
+        ? "rgb(255, 211, 121)"
       : $status === "fail"
         ? "rgb(255, 132, 132)"
         : $status === "unscored"
@@ -380,6 +384,68 @@ const CostNote = styled.span`
   margin-top: 0.2rem;
   color: var(--color-text-secondary);
   font-size: var(--font-size-small);
+`;
+
+const ScorePerDollar = styled.span<{ $highlight?: boolean }>`
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 0.45rem;
+  border: 1px solid
+    ${({ $highlight }) =>
+      $highlight ? "rgba(111, 220, 166, 0.36)" : "rgba(255, 255, 255, 0.08)"};
+  border-radius: 999px;
+  background: ${({ $highlight }) =>
+    $highlight ? "rgba(111, 220, 166, 0.12)" : "rgba(255, 255, 255, 0.04)"};
+  color: ${({ $highlight }) =>
+    $highlight ? "rgb(111, 220, 166)" : "var(--color-text-secondary)"};
+  padding: 0.18rem 0.5rem;
+  font-size: var(--font-size-small);
+  font-weight: 800;
+`;
+
+const CaseHardReason = styled.span`
+  display: block;
+  max-width: 18rem;
+  margin-top: 0.45rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  line-height: 1.45;
+`;
+
+const ComponentList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  list-style: none;
+`;
+
+const ComponentChip = styled.li<{ $status: "pass" | "partial" | "fail" }>`
+  border: 1px solid
+    ${({ $status }) =>
+      $status === "pass"
+        ? "rgba(111, 220, 166, 0.3)"
+        : $status === "partial"
+          ? "rgba(255, 211, 121, 0.28)"
+          : "rgba(255, 132, 132, 0.24)"};
+  border-radius: 999px;
+  background: ${({ $status }) =>
+    $status === "pass"
+      ? "rgba(111, 220, 166, 0.1)"
+      : $status === "partial"
+        ? "rgba(255, 211, 121, 0.1)"
+        : "rgba(255, 132, 132, 0.08)"};
+  color: ${({ $status }) =>
+    $status === "pass"
+      ? "rgb(111, 220, 166)"
+      : $status === "partial"
+        ? "rgb(255, 211, 121)"
+        : "rgb(255, 132, 132)"};
+  padding: 0.1rem 0.42rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.4;
 `;
 
 const ChartGrid = styled.div`
@@ -548,17 +614,84 @@ const metricChartGroups = [
   },
 ];
 
-const statusForScore = (score: string): "pass" | "fail" | "unscored" => {
+const statusForScore = (score: string): "pass" | "partial" | "fail" | "unscored" => {
   if (score === "Not run" || score === "Unscored") {
     return "unscored";
   }
 
-  if (score === "1.00" || score.includes("1.00")) {
+  if (score === "1.00" || score.includes("1.00") || score.startsWith("5/5")) {
     return "pass";
+  }
+
+  if (score.includes("/5")) {
+    return "partial";
   }
 
   return "fail";
 };
+
+const gateLabels = [
+  ["output", "Output"],
+  ["evidence", "Evidence"],
+  ["constraints", "Constraints"],
+  ["search", "Search"],
+  ["final", "Final"],
+] as const;
+
+type GateComponents = (typeof hardestTenShootoutRows)[number]["packComponents"];
+
+const scoreValue = (score: string): number => {
+  if (score === "Unscored" || score === "Not run") {
+    return 0;
+  }
+
+  const gateMatch = /^(\d+)\/5/u.exec(score);
+  if (gateMatch) {
+    return Number(gateMatch[1]) / 5;
+  }
+
+  const numericScore = Number(score);
+  return Number.isFinite(numericScore) ? numericScore : 0;
+};
+
+const costValue = (cost: string): number => {
+  const numericCost = Number(cost.replace(/[^0-9.]/g, ""));
+  return Number.isFinite(numericCost) ? numericCost : 0;
+};
+
+const scorePerDollar = (score: string, cost: string): number => {
+  const costUsd = costValue(cost);
+  return costUsd > 0 ? scoreValue(score) / costUsd : 0;
+};
+
+const formatScorePerDollar = (score: string, cost: string): string =>
+  scorePerDollar(score, cost).toFixed(2);
+
+const bestScorePerDollar = (row: (typeof hardestTenShootoutRows)[number]): number =>
+  Math.max(
+    scorePerDollar(row.packScore, row.packCost),
+    scorePerDollar(row.gptScore, row.gptCost),
+    scorePerDollar(row.opusScore, row.opusCost),
+  );
+
+const isBestScorePerDollar = (
+  row: (typeof hardestTenShootoutRows)[number],
+  score: string,
+  cost: string,
+): boolean => {
+  const value = scorePerDollar(score, cost);
+  return value > 0 && value === bestScorePerDollar(row);
+};
+
+const ComponentBreakdown = ({ components }: { components: GateComponents }) => (
+  <ComponentList aria-label="Rubric components">
+    {gateLabels.map(([key, label]) => (
+      <ComponentChip key={key} $status={components[key]}>
+        {label}
+      </ComponentChip>
+    ))}
+  </ComponentList>
+);
 
 const TravelContextBenchmark = () => (
   <Page>
@@ -593,7 +726,7 @@ const TravelContextBenchmark = () => (
         <strong>Hardest-10 comparison.</strong>
         Pack exact rerun: 0/10 final content pass for $2.76 in 5m31s
         planning + search. GPT-5.5 xhigh: 2/10 for $86.60. Opus 4.7:
-        2/10 manual content pass, 0/10 schema-valid, for $17.15.
+        2/10 content pass for $17.15.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -613,8 +746,8 @@ const TravelContextBenchmark = () => (
           <dd>GPT 2/10; Opus 2/10</dd>
         </Metric>
         <Metric>
-          <dt>Raw schema-valid</dt>
-          <dd>GPT 9/10; Opus 0/10</dd>
+          <dt>Raw cost</dt>
+          <dd>GPT $86.60; Opus $17.15</dd>
         </Metric>
       </MetricGrid>
     </Header>
@@ -690,22 +823,15 @@ const TravelContextBenchmark = () => (
           ))}
         </ComparisonGrid>
         <FindingText>{neurosymbolicComparison.estimateNote}</FindingText>
-        <FindingText>
-          Scores judge plan content, not only schemas. The first gate asks
-          whether the answer is readable enough to score. Schema validity is
-          still shown separately because production agents need reliable
-          machine-readable output.
-        </FindingText>
       </ResultPanel>
     </Section>
 
     <Section>
       <SectionTitle>Hardest-10 Case Results</SectionTitle>
       <SectionText>
-        Each row is one selected hard case. A final score of 1.00 means the
-        case passed all content gates. Opus rows use manual content scores
-        because every Opus answer was readable but off-schema. Pack rows use
-        the May 19 exact-case rerun, not the earlier stale per-case values.
+        Each row is one selected hard case. A full pass means the case passed
+        all content gates. Pack rows use the May 19 exact-case rerun, not the
+        earlier stale per-case values.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -722,23 +848,36 @@ const TravelContextBenchmark = () => (
               <tr key={row.number}>
                 <td>
                   <strong>{row.number}. {row.title}</strong>
+                  <CaseHardReason>{row.hardReason}</CaseHardReason>
                 </td>
                 <td>
                   <ScoreValue $status={statusForScore(row.packScore)}>{row.packScore}</ScoreValue>
                   <CostNote>Cost: {row.packCost}</CostNote>
                   <CostNote>Runtime: {row.packRuntime}</CostNote>
+                  <ScorePerDollar $highlight={isBestScorePerDollar(row, row.packScore, row.packCost)}>
+                    {formatScorePerDollar(row.packScore, row.packCost)} score/$
+                  </ScorePerDollar>
+                  <ComponentBreakdown components={row.packComponents} />
                   <CostNote>{row.packResult}</CostNote>
                 </td>
                 <td>
                   <ScoreValue $status={statusForScore(row.gptScore)}>{row.gptScore}</ScoreValue>
                   <CostNote>Cost: {row.gptCost}</CostNote>
                   <CostNote>Runtime: {row.gptRuntime}</CostNote>
+                  <ScorePerDollar $highlight={isBestScorePerDollar(row, row.gptScore, row.gptCost)}>
+                    {formatScorePerDollar(row.gptScore, row.gptCost)} score/$
+                  </ScorePerDollar>
+                  <ComponentBreakdown components={row.gptComponents} />
                   <CostNote>{row.gptResult}</CostNote>
                 </td>
                 <td>
                   <ScoreValue $status={statusForScore(row.opusScore)}>{row.opusScore}</ScoreValue>
                   <CostNote>Cost: {row.opusCost}</CostNote>
                   <CostNote>Runtime: {row.opusRuntime}</CostNote>
+                  <ScorePerDollar $highlight={isBestScorePerDollar(row, row.opusScore, row.opusCost)}>
+                    {formatScorePerDollar(row.opusScore, row.opusCost)} score/$
+                  </ScorePerDollar>
+                  <ComponentBreakdown components={row.opusComponents} />
                   <CostNote>{row.opusResult}</CostNote>
                 </td>
               </tr>

@@ -362,13 +362,15 @@ const ShootoutTable = styled.table`
   }
 `;
 
-const ScoreValue = styled.strong<{ $status?: "pass" | "fail" | "pending" }>`
+const ScoreValue = styled.strong<{ $status?: "pass" | "fail" | "unscored" }>`
   display: block;
   color: ${({ $status }) =>
     $status === "pass"
       ? "rgb(111, 220, 166)"
       : $status === "fail"
         ? "rgb(255, 132, 132)"
+        : $status === "unscored"
+          ? "rgb(255, 211, 121)"
         : "var(--color-text-primary)"};
   font-size: var(--font-size-large);
 `;
@@ -414,7 +416,7 @@ const TravelContextBenchmark = () => (
       <StatusBar>
         <strong>{benchmarkOverview.officialRunStatus}.</strong>
         Pack passes the hard-100 run and all 10 hardest shootout cases; raw
-        max-thinking agents did not complete a valid shootout case.
+        max-thinking agents did not pass a shootout case.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -580,7 +582,7 @@ const TravelContextBenchmark = () => (
                   <CostNote>{row.packCost}</CostNote>
                 </td>
                 <td>
-                  <ScoreValue $status={row.gptScore === "0.00" ? "fail" : "pending"}>
+                  <ScoreValue $status={row.gptScore === "0.00" ? "fail" : "unscored"}>
                     {row.gptScore}
                   </ScoreValue>
                   <CostNote>{row.gptCost}</CostNote>

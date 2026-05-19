@@ -619,35 +619,31 @@ const statusForScore = (score: string): "pass" | "partial" | "fail" | "unscored"
     return "unscored";
   }
 
-  if (score === "1.00" || score.includes("1.00") || score.startsWith("5/5")) {
-    return "pass";
-  }
+  const numericScore = Number(score);
+  if (Number.isFinite(numericScore)) {
+    if (numericScore >= 1) {
+      return "pass";
+    }
 
-  if (score.includes("/5")) {
-    return "partial";
+    return numericScore > 0 ? "partial" : "fail";
   }
 
   return "fail";
 };
 
-const gateLabels = [
-  ["output", "Output"],
-  ["evidence", "Evidence"],
-  ["constraints", "Constraints"],
-  ["search", "Search"],
-  ["final", "Final"],
+const componentLabels = [
+  ["output", "Output 3%"],
+  ["evidence", "Evidence 7%"],
+  ["constraints", "Details 30%"],
+  ["search", "Search 10%"],
+  ["final", "Final 50%"],
 ] as const;
 
-type GateComponents = (typeof hardestTenShootoutRows)[number]["packComponents"];
+type RubricComponents = (typeof hardestTenShootoutRows)[number]["packComponents"];
 
 const scoreValue = (score: string): number => {
   if (score === "Unscored" || score === "Not run") {
     return 0;
-  }
-
-  const gateMatch = /^(\d+)\/5/u.exec(score);
-  if (gateMatch) {
-    return Number(gateMatch[1]) / 5;
   }
 
   const numericScore = Number(score);
@@ -683,9 +679,9 @@ const isBestScorePerDollar = (
   return value > 0 && value === bestScorePerDollar(row);
 };
 
-const ComponentBreakdown = ({ components }: { components: GateComponents }) => (
+const ComponentBreakdown = ({ components }: { components: RubricComponents }) => (
   <ComponentList aria-label="Rubric components">
-    {gateLabels.map(([key, label]) => (
+    {componentLabels.map(([key, label]) => (
       <ComponentChip key={key} $status={components[key]}>
         {label}
       </ComponentChip>
@@ -725,8 +721,8 @@ const TravelContextBenchmark = () => (
       <StatusBar>
         <strong>Hardest-10 comparison.</strong>
         Pack exact rerun: 0/10 final content pass for $2.76 in 5m31s
-        planning + search. GPT-5.5 xhigh: 2/10 for $86.60. Opus 4.7:
-        2/10 content pass for $17.15.
+        planning + search. GPT-5.5 xhigh: 1/10 for $86.60. Opus 4.7:
+        2/10 final content pass for $17.15.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -743,7 +739,7 @@ const TravelContextBenchmark = () => (
         </Metric>
         <Metric>
           <dt>Raw content pass</dt>
-          <dd>GPT 2/10; Opus 2/10</dd>
+          <dd>GPT 1/10; Opus 2/10</dd>
         </Metric>
         <Metric>
           <dt>Raw cost</dt>
@@ -829,9 +825,11 @@ const TravelContextBenchmark = () => (
     <Section>
       <SectionTitle>Hardest-10 Case Results</SectionTitle>
       <SectionText>
-        Each row is one selected hard case. A full pass means the case passed
-        all content gates. Pack rows use the May 19 exact-case rerun, not the
-        earlier stale per-case values.
+        Each row is one selected hard case. A full pass means the final answer
+        is fully correct. Decimal scores use a final-answer-heavy rubric:
+        50% final outcome, 30% core trip details, 10% inventory or outcome,
+        7% evidence, and 3% scorable output.
+        Pack rows use the May 19 exact-case rerun.
       </SectionText>
       <TableWrap>
         <ShootoutTable>

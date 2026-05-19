@@ -3314,8 +3314,8 @@ const labsContent = {
           slug: "pack-deeperbench-report",
           title: "Pack DeeperBench Report",
           description:
-            "Inspect the latest 100-case benchmark run, per-case costs, planner failures, search selections, and extractor profile quality notes.",
-          href: "/labs/pack-deeperbench-report.html",
+            "Open the canonical Pack DeeperBench benchmark page with the latest hard-100 and hardest-10 comparison results.",
+          href: "/pack-deeperbench",
           kicker: "Benchmark QA",
         },
       ],
@@ -3534,8 +3534,8 @@ const labsContent = {
           slug: "pack-deeperbench-report",
           title: "Pack DeeperBench Report",
           description:
-            "Inspecciona el benchmark de 100 casos, costos por caso, fallas del planner, selecciones de búsqueda y notas de calidad del extractor.",
-          href: "/labs/pack-deeperbench-report.html",
+            "Abre la página canónica de Pack DeeperBench con los últimos resultados del hard-100 y la comparación hardest-10.",
+          href: "/pack-deeperbench",
           kicker: "QA de benchmark",
         },
       ],

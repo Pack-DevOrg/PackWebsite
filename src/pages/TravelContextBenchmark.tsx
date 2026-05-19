@@ -518,18 +518,18 @@ const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtim
 const metricChartGroups = [
   {
     title: "Cases solved",
-    helper: "Final passing cases out of the same 10 hard prompts.",
+    helper: "Final passing cases before each system's budget cap.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.solvedLabel,
-      percent: (row.solved / 10) * 100,
+      percent: (row.solved / row.attempted) * 100,
       tone: row.tone,
     })),
   },
   {
     title: "Total spend",
     helper:
-      "Metered model spend across finished answers, failed answers, timeouts, and provider-limit attempts.",
+      "Pack shows measured metered spend; raw agents show fresh no-cache estimated spend.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.costLabel,
@@ -539,7 +539,7 @@ const metricChartGroups = [
   },
   {
     title: "Runtime",
-    helper: "Total observed or capped runtime across the hardest 10.",
+    helper: "Observed runtime before completion or budget cap.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.runtimeLabel,
@@ -548,6 +548,14 @@ const metricChartGroups = [
     })),
   },
 ];
+
+const statusForRawScore = (score: string): "fail" | "unscored" => {
+  if (score === "Not run" || score === "Unscored") {
+    return "unscored";
+  }
+
+  return "fail";
+};
 
 const TravelContextBenchmark = () => (
   <Page>
@@ -580,9 +588,9 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>Hardest-10 comparison.</strong>
-        Pack: 10/10 for $0.44 in 8m59s. GPT-5.5 xhigh and Opus 4.7:
-        0/20 combined after $9.66 in metered comparison spend and about 96
-        minutes of capped runtime.
+        Pack: 10/10 for $0.45 in 3m52s. GPT-5.5 xhigh: 0/1 after
+        $13.22 fresh-run estimated spend. Opus 4.7: 0/5 after $12.77
+        fresh-run estimated spend.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -598,8 +606,8 @@ const TravelContextBenchmark = () => (
           <dd>{neurosymbolicComparison.packCorpusCost}</dd>
         </Metric>
         <Metric>
-          <dt>Raw-agent passes</dt>
-          <dd>0/20</dd>
+          <dt>Raw-agent attempts passed</dt>
+          <dd>0/6</dd>
         </Metric>
       </MetricGrid>
     </Header>
@@ -635,19 +643,20 @@ const TravelContextBenchmark = () => (
             <RubricCard key={row.system}>
               <RubricHeader>
                 <h4>{row.system}</h4>
-                <strong>{row.finalPass}/10 pass</strong>
+                <strong>{row.finalPass}/{row.denominator} pass</strong>
               </RubricHeader>
               <RubricCategoryList>
                 {rubricCategories.map((category) => {
                   const value = row[category.key];
+                  const denominator = row.denominator;
                   return (
                     <RubricCategory key={`${row.system}-${category.key}`}>
                       <RubricCategoryHeader>
                         <strong>{category.label}</strong>
-                        <span>{value}/10</span>
+                        <span>{value}/{denominator}</span>
                       </RubricCategoryHeader>
                       <BarTrack aria-hidden="true">
-                        <BarFill $percent={(value / 10) * 100} $tone={row.tone} />
+                        <BarFill $percent={(value / denominator) * 100} $tone={row.tone} />
                       </BarTrack>
                       <RubricDescription>{category.description}</RubricDescription>
                     </RubricCategory>
@@ -711,15 +720,13 @@ const TravelContextBenchmark = () => (
                   <CostNote>Runtime: {row.packRuntime}</CostNote>
                 </td>
                 <td>
-                  <ScoreValue $status={row.gptScore === "0.00" ? "fail" : "unscored"}>
-                    {row.gptScore}
-                  </ScoreValue>
+                  <ScoreValue $status={statusForRawScore(row.gptScore)}>{row.gptScore}</ScoreValue>
                   <CostNote>Cost: {row.gptCost}</CostNote>
                   <CostNote>Runtime: {row.gptRuntime}</CostNote>
                   <CostNote>{row.gptResult}</CostNote>
                 </td>
                 <td>
-                  <ScoreValue $status="fail">{row.opusScore}</ScoreValue>
+                  <ScoreValue $status={statusForRawScore(row.opusScore)}>{row.opusScore}</ScoreValue>
                   <CostNote>Cost: {row.opusCost}</CostNote>
                   <CostNote>Runtime: {row.opusRuntime}</CostNote>
                   <CostNote>{row.opusResult}</CostNote>

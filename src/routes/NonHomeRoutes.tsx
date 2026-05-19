@@ -853,7 +853,7 @@ const NonHomeRoutes: React.FC = () => {
           />
           <Route
             path="benchmark/travel-context"
-            element={<Navigate to="../pack-deeperbench" replace />}
+            element={<Navigate to="/pack-deeperbench" replace />}
           />
           <Route
             path="pack-deeperbench"

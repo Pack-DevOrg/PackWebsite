@@ -10,7 +10,7 @@ import {
 export const benchmarkOverview = {
   name: "Pack DeeperBench",
   version: "pack-deeperbench-v0",
-  officialRunStatus: "Local Pack validation updated May 18, 2026; comparison runs updated May 19, 2026",
+  officialRunStatus: "Pack hard-100 full run updated May 20, 2026; targeted repair checks updated May 20, 2026",
   corpus: {
     household: "Synthetic household",
     people: 4,
@@ -31,26 +31,26 @@ export const benchmarkOverview = {
 };
 
 export const latestVerifiedPackRun = {
-  label: "Pack artifact status",
+  label: "Pack hard-100 status",
   summary:
-    "The May 19, 2026 exact-case Pack rerun is now the source for the Pack comparison rows. Earlier Pack hard-100 rollups are under audit and are not used for the shootout numbers.",
-  hard100Composite: "Under audit",
-  hard100TotalCost: "Under audit",
-  averageHard100Cost: "Under audit",
-  hard100Runtime: "Under audit",
-  averageHard100Runtime: "Under audit",
-  selectedComparisonSet: "Same 10 cases as the raw-agent shootout",
-  selectedComparisonRuntime: "5m31s planning + search",
-  selectedComparisonScope: "Pack, GPT-5.5 xhigh, and Claude Opus 4.7 max-thinking",
+    "The latest deployed dev hard-100 run is dev-v1373-hard100-20260520T1555Z: 93/100 passed. The previous targeted fixes for hard-019, hard-039, and hard-047 held in the full rerun; the remaining failures are now the next planner-fix queue.",
+  hard100Composite: "93/100",
+  hard100TotalCost: "$4.39",
+  averageHard100Cost: "$0.0439",
+  hard100Runtime: "20m14s wall clock",
+  averageHard100Runtime: "46.7s processing/case",
+  selectedComparisonSet: "5/10 selected hard cases passed in the latest full run",
+  selectedComparisonRuntime: "Latest deployed full hard-100 run",
+  selectedComparisonScope: "dev-v1373 hard-100 result with all 100 cases run end to end",
 };
 
 export const neurosymbolicComparison = {
-  label: "Hardest-10 Comparison",
-  headline: "Results from the selected hard cases.",
+  label: "Archived Raw-Agent Shootout",
+  headline: "May 19 raw-agent comparison baseline.",
   summary:
-    "Pack, GPT-5.5 xhigh, and Opus 4.7 were run on the same ten selected hard cases. Raw agents received the same short prompts, private-context tools, travel-search tools, and scoring rubric. GPT-5.5 xhigh and Opus 4.7 used a 45-minute cutoff and a $10 execution cap per case. Scores below use a final-answer-heavy rubric: 50% final outcome, 30% trip details, 10% inventory or outcome, 7% evidence, and 3% scorable output.",
-  measuredCase: "10 selected hard-100 cases, 45-minute raw-agent cutoff, $10 execution cap per case",
-  packCorpusResult: "0/10 final content pass on the exact rerun",
+    "These rows preserve the May 19, 2026 shootout baseline. Pack, GPT-5.5 xhigh, and Opus 4.7 were run on the same ten selected hard cases. Raw agents received the same short prompts, private-context tools, travel-search tools, and scoring rubric. GPT-5.5 xhigh and Opus 4.7 used a 45-minute cutoff and a $10 execution cap per case. Pack's current repair status is shown separately above and should not be mixed into this archived comparison.",
+  measuredCase: "10 selected hard-100 cases, May 19 baseline, 45-minute raw-agent cutoff, $10 execution cap per case",
+  packCorpusResult: "0/10 final content pass on the archived exact rerun",
   packCorpusCost: "$2.76 total cost",
   packCorpusRuntime: "5m31s planning + search; extraction snapshot reused",
   estimateNote: "Costs show the full cost for each run. Pack includes extraction, planning, and search. Raw-agent costs include all model work through completion, timeout, or service limit.",
@@ -87,8 +87,8 @@ export const neurosymbolicComparison = {
 
 export const shootoutChartRows = [
   {
-    system: "Pack",
-    fullName: "Pack",
+    system: "Pack baseline",
+    fullName: "Pack May 19 exact rerun",
     solved: 0,
     attempted: 10,
     costUsd: 2.76,
@@ -96,7 +96,7 @@ export const shootoutChartRows = [
     solvedLabel: "0/10",
     costLabel: "$2.76",
     runtimeLabel: "5m31s",
-    note: "Exact rerun",
+    note: "Archived exact rerun",
     tone: "pack",
   },
   {
@@ -157,8 +157,8 @@ export const rubricCategories = [
 
 export const shootoutRubricRows = [
   {
-    system: "Pack",
-    fullName: "Pack",
+    system: "Pack baseline",
+    fullName: "Pack May 19 exact rerun",
     tone: "pack",
     denominator: 10,
     validOutput: 10,
@@ -166,7 +166,7 @@ export const shootoutRubricRows = [
     constraints: 1,
     search: 1,
     finalPass: 0,
-    note: "May 19 exact rerun. Pack returned scorable artifacts for all ten, but none had a fully correct final answer.",
+    note: "Archived May 19 exact rerun. Pack returned scorable artifacts for all ten, but none had a fully correct final answer in that baseline.",
   },
   {
     system: "GPT-5.5 xhigh",
@@ -193,6 +193,129 @@ export const shootoutRubricRows = [
     note: "Two plans passed. The rest missed evidence, constraints, search inventory, or the required no-travel/clarification outcome.",
   },
 ] as const;
+
+export const packHardCaseStatus = {
+  label: "Current Pack Hard-Case Status",
+  headline: "93/100 on the latest deployed hard-100 run; 5/10 selected hard cases pass in that full run.",
+  summary:
+    "Source of truth is now the May 20 deployed dev-v1373 full hard-100 rerun. The suite improved overall, and the prior hard-019, hard-039, and hard-047 repairs held, but hard-001 and hard-052 regressed inside the selected hard-ten set.",
+  latestFullRun: "93/100",
+  selectedHardestTenLedger: "5/10",
+  targetedRepairs: "3/3 held",
+  remainingSelectedGaps: "5",
+  metrics: [
+    {
+      label: "Latest full hard-100",
+      value: "93/100",
+      helper: "dev-v1373-hard100-20260520T1555Z",
+    },
+    {
+      label: "Full-run cost",
+      value: "$4.39",
+      helper: "$0.0439 average per case",
+    },
+    {
+      label: "Selected hard-case ledger",
+      value: "5/10",
+      helper: "all measured in the latest deployed full run",
+    },
+    {
+      label: "Open selected gaps",
+      value: "5",
+      helper: "hard-001, hard-002, hard-003, hard-052, hard-067",
+    },
+  ],
+  rows: [
+    {
+      caseId: "hard-001",
+      title: "@family Japan for about a week.",
+      result: "Open",
+      status: "open",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "Regressed in the full rerun: Japan planning picked the stale Blueground NYC availability window instead of the 2027 school-break Japan evidence.",
+    },
+    {
+      caseId: "hard-005",
+      title: "@danny Orlando theme park weekend.",
+      result: "Pass",
+      status: "verified",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note: "Passed in the latest full hard-100 run.",
+    },
+    {
+      caseId: "hard-019",
+      title: "Forwarded hotel for the upcoming trip.",
+      result: "Pass",
+      status: "verified",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "The wrong-owner forwarded hotel repair held in the full rerun and returns the expected needs-input ownership clarification.",
+    },
+    {
+      caseId: "hard-039",
+      title: "@adam NYC meeting trip.",
+      result: "Pass",
+      status: "verified",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "Temporary-home evidence now drives the expected no-travel outcome in the full rerun.",
+    },
+    {
+      caseId: "hard-047",
+      title: "Miami F1 trip.",
+      result: "Pass",
+      status: "verified",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "Promotional family-package ambiguity asks for traveler-set clarification in the full rerun.",
+    },
+    {
+      caseId: "hard-052",
+      title: "Barcelona Apr 4-7 for all four of us.",
+      result: "Open",
+      status: "open",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "Returns needs-input instead of the expected impossible outcome, and the prompt text does not clearly say all travelers are blocked.",
+    },
+    {
+      caseId: "hard-058",
+      title: "@adam Midtown and Roam week.",
+      result: "Pass",
+      status: "verified",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note: "Passed in the latest full hard-100 run.",
+    },
+    {
+      caseId: "hard-002",
+      title: "@bel Paris fashion week.",
+      result: "Open",
+      status: "open",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "Current failure is a destination normalization mismatch: Paris versus Paris, France.",
+    },
+    {
+      caseId: "hard-003",
+      title: "@adam to Tokyo, use the airline credit if we still can.",
+      result: "Open",
+      status: "open",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "Private-evidence selection misses the required Delta seat-map evidence and over-anchors on unrelated calendar windows.",
+    },
+    {
+      caseId: "hard-067",
+      title: "Met Gala, then Knicks.",
+      result: "Open",
+      status: "open",
+      sourceRun: "dev-v1373-hard100-20260520T1555Z",
+      note:
+        "Still over-clarifies and loses New York duration/context, including the no-Knicks-game search note.",
+    },
+  ],
+} as const;
 
 export const hardestTenShootoutRows = [
   {

@@ -44,7 +44,7 @@ describe("PrivacyRequestPage", () => {
     renderPrivacyRequestRoute("/privacy-request");
 
     expect(
-      screen.getByRole("heading", { name: "Your Privacy Choices" }),
+      screen.getByRole("heading", { level: 1, name: "Your Privacy Choices" }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(

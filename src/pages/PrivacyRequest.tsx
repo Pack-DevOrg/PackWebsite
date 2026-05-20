@@ -99,6 +99,13 @@ const Section = styled.section`
   }
 `;
 
+const PageTitle = styled.h1`
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+`;
+
 const SectionTitle = styled.h2`
   margin: 0 0 0.75rem;
   font-size: 1.5rem;
@@ -562,7 +569,7 @@ const PrivacyRequestPage: React.FC = () => {
         robots="noindex, follow"
       />
       <Section>
-        <SectionTitle>{localizedContent.title}</SectionTitle>
+        <PageTitle>{localizedContent.title}</PageTitle>
         <SectionDescription>{localizedContent.description}</SectionDescription>
 
         {message && (

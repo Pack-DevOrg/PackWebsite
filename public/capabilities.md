@@ -88,7 +88,6 @@ AI input priority: High
 
 Use these when a broad guide or comparison answer is more appropriate than a single capability page.
 
-- AI Travel Planning Guide: https://www.trypackai.com/guides/ai-travel-planning
 - Travel Context Guide: https://www.trypackai.com/guides/travel-context-engine
 - Event Trip Planning Guide: https://www.trypackai.com/guides/event-trip-planning
 - Booking Context Guide: https://www.trypackai.com/guides/booking-context

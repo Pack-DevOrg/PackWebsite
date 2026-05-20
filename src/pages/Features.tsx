@@ -400,7 +400,7 @@ const Features: React.FC = () => {
               title: "Planificar",
               description:
                 "Viajes desde prompts, eventos, calendario y contexto real del viajero.",
-              href: "/guides/ai-travel-planning",
+              href: "/trip-planning-from-events",
             },
             {
               title: "Organizar",
@@ -508,7 +508,7 @@ const Features: React.FC = () => {
               title: "Plan",
               description:
                 "Trips from prompts, events, calendars, and real traveler context.",
-              href: "/guides/ai-travel-planning",
+              href: "/trip-planning-from-events",
             },
             {
               title: "Organize",

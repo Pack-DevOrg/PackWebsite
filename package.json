@@ -22,6 +22,8 @@
     "seo:check": "node scripts/seo/analyze-seo-opportunities.mjs --fail-on-critical",
     "seo:competitors": "node scripts/seo/analyze-competitor-seo.mjs",
     "seo:discover": "node scripts/seo/analyze-seo-opportunities.mjs --discover-articles",
+    "seo:indexnow": "node scripts/seo/submit-indexnow.mjs",
+    "seo:indexnow:sitemap": "node scripts/seo/submit-indexnow.mjs --sitemap",
     "validate:meta-browser": "node scripts/validate-meta-browser-events.mjs",
     "capture:live-activity-lab": "node scripts/capture-live-activity-lab.mjs",
     "sync:live-activity-lab": "node scripts/sync-live-activity-lab.mjs",

@@ -1040,7 +1040,6 @@ export const seoGuideDefinitions = [
     ],
     relatedLinks: [
       { href: "/guides/travel-context-engine", label: "Travel Context Guide" },
-      { href: "/guides/ai-travel-planning", label: "AI Travel Planning Guide" },
       { href: "/connected-accounts", label: "Connected Accounts" },
       { href: "/travel-history", label: "Travel History" },
       { href: "/traveler-profiles", label: "Traveler Profiles" },
@@ -1056,6 +1055,10 @@ export const seoGuideDefinitionMap: Record<SeoGuideSlug, SeoGuideDefinition> =
     seoGuideDefinitions.map((definition) => [definition.slug, definition]),
   ) as Record<SeoGuideSlug, SeoGuideDefinition>;
 
+const disabledSeoGuideSlugs = new Set<string>(["ai-travel-planning"]);
+
 export function isSeoGuideSlug(slug: string | undefined): slug is SeoGuideSlug {
-  return Boolean(slug && slug in seoGuideDefinitionMap);
+  return Boolean(
+    slug && slug in seoGuideDefinitionMap && !disabledSeoGuideSlugs.has(slug),
+  );
 }

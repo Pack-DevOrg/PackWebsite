@@ -155,7 +155,7 @@ export const capabilityPageDefinitions = [
     featureTitle: "Extracts loyalty numbers and program details",
     featureDescription:
       "Pack can help organize airline points context, loyalty numbers, traveler program details, and travel-account information across flights, hotels, and rental cars.",
-    pageTitle: "Airline points and loyalty details that stay attached to the trip",
+    pageTitle: "Airline points and loyalty details for every trip",
     pageSubtitle:
       "Pack can help organize loyalty numbers, frequent flyer context, hotel programs, rental car memberships, and points-related travel details instead of leaving them scattered across bookings.",
     intro:

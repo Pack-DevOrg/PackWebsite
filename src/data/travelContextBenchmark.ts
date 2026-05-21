@@ -33,54 +33,66 @@ export const benchmarkOverview = {
 export const latestVerifiedPackRun = {
   label: "Pack hard-100 result",
   summary:
-    "Pack passed all 100 hard travel-planning cases in the latest AWS-backed hard-100 run.",
+    "Pack was evaluated on every case in the hard-100 corpus in an AWS SQS end-to-end run and passed all 100 cases.",
   hard100Composite: "100/100",
   hard100TotalCost: "$5.22",
   averageHard100Cost: "$0.0522",
   hard100Runtime: "24m24s wall clock",
   averageHard100Runtime: "49.5s processing/case",
-  selectedComparisonSet: "10/10 selected hard cases passed in the ten-case comparison set",
-  selectedComparisonRuntime: "10m46s cumulative processing across selected ten",
-  selectedComparisonScope: "Same selected ten inside the May 21 full hard-100 run",
+  llmCalls: "628 LLM calls",
+  runId: "2026-05-21T13-54-55-207Z-aws-e2e-hard-100-1e4b3dfd2",
+  corpusHash:
+    "c569966e63b83a5c4cccebad80d3c674406987d17e90db2bd7da0a055cc347d1",
+  gitCommit:
+    "1e4b3dfd293a3980647e602c0486add78c28f981; artifact recorded uncommitted changes",
+  executionMode: "AWS SQS end-to-end run",
 };
 
+export const methodologyNotes = [
+  "The official result on this page is the Pack hard-100 run over all 100 corpus cases.",
+  "The ten-case model slice is fixed diagnostic evidence, not a random sample and not the benchmark denominator.",
+  "The GPT-5.5 xhigh and Claude Opus 4.7 rows are not full hard-100 runs, so they should not be read as model-wide hard-100 scores.",
+  "A public leaderboard needs each system evaluated on the full frozen corpus under the same harness before making full-corpus comparative claims.",
+  "The May 21 run artifact recorded uncommitted checkout changes; the page reports the run id, commit, and corpus hash so the evidence can be audited.",
+] as const;
+
 export const neurosymbolicComparison = {
-  label: "Hardest-10 Model Comparison",
-  headline: "Latest Pack selected-case results against model baselines.",
+  label: "Diagnostic 10-Case Model Slice",
+  headline: "Subset baselines for error analysis, not the official score.",
   summary:
-    "Pack's latest full hard-100 run now passes all ten selected hard cases. GPT-5.5 xhigh and Claude Opus 4.7 were evaluated on the same selected cases with the same short prompts, private-context tools, travel-search tools, scoring rubric, 45-minute cutoff, and $10 execution cap per case.",
-  measuredCase: "10 selected hard-100 cases, 45-minute cutoff, $10 execution cap per case",
+    "The official Pack result is the full 100-case run above. This section reports a fixed ten-case diagnostic slice because GPT-5.5 xhigh and Claude Opus 4.7 baseline runs currently exist for those same cases. Treat it as case-level audit evidence and cost/runtime context, not as a full-corpus leaderboard.",
+  measuredCase: "10 hard-100 diagnostic cases, 45-minute cutoff, $10 execution cap per case",
   packCorpusResult: "10/10 final content pass",
   packCorpusCost: "$1.11 total cost",
   packCorpusRuntime: "10m46s cumulative processing inside the full run",
-  estimateNote: "Costs show the full cost for each run. Pack includes extraction, planning, and search. GPT and Claude costs include all model work through completion, timeout, or service limit.",
+  estimateNote: "Costs show the full cost for each diagnostic-slice run. Pack entries are extracted from the May 21 full hard-100 run and include extraction, planning, and search. GPT and Claude costs include all model work through completion, timeout, or service limit. The GPT and Claude rows are not full hard-100 evaluations.",
   rows: [
     {
       system: "Pack",
-      outcome: "10/10",
+      outcome: "10/10 slice",
       cost: "$1.11",
       costMultiple: "1x",
       runtime: "10m46s across 10 cases",
       calls: "10/10 final content pass; 10/10 scorable output",
-      note: "Pack passed every selected hard case in the May 21 run, including Japan availability, Paris event dates, airline-credit evidence, wrong-owner hotel rejection, local no-travel, Miami traveler ambiguity, and Barcelona blackout handling.",
+      note: "These rows are the corresponding case-level outcomes from the full May 21 hard-100 run, not a separate run scoped only to the diagnostic slice.",
     },
     {
       system: "GPT-5.5 xhigh",
-      outcome: "Fail",
+      outcome: "1/10 slice",
       cost: "$86.60",
       costMultiple: "77.8x",
       runtime: "48m03s across 10 cases",
       calls: "1/10 final content pass; 0.29 average score",
-      note: "Includes all model work across completed cases and service-limit handling. Partial scores stay low when the final answer is wrong.",
+      note: "Diagnostic-slice baseline only. Includes all model work across completed cases and service-limit handling. Partial scores stay low when the final answer is wrong.",
     },
     {
       system: "Claude Opus 4.7 max-thinking",
-      outcome: "Fail",
+      outcome: "2/10 slice",
       cost: "$17.15",
       costMultiple: "15.4x",
       runtime: "38m50s across 10 cases",
       calls: "2/10 final content pass; 0.37 average score",
-      note: "Claude answers were normalized into the benchmark format before scoring. Two final answers passed; the other eight missed final outcome, constraints, inventory, or evidence requirements.",
+      note: "Diagnostic-slice baseline only. Claude answers were normalized into the benchmark format before scoring. Two final answers passed; the other eight missed final outcome, constraints, inventory, or evidence requirements.",
     },
   ],
 };
@@ -96,7 +108,7 @@ export const shootoutChartRows = [
     solvedLabel: "10/10",
     costLabel: "$1.11",
     runtimeLabel: "10m46s",
-    note: "10/10 pass",
+    note: "10/10 diagnostic slice",
     tone: "pack",
   },
   {
@@ -109,7 +121,7 @@ export const shootoutChartRows = [
     solvedLabel: "1/10",
     costLabel: "$86.60",
     runtimeLabel: "48m03s",
-    note: "1/10 pass",
+    note: "1/10 diagnostic slice",
     tone: "model",
   },
   {
@@ -122,7 +134,7 @@ export const shootoutChartRows = [
     solvedLabel: "2/10",
     costLabel: "$17.15",
     runtimeLabel: "38m50s",
-    note: "2/10 pass",
+    note: "2/10 diagnostic slice",
     tone: "model",
   },
 ] as const;
@@ -166,7 +178,7 @@ export const shootoutRubricRows = [
     constraints: 10,
     search: 10,
     finalPass: 10,
-    note: "Pack passed all ten selected hard cases in the May 21 full hard-100 run and returned scorable output for all ten.",
+    note: "Pack values are extracted from the same fixed diagnostic cases inside the May 21 full hard-100 run and returned scorable output for all ten.",
   },
   {
     system: "GPT-5.5 xhigh",
@@ -772,24 +784,24 @@ export const hard100Cases = [
 
 export const phaseCards = [
   {
-    title: "1. Travel Extractor",
+    title: "1. Context Graph Build",
     metric: "40k emails",
     body:
-      "Runs Pack's real streaming extractor over Gmail-shaped messages and calendar events, then emits profile JSON for trips, cancellations, changes, loyalty, preferences, and costs.",
+      "Each system receives the same Gmail-shaped inbox and calendar history, creating the opportunity to build a per-case context graph of trips, cancellations, changes, loyalty, preferences, obligations, and costs before answering.",
     icon: MailSearch,
   },
   {
-    title: "2. Trip Planner",
+    title: "2. Travel Reasoning",
     metric: "100 hard prompts",
     body:
-      "Runs Pack's real planner on human-written requests with extracted family context, obligations, public-event timing, prior travel, and noisy private context.",
+      "Human-written requests require decisions grounded in household context, obligations, public-event timing, prior travel, and noisy private evidence.",
     icon: CalendarCheck,
   },
   {
-    title: "3. Travel Search",
+    title: "3. Search Grounding",
     metric: "1M + 1M inventory",
     body:
-      "Executes deterministic flight and hotel search from Pack planner outlines, then scores seat fit, price, stops, refundability, room capacity, location, and preference match.",
+      "Flight and hotel choices are checked against deterministic inventory for seat fit, price, stops, refundability, room capacity, location, and preference match.",
     icon: Plane,
   },
 ];

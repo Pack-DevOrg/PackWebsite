@@ -4,6 +4,7 @@ import {
   hard100Cases,
   hardestTenShootoutRows,
   latestVerifiedPackRun,
+  methodologyNotes,
   neurosymbolicComparison,
   phaseCards,
   rubricCategories,
@@ -250,6 +251,7 @@ const ResultItem = styled.div`
     margin-top: 0.25rem;
     color: var(--color-text-primary);
     font-size: var(--font-size-large);
+    overflow-wrap: anywhere;
   }
 `;
 
@@ -646,7 +648,7 @@ const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtim
 const metricChartGroups = [
   {
     title: "Cases solved",
-    helper: "Final content passes on the selected hard cases.",
+    helper: "Final content passes on this diagnostic slice, not the full 100-case suite.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.solvedLabel,
@@ -656,7 +658,7 @@ const metricChartGroups = [
   },
   {
     title: "Total spend",
-    helper: "Full cost for each run across all ten selected cases.",
+    helper: "Full cost for each diagnostic-slice run.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.costLabel,
@@ -666,7 +668,7 @@ const metricChartGroups = [
   },
   {
     title: "Runtime",
-    helper: "Observed runtime across all ten selected cases.",
+    helper: "Observed runtime for each diagnostic-slice evaluation.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.runtimeLabel,
@@ -803,14 +805,14 @@ const TravelContextBenchmark = () => (
   <Page>
       <PageSeo
         title="Pack DeeperBench | Travel Agent Benchmark"
-        description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, and model cost. Pack's latest hard-100 run passed 100 of 100 cases."
+        description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, and model cost. Pack's latest hard-100 run passed 100 of 100 cases; subset model baselines are labeled separately."
       path="/pack-deeperbench"
       schema={[
         {
           "@type": "Dataset",
           name: "Pack DeeperBench",
           description:
-            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases.",
+            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases; diagnostic subset baselines are not the official score.",
           url: buildAbsoluteUrl("/pack-deeperbench"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {
@@ -831,8 +833,8 @@ const TravelContextBenchmark = () => (
       <StatusBar>
         <strong>{benchmarkOverview.officialRunStatus}.</strong>
         {latestVerifiedPackRun.hard100Composite} passed on the full
-        100-case suite. The selected ten-case comparison uses the same private
-        context, tools, cutoff, and scoring rubric for every system.
+        100-case suite. The model-baseline slice below covers ten fixed cases
+        with available baseline runs and is not the official benchmark score.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -852,11 +854,76 @@ const TravelContextBenchmark = () => (
           <dd>{latestVerifiedPackRun.averageHard100Runtime}</dd>
         </Metric>
         <Metric>
-          <dt>Model comparison</dt>
-          <dd>GPT 1/10; Opus 2/10</dd>
+          <dt>LLM calls</dt>
+          <dd>{latestVerifiedPackRun.llmCalls}</dd>
+        </Metric>
+        <Metric>
+          <dt>Run artifact</dt>
+          <dd>May 21 AWS</dd>
         </Metric>
       </MetricGrid>
     </Header>
+
+    <Section>
+      <SectionTitle>Official Full-Corpus Run</SectionTitle>
+      <ResultPanel>
+        <ResultHeader>
+          <h3>{latestVerifiedPackRun.label}</h3>
+          <p>{latestVerifiedPackRun.summary}</p>
+        </ResultHeader>
+        <ResultGrid>
+          <ResultItem>
+            <span>Hard-100 evidence set</span>
+            <strong>{latestVerifiedPackRun.hard100Composite}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Hard-100 total cost</span>
+            <strong>{latestVerifiedPackRun.hard100TotalCost}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Average hard-100 case cost</span>
+            <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.hard100Runtime}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Average hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.averageHard100Runtime}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>LLM calls</span>
+            <strong>{latestVerifiedPackRun.llmCalls}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Execution mode</span>
+            <strong>{latestVerifiedPackRun.executionMode}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Corpus SHA-256</span>
+            <strong>{latestVerifiedPackRun.corpusHash}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Git commit</span>
+            <strong>{latestVerifiedPackRun.gitCommit}</strong>
+          </ResultItem>
+          <ResultItem>
+            <span>Run artifact</span>
+            <strong>{latestVerifiedPackRun.runId}</strong>
+          </ResultItem>
+        </ResultGrid>
+      </ResultPanel>
+    </Section>
+
+    <Section>
+      <SectionTitle>Methodology Notes</SectionTitle>
+      <ProtocolList>
+        {methodologyNotes.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ProtocolList>
+    </Section>
 
     <Section>
       <SectionTitle>{neurosymbolicComparison.label}</SectionTitle>
@@ -933,12 +1000,15 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Hardest-10 Case Results</SectionTitle>
+      <SectionTitle>Diagnostic Case-Level Rows</SectionTitle>
       <SectionText>
-        Each row is one selected hard case. A full pass means the final answer
-        is fully correct. Decimal scores use a final-answer-heavy rubric:
-        50% final outcome, 30% core trip details, 10% inventory or outcome,
-        7% evidence, and 3% scorable output.
+        Each row is one fixed diagnostic case from the hard-100 corpus for
+        which Pack, GPT-5.5 xhigh, and Claude Opus 4.7 baseline rows are
+        currently available. This table is for auditability and error analysis;
+        the public benchmark result remains the full 100-case run. Decimal
+        scores use a final-answer-heavy rubric: 50% final outcome, 30% core
+        trip details, 10% inventory or outcome, 7% evidence, and 3% scorable
+        output.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -1038,54 +1108,9 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Full Pack Run</SectionTitle>
-      <ResultPanel>
-        <ResultHeader>
-          <h3>{latestVerifiedPackRun.label}</h3>
-          <p>{latestVerifiedPackRun.summary}</p>
-        </ResultHeader>
-        <ResultGrid>
-          <ResultItem>
-            <span>Hard-100 evidence set</span>
-            <strong>{latestVerifiedPackRun.hard100Composite}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Hard-100 total cost</span>
-            <strong>{latestVerifiedPackRun.hard100TotalCost}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Average hard-100 case cost</span>
-            <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Hard-100 runtime</span>
-            <strong>{latestVerifiedPackRun.hard100Runtime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Average hard-100 runtime</span>
-            <strong>{latestVerifiedPackRun.averageHard100Runtime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Selected case result</span>
-            <strong>{latestVerifiedPackRun.selectedComparisonSet}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Selected set runtime</span>
-            <strong>{latestVerifiedPackRun.selectedComparisonRuntime}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Comparison set</span>
-            <strong>{latestVerifiedPackRun.selectedComparisonScope}</strong>
-          </ResultItem>
-        </ResultGrid>
-      </ResultPanel>
-    </Section>
-
-    <Section>
       <SectionTitle>Hard-100 Case Browser</SectionTitle>
       <SectionText>
-        The ten-case comparison is drawn from this full set of 100 hard travel
-        requests.
+        The official hard-100 result covers every request listed here.
       </SectionText>
       <FullCaseList>
         {hard100Cases.map((caseItem) => (

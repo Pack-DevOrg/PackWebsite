@@ -153,6 +153,24 @@ const Card = styled.article`
   }
 `;
 
+const ScoreCardGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+
+  @media (max-width: 1020px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 620px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ScoreCard = styled(Card)<{ $featured?: boolean }>`
+  ${({ $featured }) => ($featured ? "grid-column: 1 / -1;" : "")}
+`;
+
 const CardMetric = styled.span`
   color: var(--color-accent);
   font-size: var(--font-size-small);
@@ -801,6 +819,9 @@ const CaseModelResult = ({
   </ModelResultCell>
 );
 
+const finalAnswerScoreCard = scoreCards.find((card) => card.label === "Final Answer");
+const supportingScoreCards = scoreCards.filter((card) => card.label !== "Final Answer");
+
 const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
@@ -1073,18 +1094,25 @@ const TravelContextBenchmark = () => (
 
     <Section>
       <SectionTitle>How A Case Passes</SectionTitle>
-      <CardGrid>
-        {scoreCards.map((card) => {
+      <ScoreCardGrid>
+        {supportingScoreCards.map((card) => {
           const Icon = card.icon;
           return (
-            <Card key={card.label}>
+            <ScoreCard key={card.label}>
               <Icon aria-hidden="true" />
               <h3>{card.label}</h3>
               <p>{card.body}</p>
-            </Card>
+            </ScoreCard>
           );
         })}
-      </CardGrid>
+        {finalAnswerScoreCard ? (
+          <ScoreCard key={finalAnswerScoreCard.label} $featured>
+            <finalAnswerScoreCard.icon aria-hidden="true" />
+            <h3>{finalAnswerScoreCard.label}</h3>
+            <p>{finalAnswerScoreCard.body}</p>
+          </ScoreCard>
+        ) : null}
+      </ScoreCardGrid>
     </Section>
 
     <Section>

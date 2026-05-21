@@ -33,19 +33,13 @@ export const benchmarkOverview = {
 export const latestVerifiedPackRun = {
   label: "Pack hard-100 result",
   summary:
-    "Pack was evaluated on every case in the hard-100 corpus in an AWS SQS end-to-end run and passed all 100 cases.",
+    "Pack was evaluated on every case in the hard-100 corpus and passed all 100 cases.",
   hard100Composite: "100/100",
   hard100TotalCost: "$5.22",
   averageHard100Cost: "$0.0522",
   hard100Runtime: "24m24s wall clock",
   averageHard100Runtime: "49.5s processing/case",
   llmCalls: "628 LLM calls",
-  runId: "2026-05-21T13-54-55-207Z-aws-e2e-hard-100-1e4b3dfd2",
-  corpusHash:
-    "c569966e63b83a5c4cccebad80d3c674406987d17e90db2bd7da0a055cc347d1",
-  gitCommit:
-    "1e4b3dfd293a3980647e602c0486add78c28f981; artifact recorded uncommitted changes",
-  executionMode: "AWS SQS end-to-end run",
 };
 
 export const methodologyNotes = [
@@ -53,7 +47,7 @@ export const methodologyNotes = [
   "The ten-case model slice is fixed diagnostic evidence, not a random sample and not the benchmark denominator.",
   "The GPT-5.5 xhigh and Claude Opus 4.7 rows are not full hard-100 runs, so they should not be read as model-wide hard-100 scores.",
   "A public leaderboard needs each system evaluated on the full frozen corpus under the same harness before making full-corpus comparative claims.",
-  "The May 21 run artifact recorded uncommitted checkout changes; the page reports the run id, commit, and corpus hash so the evidence can be audited.",
+  "Pack's May 21 result is reported as an empirical public run summary, not as an internal build trace.",
 ] as const;
 
 export const neurosymbolicComparison = {

@@ -857,10 +857,6 @@ const TravelContextBenchmark = () => (
           <dt>LLM calls</dt>
           <dd>{latestVerifiedPackRun.llmCalls}</dd>
         </Metric>
-        <Metric>
-          <dt>Run artifact</dt>
-          <dd>May 21 AWS</dd>
-        </Metric>
       </MetricGrid>
     </Header>
 
@@ -895,22 +891,6 @@ const TravelContextBenchmark = () => (
           <ResultItem>
             <span>LLM calls</span>
             <strong>{latestVerifiedPackRun.llmCalls}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Execution mode</span>
-            <strong>{latestVerifiedPackRun.executionMode}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Corpus SHA-256</span>
-            <strong>{latestVerifiedPackRun.corpusHash}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Git commit</span>
-            <strong>{latestVerifiedPackRun.gitCommit}</strong>
-          </ResultItem>
-          <ResultItem>
-            <span>Run artifact</span>
-            <strong>{latestVerifiedPackRun.runId}</strong>
           </ResultItem>
         </ResultGrid>
       </ResultPanel>

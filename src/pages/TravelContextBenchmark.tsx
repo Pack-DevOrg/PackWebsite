@@ -801,16 +801,16 @@ const CaseModelResult = ({
 
 const TravelContextBenchmark = () => (
   <Page>
-    <PageSeo
-      title="Pack DeeperBench | Travel Agent Benchmark"
-      description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, and model cost."
+      <PageSeo
+        title="Pack DeeperBench | Travel Agent Benchmark"
+        description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, and model cost. Pack's latest hard-100 run passed 100 of 100 cases."
       path="/pack-deeperbench"
       schema={[
         {
           "@type": "Dataset",
           name: "Pack DeeperBench",
           description:
-            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory.",
+            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases.",
           url: buildAbsoluteUrl("/pack-deeperbench"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {
@@ -829,7 +829,7 @@ const TravelContextBenchmark = () => (
         email, calendar, flight-search, and hotel-search tasks.
       </Intro>
       <StatusBar>
-        <strong>Current Pack hard-100 result.</strong>
+        <strong>{benchmarkOverview.officialRunStatus}.</strong>
         {latestVerifiedPackRun.hard100Composite} passed on the full
         100-case suite. The selected ten-case comparison uses the same private
         context, tools, cutoff, and scoring rubric for every system.

@@ -168,7 +168,31 @@ const ScoreCardGrid = styled.div`
 `;
 
 const ScoreCard = styled(Card)<{ $featured?: boolean }>`
-  ${({ $featured }) => ($featured ? "grid-column: 1 / -1;" : "")}
+  ${({ $featured }) =>
+    $featured
+      ? `
+        grid-column: 1 / -1;
+        justify-items: center;
+        align-content: center;
+        min-height: 270px;
+        padding: var(--space-5);
+        text-align: center;
+
+        svg {
+          width: 44px;
+          height: 44px;
+        }
+
+        h3 {
+          font-size: var(--font-size-2xl);
+        }
+
+        p {
+          max-width: 760px;
+          font-size: var(--font-size-large);
+        }
+      `
+      : ""}
 `;
 
 const CardMetric = styled.span`

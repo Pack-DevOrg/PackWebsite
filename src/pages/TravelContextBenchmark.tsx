@@ -403,11 +403,11 @@ const ScoreValue = styled.strong<{ $status?: "pass" | "partial" | "fail" | "unsc
       ? "rgb(111, 220, 166)"
       : $status === "partial"
         ? "rgb(255, 211, 121)"
-      : $status === "fail"
-        ? "rgb(255, 132, 132)"
-        : $status === "unscored"
-      ? "rgb(255, 211, 121)"
-      : "var(--color-text-primary)"};
+        : $status === "fail"
+          ? "rgb(255, 132, 132)"
+          : $status === "unscored"
+            ? "rgb(255, 211, 121)"
+            : "var(--color-text-primary)"};
   font-size: var(--font-size-large);
   line-height: 1.15;
 `;
@@ -473,7 +473,7 @@ const ComponentChip = styled.li<{ $status: "pass" | "partial" | "fail" }>`
       ? "rgb(111, 220, 166)"
       : $status === "partial"
         ? "rgb(255, 211, 121)"
-      : "rgb(255, 132, 132)"};
+        : "rgb(255, 132, 132)"};
   padding: 0.1rem 0.42rem;
   font-size: 0.68rem;
   font-weight: 800;
@@ -803,9 +803,9 @@ const CaseModelResult = ({
 
 const TravelContextBenchmark = () => (
   <Page>
-      <PageSeo
-        title="Pack DeeperBench | Travel Agent Benchmark"
-        description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, and model cost. Pack's latest hard-100 run passed 100 of 100 cases; subset model baselines are labeled separately."
+    <PageSeo
+      title="Pack DeeperBench | Travel Agent Benchmark"
+      description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, and model cost. Pack's latest hard-100 run passed 100 of 100 cases; subset model baselines are labeled separately."
       path="/pack-deeperbench"
       schema={[
         {
@@ -831,10 +831,10 @@ const TravelContextBenchmark = () => (
         email, calendar, flight-search, and hotel-search tasks.
       </Intro>
       <StatusBar>
-        <strong>{benchmarkOverview.officialRunStatus}.</strong>
-        {latestVerifiedPackRun.hard100Composite} passed on the full
-        100-case suite. The model-baseline slice below covers ten fixed cases
-        with available baseline runs and is not the official benchmark score.
+        <strong>{benchmarkOverview.status}.</strong>
+        {latestVerifiedPackRun.hard100Composite} passed on the full 100-case
+        suite. The model-baseline slice below covers ten fixed cases with
+        available baseline runs and is not the official benchmark score.
       </StatusBar>
       <MetricGrid>
         <Metric>

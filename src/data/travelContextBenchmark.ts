@@ -10,7 +10,7 @@ import {
 export const benchmarkOverview = {
   name: "Pack DeeperBench",
   version: "pack-deeperbench-v0",
-  officialRunStatus: "Pack hard-100 full run verified May 21, 2026",
+  status: "Pack hard-100 full run verified May 21, 2026",
   corpus: {
     household: "Synthetic household",
     people: 4,
@@ -47,7 +47,7 @@ export const methodologyNotes = [
   "The ten-case model slice is fixed diagnostic evidence, not a random sample and not the benchmark denominator.",
   "The GPT-5.5 xhigh and Claude Opus 4.7 rows are not full hard-100 runs, so they should not be read as model-wide hard-100 scores.",
   "A public leaderboard needs each system evaluated on the full frozen corpus under the same harness before making full-corpus comparative claims.",
-  "Pack's May 21 result is reported as an empirical public run summary, not as an internal build trace.",
+  "Public result fields stay empirical: final pass count, runtime, cost, and model-call count.",
 ] as const;
 
 export const neurosymbolicComparison = {

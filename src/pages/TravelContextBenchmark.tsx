@@ -5,7 +5,6 @@ import {
   hardestTenShootoutRows,
   latestVerifiedPackRun,
   neurosymbolicComparison,
-  packHardCaseStatus,
   phaseCards,
   rubricCategories,
   scoreCards,
@@ -13,8 +12,6 @@ import {
   shootoutRubricRows,
 } from "@/data/travelContextBenchmark";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
-
-type HardCaseLedgerStatus = (typeof packHardCaseStatus.rows)[number]["status"];
 
 const Page = styled.main`
   width: min(100%, 1180px);
@@ -201,86 +198,6 @@ const ResultGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-2);
-`;
-
-const HardCaseLedgerTable = styled.table`
-  width: 100%;
-  min-width: 920px;
-  border-collapse: collapse;
-  table-layout: fixed;
-
-  th,
-  td {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 0.85rem;
-    text-align: left;
-    vertical-align: top;
-  }
-
-  th {
-    color: var(--color-text-primary);
-    font-size: var(--font-size-small);
-    text-transform: uppercase;
-  }
-
-  td {
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-  }
-
-  th:first-child,
-  td:first-child {
-    width: 16%;
-  }
-
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 25%;
-  }
-
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 15%;
-  }
-
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 21%;
-  }
-
-  tr:last-child td {
-    border-bottom: 0;
-  }
-
-  strong {
-    color: var(--color-text-primary);
-  }
-`;
-
-const HardCaseStatusBadge = styled.span<{ $status: HardCaseLedgerStatus }>`
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  min-height: 1.65rem;
-  border: 1px solid
-    ${({ $status }) =>
-      $status === "open" ? "rgba(255, 132, 132, 0.34)" : "rgba(111, 220, 166, 0.34)"};
-  border-radius: 999px;
-  background: ${({ $status }) =>
-    $status === "open"
-      ? "rgba(255, 132, 132, 0.12)"
-      : $status === "repaired"
-        ? "rgba(243, 210, 122, 0.12)"
-        : "rgba(111, 220, 166, 0.12)"};
-  color: ${({ $status }) =>
-    $status === "open"
-      ? "rgb(255, 132, 132)"
-      : $status === "repaired"
-        ? "rgb(255, 211, 121)"
-        : "rgb(111, 220, 166)"};
-  padding: 0.18rem 0.55rem;
-  font-size: var(--font-size-small);
-  font-weight: 800;
 `;
 
 const FullCaseList = styled.div`
@@ -654,7 +571,7 @@ const BarTrack = styled.span`
   background: rgba(255, 255, 255, 0.08);
 `;
 
-const BarFill = styled.span<{ $percent: number; $tone: "pack" | "raw" }>`
+const BarFill = styled.span<{ $percent: number; $tone: "pack" | "model" }>`
   display: block;
   width: ${({ $percent }) => `${Math.max(0, Math.min(100, $percent))}%`};
   height: 100%;
@@ -912,11 +829,10 @@ const TravelContextBenchmark = () => (
         email, calendar, flight-search, and hotel-search tasks.
       </Intro>
       <StatusBar>
-        <strong>Current Pack hard-case status.</strong>
-        Latest full dev hard-100: {latestVerifiedPackRun.hard100Composite}.
-        Selected hardest-ten pass ledger: {packHardCaseStatus.selectedHardestTenLedger}.
-        Prior targeted repairs held in the full run: {packHardCaseStatus.targetedRepairs}.
-        Remaining selected gaps: {packHardCaseStatus.remainingSelectedGaps}.
+        <strong>Current Pack hard-100 result.</strong>
+        {latestVerifiedPackRun.hard100Composite} passed on the full
+        100-case suite. The selected ten-case comparison uses the same private
+        context, tools, cutoff, and scoring rubric for every system.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -924,72 +840,23 @@ const TravelContextBenchmark = () => (
           <dd>{latestVerifiedPackRun.hard100Composite}</dd>
         </Metric>
         <Metric>
-          <dt>Selected hard cases</dt>
-          <dd>{packHardCaseStatus.selectedHardestTenLedger}</dd>
+          <dt>Hard-100 cost</dt>
+          <dd>{latestVerifiedPackRun.hard100TotalCost}</dd>
         </Metric>
         <Metric>
-          <dt>Repairs held</dt>
-          <dd>{packHardCaseStatus.targetedRepairs}</dd>
+          <dt>Average case cost</dt>
+          <dd>{latestVerifiedPackRun.averageHard100Cost}</dd>
         </Metric>
         <Metric>
-          <dt>Open selected gaps</dt>
-          <dd>{packHardCaseStatus.remainingSelectedGaps}</dd>
+          <dt>Average runtime</dt>
+          <dd>{latestVerifiedPackRun.averageHard100Runtime}</dd>
         </Metric>
         <Metric>
-          <dt>Archived raw baseline</dt>
+          <dt>Model comparison</dt>
           <dd>GPT 1/10; Opus 2/10</dd>
         </Metric>
       </MetricGrid>
     </Header>
-
-    <Section>
-      <SectionTitle>{packHardCaseStatus.label}</SectionTitle>
-      <ResultPanel>
-        <ResultHeader>
-          <h3>{packHardCaseStatus.headline}</h3>
-          <p>{packHardCaseStatus.summary}</p>
-        </ResultHeader>
-        <ResultGrid>
-          {packHardCaseStatus.metrics.map((metric) => (
-            <ResultItem key={metric.label}>
-              <span>{metric.label}</span>
-              <strong>{metric.value}</strong>
-              <span>{metric.helper}</span>
-            </ResultItem>
-          ))}
-        </ResultGrid>
-        <TableWrap>
-          <HardCaseLedgerTable>
-            <thead>
-              <tr>
-                <th>Case</th>
-                <th>Prompt</th>
-                <th>Result</th>
-                <th>Source run</th>
-                <th>What it means</th>
-              </tr>
-            </thead>
-            <tbody>
-              {packHardCaseStatus.rows.map((row) => (
-                <tr key={row.caseId}>
-                  <td>
-                    <strong>{row.caseId}</strong>
-                  </td>
-                  <td>{row.title}</td>
-                  <td>
-                    <HardCaseStatusBadge $status={row.status}>
-                      {row.result}
-                    </HardCaseStatusBadge>
-                  </td>
-                  <td>{row.sourceRun}</td>
-                  <td>{row.note}</td>
-                </tr>
-              ))}
-            </tbody>
-          </HardCaseLedgerTable>
-        </TableWrap>
-      </ResultPanel>
-    </Section>
 
     <Section>
       <SectionTitle>{neurosymbolicComparison.label}</SectionTitle>
@@ -1072,8 +939,6 @@ const TravelContextBenchmark = () => (
         is fully correct. Decimal scores use a final-answer-heavy rubric:
         50% final outcome, 30% core trip details, 10% inventory or outcome,
         7% evidence, and 3% scorable output.
-        Pack rows in this table use the archived May 19 exact-case rerun;
-        the current Pack repair ledger is shown above.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -1201,11 +1066,11 @@ const TravelContextBenchmark = () => (
             <strong>{latestVerifiedPackRun.averageHard100Runtime}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Raw comparison set</span>
+            <span>Selected case result</span>
             <strong>{latestVerifiedPackRun.selectedComparisonSet}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Hardest-10 Pack runtime</span>
+            <span>Selected set runtime</span>
             <strong>{latestVerifiedPackRun.selectedComparisonRuntime}</strong>
           </ResultItem>
           <ResultItem>

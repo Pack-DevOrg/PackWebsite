@@ -679,7 +679,7 @@ const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtim
 const metricChartGroups = [
   {
     title: "Cases solved",
-    helper: "Final content passes on this diagnostic slice, not the full 100-case suite.",
+    helper: "Final content passes within the selected ten-case hard set.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.solvedLabel,
@@ -689,7 +689,7 @@ const metricChartGroups = [
   },
   {
     title: "Total spend",
-    helper: "Full model and tool cost for each diagnostic-slice run.",
+    helper: "Full model and tool cost for each ten-case hard-set run.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.costLabel,
@@ -699,7 +699,7 @@ const metricChartGroups = [
   },
   {
     title: "Runtime",
-    helper: "Observed wait time for each diagnostic-slice evaluation.",
+    helper: "Observed wait time for each ten-case hard-set evaluation.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
       label: row.runtimeLabel,
@@ -997,10 +997,10 @@ const TravelContextBenchmark = () => (
     <Section>
       <SectionTitle>Case Results</SectionTitle>
       <SectionText>
-        Each row is one fixed diagnostic case from the hard-100 corpus for
-        which Pack, GPT-5.5 xhigh, and Claude Opus 4.7 baseline rows are
-        currently available. The table reports rubric score, cost, runtime,
-        rubric components, and the scored result note for each system.
+        Each row is one of ten especially difficult cases selected from the
+        hard-100 corpus as a focused test set. The table reports rubric score,
+        cost, runtime, rubric components, and the scored result note for Pack,
+        GPT-5.5 xhigh, and Claude Opus 4.7 on those same cases.
       </SectionText>
       <TableWrap>
         <ShootoutTable>

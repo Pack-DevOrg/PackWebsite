@@ -318,19 +318,23 @@ const FindingText = styled.p`
 const ComparisonGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(5, auto);
+  grid-template-rows: repeat(6, auto);
   gap: var(--space-3);
+  align-items: stretch;
 
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  @media (max-width: 980px) {
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  }
+
+  @media (max-width: 360px) {
+    grid-template-columns: 1fr;
   }
 `;
 
 const ComparisonCard = styled.article`
   display: grid;
-  grid-row: span 5;
+  grid-row: span 6;
   grid-template-rows: subgrid;
-  align-content: start;
   gap: var(--space-2);
   min-width: 0;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -339,7 +343,7 @@ const ComparisonCard = styled.article`
   padding: var(--space-3);
 
   @supports not (grid-template-rows: subgrid) {
-    grid-template-rows: auto minmax(3.2rem, auto) auto minmax(5rem, auto) 1fr;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
   }
 
   h4 {
@@ -391,9 +395,16 @@ const ComparisonMeta = styled.div`
   display: grid;
   align-content: start;
   gap: 0.3rem;
-  min-height: 5rem;
   color: var(--color-text-secondary);
   font-size: var(--font-size-small);
+`;
+
+const ComparisonNoteGroup = styled.div`
+  display: grid;
+  gap: var(--space-2);
+  align-self: end;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-2);
 `;
 
 const TableWrap = styled.div`
@@ -615,24 +626,12 @@ const BarFill = styled.span<{ $percent: number; $tone: "pack" | "model" }>`
       : "rgba(255, 132, 132, 0.8)"};
 `;
 
-const RubricGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-3);
-`;
-
-const RubricCard = styled.article`
-  display: grid;
-  gap: var(--space-2);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: var(--space-3);
-`;
-
 const RubricHeader = styled.div`
   display: flex;
   justify-content: space-between;
   gap: var(--space-2);
   align-items: baseline;
+  flex-wrap: wrap;
 
   h4 {
     margin: 0;
@@ -708,6 +707,20 @@ const metricChartGroups = [
     })),
   },
 ];
+
+const hardSetSystemRows = neurosymbolicComparison.rows.map((comparisonRow) => {
+  const rubricRow = shootoutRubricRows.find(
+    (row) => row.system === comparisonRow.rubricSystem,
+  );
+  if (!rubricRow) {
+    throw new Error(`Missing hard-set rubric row for ${comparisonRow.system}`);
+  }
+
+  return {
+    comparisonRow,
+    rubricRow,
+  };
+});
 
 const statusForScore = (score: string): "pass" | "partial" | "fail" | "unscored" => {
   if (score === "Not run" || score === "Unscored") {
@@ -812,7 +825,7 @@ const TravelContextBenchmark = () => (
           "@type": "Dataset",
           name: "Pack DeeperBench",
           description:
-            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases; diagnostic subset baselines are not the official score.",
+            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases; selected hard-case baselines are not the official full-corpus score.",
           url: buildAbsoluteUrl("/pack-deeperbench"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {
@@ -943,50 +956,46 @@ const TravelContextBenchmark = () => (
             </ChartBlock>
           ))}
         </ChartGrid>
-        <RubricGrid aria-label="Shared rubric category scores">
-          {shootoutRubricRows.map((row) => (
-            <RubricCard key={row.system}>
+        <ComparisonGrid aria-label="Selected hard-case system details">
+          {hardSetSystemRows.map(({ comparisonRow, rubricRow }) => (
+            <ComparisonCard key={comparisonRow.system}>
               <RubricHeader>
-                <h4>{row.system}</h4>
-                <strong>{row.finalPass}/{row.denominator} pass</strong>
+                <h4>{comparisonRow.system}</h4>
+                <ComparisonBadge $outcome={comparisonRow.outcome}>
+                  {comparisonRow.outcome}
+                </ComparisonBadge>
               </RubricHeader>
+              <ComparisonCost>{comparisonRow.cost}</ComparisonCost>
+              <ComparisonMeta>
+                <span>{comparisonRow.costMultiple}</span>
+                <span>{comparisonRow.runtime}</span>
+                <span>{comparisonRow.calls}</span>
+              </ComparisonMeta>
+              <FindingText>
+                <strong>Summary:</strong> {comparisonRow.takeaway}
+              </FindingText>
               <RubricCategoryList>
                 {rubricCategories.map((category) => {
-                  const value = row[category.key];
-                  const denominator = row.denominator;
+                  const value = rubricRow[category.key];
+                  const denominator = rubricRow.denominator;
                   return (
-                    <RubricCategory key={`${row.system}-${category.key}`}>
+                    <RubricCategory key={`${rubricRow.system}-${category.key}`}>
                       <RubricCategoryHeader>
                         <strong>{category.label}</strong>
                         <span>{value}/{denominator}</span>
                       </RubricCategoryHeader>
                       <BarTrack aria-hidden="true">
-                        <BarFill $percent={(value / denominator) * 100} $tone={row.tone} />
+                        <BarFill $percent={(value / denominator) * 100} $tone={rubricRow.tone} />
                       </BarTrack>
                       <RubricDescription>{category.description}</RubricDescription>
                     </RubricCategory>
                   );
                 })}
               </RubricCategoryList>
-              <FindingText>{row.note}</FindingText>
-            </RubricCard>
-          ))}
-        </RubricGrid>
-        <ComparisonGrid>
-          {neurosymbolicComparison.rows.map((row) => (
-            <ComparisonCard key={row.system}>
-              <ComparisonBadge $outcome={row.outcome}>{row.outcome}</ComparisonBadge>
-              <h4>{row.system}</h4>
-              <ComparisonCost>{row.cost}</ComparisonCost>
-              <ComparisonMeta>
-                <span>{row.costMultiple}</span>
-                <span>{row.runtime}</span>
-                <span>{row.calls}</span>
-              </ComparisonMeta>
-              <FindingText>
-                <strong>Summary:</strong> {row.takeaway}
-              </FindingText>
-              <p>{row.note}</p>
+              <ComparisonNoteGroup>
+                <FindingText>{rubricRow.note}</FindingText>
+                <p>{comparisonRow.note}</p>
+              </ComparisonNoteGroup>
             </ComparisonCard>
           ))}
         </ComparisonGrid>

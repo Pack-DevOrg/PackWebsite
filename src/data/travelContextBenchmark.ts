@@ -96,6 +96,7 @@ export const neurosymbolicComparison = {
   rows: [
     {
       system: "Pack",
+      rubricSystem: "Pack",
       outcome: "10/10 hard set",
       cost: "$1.11",
       costMultiple: "1x Pack cost",
@@ -106,6 +107,7 @@ export const neurosymbolicComparison = {
     },
     {
       system: "GPT-5.5 xhigh",
+      rubricSystem: "GPT-5.5 xhigh",
       outcome: "1/10 hard set",
       cost: "$86.60",
       costMultiple: "77.8x Pack cost",
@@ -116,6 +118,7 @@ export const neurosymbolicComparison = {
     },
     {
       system: "Claude Opus 4.7 max-thinking",
+      rubricSystem: "Opus 4.7",
       outcome: "2/10 hard set",
       cost: "$17.15",
       costMultiple: "15.4x Pack cost",
@@ -208,7 +211,7 @@ export const shootoutRubricRows = [
     constraints: 10,
     search: 10,
     finalPass: 10,
-    note: "Pack values are extracted from the same fixed diagnostic cases inside the May 21 full hard-100 run and returned scorable output for all ten.",
+    note: "Pack values are extracted from the same selected hard cases inside the May 21 full hard-100 run and returned scorable output for all ten.",
   },
   {
     system: "GPT-5.5 xhigh",

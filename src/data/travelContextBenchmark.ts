@@ -103,7 +103,6 @@ export const neurosymbolicComparison = {
       runtime: "10m46s across the ten hard cases",
       calls: "10/10 final content pass; 10/10 scorable output",
       takeaway: "Returned a passing final answer for each selected hard case.",
-      note: "The Pack rows are the corresponding case outcomes from the May 21 hard-100 run.",
     },
     {
       system: "GPT-5.5 xhigh",
@@ -114,7 +113,6 @@ export const neurosymbolicComparison = {
       runtime: "67m16s across the ten hard cases",
       calls: "1/10 final content pass; 0.29 average score",
       takeaway: "One final answer passed. Other cases received partial rubric credit where evidence, constraints, or inventory were correct.",
-      note: "Shown as hard-case evidence for these specific cases, not as a full hard-100 model score.",
     },
     {
       system: "Claude Opus 4.7 max-thinking",
@@ -125,7 +123,6 @@ export const neurosymbolicComparison = {
       runtime: "38m45s across the ten hard cases",
       calls: "2/10 final content pass; 0.37 average score",
       takeaway: "Two final answers passed. Other cases received partial rubric credit where evidence, constraints, or inventory were correct.",
-      note: "Shown as hard-case evidence for these specific cases, not as a full hard-100 model score.",
     },
   ],
 };

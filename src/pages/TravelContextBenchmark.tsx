@@ -994,7 +994,6 @@ const TravelContextBenchmark = () => (
               </RubricCategoryList>
               <ComparisonNoteGroup>
                 <FindingText>{rubricRow.note}</FindingText>
-                <p>{comparisonRow.note}</p>
               </ComparisonNoteGroup>
             </ComparisonCard>
           ))}

@@ -92,7 +92,7 @@ export const neurosymbolicComparison = {
   packCorpusResult: "10/10 final content pass",
   packCorpusCost: "$1.11 total cost",
   packCorpusRuntime: "10m46s cumulative processing inside the full run",
-  estimateNote: "Costs show the uncached cost for each ten-case hard-set run. These rows describe the selected hard cases, not full hard-100 evaluations for GPT-5.5 xhigh or Claude Opus 4.7.",
+  estimateNote: "Pack values are the matching cases from the May 21 full hard-100 run. Costs show the uncached cost for each ten-case hard-set run. These rows describe the selected hard cases, not full hard-100 evaluations for GPT-5.5 xhigh or Claude Opus 4.7.",
   rows: [
     {
       system: "Pack",
@@ -138,7 +138,6 @@ export const shootoutChartRows = [
     solvedLabel: "10/10",
     costLabel: "$1.11",
     runtimeLabel: "10m46s",
-    note: "10/10 hard-case set",
     tone: "pack",
   },
   {
@@ -151,7 +150,6 @@ export const shootoutChartRows = [
     solvedLabel: "1/10",
     costLabel: "$86.60",
     runtimeLabel: "67m16s",
-    note: "1/10 hard-case set",
     tone: "model",
   },
   {
@@ -164,7 +162,6 @@ export const shootoutChartRows = [
     solvedLabel: "2/10",
     costLabel: "$17.15",
     runtimeLabel: "38m45s",
-    note: "2/10 hard-case set",
     tone: "model",
   },
 ] as const;
@@ -208,7 +205,6 @@ export const shootoutRubricRows = [
     constraints: 10,
     search: 10,
     finalPass: 10,
-    note: "Pack values are extracted from the same selected hard cases inside the May 21 full hard-100 run and returned scorable output for all ten.",
   },
   {
     system: "GPT-5.5 xhigh",
@@ -220,7 +216,6 @@ export const shootoutRubricRows = [
     constraints: 5,
     search: 5,
     finalPass: 1,
-    note: "One final answer passed. Several failed cases still found useful evidence, but wrong-owner, local-stay, and wrong-destination misses now stay low because final correctness carries the largest weight.",
   },
   {
     system: "Opus 4.7",
@@ -232,7 +227,6 @@ export const shootoutRubricRows = [
     constraints: 6,
     search: 5,
     finalPass: 2,
-    note: "Two plans passed. The rest missed evidence, constraints, search inventory, or the required no-travel/clarification outcome.",
   },
 ] as const;
 

@@ -318,7 +318,7 @@ const FindingText = styled.p`
 const ComparisonGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(6, auto);
+  grid-template-rows: repeat(5, auto);
   gap: var(--space-3);
   align-items: stretch;
 
@@ -333,7 +333,7 @@ const ComparisonGrid = styled.div`
 
 const ComparisonCard = styled.article`
   display: grid;
-  grid-row: span 6;
+  grid-row: span 5;
   grid-template-rows: subgrid;
   gap: var(--space-2);
   min-width: 0;
@@ -343,7 +343,7 @@ const ComparisonCard = styled.article`
   padding: var(--space-3);
 
   @supports not (grid-template-rows: subgrid) {
-    grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   }
 
   h4 {
@@ -397,14 +397,6 @@ const ComparisonMeta = styled.div`
   gap: 0.3rem;
   color: var(--color-text-secondary);
   font-size: var(--font-size-small);
-`;
-
-const ComparisonNoteGroup = styled.div`
-  display: grid;
-  gap: var(--space-2);
-  align-self: end;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: var(--space-2);
 `;
 
 const TableWrap = styled.div`
@@ -992,9 +984,6 @@ const TravelContextBenchmark = () => (
                   );
                 })}
               </RubricCategoryList>
-              <ComparisonNoteGroup>
-                <FindingText>{rubricRow.note}</FindingText>
-              </ComparisonNoteGroup>
             </ComparisonCard>
           ))}
         </ComparisonGrid>

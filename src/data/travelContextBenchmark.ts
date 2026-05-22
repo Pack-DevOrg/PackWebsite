@@ -31,9 +31,9 @@ export const benchmarkOverview = {
 };
 
 export const latestVerifiedPackRun = {
-  label: "Pack hard-100 result",
+  label: "Pack hard-100 run",
   summary:
-    "Pack answered every hard-100 request with the right traveler-facing outcome.",
+    "The run includes all 100 hard-corpus cases. Final pass count was 100/100.",
   hard100Composite: "100/100",
   hard100TotalCost: "$5.22",
   averageHard100Cost: "$0.0522",
@@ -52,43 +52,42 @@ export const benchmarkMetricExplanations = [
     label: "Final pass count",
     value: latestVerifiedPackRun.hard100Composite,
     body:
-      "Shows whether the traveler would get the right outcome, not just a fluent answer. A pass means the plan, abstention, impossibility, or clarification matched the evidence.",
+      "Number of cases where the final answer matched the expected outcome under the rubric.",
   },
   {
     label: "Runtime",
-    value: latestVerifiedPackRun.averageHard100Runtime,
+    value: `${latestVerifiedPackRun.hard100Runtime}; ${latestVerifiedPackRun.averageHard100Runtime}`,
     body:
-      "Shows the wait a traveler or product workflow would feel. Reliable travel planning is less useful if the answer arrives too slowly to act on.",
+      "Observed execution time for the run, reported as total wall-clock time and average processing time per case.",
   },
   {
     label: "Cost",
-    value: latestVerifiedPackRun.averageHard100Cost,
+    value: `${latestVerifiedPackRun.hard100TotalCost}; ${latestVerifiedPackRun.averageHard100Cost} avg`,
     body:
-      "Shows whether the approach can be operated repeatedly at real product scale, instead of working only as a one-off demo.",
+      "Measured model and tool execution cost for the run, reported as total cost and average cost per case.",
   },
   {
     label: "Model-call count",
     value: latestVerifiedPackRun.llmCalls,
     body:
-      "Shows how much agent work the system needed. Calls matter because every extra step adds latency, cost, and another place for tool or reasoning failures.",
+      "Number of LLM calls made during the run. This records how many model steps were needed to complete the corpus.",
   },
 ] as const;
 
 export const methodologyNotes = [
-  "The corpus is synthetic, so the benchmark can test private inbox and calendar reasoning without exposing real customer data.",
-  "The prompts are intentionally short because real travel requests often assume the assistant already knows the household, calendar, loyalty, and booking context.",
-  "A passing answer must return the right traveler outcome, not just fluent travel advice.",
-  "Some cases should not become trips: the traveler may already be local, the evidence may belong to someone else, the requested dates may be blocked, or the planner may need a clarification.",
-  "Runtime, cost, and model-call count are included because correctness has to be practical enough for real travelers and repeat product use.",
-  "A public leaderboard is only meaningful when each system runs the same frozen corpus under the same harness; that keeps comparative claims apples-to-apples.",
-  "The ten diagnostic rows show representative hard cases and failure modes; the public page uses them to explain what the benchmark is testing and how the operational metrics were produced.",
+  "The corpus is synthetic and uses generated inbox, calendar, public-event, flight, and hotel data.",
+  "Prompts are intentionally short. Required facts may be present only in private context or deterministic inventory.",
+  "A passing final answer must match one of the expected outcome classes: bookable trip, no travel needed, impossible, or clarification required.",
+  "Incorrect final answers, unscorable content, bad IDs, missing evidence, timeouts, and service-limit failures score 0 for final pass.",
+  "The GPT-5.5 xhigh and Claude Opus 4.7 rows currently cover the fixed 10-case diagnostic slice only. They are not full hard-100 results.",
+  "The benchmark is designed around neurosymbolic planning over structured context and deterministic inventory. Results for traditional agentic models should be read as advisory for that architecture class.",
 ] as const;
 
 export const neurosymbolicComparison = {
-  label: "Diagnostic 10-Case Model Slice",
-  headline: "Why these cases are hard for travel agents.",
+  label: "Diagnostic Slice",
+  headline: "Fixed 10-case comparison where all rows are available.",
   summary:
-    "These rows show the kinds of traveler-facing mistakes the benchmark catches: wrong-owner confirmations, hidden calendar conflicts, local no-travel requests, missing private evidence, and incomplete flight or hotel choices.",
+    "This section reports the fixed 10-case diagnostic slice where Pack, GPT-5.5 xhigh, and Claude Opus 4.7 max-thinking rows are available.",
   measuredCase: "10 hard-100 diagnostic cases, 45-minute cutoff",
   packCorpusResult: "10/10 final content pass",
   packCorpusCost: "$1.11 total cost",
@@ -102,7 +101,7 @@ export const neurosymbolicComparison = {
       costMultiple: "1x Pack cost",
       runtime: "10m46s across 10 cases",
       calls: "10/10 final content pass; 10/10 scorable output",
-      takeaway: "Recovered the private trip context and returned the right traveler outcome on each diagnostic case.",
+      takeaway: "Returned a passing final answer for each diagnostic case.",
       note: "The Pack rows are the corresponding case outcomes from the May 21 hard-100 run.",
     },
     {
@@ -112,7 +111,7 @@ export const neurosymbolicComparison = {
       costMultiple: "77.8x Pack cost",
       runtime: "67m16s across 10 cases",
       calls: "1/10 final content pass; 0.29 average score",
-      takeaway: "Often found useful fragments, but failed when the final answer needed exact private evidence, valid inventory, or the correct no-travel outcome.",
+      takeaway: "One final answer passed. Other cases received partial rubric credit where evidence, constraints, or inventory were correct.",
       note: "Shown as diagnostic evidence for these specific cases, not as a full hard-100 model score.",
     },
     {
@@ -122,7 +121,7 @@ export const neurosymbolicComparison = {
       costMultiple: "15.4x Pack cost",
       runtime: "38m45s across 10 cases",
       calls: "2/10 final content pass; 0.37 average score",
-      takeaway: "Handled a few cases correctly, but missed evidence, constraints, search inventory, or required abstentions on the rest.",
+      takeaway: "Two final answers passed. Other cases received partial rubric credit where evidence, constraints, or inventory were correct.",
       note: "Shown as diagnostic evidence for these specific cases, not as a full hard-100 model score.",
     },
   ],

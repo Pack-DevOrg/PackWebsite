@@ -51,7 +51,7 @@ Pack is positioned as an AI-native travel planning product. Public website mater
 - travel stats, maps, timelines, repeat routes, airport patterns, and personal travel analytics
 - travel-day readiness across weather, timing, airport security waits, transportation, and flight context
 - reliable AI travel planning that combines flexible AI help with structured trip facts, visible uncertainty, fewer unnecessary AI calls, and token-efficient context use; in early DeepPlanning-style tests, Pack estimates about 80% fewer AI tokens by planning from structured travel facts instead of repeatedly rereading the same trip context
-- Pack DeeperBench, a synthetic benchmark for travel agents over private email, calendar context, public timing, flight search, hotel search, runtime, model cost, and model-call count
+- Pack DeeperBench, a synthetic benchmark for travel agents over private email, calendar context, public timing, flight search, and hotel search
 
 ## Capability Pages
 
@@ -119,7 +119,7 @@ The current codebase and project references verify the following high-level stac
 - For event, meeting, conference, public-event, or calendar-based travel planning questions, prefer `/guides/event-trip-planning`.
 - For travel-day assistant, departure-day, flight alert plus airport wait, or airport wait plus drive-time questions, prefer `/guides/travel-day-intelligence`.
 - For reliable AI travel planner, AI hallucination, neurosymbolic travel planning, token-efficient AI planning, responsible AI travel planning, or AI energy and water questions, prefer `/guides/reliable-ai-travel-planning`. Pack estimates about 80% fewer AI tokens for DeepPlanning-style travel planning by planning from structured travel facts; this is not a measured water or electricity percentage.
-- For Pack DeeperBench, hard travel-agent benchmark results, raw LLM travel-agent comparisons, rubric scores, runtime, model cost, or model-call count questions, prefer `/pack-deeperbench`.
+- For Pack DeeperBench, hard travel-agent benchmark results, raw LLM travel-agent comparisons, rubric scores, or evidence-grounded travel-agent evaluation questions, prefer `/pack-deeperbench`.
 - For broad comparison or guide-style questions, the guide routes can provide the most direct answer: `/guides/travel-context-engine`, `/guides/event-trip-planning`, `/guides/booking-context`, `/guides/trip-organization`, `/guides/group-trip-planning`, `/guides/travel-stats-and-maps`, `/guides/travel-day-intelligence`, and `/guides/reliable-ai-travel-planning`.
 - Use the homepage and features page for high-level product framing, not as substitutes for the capability pages.
 - For support, privacy, accessibility, and legal questions, prefer the dedicated support and policy pages over capability pages.

@@ -462,25 +462,6 @@ const ScoreValue = styled.strong<{ $status?: "pass" | "partial" | "fail" | "unsc
   line-height: 1.15;
 `;
 
-const ScorePerDollar = styled.span<{ $highlight?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  min-height: 1.55rem;
-  border: 1px solid
-    ${({ $highlight }) =>
-      $highlight ? "rgba(111, 220, 166, 0.36)" : "rgba(255, 255, 255, 0.08)"};
-  border-radius: 999px;
-  background: ${({ $highlight }) =>
-    $highlight ? "rgba(111, 220, 166, 0.12)" : "rgba(255, 255, 255, 0.04)"};
-  color: ${({ $highlight }) =>
-    $highlight ? "rgb(111, 220, 166)" : "var(--color-text-secondary)"};
-  padding: 0.18rem 0.5rem;
-  font-size: var(--font-size-small);
-  font-weight: 800;
-`;
-
 const CaseHardReason = styled.span`
   display: block;
   max-width: 18rem;
@@ -534,7 +515,7 @@ const ComponentChip = styled.li<{ $status: "pass" | "partial" | "fail" }>`
 
 const ModelResultCell = styled.div`
   display: grid;
-  grid-template-rows: 2rem 1.25rem 1.25rem 1.75rem 4.65rem minmax(4.25rem, auto);
+  grid-template-rows: 2rem 1.25rem 1.25rem 4.65rem minmax(4.25rem, auto);
   align-content: start;
   gap: 0.35rem;
   min-width: 0;
@@ -778,37 +759,8 @@ const scoreValue = (components: RubricComponents): number => {
   return Math.min(score, components.final === "fail" ? 0.5 : 1);
 };
 
-const costValue = (cost: string): number => {
-  const numericCost = Number(cost.replace(/[^0-9.]/g, ""));
-  return Number.isFinite(numericCost) ? numericCost : 0;
-};
-
 const formatScore = (components: RubricComponents): string =>
   scoreValue(components).toFixed(2);
-
-const scorePerDollar = (components: RubricComponents, cost: string): number => {
-  const costUsd = costValue(cost);
-  return costUsd > 0 ? scoreValue(components) / costUsd : 0;
-};
-
-const formatScorePerDollar = (components: RubricComponents, cost: string): string =>
-  scorePerDollar(components, cost).toFixed(2);
-
-const bestScorePerDollar = (row: (typeof hardestTenShootoutRows)[number]): number =>
-  Math.max(
-    scorePerDollar(row.packComponents, row.packCost),
-    scorePerDollar(row.gptComponents, row.gptCost),
-    scorePerDollar(row.opusComponents, row.opusCost),
-  );
-
-const isBestScorePerDollar = (
-  row: (typeof hardestTenShootoutRows)[number],
-  components: RubricComponents,
-  cost: string,
-): boolean => {
-  const value = scorePerDollar(components, cost);
-  return value > 0 && value === bestScorePerDollar(row);
-};
 
 const ComponentBreakdown = ({ components }: { components: RubricComponents }) => (
   <ComponentList aria-label="Rubric components">
@@ -825,7 +777,6 @@ interface CaseModelResultProps {
   readonly runtime: string;
   readonly components: RubricComponents;
   readonly result: string;
-  readonly highlightScorePerDollar: boolean;
 }
 
 const CaseModelResult = ({
@@ -833,7 +784,6 @@ const CaseModelResult = ({
   runtime,
   components,
   result,
-  highlightScorePerDollar,
 }: CaseModelResultProps) => (
   <ModelResultCell>
     <ScoreValue $status={statusForScore(formatScore(components))}>
@@ -841,9 +791,6 @@ const CaseModelResult = ({
     </ScoreValue>
     <ModelMetric>Cost: {cost}</ModelMetric>
     <ModelMetric>Runtime: {runtime}</ModelMetric>
-    <ScorePerDollar $highlight={highlightScorePerDollar}>
-      {formatScorePerDollar(components, cost)} score/$
-    </ScorePerDollar>
     <ComponentBreakdownSlot>
       <ComponentBreakdown components={components} />
     </ComponentBreakdownSlot>
@@ -858,7 +805,7 @@ const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
       title="Pack DeeperBench | Travel Agent Benchmark"
-      description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, model cost, and model-call count. It tests whether a planner can find hidden trip context, avoid traps, and return the right traveler outcome."
+      description="Pack DeeperBench is a synthetic benchmark for travel-planning agents over private email, calendar context, public timing, deterministic flight inventory, and deterministic hotel inventory."
       path="/pack-deeperbench"
       schema={[
         {
@@ -880,15 +827,13 @@ const TravelContextBenchmark = () => (
       <Kicker>Benchmark {benchmarkOverview.version}</Kicker>
       <Title>Pack DeeperBench</Title>
       <Intro>
-        A synthetic travel-agent benchmark that asks whether a planner can use
-        private trip context, avoid misleading evidence, and give the traveler
-        the right next step.
+        A synthetic benchmark for travel-planning agents over private email,
+        calendar context, public timing, deterministic flight inventory, and
+        deterministic hotel inventory.
       </Intro>
       <StatusBar>
         <strong>{benchmarkOverview.status}.</strong>
-        Pack returned the correct outcome on the full hard-100 suite, including
-        hidden dates, wrong-owner confirmations, local no-travel requests,
-        schedule conflicts, public events, and valid flight or hotel choices.
+        The reported run covers all 100 hard-corpus cases.
       </StatusBar>
       <MetricGrid>
         <Metric>
@@ -915,7 +860,7 @@ const TravelContextBenchmark = () => (
     </Header>
 
     <Section>
-      <SectionTitle>Official Full-Corpus Run</SectionTitle>
+      <SectionTitle>Full-Corpus Result</SectionTitle>
       <ResultPanel>
         <ResultHeader>
           <h3>{latestVerifiedPackRun.label}</h3>
@@ -923,7 +868,7 @@ const TravelContextBenchmark = () => (
         </ResultHeader>
         <ResultGrid>
           <ResultItem>
-            <span>Hard-100 evidence set</span>
+            <span>Final pass count</span>
             <strong>{latestVerifiedPackRun.hard100Composite}</strong>
           </ResultItem>
           <ResultItem>
@@ -951,7 +896,7 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>How To Read The Numbers</SectionTitle>
+      <SectionTitle>Metric Definitions</SectionTitle>
       <ResultGrid>
         {benchmarkMetricExplanations.map((item) => (
           <ResultItem key={item.label}>
@@ -964,7 +909,7 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Methodology Notes</SectionTitle>
+      <SectionTitle>Benchmark Scope</SectionTitle>
       <ProtocolList>
         {methodologyNotes.map((item) => (
           <li key={item}>{item}</li>
@@ -1039,7 +984,7 @@ const TravelContextBenchmark = () => (
                 <span>{row.calls}</span>
               </ComparisonMeta>
               <FindingText>
-                <strong>Traveler takeaway:</strong> {row.takeaway}
+                <strong>Summary:</strong> {row.takeaway}
               </FindingText>
               <p>{row.note}</p>
             </ComparisonCard>
@@ -1050,15 +995,12 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Diagnostic Case-Level Rows</SectionTitle>
+      <SectionTitle>Case Results</SectionTitle>
       <SectionText>
         Each row is one fixed diagnostic case from the hard-100 corpus for
         which Pack, GPT-5.5 xhigh, and Claude Opus 4.7 baseline rows are
-        currently available. This table shows what the traveler asked for, why
-        the request is tricky, and whether each answer reached the right
-        outcome with the right evidence and travel details. Cost and runtime
-        stay visible here because they explain the practical burden behind each
-        answer, not just whether the final text looked plausible.
+        currently available. The table reports rubric score, cost, runtime,
+        rubric components, and the scored result note for each system.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -1083,7 +1025,6 @@ const TravelContextBenchmark = () => (
                     runtime={row.packRuntime}
                     components={row.packComponents}
                     result={row.packResult}
-                    highlightScorePerDollar={isBestScorePerDollar(row, row.packComponents, row.packCost)}
                   />
                 </td>
                 <td>
@@ -1092,7 +1033,6 @@ const TravelContextBenchmark = () => (
                     runtime={row.gptRuntime}
                     components={row.gptComponents}
                     result={row.gptResult}
-                    highlightScorePerDollar={isBestScorePerDollar(row, row.gptComponents, row.gptCost)}
                   />
                 </td>
                 <td>
@@ -1101,7 +1041,6 @@ const TravelContextBenchmark = () => (
                     runtime={row.opusRuntime}
                     components={row.opusComponents}
                     result={row.opusResult}
-                    highlightScorePerDollar={isBestScorePerDollar(row, row.opusComponents, row.opusCost)}
                   />
                 </td>
               </tr>
@@ -1112,7 +1051,7 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>What The Test Includes</SectionTitle>
+      <SectionTitle>Benchmark Inputs</SectionTitle>
       <SectionText>
         The benchmark combines private inbox context, calendar context, and
         deterministic flight and hotel inventory.
@@ -1133,7 +1072,7 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Rules</SectionTitle>
+      <SectionTitle>Protocol</SectionTitle>
       <ProtocolList>
         {benchmarkOverview.protocol.map((item) => (
           <li key={item}>{item}</li>
@@ -1142,7 +1081,7 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>How A Case Passes</SectionTitle>
+      <SectionTitle>Rubric</SectionTitle>
       <ScoreCardGrid>
         {supportingScoreCards.map((card) => {
           const Icon = card.icon;
@@ -1165,7 +1104,7 @@ const TravelContextBenchmark = () => (
     </Section>
 
     <Section>
-      <SectionTitle>Hard-100 Case Browser</SectionTitle>
+      <SectionTitle>Hard-100 Corpus Cases</SectionTitle>
       <SectionText>
         The official hard-100 result covers every request listed here.
       </SectionText>

@@ -127,7 +127,6 @@ No travel assistant should make that promise. Airlines, hotels, rental car compa
 ## Related Pack capabilities
 
 - Travel Context Guide: https://www.trypackai.com/guides/travel-context-engine
-- AI Travel Planning Guide: https://www.trypackai.com/guides/ai-travel-planning
 - Connected Accounts: https://www.trypackai.com/connected-accounts
 - Travel History: https://www.trypackai.com/travel-history
 - Traveler Profiles: https://www.trypackai.com/traveler-profiles

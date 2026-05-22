@@ -15,6 +15,7 @@ import { I18nProvider } from "./i18n/I18nProvider";
 import { stripLocaleFromPath } from "./i18n/config";
 import HomePage from "./routes/HomePage";
 import { WebMcpRegistrar } from "./agent/webMcp";
+import { env } from "./utils/env";
 
 export const AppRoutes: React.FC = () => (
   <I18nProvider>
@@ -44,7 +45,12 @@ const HomeRouteSwitch: React.FC = () => {
   }
 
   if (isHomePath) {
-    return <HomePage />;
+    return (
+      <>
+        <HomeServiceWorkerCleanup />
+        <HomePage />
+      </>
+    );
   }
 
   return (
@@ -52,6 +58,28 @@ const HomeRouteSwitch: React.FC = () => {
       <NonHomeRuntime />
     </Suspense>
   );
+};
+
+const HomeServiceWorkerCleanup: React.FC = () => {
+  useEffect(() => {
+    if (
+      env.DEV === true ||
+      typeof navigator === "undefined" ||
+      !("serviceWorker" in navigator)
+    ) {
+      return;
+    }
+
+    void navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations
+        .filter((registration) => registration.scope.endsWith("/app/"))
+        .forEach((registration) => {
+          void registration.unregister();
+        });
+    });
+  }, []);
+
+  return null;
 };
 
 const RouteTrackingCoordinator: React.FC = () => {

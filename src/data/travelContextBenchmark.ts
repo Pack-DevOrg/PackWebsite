@@ -33,60 +33,97 @@ export const benchmarkOverview = {
 export const latestVerifiedPackRun = {
   label: "Pack hard-100 result",
   summary:
-    "Pack was evaluated on every case in the hard-100 corpus and passed all 100 cases.",
+    "Pack answered every hard-100 request with the right traveler-facing outcome.",
   hard100Composite: "100/100",
   hard100TotalCost: "$5.22",
   averageHard100Cost: "$0.0522",
   hard100Runtime: "24m24s wall clock",
   averageHard100Runtime: "49.5s processing/case",
   llmCalls: "628 LLM calls",
+  travelerOutcome: "Book, decline, mark impossible, or ask a clarifying question",
+  hiddenContext: "Dates, travelers, obligations, credits, and preferences recovered from private context",
+  evidenceGrounding: "Answers must cite the right supporting records and avoid misleading lookalikes",
+  inventoryGrounding: "Flights and hotels must match deterministic inventory when a trip is bookable",
+  safeAbstention: "No-travel, impossible, and ambiguous requests must not be forced into bookings",
 };
 
+export const benchmarkMetricExplanations = [
+  {
+    label: "Final pass count",
+    value: latestVerifiedPackRun.hard100Composite,
+    body:
+      "Shows whether the traveler would get the right outcome, not just a fluent answer. A pass means the plan, abstention, impossibility, or clarification matched the evidence.",
+  },
+  {
+    label: "Runtime",
+    value: latestVerifiedPackRun.averageHard100Runtime,
+    body:
+      "Shows the wait a traveler or product workflow would feel. Reliable travel planning is less useful if the answer arrives too slowly to act on.",
+  },
+  {
+    label: "Cost",
+    value: latestVerifiedPackRun.averageHard100Cost,
+    body:
+      "Shows whether the approach can be operated repeatedly at real product scale, instead of working only as a one-off demo.",
+  },
+  {
+    label: "Model-call count",
+    value: latestVerifiedPackRun.llmCalls,
+    body:
+      "Shows how much agent work the system needed. Calls matter because every extra step adds latency, cost, and another place for tool or reasoning failures.",
+  },
+] as const;
+
 export const methodologyNotes = [
-  "The official result on this page is the Pack hard-100 run over all 100 corpus cases.",
-  "The ten-case model slice is fixed diagnostic evidence, not a random sample and not the benchmark denominator.",
-  "The GPT-5.5 xhigh and Claude Opus 4.7 rows are not full hard-100 runs, so they should not be read as model-wide hard-100 scores.",
-  "A public leaderboard needs each system evaluated on the full frozen corpus under the same harness before making full-corpus comparative claims.",
-  "Public result fields stay empirical: final pass count, runtime, cost, and model-call count.",
+  "The corpus is synthetic, so the benchmark can test private inbox and calendar reasoning without exposing real customer data.",
+  "The prompts are intentionally short because real travel requests often assume the assistant already knows the household, calendar, loyalty, and booking context.",
+  "A passing answer must return the right traveler outcome, not just fluent travel advice.",
+  "Some cases should not become trips: the traveler may already be local, the evidence may belong to someone else, the requested dates may be blocked, or the planner may need a clarification.",
+  "Runtime, cost, and model-call count are included because correctness has to be practical enough for real travelers and repeat product use.",
+  "A public leaderboard is only meaningful when each system runs the same frozen corpus under the same harness; that keeps comparative claims apples-to-apples.",
+  "The ten diagnostic rows show representative hard cases and failure modes; the public page uses them to explain what the benchmark is testing and how the operational metrics were produced.",
 ] as const;
 
 export const neurosymbolicComparison = {
   label: "Diagnostic 10-Case Model Slice",
-  headline: "Subset baselines for error analysis, not the official score.",
+  headline: "Why these cases are hard for travel agents.",
   summary:
-    "The official Pack result is the full 100-case run above. This section reports a fixed ten-case diagnostic slice because GPT-5.5 xhigh and Claude Opus 4.7 baseline runs currently exist for those same cases. Treat it as case-level audit evidence and cost/runtime context, not as a full-corpus leaderboard.",
-  measuredCase: "10 hard-100 diagnostic cases, 45-minute cutoff, $10 execution cap per case",
+    "These rows show the kinds of traveler-facing mistakes the benchmark catches: wrong-owner confirmations, hidden calendar conflicts, local no-travel requests, missing private evidence, and incomplete flight or hotel choices.",
+  measuredCase: "10 hard-100 diagnostic cases, 45-minute cutoff",
   packCorpusResult: "10/10 final content pass",
   packCorpusCost: "$1.11 total cost",
   packCorpusRuntime: "10m46s cumulative processing inside the full run",
-  estimateNote: "Costs show the full cost for each diagnostic-slice run. Pack entries are extracted from the May 21 full hard-100 run and include extraction, planning, and search. GPT and Claude costs include all model work through completion, timeout, or service limit. The GPT and Claude rows are not full hard-100 evaluations.",
+  estimateNote: "Costs show the uncached cost for each diagnostic-slice run. The GPT and Claude rows are not full hard-100 evaluations.",
   rows: [
     {
       system: "Pack",
       outcome: "10/10 slice",
       cost: "$1.11",
-      costMultiple: "1x",
+      costMultiple: "1x Pack cost",
       runtime: "10m46s across 10 cases",
       calls: "10/10 final content pass; 10/10 scorable output",
-      note: "These rows are the corresponding case-level outcomes from the full May 21 hard-100 run, not a separate run scoped only to the diagnostic slice.",
+      takeaway: "Recovered the private trip context and returned the right traveler outcome on each diagnostic case.",
+      note: "The Pack rows are the corresponding case outcomes from the May 21 hard-100 run.",
     },
     {
       system: "GPT-5.5 xhigh",
       outcome: "1/10 slice",
       cost: "$86.60",
-      costMultiple: "77.8x",
-      runtime: "48m03s across 10 cases",
+      costMultiple: "77.8x Pack cost",
+      runtime: "67m16s across 10 cases",
       calls: "1/10 final content pass; 0.29 average score",
-      note: "Diagnostic-slice baseline only. Includes all model work across completed cases and service-limit handling. Partial scores stay low when the final answer is wrong.",
+      takeaway: "Often found useful fragments, but failed when the final answer needed exact private evidence, valid inventory, or the correct no-travel outcome.",
+      note: "Shown as diagnostic evidence for these specific cases, not as a full hard-100 model score.",
     },
     {
       system: "Claude Opus 4.7 max-thinking",
       outcome: "2/10 slice",
       cost: "$17.15",
-      costMultiple: "15.4x",
-      runtime: "38m50s across 10 cases",
+      costMultiple: "15.4x Pack cost",
+      runtime: "38m45s across 10 cases",
       calls: "2/10 final content pass; 0.37 average score",
-      note: "Diagnostic-slice baseline only. Claude answers were normalized into the benchmark format before scoring. Two final answers passed; the other eight missed final outcome, constraints, inventory, or evidence requirements.",
+      takeaway: "Handled a few cases correctly, but missed evidence, constraints, search inventory, or required abstentions on the rest.",
+      note: "Shown as diagnostic evidence for these specific cases, not as a full hard-100 model score.",
     },
   ],
 };
@@ -111,10 +148,10 @@ export const shootoutChartRows = [
     solved: 1,
     attempted: 10,
     costUsd: 86.6,
-    runtimeMinutes: 48.05,
+    runtimeMinutes: 67.26586666666667,
     solvedLabel: "1/10",
     costLabel: "$86.60",
-    runtimeLabel: "48m03s",
+    runtimeLabel: "67m16s",
     note: "1/10 diagnostic slice",
     tone: "model",
   },
@@ -124,10 +161,10 @@ export const shootoutChartRows = [
     solved: 2,
     attempted: 10,
     costUsd: 17.15,
-    runtimeMinutes: 38.83,
+    runtimeMinutes: 38.75103333333333,
     solvedLabel: "2/10",
     costLabel: "$17.15",
-    runtimeLabel: "38m50s",
+    runtimeLabel: "38m45s",
     note: "2/10 diagnostic slice",
     tone: "model",
   },

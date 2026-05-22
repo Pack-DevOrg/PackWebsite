@@ -340,6 +340,11 @@ const LocalizedOutlet: React.FC = () => (
 
 const SeoGuideRoute: React.FC = () => {
   const { guideSlug } = useParams();
+  const { pathFor } = useI18n();
+
+  if (guideSlug === "ai-travel-planning") {
+    return <Navigate to={pathFor("/features")} replace />;
+  }
 
   return <SeoGuidePage slug={guideSlug} />;
 };

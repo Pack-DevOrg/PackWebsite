@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T20:18:32.081Z",
+  "generatedAt": "2026-05-20T03:38:52.200Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -62,6 +62,34 @@
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
     },
     {
+      "keyword": "AI itinerary planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "intent": "commercial",
+      "priority": 10,
+      "gapScore": 110,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/",
+      "strongestExistingPages": [
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/booking-context",
+          "title": "Points And Miles Trip Planner For Booking Context",
+          "score": 0.55
+        },
+        {
+          "path": "/group-trip-planning",
+          "title": "Group Trip Planner For Shared Itineraries And Costs",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
       "keyword": "travel assistant with email calendar and loyalty",
       "clusterId": "travel-context-engine",
       "clusterLabel": "Context-aware travel assistance",
@@ -88,6 +116,34 @@
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "best AI travel planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "intent": "commercial",
+      "priority": 10,
+      "gapScore": 105,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/",
+      "strongestExistingPages": [
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/faq",
+          "title": "Pack FAQ",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
       "keyword": "turn emails into travel itinerary",
@@ -230,29 +286,29 @@
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
     },
     {
-      "keyword": "best AI travel planner",
+      "keyword": "AI travel planner",
       "clusterId": "ai-travel-planning",
       "clusterLabel": "AI travel planning",
       "intent": "commercial",
       "priority": 10,
-      "gapScore": 98,
-      "currentBestCoverage": 1,
+      "gapScore": 97,
+      "currentBestCoverage": 0.85,
       "recommendedPage": "/",
       "strongestExistingPages": [
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
-          "score": 1
-        },
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
+          "path": "/faq",
+          "title": "Pack FAQ",
           "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.8500000000000001
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -268,11 +324,6 @@
       "recommendedPage": "/",
       "strongestExistingPages": [
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/source/src/content/seoGuides.ts",
           "title": "seoGuides.ts",
           "score": 0.8500000000000001
@@ -281,33 +332,10 @@
           "path": "/capabilities",
           "title": "Pack Capability Pages",
           "score": 0.55
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "AI itinerary planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "intent": "commercial",
-      "priority": 10,
-      "gapScore": 97,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/",
-      "strongestExistingPages": [
-        {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
-          "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/booking-context",
-          "title": "Points And Miles Trip Planner For Booking Context",
+          "path": "/faq",
+          "title": "Pack FAQ",
           "score": 0.55
         }
       ],
@@ -380,11 +408,6 @@
       "recommendedPage": "/",
       "strongestExistingPages": [
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/source/src/content/seoGuides.ts",
           "title": "seoGuides.ts",
           "score": 0.8500000000000001
@@ -392,6 +415,11 @@
         {
           "path": "/capability-pages",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/product-overview",
+          "title": "Pack Product Overview",
           "score": 0.55
         }
       ],
@@ -558,8 +586,8 @@
           "score": 0.55
         },
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "path": "/trip-organization",
+          "title": "Trip Organizer App For Emails And Automatic Itineraries",
           "score": 0.55
         }
       ],
@@ -620,34 +648,6 @@
         }
       ],
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
-    },
-    {
-      "keyword": "AI travel planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "intent": "commercial",
-      "priority": 10,
-      "gapScore": 90,
-      "currentBestCoverage": 1,
-      "recommendedPage": "/",
-      "strongestExistingPages": [
-        {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
-          "score": 1
-        },
-        {
-          "path": "/faq",
-          "title": "Pack FAQ",
-          "score": 0.8500000000000001
-        },
-        {
-          "path": "/reliable-ai-travel-planning",
-          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
-          "score": 0.8500000000000001
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
       "keyword": "connected travel assistant",
@@ -754,8 +754,8 @@
           "score": 0.55
         },
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "path": "/source/src/data/travelContextBenchmark.ts",
+          "title": "travelContextBenchmark.ts",
           "score": 0.3666666666666667
         }
       ],
@@ -1281,13 +1281,13 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/components/ConversationalAIContent.tsx",
-          "title": "ConversationalAIContent.tsx",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/source/src/components/ConversationalAIContent.tsx",
+          "title": "ConversationalAIContent.tsx",
           "score": 0.55
         }
       ],
@@ -1566,8 +1566,8 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
           "score": 0.8500000000000001
         }
       ],
@@ -1897,13 +1897,13 @@
           "score": 0.55
         },
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "path": "/booking-context",
+          "title": "Points And Miles Trip Planner For Booking Context",
           "score": 0.55
         },
         {
-          "path": "/booking-context",
-          "title": "Points And Miles Trip Planner For Booking Context",
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
           "score": 0.55
         }
       ],
@@ -2322,8 +2322,8 @@
           "score": 0.55
         },
         {
-          "path": "/ai-travel-planning",
-          "title": "Best AI Travel Planner For Context-Aware Trips",
+          "path": "/booking-context",
+          "title": "Points And Miles Trip Planner For Booking Context",
           "score": 0.55
         }
       ],
@@ -3172,16 +3172,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3226,16 +3226,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3280,16 +3280,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3334,16 +3334,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3388,16 +3388,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3442,16 +3442,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3496,16 +3496,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3550,16 +3550,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
+          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
-          "query": "\"turn emails into travel itinerary\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22turn+emails+into+travel+itinerary%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3607,11 +3607,11 @@
       "targets": [
         {
           "entity": "Pack",
-          "occurrences": 93
+          "occurrences": 92
         },
         {
           "entity": "TryPackAI",
-          "occurrences": 51
+          "occurrences": 50
         },
         {
           "entity": "Try Pack AI",
@@ -3619,7 +3619,7 @@
         },
         {
           "entity": "AI travel assistant",
-          "occurrences": 16
+          "occurrences": 15
         }
       ]
     }

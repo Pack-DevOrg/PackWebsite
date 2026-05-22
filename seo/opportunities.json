@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-20T03:38:52.200Z",
+  "generatedAt": "2026-05-22T22:24:20.618Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -28,7 +28,7 @@
     }
   ],
   "inventory": {
-    "scannedPages": 185,
+    "scannedPages": 186,
     "sitemapUrls": 25,
     "prerenderRoutes": 36
   },
@@ -754,9 +754,9 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/data/travelContextBenchmark.ts",
-          "title": "travelContextBenchmark.ts",
-          "score": 0.3666666666666667
+          "path": "/terms",
+          "title": "TermsOfService.md",
+          "score": 0.18333333333333335
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -3607,7 +3607,7 @@
       "targets": [
         {
           "entity": "Pack",
-          "occurrences": 92
+          "occurrences": 93
         },
         {
           "entity": "TryPackAI",

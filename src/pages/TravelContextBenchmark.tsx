@@ -692,6 +692,42 @@ const RubricDescription = styled.span`
   line-height: 1.45;
 `;
 
+const maxShootoutCost = Math.max(...shootoutChartRows.map((row) => row.costUsd));
+const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtimeMinutes));
+
+const metricChartGroups = [
+  {
+    title: "Cases solved",
+    helper: "Final content passes on this diagnostic slice, not the full 100-case suite.",
+    rows: shootoutChartRows.map((row) => ({
+      system: row.system,
+      label: row.solvedLabel,
+      percent: (row.solved / row.attempted) * 100,
+      tone: row.tone,
+    })),
+  },
+  {
+    title: "Total spend",
+    helper: "Full model and tool cost for each diagnostic-slice run.",
+    rows: shootoutChartRows.map((row) => ({
+      system: row.system,
+      label: row.costLabel,
+      percent: (row.costUsd / maxShootoutCost) * 100,
+      tone: row.tone,
+    })),
+  },
+  {
+    title: "Runtime",
+    helper: "Observed wait time for each diagnostic-slice evaluation.",
+    rows: shootoutChartRows.map((row) => ({
+      system: row.system,
+      label: row.runtimeLabel,
+      percent: (row.runtimeMinutes / maxShootoutRuntime) * 100,
+      tone: row.tone,
+    })),
+  },
+];
+
 const statusForScore = (score: string): "pass" | "partial" | "fail" | "unscored" => {
   if (score === "Not run" || score === "Unscored") {
     return "unscored";
@@ -742,8 +778,37 @@ const scoreValue = (components: RubricComponents): number => {
   return Math.min(score, components.final === "fail" ? 0.5 : 1);
 };
 
+const costValue = (cost: string): number => {
+  const numericCost = Number(cost.replace(/[^0-9.]/g, ""));
+  return Number.isFinite(numericCost) ? numericCost : 0;
+};
+
 const formatScore = (components: RubricComponents): string =>
   scoreValue(components).toFixed(2);
+
+const scorePerDollar = (components: RubricComponents, cost: string): number => {
+  const costUsd = costValue(cost);
+  return costUsd > 0 ? scoreValue(components) / costUsd : 0;
+};
+
+const formatScorePerDollar = (components: RubricComponents, cost: string): string =>
+  scorePerDollar(components, cost).toFixed(2);
+
+const bestScorePerDollar = (row: (typeof hardestTenShootoutRows)[number]): number =>
+  Math.max(
+    scorePerDollar(row.packComponents, row.packCost),
+    scorePerDollar(row.gptComponents, row.gptCost),
+    scorePerDollar(row.opusComponents, row.opusCost),
+  );
+
+const isBestScorePerDollar = (
+  row: (typeof hardestTenShootoutRows)[number],
+  components: RubricComponents,
+  cost: string,
+): boolean => {
+  const value = scorePerDollar(components, cost);
+  return value > 0 && value === bestScorePerDollar(row);
+};
 
 const ComponentBreakdown = ({ components }: { components: RubricComponents }) => (
   <ComponentList aria-label="Rubric components">
@@ -756,18 +821,29 @@ const ComponentBreakdown = ({ components }: { components: RubricComponents }) =>
 );
 
 interface CaseModelResultProps {
+  readonly cost: string;
+  readonly runtime: string;
   readonly components: RubricComponents;
   readonly result: string;
+  readonly highlightScorePerDollar: boolean;
 }
 
 const CaseModelResult = ({
+  cost,
+  runtime,
   components,
   result,
+  highlightScorePerDollar,
 }: CaseModelResultProps) => (
   <ModelResultCell>
     <ScoreValue $status={statusForScore(formatScore(components))}>
       {formatScore(components)}
     </ScoreValue>
+    <ModelMetric>Cost: {cost}</ModelMetric>
+    <ModelMetric>Runtime: {runtime}</ModelMetric>
+    <ScorePerDollar $highlight={highlightScorePerDollar}>
+      {formatScorePerDollar(components, cost)} score/$
+    </ScorePerDollar>
     <ComponentBreakdownSlot>
       <ComponentBreakdown components={components} />
     </ComponentBreakdownSlot>
@@ -782,7 +858,7 @@ const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
       title="Pack DeeperBench | Travel Agent Benchmark"
-      description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, and hotel search. It tests whether a planner can find hidden trip context, avoid traps, and return the right traveler outcome."
+      description="Pack DeeperBench is a synthetic benchmark for travel agents over private email, calendar context, flight search, hotel search, runtime, model cost, and model-call count. It tests whether a planner can find hidden trip context, avoid traps, and return the right traveler outcome."
       path="/pack-deeperbench"
       schema={[
         {
@@ -816,30 +892,30 @@ const TravelContextBenchmark = () => (
       </StatusBar>
       <MetricGrid>
         <Metric>
-          <dt>Household context</dt>
-          <dd>{benchmarkOverview.corpus.people} people</dd>
+          <dt>Hard-100 Pack run</dt>
+          <dd>{latestVerifiedPackRun.hard100Composite}</dd>
         </Metric>
         <Metric>
-          <dt>Private records</dt>
-          <dd>{benchmarkOverview.corpus.totalEmails} emails</dd>
+          <dt>Hard-100 cost</dt>
+          <dd>{latestVerifiedPackRun.hard100TotalCost}</dd>
         </Metric>
         <Metric>
-          <dt>Hard requests</dt>
-          <dd>100 prompts</dd>
+          <dt>Average case cost</dt>
+          <dd>{latestVerifiedPackRun.averageHard100Cost}</dd>
         </Metric>
         <Metric>
-          <dt>Flight inventory</dt>
-          <dd>{benchmarkOverview.corpus.flightInventory}</dd>
+          <dt>Average runtime</dt>
+          <dd>{latestVerifiedPackRun.averageHard100Runtime}</dd>
         </Metric>
         <Metric>
-          <dt>Hotel inventory</dt>
-          <dd>{benchmarkOverview.corpus.hotelInventory}</dd>
+          <dt>LLM calls</dt>
+          <dd>{latestVerifiedPackRun.llmCalls}</dd>
         </Metric>
       </MetricGrid>
     </Header>
 
     <Section>
-      <SectionTitle>What Pack Had To Get Right</SectionTitle>
+      <SectionTitle>Official Full-Corpus Run</SectionTitle>
       <ResultPanel>
         <ResultHeader>
           <h3>{latestVerifiedPackRun.label}</h3>
@@ -847,31 +923,44 @@ const TravelContextBenchmark = () => (
         </ResultHeader>
         <ResultGrid>
           <ResultItem>
-            <span>Traveler outcome</span>
+            <span>Hard-100 evidence set</span>
             <strong>{latestVerifiedPackRun.hard100Composite}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Allowed outcomes</span>
-            <strong>{latestVerifiedPackRun.travelerOutcome}</strong>
+            <span>Hard-100 total cost</span>
+            <strong>{latestVerifiedPackRun.hard100TotalCost}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Hidden context</span>
-            <strong>{latestVerifiedPackRun.hiddenContext}</strong>
+            <span>Average hard-100 case cost</span>
+            <strong>{latestVerifiedPackRun.averageHard100Cost}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Evidence grounding</span>
-            <strong>{latestVerifiedPackRun.evidenceGrounding}</strong>
+            <span>Hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.hard100Runtime}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Search grounding</span>
-            <strong>{latestVerifiedPackRun.inventoryGrounding}</strong>
+            <span>Average hard-100 runtime</span>
+            <strong>{latestVerifiedPackRun.averageHard100Runtime}</strong>
           </ResultItem>
           <ResultItem>
-            <span>Safe abstention</span>
-            <strong>{latestVerifiedPackRun.safeAbstention}</strong>
+            <span>LLM calls</span>
+            <strong>{latestVerifiedPackRun.llmCalls}</strong>
           </ResultItem>
         </ResultGrid>
       </ResultPanel>
+    </Section>
+
+    <Section>
+      <SectionTitle>How To Read The Numbers</SectionTitle>
+      <ResultGrid>
+        {benchmarkMetricExplanations.map((item) => (
+          <ResultItem key={item.label}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <p>{item.body}</p>
+          </ResultItem>
+        ))}
+      </ResultGrid>
     </Section>
 
     <Section>
@@ -890,6 +979,25 @@ const TravelContextBenchmark = () => (
           <h3>{neurosymbolicComparison.headline}</h3>
           <p>{neurosymbolicComparison.summary}</p>
         </ResultHeader>
+        <ChartGrid aria-label="Comparison metric charts">
+          {metricChartGroups.map((group) => (
+            <ChartBlock key={group.title}>
+              <h4>{group.title}</h4>
+              <FindingText>{group.helper}</FindingText>
+              <BarList>
+                {group.rows.map((row) => (
+                  <BarRow key={`${group.title}-${row.system}`}>
+                    <BarLabel>{row.system}</BarLabel>
+                    <BarTrack aria-hidden="true">
+                      <BarFill $percent={row.percent} $tone={row.tone} />
+                    </BarTrack>
+                    <BarValue>{row.label}</BarValue>
+                  </BarRow>
+                ))}
+              </BarList>
+            </ChartBlock>
+          ))}
+        </ChartGrid>
         <RubricGrid aria-label="Shared rubric category scores">
           {shootoutRubricRows.map((row) => (
             <RubricCard key={row.system}>
@@ -924,6 +1032,12 @@ const TravelContextBenchmark = () => (
             <ComparisonCard key={row.system}>
               <ComparisonBadge $outcome={row.outcome}>{row.outcome}</ComparisonBadge>
               <h4>{row.system}</h4>
+              <ComparisonCost>{row.cost}</ComparisonCost>
+              <ComparisonMeta>
+                <span>{row.costMultiple}</span>
+                <span>{row.runtime}</span>
+                <span>{row.calls}</span>
+              </ComparisonMeta>
               <FindingText>
                 <strong>Traveler takeaway:</strong> {row.takeaway}
               </FindingText>
@@ -942,7 +1056,9 @@ const TravelContextBenchmark = () => (
         which Pack, GPT-5.5 xhigh, and Claude Opus 4.7 baseline rows are
         currently available. This table shows what the traveler asked for, why
         the request is tricky, and whether each answer reached the right
-        outcome with the right evidence and travel details.
+        outcome with the right evidence and travel details. Cost and runtime
+        stay visible here because they explain the practical burden behind each
+        answer, not just whether the final text looked plausible.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -963,20 +1079,29 @@ const TravelContextBenchmark = () => (
                 </td>
                 <td>
                   <CaseModelResult
+                    cost={row.packCost}
+                    runtime={row.packRuntime}
                     components={row.packComponents}
                     result={row.packResult}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.packComponents, row.packCost)}
                   />
                 </td>
                 <td>
                   <CaseModelResult
+                    cost={row.gptCost}
+                    runtime={row.gptRuntime}
                     components={row.gptComponents}
                     result={row.gptResult}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.gptComponents, row.gptCost)}
                   />
                 </td>
                 <td>
                   <CaseModelResult
+                    cost={row.opusCost}
+                    runtime={row.opusRuntime}
                     components={row.opusComponents}
                     result={row.opusResult}
+                    highlightScorePerDollar={isBestScorePerDollar(row, row.opusComponents, row.opusCost)}
                   />
                 </td>
               </tr>

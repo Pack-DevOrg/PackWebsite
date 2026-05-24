@@ -17,6 +17,55 @@ import HomePage from "./routes/HomePage";
 import { WebMcpRegistrar } from "./agent/webMcp";
 import { env } from "./utils/env";
 
+interface RuntimeErrorBoundaryState {
+  readonly hasError: boolean;
+}
+
+class RuntimeErrorBoundary extends React.Component<
+  { readonly children: React.ReactNode },
+  RuntimeErrorBoundaryState
+> {
+  override state: RuntimeErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): RuntimeErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  override componentDidCatch(error: Error, info: React.ErrorInfo): void {
+    console.error("Pack website runtime error", {
+      error,
+      componentStack: info.componentStack,
+    });
+  }
+
+  override render(): React.ReactNode {
+    if (this.state.hasError) {
+      return (
+        <main
+          style={{
+            alignItems: "center",
+            display: "flex",
+            minHeight: "100vh",
+            padding: "24px",
+          }}
+        >
+          <section
+            style={{
+              margin: "0 auto",
+              maxWidth: "560px",
+            }}
+          >
+            <h1>Pack is having trouble loading.</h1>
+            <p>Please refresh the page and try again.</p>
+          </section>
+        </main>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 export const AppRoutes: React.FC = () => (
   <I18nProvider>
     <>
@@ -119,9 +168,11 @@ const App: React.FC = () => (
     <DynamicImportRecovery />
     <WebMcpRegistrar />
     <AppProviders>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <RuntimeErrorBoundary>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </RuntimeErrorBoundary>
     </AppProviders>
   </>
 );

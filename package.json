@@ -17,6 +17,7 @@
     "legal:refresh-lock": "node scripts/refresh-legal-lock.mjs",
     "lint": "eslint .",
     "lint:strict": "PACK_LINT_STRICT=1 npm run lint",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "seo:analyze": "node scripts/seo/analyze-seo-opportunities.mjs",
     "seo:check": "node scripts/seo/analyze-seo-opportunities.mjs --fail-on-critical",

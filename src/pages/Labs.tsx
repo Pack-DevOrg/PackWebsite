@@ -4,8 +4,10 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
+  DEFAULT_PLANNER_CORPUS_REVIEW_PATH,
   fetchLatestLogoLabRun,
   fetchLatestVideoLabManifest,
+  fetchPlannerCorpusReviewAggregate,
   fetchTravelDetailReviewAggregate,
   generateVideoLabRun,
   generateLogoLabRun,
@@ -14,6 +16,9 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { AuthCallbackSurface } from "@/pages/AuthCallbackPage";
 import type {
   LogoLabRun,
+  PlannerCorpusOutlineRow,
+  PlannerCorpusReviewOptionRow,
+  PlannerCorpusReviewResult,
   TravelDetailReviewOutput,
   TravelDetailReviewResult,
   VideoLabManifest,
@@ -125,6 +130,26 @@ type TravelDetailReviewState = Record<
 >;
 
 const TRAVEL_DETAIL_REVIEW_STORAGE_KEY = "pack-labs-travel-detail-review-v1";
+
+type PlannerCorpusReviewFilter =
+  | "attention"
+  | "all"
+  | "needs_input"
+  | "failed"
+  | "completed"
+  | TravelDetailVerdict
+  | "unreviewed";
+
+type PlannerCorpusReviewState = Record<
+  string,
+  {
+    verdict?: TravelDetailVerdict;
+    note?: string;
+  }
+>;
+
+const PLANNER_CORPUS_REVIEW_STORAGE_KEY =
+  "pack-labs-planner-corpus-review-v1";
 
 const labVideoGroups: LabVideoGroup[] = [
   {
@@ -1198,6 +1223,70 @@ const ReviewTextArea = styled.textarea`
   color: ${({ theme }) => theme.colors.text.primary};
   font: inherit;
   resize: vertical;
+`;
+
+const SourcePathForm = styled.form`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SourcePathInput = styled.input`
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.04);
+  padding: 0.75rem 0.95rem;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font: inherit;
+`;
+
+const CompactList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  line-height: 1.55;
+`;
+
+const OptionRowGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const OptionReviewCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  border-radius: 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.04);
+  padding: 0.8rem;
+`;
+
+const DetailsDisclosure = styled.details`
+  border-radius: 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border.light};
+  background: rgba(255, 248, 236, 0.03);
+  padding: 0.85rem;
+
+  summary {
+    cursor: pointer;
+    color: ${({ theme }) => theme.colors.text.primary};
+    font-weight: 700;
+  }
 `;
 
 const SurfacePreviewCard = styled.article`
@@ -3311,6 +3400,14 @@ const labsContent = {
           kicker: "Extractor QA",
         },
         {
+          slug: "planner-corpus-review",
+          title: "Planner Corpus Review",
+          description:
+            "Review full planner outcomes, needs-input choices, evidence context, and itinerary rows from a local aggregate.",
+          href: "/labs/planner-corpus-review",
+          kicker: "Planner QA",
+        },
+        {
           slug: "pack-deeperbench-report",
           title: "Pack DeeperBench Report",
           description:
@@ -3427,6 +3524,37 @@ const labsContent = {
       promptLabel: "Prompt",
       detailLabel: "Raw detail output",
     },
+    plannerCorpusReview: {
+      title: "Planner corpus review.",
+      description:
+        "Review full planner outcomes from a local aggregate: prompts, final rows, needs-input choices, context evidence, failures, and notes.",
+      statsLabel: "Corpus result",
+      attentionFilter: "Needs attention",
+      needsInputFilter: "Needs input",
+      failedFilter: "Failed",
+      completedFilter: "Completed",
+      wrongFilter: "Wrong",
+      needsValidationFilter: "Needs validation",
+      okFilter: "OK",
+      unreviewedFilter: "Unreviewed",
+      allFilter: "All",
+      markWrong: "Mark wrong",
+      markNeedsValidation: "Needs validation",
+      markOk: "Mark OK",
+      clearReview: "Clear",
+      loadSource: "Load aggregate",
+      copyReviewJson: "Copy review JSON",
+      copiedReviewJson: "Copied review JSON",
+      notesLabel: "What should be fixed?",
+      sourceLabel: "Aggregate source",
+      promptLabel: "Prompt",
+      overviewLabel: "Planner result",
+      contextLabel: "Evidence context",
+      needsInputLabel: "Needs-input choices",
+      outlineLabel: "Final outline rows",
+      timelineLabel: "Timeline rows",
+      rawLabel: "Raw payloads",
+    },
     designLabs: {
       title: "Travel-native design labs.",
       description:
@@ -3444,6 +3572,7 @@ const labsContent = {
       soundmarks: "Soundmarks",
       authCallback: "Auth callback",
       travelDetailReview: "Travel detail review",
+      plannerCorpusReview: "Planner corpus review",
     },
   },
   es: {
@@ -3529,6 +3658,14 @@ const labsContent = {
             "Revisa el aggregate de detail de 78 casos, inspecciona cada payload por leg y marca los casos incorrectos antes de la siguiente pasada de prompts.",
           href: "/labs/travel-detail-review",
           kicker: "QA del extractor",
+        },
+        {
+          slug: "planner-corpus-review",
+          title: "Planner Corpus Review",
+          description:
+            "Revisa resultados completos del planner, choices de needs-input, evidencia de contexto y filas de itinerario desde un aggregate local.",
+          href: "/labs/planner-corpus-review",
+          kicker: "QA del planner",
         },
         {
           slug: "pack-deeperbench-report",
@@ -3660,6 +3797,37 @@ const labsContent = {
       promptLabel: "Prompt",
       detailLabel: "Salida raw de detail",
     },
+    plannerCorpusReview: {
+      title: "Revisión del corpus del planner.",
+      description:
+        "Revisa resultados completos del planner desde un aggregate local: prompts, filas finales, choices de needs-input, evidencia de contexto, fallas y notas.",
+      statsLabel: "Resultado del corpus",
+      attentionFilter: "Requiere atención",
+      needsInputFilter: "Needs input",
+      failedFilter: "Fallidos",
+      completedFilter: "Completados",
+      wrongFilter: "Incorrectos",
+      needsValidationFilter: "Necesita validación",
+      okFilter: "Correctos",
+      unreviewedFilter: "Sin revisar",
+      allFilter: "Todos",
+      markWrong: "Marcar incorrecto",
+      markNeedsValidation: "Necesita validación",
+      markOk: "Marcar correcto",
+      clearReview: "Limpiar",
+      loadSource: "Cargar aggregate",
+      copyReviewJson: "Copiar JSON de revisión",
+      copiedReviewJson: "JSON copiado",
+      notesLabel: "¿Qué hay que corregir?",
+      sourceLabel: "Fuente del aggregate",
+      promptLabel: "Prompt",
+      overviewLabel: "Resultado del planner",
+      contextLabel: "Evidencia de contexto",
+      needsInputLabel: "Choices de needs-input",
+      outlineLabel: "Filas finales",
+      timelineLabel: "Timeline",
+      rawLabel: "Payloads raw",
+    },
     designLabs: {
       title: "Labs de diseño travel-native.",
       description:
@@ -3677,6 +3845,7 @@ const labsContent = {
       soundmarks: "Soundmarks",
       authCallback: "Auth callback",
       travelDetailReview: "Travel detail review",
+      plannerCorpusReview: "Planner corpus review",
     },
   },
 } as const;
@@ -3713,6 +3882,49 @@ const persistTravelDetailReviewState = (
   window.localStorage.setItem(
     TRAVEL_DETAIL_REVIEW_STORAGE_KEY,
     JSON.stringify(nextState),
+  );
+};
+
+const getPlannerCorpusReviewStorageKey = (filePath: string) =>
+  `${PLANNER_CORPUS_REVIEW_STORAGE_KEY}:${filePath}`;
+
+const loadPlannerCorpusReviewState = (
+  filePath: string,
+): PlannerCorpusReviewState => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const raw = window.localStorage.getItem(
+      getPlannerCorpusReviewStorageKey(filePath),
+    );
+    if (!raw) {
+      return {};
+    }
+
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object") {
+      return {};
+    }
+
+    return parsed as PlannerCorpusReviewState;
+  } catch {
+    return {};
+  }
+};
+
+const persistPlannerCorpusReviewState = (
+  filePath: string,
+  nextState: PlannerCorpusReviewState,
+): void => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(
+    getPlannerCorpusReviewStorageKey(filePath),
+    JSON.stringify(nextState, null, 2),
   );
 };
 
@@ -3758,6 +3970,63 @@ const summarizeTravelDetailOutput = (
   }
 
   return lines;
+};
+
+const formatMaybeText = (value: string | null | undefined): string | null => {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+};
+
+const summarizePlannerOutlineRow = (
+  row: PlannerCorpusOutlineRow,
+): string[] => {
+  return [
+    formatMaybeText(row.type),
+    formatMaybeText(row.title ?? undefined),
+    formatMaybeText(row.location ?? undefined),
+    formatMaybeText(row.cityCode ?? undefined),
+    row.origin && row.destination ? `${row.origin} to ${row.destination}` : null,
+    formatMaybeText(row.date ?? undefined),
+    row.checkIn && row.checkOut ? `${row.checkIn} to ${row.checkOut}` : null,
+    row.eventTitles.length ? `Events: ${row.eventTitles.join(", ")}` : null,
+  ].filter((value): value is string => Boolean(value));
+};
+
+const summarizePlannerOptionRow = (
+  row: PlannerCorpusReviewOptionRow,
+): string[] => {
+  return [
+    formatMaybeText(row.title ?? undefined) ??
+      formatMaybeText(row.label ?? undefined),
+    formatMaybeText(row.location ?? undefined),
+    formatMaybeText(row.cityName ?? undefined) ??
+      formatMaybeText(row.cityCode ?? undefined),
+    row.startDate && row.endDate
+      ? `${row.startDate} to ${row.endDate}`
+      : formatMaybeText(row.startDate ?? undefined),
+    formatMaybeText(row.candidateType ?? undefined),
+    row.selectionSignals.length
+      ? `Signals: ${row.selectionSignals.join(", ")}`
+      : null,
+  ].filter((value): value is string => Boolean(value));
+};
+
+const formatJsonPreview = (value: unknown): string => {
+  if (value === null || value === undefined) {
+    return "null";
+  }
+
+  return JSON.stringify(value, null, 2);
+};
+
+const resultNeedsAttention = (result: PlannerCorpusReviewResult): boolean => {
+  return (
+    result.status === "needs_input" ||
+    result.passed === false ||
+    result.expectationPassed === false ||
+    result.rubricPassed === false ||
+    Boolean(result.error || result.resultError)
+  );
 };
 
 const loadReferenceSoundmarks = async (round: string): Promise<ReferenceSoundmark[]> => {
@@ -5906,6 +6175,481 @@ export const LabsTravelDetailReviewPage: React.FC = () => {
                       setNote(result.caseId, event.target.value)
                     }
                     placeholder="Placeholder locations, fake grounding, wrong timing, etc."
+                  />
+                </div>
+              </ReviewCard>
+            );
+          })}
+        </Grid>
+      ) : null}
+    </LabsShell>
+  );
+};
+
+export const LabsPlannerCorpusReviewPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+  const [filePathInput, setFilePathInput] = React.useState(
+    DEFAULT_PLANNER_CORPUS_REVIEW_PATH,
+  );
+  const [filePath, setFilePath] = React.useState(
+    DEFAULT_PLANNER_CORPUS_REVIEW_PATH,
+  );
+  const [filter, setFilter] =
+    React.useState<PlannerCorpusReviewFilter>("attention");
+  const [copyLabel, setCopyLabel] = React.useState(
+    localizedContent.plannerCorpusReview.copyReviewJson,
+  );
+  const [reviewState, setReviewState] =
+    React.useState<PlannerCorpusReviewState>(() =>
+      loadPlannerCorpusReviewState(DEFAULT_PLANNER_CORPUS_REVIEW_PATH),
+    );
+
+  const plannerCorpusQuery = useQuery({
+    queryKey: ["labs", "planner-corpus-review", filePath],
+    queryFn: () => fetchPlannerCorpusReviewAggregate(filePath),
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const setVerdict = (
+    caseId: string,
+    verdict: TravelDetailVerdict | undefined,
+  ) => {
+    setReviewState((current) => {
+      const nextState: PlannerCorpusReviewState = {
+        ...current,
+        [caseId]: {
+          ...current[caseId],
+          verdict,
+        },
+      };
+      if (!nextState[caseId]?.verdict && !nextState[caseId]?.note) {
+        delete nextState[caseId];
+      }
+      persistPlannerCorpusReviewState(filePath, nextState);
+      return nextState;
+    });
+  };
+
+  const setNote = (caseId: string, note: string) => {
+    setReviewState((current) => {
+      const trimmed = note.trim();
+      const nextState: PlannerCorpusReviewState = {
+        ...current,
+        [caseId]: {
+          ...current[caseId],
+          note,
+        },
+      };
+      if (!nextState[caseId]?.verdict && !trimmed) {
+        delete nextState[caseId];
+      }
+      persistPlannerCorpusReviewState(filePath, nextState);
+      return nextState;
+    });
+  };
+
+  const loadSource = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedPath = filePathInput.trim();
+    if (!trimmedPath) {
+      return;
+    }
+    setFilePath(trimmedPath);
+    setReviewState(loadPlannerCorpusReviewState(trimmedPath));
+    setCopyLabel(localizedContent.plannerCorpusReview.copyReviewJson);
+  };
+
+  const filteredResults = React.useMemo(() => {
+    const results = plannerCorpusQuery.data?.results ?? [];
+    return results.filter((result) => {
+      const verdict = reviewState[result.caseId]?.verdict;
+      if (filter === "attention") {
+        return resultNeedsAttention(result);
+      }
+      if (filter === "needs_input") {
+        return result.status === "needs_input";
+      }
+      if (filter === "failed") {
+        return result.passed === false || Boolean(result.error || result.resultError);
+      }
+      if (filter === "completed") {
+        return result.status === "completed";
+      }
+      if (filter === "wrong") {
+        return verdict === "wrong";
+      }
+      if (filter === "ok") {
+        return verdict === "ok";
+      }
+      if (filter === "needs_validation") {
+        return verdict === "needs_validation";
+      }
+      if (filter === "unreviewed") {
+        return !verdict;
+      }
+      return true;
+    });
+  }, [filter, plannerCorpusQuery.data?.results, reviewState]);
+
+  const reviewStats = React.useMemo(() => {
+    const reviews = Object.values(reviewState);
+    const results = plannerCorpusQuery.data?.results ?? [];
+    return {
+      attention: results.filter(resultNeedsAttention).length,
+      needsInput: results.filter((result) => result.status === "needs_input")
+        .length,
+      wrong: reviews.filter((value) => value.verdict === "wrong").length,
+      needsValidation: reviews.filter(
+        (value) => value.verdict === "needs_validation",
+      ).length,
+      ok: reviews.filter((value) => value.verdict === "ok").length,
+      unreviewed: Math.max(results.length - reviews.length, 0),
+    };
+  }, [plannerCorpusQuery.data?.results, reviewState]);
+
+  const copyReviewJson = async () => {
+    const reviews = Object.entries(reviewState)
+      .filter(([, review]) => review.verdict || review.note?.trim())
+      .map(([caseId, review]) => ({
+        caseId,
+        verdict: review.verdict ?? null,
+        note: review.note?.trim() ?? "",
+      }));
+    const payload = {
+      source: filePath,
+      generatedAt: new Date().toISOString(),
+      reviews,
+    };
+    await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+    setCopyLabel(localizedContent.plannerCorpusReview.copiedReviewJson);
+  };
+
+  return (
+    <LabsShell
+      title={localizedContent.plannerCorpusReview.title}
+      description={localizedContent.plannerCorpusReview.description}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor("/labs")}>
+          {localizedContent.crumbs.labs}
+        </BreadcrumbLink>
+        <BreadcrumbLink to={pathFor("/labs/planner-corpus-review")}>
+          {localizedContent.crumbs.plannerCorpusReview}
+        </BreadcrumbLink>
+      </BreadcrumbRow>
+      <Stack>
+        <SourcePathForm onSubmit={loadSource}>
+          <SourcePathInput
+            value={filePathInput}
+            onChange={(event) => setFilePathInput(event.target.value)}
+            aria-label={localizedContent.plannerCorpusReview.sourceLabel}
+          />
+          <ReviewActionButton type="submit" $tone="neutral">
+            {localizedContent.plannerCorpusReview.loadSource}
+          </ReviewActionButton>
+        </SourcePathForm>
+        <FilterRow>
+          <ReviewStats
+            aria-label={localizedContent.plannerCorpusReview.statsLabel}
+          >
+            <ReviewPill>
+              {localizedContent.plannerCorpusReview.statsLabel}:{" "}
+              {plannerCorpusQuery.data?.passedCount ?? 0}/
+              {plannerCorpusQuery.data?.totalCaseCount ??
+                plannerCorpusQuery.data?.caseCount ??
+                plannerCorpusQuery.data?.results.length ??
+                0}{" "}
+              passed
+            </ReviewPill>
+            <ReviewPill>{reviewStats.attention} attention</ReviewPill>
+            <ReviewPill>{reviewStats.needsInput} needs input</ReviewPill>
+            <ReviewPill>{reviewStats.wrong} wrong</ReviewPill>
+            <ReviewPill>{reviewStats.needsValidation} needs validation</ReviewPill>
+            <ReviewPill>{reviewStats.ok} ok</ReviewPill>
+            <ReviewPill>{reviewStats.unreviewed} unreviewed</ReviewPill>
+          </ReviewStats>
+          <FilterButton
+            type="button"
+            $active={filter === "attention"}
+            onClick={() => setFilter("attention")}
+          >
+            {localizedContent.plannerCorpusReview.attentionFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "needs_input"}
+            onClick={() => setFilter("needs_input")}
+          >
+            {localizedContent.plannerCorpusReview.needsInputFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "failed"}
+            onClick={() => setFilter("failed")}
+          >
+            {localizedContent.plannerCorpusReview.failedFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "completed"}
+            onClick={() => setFilter("completed")}
+          >
+            {localizedContent.plannerCorpusReview.completedFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "wrong"}
+            onClick={() => setFilter("wrong")}
+          >
+            {localizedContent.plannerCorpusReview.wrongFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "needs_validation"}
+            onClick={() => setFilter("needs_validation")}
+          >
+            {localizedContent.plannerCorpusReview.needsValidationFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "ok"}
+            onClick={() => setFilter("ok")}
+          >
+            {localizedContent.plannerCorpusReview.okFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "unreviewed"}
+            onClick={() => setFilter("unreviewed")}
+          >
+            {localizedContent.plannerCorpusReview.unreviewedFilter}
+          </FilterButton>
+          <FilterButton
+            type="button"
+            $active={filter === "all"}
+            onClick={() => setFilter("all")}
+          >
+            {localizedContent.plannerCorpusReview.allFilter}
+          </FilterButton>
+          <FilterButton type="button" onClick={copyReviewJson}>
+            {copyLabel}
+          </FilterButton>
+        </FilterRow>
+        <PathLabel>
+          {localizedContent.plannerCorpusReview.sourceLabel}: {filePath}
+        </PathLabel>
+      </Stack>
+      {plannerCorpusQuery.isLoading ? (
+        <Notice>Loading planner corpus aggregate…</Notice>
+      ) : null}
+      {plannerCorpusQuery.isError ? (
+        <ErrorNotice>
+          {plannerCorpusQuery.error instanceof Error
+            ? plannerCorpusQuery.error.message
+            : "Failed to load planner corpus aggregate."}
+        </ErrorNotice>
+      ) : null}
+      {plannerCorpusQuery.data ? (
+        <Grid>
+          {filteredResults.map((result) => {
+            const review = reviewState[result.caseId];
+            const verdict = review?.verdict;
+            const pendingInput = result.pendingUserInput;
+            const optionRows = pendingInput?.optionRows ?? [];
+            const contextLines = [
+              result.context?.location
+                ? `Location: ${result.context.location}`
+                : null,
+              result.context?.startDate || result.context?.endDate
+                ? `Dates: ${result.context.startDate ?? "?"} to ${result.context.endDate ?? "?"}`
+                : null,
+              result.context?.eventTitles.length
+                ? `Events: ${result.context.eventTitles.join(", ")}`
+                : null,
+              result.context?.contextTitles.length
+                ? `Context: ${result.context.contextTitles.join(", ")}`
+                : null,
+              result.context?.syntheticTitles.length
+                ? `Synthetic: ${result.context.syntheticTitles.join(", ")}`
+                : null,
+            ].filter((value): value is string => Boolean(value));
+
+            return (
+              <ReviewCard key={result.caseId}>
+                <ReviewHeader>
+                  <ReviewMetaColumn>
+                    <Kicker>
+                      {result.status ?? "unknown"} ·{" "}
+                      {result.passed === false ? "failed" : "passed/unknown"}
+                    </Kicker>
+                    <CardTitle>{result.caseId}</CardTitle>
+                    <CardBody>
+                      {result.tags.length ? result.tags.join(" · ") : "No tags"}
+                    </CardBody>
+                  </ReviewMetaColumn>
+                  <ReviewActions>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="wrong"
+                      onClick={() => setVerdict(result.caseId, "wrong")}
+                    >
+                      {verdict === "wrong"
+                        ? "Wrong marked"
+                        : localizedContent.plannerCorpusReview.markWrong}
+                    </ReviewActionButton>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="needsValidation"
+                      onClick={() =>
+                        setVerdict(result.caseId, "needs_validation")
+                      }
+                    >
+                      {verdict === "needs_validation"
+                        ? "Needs validation marked"
+                        : localizedContent.plannerCorpusReview.markNeedsValidation}
+                    </ReviewActionButton>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="ok"
+                      onClick={() => setVerdict(result.caseId, "ok")}
+                    >
+                      {verdict === "ok"
+                        ? "OK marked"
+                        : localizedContent.plannerCorpusReview.markOk}
+                    </ReviewActionButton>
+                    <ReviewActionButton
+                      type="button"
+                      $tone="neutral"
+                      onClick={() => setVerdict(result.caseId, undefined)}
+                    >
+                      {localizedContent.plannerCorpusReview.clearReview}
+                    </ReviewActionButton>
+                  </ReviewActions>
+                </ReviewHeader>
+                <div>
+                  <CardBody>{localizedContent.plannerCorpusReview.promptLabel}</CardBody>
+                  <PromptPanel>{result.message ?? "No prompt recorded."}</PromptPanel>
+                </div>
+                <div>
+                  <CardBody>
+                    {localizedContent.plannerCorpusReview.overviewLabel}
+                  </CardBody>
+                  <PromptPanel>
+                    {result.shortOverview ??
+                      result.currentStep ??
+                      result.noTravelReason ??
+                      "No overview recorded."}
+                  </PromptPanel>
+                </div>
+                {result.error || result.resultError ? (
+                  <ErrorNotice>{result.error ?? result.resultError}</ErrorNotice>
+                ) : null}
+                {result.expectationFailures.length ||
+                result.rubricFindings.length ? (
+                  <DetailsDisclosure open>
+                    <summary>Failures and rubric findings</summary>
+                    <JsonBlock>
+                      {formatJsonPreview({
+                        expectationFailures: result.expectationFailures,
+                        rubricFindings: result.rubricFindings,
+                      })}
+                    </JsonBlock>
+                  </DetailsDisclosure>
+                ) : null}
+                {pendingInput ? (
+                  <div>
+                    <CardBody>
+                      {localizedContent.plannerCorpusReview.needsInputLabel}
+                    </CardBody>
+                    <PromptPanel>
+                      {pendingInput.prompt ??
+                        pendingInput.title ??
+                        "No needs-input prompt recorded."}
+                    </PromptPanel>
+                    {optionRows.length ? (
+                      <OptionRowGrid>
+                        {optionRows.map((row, index) => (
+                          <OptionReviewCard key={`${result.caseId}-option-${index}`}>
+                            <Kicker>Option {index + 1}</Kicker>
+                            <CompactList>
+                              {summarizePlannerOptionRow(row).map((line, lineIndex) => (
+                                <li key={`${line}-${lineIndex}`}>{line}</li>
+                              ))}
+                            </CompactList>
+                          </OptionReviewCard>
+                        ))}
+                      </OptionRowGrid>
+                    ) : (
+                      <JsonBlock>{formatJsonPreview(pendingInput)}</JsonBlock>
+                    )}
+                  </div>
+                ) : null}
+                {contextLines.length ? (
+                  <div>
+                    <CardBody>
+                      {localizedContent.plannerCorpusReview.contextLabel}
+                    </CardBody>
+                    <PromptPanel>
+                      <CompactList>
+                        {contextLines.map((line, lineIndex) => (
+                          <li key={`${line}-${lineIndex}`}>{line}</li>
+                        ))}
+                      </CompactList>
+                    </PromptPanel>
+                  </div>
+                ) : null}
+                {result.outlineRows.length ? (
+                  <div>
+                    <CardBody>
+                      {localizedContent.plannerCorpusReview.outlineLabel}
+                    </CardBody>
+                    <ReviewLegGrid>
+                      {result.outlineRows.map((row, index) => (
+                        <ReviewLegCard key={row.id ?? `${result.caseId}-${index}`}>
+                          <CompactList>
+                            {summarizePlannerOutlineRow(row).map((line, lineIndex) => (
+                              <li key={`${line}-${lineIndex}`}>{line}</li>
+                            ))}
+                          </CompactList>
+                        </ReviewLegCard>
+                      ))}
+                    </ReviewLegGrid>
+                  </div>
+                ) : null}
+                {result.timelineItems.length ? (
+                  <DetailsDisclosure>
+                    <summary>
+                      {localizedContent.plannerCorpusReview.timelineLabel}
+                    </summary>
+                    <CompactList>
+                      {result.timelineItems.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </CompactList>
+                  </DetailsDisclosure>
+                ) : null}
+                <DetailsDisclosure>
+                  <summary>{localizedContent.plannerCorpusReview.rawLabel}</summary>
+                  <JsonBlock>
+                    {formatJsonPreview({
+                      outlineTravelability: result.outlineTravelability,
+                      outlineQuality: result.outlineQuality,
+                      pendingUserInput: result.pendingUserInput,
+                      canonicalContext: result.canonicalContext,
+                      llmMetrics: result.llmMetrics,
+                    })}
+                  </JsonBlock>
+                </DetailsDisclosure>
+                <div>
+                  <CardBody>{localizedContent.plannerCorpusReview.notesLabel}</CardBody>
+                  <ReviewTextArea
+                    value={review?.note ?? ""}
+                    onChange={(event) =>
+                      setNote(result.caseId, event.target.value)
+                    }
+                    placeholder="Missing options, weak evidence, bad ranking, wrong city/date, confusing needs_input copy, etc."
                   />
                 </div>
               </ReviewCard>

@@ -68,6 +68,12 @@ const packAppLiveActivityReviewDir = path.join(
   packAppDir,
   'manual-live-activity-review',
 );
+const packServerTravelPlannerFixtureCorpusDir = path.join(
+  repoRootDir,
+  'PackServer',
+  'tmp',
+  'travel-planner-fixture-corpus',
+);
 const execFileAsync = promisify(execFile);
 
 function isUsablePublicTsaBoardUrl(
@@ -963,6 +969,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
           normalizePath(packAdsLogoLabOutputDir),
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),
+          normalizePath(packServerTravelPlannerFixtureCorpusDir),
           normalizePath(reactModuleDir),
           normalizePath(reactDomModuleDir),
           normalizePath(styledComponentsModuleDir),

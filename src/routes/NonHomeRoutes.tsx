@@ -136,6 +136,12 @@ const LabsTravelDetailReviewPage = labsEnabled
       return { default: module.LabsTravelDetailReviewPage };
     })
   : null;
+const LabsPlannerCorpusReviewPage = labsEnabled
+  ? React.lazy(async () => {
+      const module = await import("../pages/Labs");
+      return { default: module.LabsPlannerCorpusReviewPage };
+    })
+  : null;
 const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
 const WestLaLiveWorkZoningPage = React.lazy(
   () => import("../pages/WestLaLiveWorkZoningPage")
@@ -728,6 +734,18 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
         ) : null}
+        {LabsPlannerCorpusReviewPage ? (
+          <Route
+            path="/labs/planner-corpus-review"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <LabsPlannerCorpusReviewPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ) : null}
         {LabsPage ? (
           <Route
             path="/labs/live-activities"
@@ -1043,6 +1061,9 @@ const NonHomeRoutes: React.FC = () => {
           ) : null}
           {LabsTravelDetailReviewPage ? (
             <Route path="labs/travel-detail-review" element={<Layout><Suspense fallback={null}><LabsTravelDetailReviewPage /></Suspense></Layout>} />
+          ) : null}
+          {LabsPlannerCorpusReviewPage ? (
+            <Route path="labs/planner-corpus-review" element={<Layout><Suspense fallback={null}><LabsPlannerCorpusReviewPage /></Suspense></Layout>} />
           ) : null}
           {LabsPage ? (
             <Route path="labs/live-activities" element={<Layout><Suspense fallback={null}><LiveActivityLab /></Suspense></Layout>} />

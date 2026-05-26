@@ -2,11 +2,13 @@ import { z } from "zod";
 import {
   LogoLabGenerateRequestSchema,
   LogoLabRunSchema,
+  PlannerCorpusReviewAggregateSchema,
   TravelDetailReviewAggregateSchema,
   VideoLabGenerateRequestSchema,
   VideoLabManifestSchema,
   type LogoLabGenerateRequest,
   type LogoLabRun,
+  type PlannerCorpusReviewAggregate,
   type TravelDetailReviewAggregate,
   type VideoLabGenerateRequest,
   type VideoLabManifest,
@@ -145,6 +147,33 @@ export const fetchTravelDetailReviewAggregate = async (
     throw new ApiRequestError(
       500,
       "Unexpected travel detail review aggregate shape.",
+      parsed.error.issues,
+    );
+  }
+
+  return parsed.data;
+};
+
+export const DEFAULT_PLANNER_CORPUS_REVIEW_PATH =
+  "/Users/noahmitsuhashi/Code/PackAll/PackServer/tmp/travel-planner-fixture-corpus/full-after-process-worker-duration-fix-2026-05-12/aggregate.json";
+
+export const fetchPlannerCorpusReviewAggregate = async (
+  filePath: string = DEFAULT_PLANNER_CORPUS_REVIEW_PATH,
+): Promise<PlannerCorpusReviewAggregate> => {
+  const response = await fetch(`/@fs${encodeURI(filePath)}`);
+  if (!response.ok) {
+    throw new ApiRequestError(
+      response.status,
+      `Failed to load planner corpus aggregate from ${filePath}.`,
+    );
+  }
+
+  const payload: unknown = await response.json();
+  const parsed = PlannerCorpusReviewAggregateSchema.safeParse(payload);
+  if (!parsed.success) {
+    throw new ApiRequestError(
+      500,
+      "Unexpected planner corpus aggregate shape.",
       parsed.error.issues,
     );
   }

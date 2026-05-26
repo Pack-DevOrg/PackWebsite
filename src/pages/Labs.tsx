@@ -4019,6 +4019,53 @@ const formatJsonPreview = (value: unknown): string => {
   return JSON.stringify(value, null, 2);
 };
 
+const normalizePlannerCorpusStatus = (
+  status: string | null | undefined,
+): string => {
+  if (!status) {
+    return "unknown status";
+  }
+
+  return status.replace(/_/g, " ");
+};
+
+const getPlannerCorpusOutcomeLabel = (
+  result: PlannerCorpusReviewResult,
+): string => {
+  if (result.passed === false) {
+    return "corpus failed";
+  }
+  if (result.status === "needs_input" && result.passed === true) {
+    return "expected pause";
+  }
+  if (result.passed === true) {
+    return "corpus passed";
+  }
+  return "not scored";
+};
+
+const getPlannerReviewOverview = (
+  result: PlannerCorpusReviewResult,
+): string => {
+  const pendingPrompt = result.pendingUserInput?.prompt?.trim();
+  const shortOverview = result.shortOverview?.trim();
+  if (pendingPrompt && shortOverview) {
+    if (
+      pendingPrompt === shortOverview ||
+      pendingPrompt.startsWith(shortOverview)
+    ) {
+      return "Planner paused for user input.";
+    }
+  }
+
+  return (
+    shortOverview ??
+    result.currentStep ??
+    result.noTravelReason ??
+    "No overview recorded."
+  );
+};
+
 const resultNeedsAttention = (result: PlannerCorpusReviewResult): boolean => {
   return (
     result.status === "needs_input" ||
@@ -6481,8 +6528,8 @@ export const LabsPlannerCorpusReviewPage: React.FC = () => {
                 <ReviewHeader>
                   <ReviewMetaColumn>
                     <Kicker>
-                      {result.status ?? "unknown"} ·{" "}
-                      {result.passed === false ? "failed" : "passed/unknown"}
+                      {normalizePlannerCorpusStatus(result.status)} ·{" "}
+                      {getPlannerCorpusOutcomeLabel(result)}
                     </Kicker>
                     <CardTitle>{result.caseId}</CardTitle>
                     <CardBody>
@@ -6537,10 +6584,7 @@ export const LabsPlannerCorpusReviewPage: React.FC = () => {
                     {localizedContent.plannerCorpusReview.overviewLabel}
                   </CardBody>
                   <PromptPanel>
-                    {result.shortOverview ??
-                      result.currentStep ??
-                      result.noTravelReason ??
-                      "No overview recorded."}
+                    {getPlannerReviewOverview(result)}
                   </PromptPanel>
                 </div>
                 {result.error || result.resultError ? (

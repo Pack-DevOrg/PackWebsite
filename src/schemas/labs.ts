@@ -189,3 +189,139 @@ export const TravelDetailReviewAggregateSchema = z.object({
 export type TravelDetailReviewAggregate = z.infer<
   typeof TravelDetailReviewAggregateSchema
 >;
+
+const PlannerCorpusReviewOptionRowSchema = z
+  .object({
+    label: z.string().nullable().optional(),
+    title: z.string().nullable().optional(),
+    location: z.string().nullable().optional(),
+    cityCode: z.string().nullable().optional(),
+    cityName: z.string().nullable().optional(),
+    countryCode: z.string().nullable().optional(),
+    gatewayAirportIata: z.string().nullable().optional(),
+    candidateType: z.string().nullable().optional(),
+    startDate: z.string().nullable().optional(),
+    endDate: z.string().nullable().optional(),
+    timezone: z.string().nullable().optional(),
+    selectionSignals: z.array(z.string()).default([]),
+  })
+  .passthrough();
+
+export type PlannerCorpusReviewOptionRow = z.infer<
+  typeof PlannerCorpusReviewOptionRowSchema
+>;
+
+const PlannerCorpusPendingUserInputSchema = z
+  .object({
+    id: z.string().optional(),
+    kind: z.string().optional(),
+    title: z.string().optional(),
+    prompt: z.string().optional(),
+    itemTypes: z.array(z.string()).default([]),
+    itemTitles: z.array(z.string()).default([]),
+    optionLabels: z.array(z.string()).default([]),
+    optionTitles: z.array(z.string()).default([]),
+    optionDates: z.array(z.string()).default([]),
+    optionRows: z.array(PlannerCorpusReviewOptionRowSchema).default([]),
+    items: z.array(z.unknown()).default([]),
+    options: z.array(z.unknown()).default([]),
+  })
+  .passthrough();
+
+export type PlannerCorpusPendingUserInput = z.infer<
+  typeof PlannerCorpusPendingUserInputSchema
+>;
+
+const PlannerCorpusOutlineRowSchema = z
+  .object({
+    type: z.string().optional(),
+    id: z.string().optional(),
+    title: z.string().nullable().optional(),
+    location: z.string().nullable().optional(),
+    cityCode: z.string().nullable().optional(),
+    origin: z.string().nullable().optional(),
+    destination: z.string().nullable().optional(),
+    date: z.string().nullable().optional(),
+    departureDate: z.string().nullable().optional(),
+    checkIn: z.string().nullable().optional(),
+    checkOut: z.string().nullable().optional(),
+    eventTitles: z.array(z.string()).default([]),
+    eventDistanceSummary: z.unknown().nullable().optional(),
+  })
+  .passthrough();
+
+export type PlannerCorpusOutlineRow = z.infer<
+  typeof PlannerCorpusOutlineRowSchema
+>;
+
+const PlannerCorpusContextSchema = z
+  .object({
+    location: z.string().nullable().optional(),
+    startDate: z.string().nullable().optional(),
+    endDate: z.string().nullable().optional(),
+    passengerCount: z.number().optional(),
+    eventTitles: z.array(z.string()).default([]),
+    contextTitles: z.array(z.string()).default([]),
+    syntheticTitles: z.array(z.string()).default([]),
+    eventRows: z.array(z.unknown()).default([]),
+  })
+  .passthrough();
+
+export const PlannerCorpusReviewResultSchema = z
+  .object({
+    caseId: z.string(),
+    message: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    status: z.string().optional(),
+    currentStep: z.string().nullable().optional(),
+    shortOverview: z.string().nullable().optional(),
+    passed: z.boolean().optional(),
+    expectationPassed: z.boolean().nullable().optional(),
+    rubricPassed: z.boolean().nullable().optional(),
+    processingDurationMs: z.number().nullable().optional(),
+    error: z.string().nullable().optional(),
+    resultError: z.string().nullable().optional(),
+    noTravelReason: z.string().nullable().optional(),
+    searchNote: z.string().nullable().optional(),
+    context: PlannerCorpusContextSchema.nullable().optional(),
+    canonicalContext: z.unknown().nullable().optional(),
+    pendingUserInput: PlannerCorpusPendingUserInputSchema.nullable().optional(),
+    outlineRows: z.array(PlannerCorpusOutlineRowSchema).default([]),
+    timelineItems: z.array(z.string()).default([]),
+    expectationFailures: z.array(z.unknown()).default([]),
+    rubricFindings: z.array(z.unknown()).default([]),
+    outlineTravelability: z.unknown().nullable().optional(),
+    outlineQuality: z.unknown().nullable().optional(),
+    llmMetrics: z.unknown().nullable().optional(),
+  })
+  .passthrough();
+
+export type PlannerCorpusReviewResult = z.infer<
+  typeof PlannerCorpusReviewResultSchema
+>;
+
+export const PlannerCorpusReviewAggregateSchema = z
+  .object({
+    totalCaseCount: z.number().int().optional(),
+    caseCount: z.number().int().optional(),
+    passedCount: z.number().int().optional(),
+    failedCount: z.number().int().optional(),
+    expectationFailedCount: z.number().int().optional(),
+    rubricFailedCount: z.number().int().optional(),
+    completedCount: z.number().int().optional(),
+    pendingCount: z.number().int().optional(),
+    referenceDate: z.string().optional(),
+    generatedAt: z.string().optional(),
+    startedAt: z.string().optional(),
+    completedAt: z.string().optional(),
+    outDir: z.string().optional(),
+    corpus: z.string().optional(),
+    evaluationMode: z.string().optional(),
+    executionMode: z.string().optional(),
+    results: z.array(PlannerCorpusReviewResultSchema),
+  })
+  .passthrough();
+
+export type PlannerCorpusReviewAggregate = z.infer<
+  typeof PlannerCorpusReviewAggregateSchema
+>;

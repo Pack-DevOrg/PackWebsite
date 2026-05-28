@@ -619,11 +619,10 @@ const BarFill = styled.span<{ $percent: number; $tone: "pack" | "model" }>`
 `;
 
 const RubricHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
-  align-items: baseline;
-  flex-wrap: wrap;
+  display: grid;
+  gap: 0.65rem;
+  align-items: start;
+  justify-items: start;
 
   h4 {
     margin: 0;
@@ -810,14 +809,14 @@ const TravelContextBenchmark = () => (
   <Page>
     <PageSeo
       title="Pack DeeperBench | Travel Agent Benchmark"
-      description="Pack DeeperBench is a synthetic benchmark for travel-planning agents over private email, calendar context, public timing, deterministic flight inventory, and deterministic hotel inventory."
+      description="Pack DeeperBench is a synthetic benchmark for travel-planning architecture over private context, calendar constraints, public timing, deterministic flight inventory, and deterministic hotel inventory."
       path="/pack-deeperbench"
       schema={[
         {
           "@type": "Dataset",
           name: "Pack DeeperBench",
           description:
-            "Synthetic benchmark for evidence-grounded travel agents over household email, calendar, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases; selected hard-case baselines are not the official full-corpus score.",
+            "Synthetic benchmark for evidence-grounded travel planning over household context, calendar constraints, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases; selected hard-case baselines are not the official full-corpus score.",
           url: buildAbsoluteUrl("/pack-deeperbench"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {
@@ -832,9 +831,9 @@ const TravelContextBenchmark = () => (
       <Kicker>Benchmark {benchmarkOverview.version}</Kicker>
       <Title>Pack DeeperBench</Title>
       <Intro>
-        A synthetic benchmark for travel-planning agents over private email,
-        calendar context, public timing, deterministic flight inventory, and
-        deterministic hotel inventory.
+        A synthetic benchmark for travel-planning architecture over private
+        context, calendar constraints, public timing, deterministic flight
+        inventory, and deterministic hotel inventory.
       </Intro>
       <StatusBar>
         <strong>{benchmarkOverview.status}.</strong>
@@ -996,8 +995,8 @@ const TravelContextBenchmark = () => (
       <SectionText>
         Each row is one of ten especially difficult cases selected from the
         hard-100 corpus as a focused test set. The table reports rubric score,
-        cost, runtime, rubric components, and the scored result note for Pack,
-        GPT-5.5 xhigh, and Claude Opus 4.7 on those same cases.
+        cost, runtime, rubric components, and the scored result note for Pack's
+        architecture and the frontier-agent baselines on those same cases.
       </SectionText>
       <TableWrap>
         <ShootoutTable>

@@ -22,11 +22,11 @@ export const benchmarkOverview = {
     hotelInventory: "1,000,000",
   },
   protocol: [
-    "Every system gets the same private inbox, calendar, and travel-search tools.",
-    "The user prompt is short; the missing details have to be found in the private context.",
-    "A response must be readable enough to normalize into the same scoring rubric.",
-    "A case only passes when the answer is grounded in the right evidence and returns the right travel outcome.",
-    "Missing final answers, unscorable content, bad IDs, missing evidence, timeouts, and service limits score 0.",
+    "Every system is evaluated against the same synthetic household, private context, calendar constraints, public timing, and travel inventory.",
+    "The user prompt is short; the system has to recover missing trip details from surrounding context instead of relying on the prompt alone.",
+    "Pack runs as a domain planning architecture. Baseline agents use direct tool calls and have to discover, reconcile, and structure the relevant evidence themselves.",
+    "A case only passes when the final outcome is grounded in the right evidence and matches the expected travel decision.",
+    "Unsupported answers, missing final decisions, timeouts, and service-limit failures do not receive final-pass credit.",
   ],
 };
 
@@ -77,17 +77,20 @@ export const benchmarkMetricExplanations = [
 export const methodologyNotes = [
   "The corpus is synthetic and uses generated inbox, calendar, public-event, flight, and hotel data.",
   "Prompts are intentionally short. Required facts may be present only in private context or deterministic inventory.",
+  "Pack DeeperBench measures a complete travel-planning architecture, not a standalone foundation model in isolation.",
+  "Pack uses structured retrieval, context translation, and planning layers to turn large personal-data surfaces into grounded trip decisions.",
+  "Baseline agents operate through direct tool-calling loops over the same synthetic task environment.",
   "A passing final answer must match one of the expected outcome classes: bookable trip, no travel needed, impossible, or clarification required.",
-  "Incorrect final answers, unscorable content, bad IDs, missing evidence, timeouts, and service-limit failures score 0 for final pass.",
+  "When a baseline produced substantively useful work without a fully passing final answer, the table reports partial rubric credit for evidence, constraints, and inventory.",
   "The GPT-5.5 xhigh and Claude Opus 4.7 rows cover a fixed 10-case test set intentionally selected from especially difficult hard-100 cases. They are not full hard-100 results.",
-  "The benchmark is designed around neurosymbolic planning over structured context and deterministic inventory. Results for traditional agentic models should be read as advisory for that architecture class.",
+  "The comparison should be read as Pack's domain architecture versus general-purpose frontier agents using direct tool calls.",
 ] as const;
 
 export const neurosymbolicComparison = {
-  label: "Hard-Case Test Set",
-  headline: "Ten selected hard-100 cases where all rows are available.",
+  label: "Architecture Comparison",
+  headline: "Ten selected hard-100 cases run across Pack and frontier-agent baselines.",
   summary:
-    "This section reports a fixed test set of ten especially difficult cases chosen from the hard-100 corpus. The same cases were run for Pack, GPT-5.5 xhigh, and Claude Opus 4.7 max-thinking.",
+    "This section reports a fixed test set of ten especially difficult cases chosen from the hard-100 corpus. Pack runs through its travel-planning architecture; GPT-5.5 xhigh and Claude Opus 4.7 max-thinking run as general-purpose agents using direct tool calls.",
   measuredCase: "10 difficult hard-100 cases, 45-minute cutoff",
   packCorpusResult: "10/10 final content pass",
   packCorpusCost: "$1.11 total cost",
@@ -102,7 +105,7 @@ export const neurosymbolicComparison = {
       costMultiple: "1x Pack cost",
       runtime: "10m46s across the ten hard cases",
       calls: "10/10 final content pass; 10/10 scorable output",
-      takeaway: "Returned a passing final answer for each selected hard case.",
+      takeaway: "Used Pack's retrieval, context, and planning layers to return a passing final answer for every selected hard case.",
     },
     {
       system: "GPT-5.5 xhigh",
@@ -811,14 +814,14 @@ export const phaseCards = [
     title: "1. Context Graph Build",
     metric: "40k emails",
     body:
-      "Each system receives the same Gmail-shaped inbox and calendar history, creating the opportunity to build a per-case context graph of trips, cancellations, changes, loyalty, preferences, obligations, and costs before answering.",
+      "The benchmark is built around a large synthetic household record: inbox history, calendar history, trips, cancellations, changes, loyalty, preferences, obligations, and costs.",
     icon: MailSearch,
   },
   {
     title: "2. Travel Reasoning",
     metric: "100 hard prompts",
     body:
-      "Human-written requests require decisions grounded in household context, obligations, public-event timing, prior travel, and noisy private evidence.",
+      "Short human requests require decisions grounded in household context, obligations, public-event timing, prior travel, and noisy private evidence.",
     icon: CalendarCheck,
   },
   {
@@ -853,7 +856,7 @@ export const scoreCards = [
   },
   {
     label: "Scorable Output",
-    body: "3% of the score. The response has to be readable enough to normalize into the shared benchmark fields before cutoff.",
+    body: "3% of the score. The response has to be clear enough to score against the shared rubric before cutoff.",
     icon: SearchCheck,
   },
 ];

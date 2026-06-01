@@ -27,7 +27,7 @@ const parseArgs = (argv) => {
 };
 
 const readJson = (filePath) =>
-  JSON.parse(fs.readFileSync(filePath, {encoding: "utf8"}));
+  JSON.parse(fs.readFileSync(filePath, { encoding: "utf8" }));
 
 const normalizeManifestPath = (value) => {
   if (typeof value !== "string" || value.trim().length === 0) {
@@ -86,7 +86,7 @@ const validateManifest = (manifest) => {
       path: entryPath,
     };
   });
-  return {assetBasePath, entries};
+  return { assetBasePath, entries };
 };
 
 const ensureAllSourceFilesExist = (sourceDir, entries) => {
@@ -108,12 +108,12 @@ const ensureAllSourceFilesExist = (sourceDir, entries) => {
   }
 };
 
-const copyManifestAssets = ({sourceDir, targetDir, entries}) => {
-  fs.rmSync(targetDir, {recursive: true, force: true});
+const copyManifestAssets = ({ sourceDir, targetDir, entries }) => {
+  fs.rmSync(targetDir, { recursive: true, force: true });
   for (const entry of entries) {
     const sourcePath = path.join(sourceDir, entry.path);
     const targetPath = path.join(targetDir, entry.path);
-    fs.mkdirSync(path.dirname(targetPath), {recursive: true});
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
     fs.copyFileSync(sourcePath, targetPath);
   }
 };
@@ -122,7 +122,7 @@ const main = () => {
   const args = parseArgs(process.argv);
   const manifestPath = path.resolve(args.manifest ?? defaultManifestPath);
   const manifest = readJson(manifestPath);
-  const {assetBasePath, entries} = validateManifest(manifest);
+  const { assetBasePath, entries } = validateManifest(manifest);
   const sourceDir = path.resolve(args["source-dir"] ?? getDefaultSourceDir(manifest));
   const distDir = path.resolve(args["dist-dir"] ?? defaultDistDir);
   const targetDir = path.join(distDir, assetBasePath);
@@ -133,7 +133,7 @@ const main = () => {
   ensureAllSourceFilesExist(sourceDir, entries);
 
   if (args["dry-run"] !== "true") {
-    copyManifestAssets({sourceDir, targetDir, entries});
+    copyManifestAssets({ sourceDir, targetDir, entries });
   }
 
   console.log(

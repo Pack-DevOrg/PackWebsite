@@ -138,6 +138,7 @@ console.log(
 run("npm", ["run", "legal:check"]);
 run("node", ["scripts/sync-app-cloudfront-functions.mjs"]);
 run("npm", ["run", "build:app-origin"]);
+run("npm", ["run", "stage:city-recommendation-assets"]);
 
 rmSync(resolve(distDir, "app"), { recursive: true, force: true });
 rmSync(resolve(distDir, "auth", "callback"), { recursive: true, force: true });

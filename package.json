@@ -29,6 +29,7 @@
     "capture:live-activity-lab": "node scripts/capture-live-activity-lab.mjs",
     "sync:live-activity-lab": "node scripts/sync-live-activity-lab.mjs",
     "sync:app-cloudfront-waf": "node scripts/sync-app-cloudfront-waf.mjs",
+    "stage:city-recommendation-assets": "node scripts/stage-city-recommendation-assets.mjs",
     "deploy": "node scripts/deploy-app-origin.mjs",
     "deploy:app-origin": "npm run deploy",
     "deploy:legacy-pages": "node scripts/deploy-github-pages.mjs",

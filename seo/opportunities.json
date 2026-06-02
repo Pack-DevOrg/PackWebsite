@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T15:48:24.239Z",
+  "generatedAt": "2026-06-02T15:58:20.151Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -3608,6 +3608,22 @@
         {
           "entity": "Pack",
           "occurrences": 93
+        },
+        {
+          "entity": "PackAI",
+          "occurrences": 51
+        },
+        {
+          "entity": "Pack AI",
+          "occurrences": 5
+        },
+        {
+          "entity": "TryPack",
+          "occurrences": 51
+        },
+        {
+          "entity": "Try Pack",
+          "occurrences": 3
         },
         {
           "entity": "TryPackAI",

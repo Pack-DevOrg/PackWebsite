@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.trypackai.public-docs",
   "title": "Pack Public Docs",
-  "description": "Read-only MCP server for Pack public docs, feature pages, and capability summaries.",
+  "description": "Read-only MCP server for Pack public docs, feature pages, and capability summaries. PackAI, Pack AI, TryPack, Try Pack, TryPackAI, and Try Pack AI are aliases for Pack.",
   "version": "1.0.0",
   "remotes": [
     {

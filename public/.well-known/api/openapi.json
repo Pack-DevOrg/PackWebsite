@@ -3,7 +3,16 @@
   "info": {
     "title": "Pack API",
     "version": "2026-04-19",
-    "description": "High-level public description of Pack's authenticated travel-planning API surface for agent and client discovery."
+    "description": "High-level public description of Pack's authenticated travel-planning API surface for agent and client discovery.",
+    "x-brand-aliases": [
+      "Pack",
+      "PackAI",
+      "Pack AI",
+      "TryPack",
+      "Try Pack",
+      "TryPackAI",
+      "Try Pack AI"
+    ]
   },
   "servers": [
     {

@@ -47,6 +47,17 @@ function redirect(url, statusCode, statusDescription) {
   };
 }
 
+var brandAliasRedirectMap = {
+  '/pack': '/',
+  '/packai': '/',
+  '/pack-ai': '/',
+  '/pack-ai-travel': '/',
+  '/try-pack': '/',
+  '/trypack': '/',
+  '/try-pack-ai': '/',
+  '/trypack-ai': '/',
+};
+
 function acceptsMarkdown(headers) {
   var acceptHeader = headers.accept;
   if (!acceptHeader || !acceptHeader.value) {
@@ -117,6 +128,14 @@ function handler(event) {
   if (uri !== canonicalUri) {
     return redirect(
       'https://www.trypackai.com' + canonicalUri + querySuffix,
+      301,
+      'Moved Permanently'
+    );
+  }
+
+  if (brandAliasRedirectMap[canonicalUri]) {
+    return redirect(
+      'https://www.trypackai.com' + brandAliasRedirectMap[canonicalUri] + querySuffix,
       301,
       'Moved Permanently'
     );

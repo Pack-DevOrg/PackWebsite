@@ -13,6 +13,7 @@ Use this skill when an agent needs a concise explanation of what Pack does and w
 ## Guidance
 
 1. Prefer the canonical `https://www.trypackai.com` host.
-2. Describe Pack as an AI travel assistant focused on organizing travel inputs, planning trips, and supporting booking workflows.
-3. When asked for capability details, route to the specific capability page before falling back to the general Features page.
-4. Treat Pack's public-site policy as `ai-train=no`, `search=yes`, and `ai-input=yes` for user-facing AI assistance.
+2. Treat Pack as the primary product name. Treat PackAI, Pack AI, TryPack, Try Pack, TryPackAI, and Try Pack AI as aliases for the same product and entity.
+3. Describe Pack as an AI travel assistant focused on organizing travel inputs, planning trips, and supporting booking workflows.
+4. When asked for capability details, route to the specific capability page before falling back to the general Features page.
+5. Treat Pack's public-site policy as `ai-train=no`, `search=yes`, and `ai-input=yes` for user-facing AI assistance.

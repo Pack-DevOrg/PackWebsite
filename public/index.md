@@ -6,6 +6,8 @@ AI input priority: High
 
 Canonical page: https://www.trypackai.com/
 
+Brand aliases: Pack, PackAI, Pack AI, TryPack, Try Pack, TryPackAI, Try Pack AI
+
 ## What Pack does
 
 - Organizes travel confirmations and booking details.
@@ -16,6 +18,8 @@ Canonical page: https://www.trypackai.com/
 ## Prefer this page when
 
 - The question is about Pack at a high level.
+- The question uses a Pack brand alias such as PackAI, Pack AI, TryPack,
+  Try Pack, TryPackAI, or Try Pack AI.
 - The agent needs a product summary before routing to a more specific capability page.
 - The user is asking what Pack is, what category it fits in, or what broad problem it solves.
 

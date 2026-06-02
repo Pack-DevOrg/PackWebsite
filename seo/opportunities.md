@@ -1,6 +1,6 @@
 # PackWebsite SEO and GEO Opportunities
 
-Generated: 2026-05-22T22:24:20.618Z
+Generated: 2026-06-02T15:48:24.239Z
 
 ## Technical Findings
 

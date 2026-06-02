@@ -7,7 +7,7 @@
       "type": "documentation",
       "description": "Public Pack product summary and capability discovery sources.",
       "url": "https://www.trypackai.com/.well-known/agent-skills/product-overview.md",
-      "sha256": "f98c7063768b26bf4d9f50d473c487ebdc629c8177158d736283d1abe91fc988"
+      "sha256": "eb8213f992a1a5daf1d443e88e9cd50f27d1b670bdb4402445dc6520b0c448d8"
     },
     {
       "name": "pack-support-and-contact",

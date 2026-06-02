@@ -78,7 +78,15 @@ export function createOrganizationSchema(): Record<string, unknown> {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
     name: "Pack",
-    alternateName: ["TryPackAI", "Try Pack AI"],
+    alternateName: [
+      "Pack",
+      "TryPackAI",
+      "Try Pack AI",
+      "PackAI",
+      "Pack AI",
+      "TryPack",
+      "Try Pack",
+    ],
     url: SITE_ORIGIN,
     logo: {
       "@type": "ImageObject",
@@ -155,7 +163,14 @@ export function createWebsiteSchema(): Record<string, unknown> {
     "@id": WEBSITE_ID,
     url: SITE_ORIGIN,
     name: "Pack",
-    alternateName: "TryPackAI",
+    alternateName: [
+      "TryPackAI",
+      "Try Pack AI",
+      "PackAI",
+      "Pack AI",
+      "TryPack",
+      "Try Pack",
+    ],
     publisher: {
       "@id": ORGANIZATION_ID,
     },

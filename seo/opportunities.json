@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-22T22:24:20.618Z",
+  "generatedAt": "2026-06-02T15:48:24.239Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -754,9 +754,9 @@
           "score": 0.55
         },
         {
-          "path": "/terms",
-          "title": "TermsOfService.md",
-          "score": 0.18333333333333335
+          "path": "/source/src/pages/Labs.tsx",
+          "title": "Labs.tsx",
+          "score": 0.3666666666666667
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -3615,7 +3615,7 @@
         },
         {
           "entity": "Try Pack AI",
-          "occurrences": 0
+          "occurrences": 3
         },
         {
           "entity": "AI travel assistant",

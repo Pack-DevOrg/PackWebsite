@@ -3965,7 +3965,7 @@ const summarizeTravelDetailOutput = (
 
   if (output.grounding) {
     lines.push(
-      `grounding: loc=${String(output.grounding.locationGrounded ?? false)} time=${String(output.grounding.timeGrounded ?? false)}`,
+      `grounding: loc=${String(output.grounding.location.grounded)} (${output.grounding.location.source}/${output.grounding.location.level}) time=${String(output.grounding.time.grounded)} (${output.grounding.time.source}/${output.grounding.time.precision})`,
     );
   }
 

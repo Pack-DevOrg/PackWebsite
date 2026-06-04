@@ -113,9 +113,21 @@ const TravelDetailReviewTimingSchema = z.object({
   endDate: z.string().nullable().optional(),
 });
 
+const TravelDetailReviewTimeGroundingSchema = z.object({
+  grounded: z.boolean(),
+  source: z.string(),
+  precision: z.string(),
+});
+
+const TravelDetailReviewLocationGroundingSchema = z.object({
+  grounded: z.boolean(),
+  source: z.string(),
+  level: z.string(),
+});
+
 const TravelDetailReviewGroundingSchema = z.object({
-  locationGrounded: z.boolean().optional(),
-  timeGrounded: z.boolean().optional(),
+  location: TravelDetailReviewLocationGroundingSchema,
+  time: TravelDetailReviewTimeGroundingSchema,
 });
 
 const TravelDetailReviewProductsSchema = z.object({

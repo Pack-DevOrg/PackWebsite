@@ -70,6 +70,9 @@ const ValueProp = React.lazy(importValueProp);
 const LiveActivityStackSection = React.lazy(importLiveActivityStackSection);
 const BookingTimelineHighlight = React.lazy(importBookingTimelineHighlight);
 const TrustBanner = React.lazy(importTrustBanner);
+const ProductFilmSection = React.lazy(
+  () => import("../components/ProductFilmSection")
+);
 
 const SectionWrapper = styled.section`
   width: 100%;
@@ -585,6 +588,10 @@ const HomePage: React.FC = () => {
         ]}
       />
       <Hero waitlistSlot={heroWaitlist} />
+      {/* Renders nothing (zero footprint) until public/videos/product-film.mp4 exists. */}
+      <Suspense fallback={null}>
+        <ProductFilmSection />
+      </Suspense>
       <DeferredContent minHeight={560} rootMargin="1280px 0px">
         <Suspense fallback={<SectionSuspenseFallback $minHeight={560} aria-hidden="true" />}>
           <TightAfterLiveActivitySection>

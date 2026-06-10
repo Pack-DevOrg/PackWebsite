@@ -573,13 +573,13 @@ const HomePage: React.FC = () => {
   return (
     <Layout>
       <PageSeo
-        title="Pack | AI travel assistant for personalized trip planning and booking"
-        description="Pack turns prompts, confirmation emails, calendars, and travel preferences into organized trip plans you can review and book in one place."
+        title="AI Trip Planner from Emails, Calendar Events & Prompts | Pack"
+        description="Pack is an AI trip planner and itinerary organizer that turns confirmation emails, calendar events, and prompts into trips you can review, book, and share."
         path="/"
         schema={[
           createSoftwareApplicationSchema(
             "Pack",
-            "AI travel assistant for personalized trip planning, booking, and trip organization.",
+            "AI trip planner and itinerary organizer for trip planning, booking, and travel-day coordination.",
           ),
           ...TEAM_MEMBER_PROFILES.map((member) => createPersonSchema(member)),
         ]}

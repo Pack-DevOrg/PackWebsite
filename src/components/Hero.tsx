@@ -4029,7 +4029,7 @@ const heroContent = {
     headlineLine1: "Past, present",
     headlineLine2Prefix: "and the ",
     headlineLine2Accent: "future of",
-    headlineLine3Accent: "agentic travel",
+    headlineLine3Accent: "AI trip planning",
     supportingCopy:
       "One prompt to get the flights, hotel, and schedule you'd pick yourself.",
     journeyEyebrow: "Journey",
@@ -4067,7 +4067,7 @@ const heroContent = {
     headlineLine1: "Pasado, presente",
     headlineLine2Prefix: "y el ",
     headlineLine2Accent: "futuro de",
-    headlineLine3Accent: "los viajes agentivos",
+    headlineLine3Accent: "planear viajes con IA",
     supportingCopy:
       "Un solo prompt para llegar al vuelo, hotel y plan que elegirías tú mismo.",
     journeyEyebrow: "Viaje",

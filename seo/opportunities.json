@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T15:58:20.151Z",
+  "generatedAt": "2026-06-10T07:47:31.367Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -29,8 +29,8 @@
   ],
   "inventory": {
     "scannedPages": 186,
-    "sitemapUrls": 25,
-    "prerenderRoutes": 36
+    "sitemapUrls": 32,
+    "prerenderRoutes": 43
   },
   "keywordOpportunities": [
     {
@@ -329,13 +329,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
+          "path": "/source/src/routes/HomePage.tsx",
+          "title": "HomePage.tsx",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/faq",
-          "title": "Pack FAQ",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -2640,6 +2640,14 @@
   ],
   "questionOpportunities": [
     {
+      "question": "How do I track updates across a whole trip?",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "answerTarget": "/guides/travel-day-intelligence",
+      "currentBestCoverage": 0.37,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
       "question": "What app shares a live trip plan with family or coworkers?",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
@@ -2836,14 +2844,6 @@
       "clusterId": "travel-stats-and-maps",
       "clusterLabel": "Travel stats, maps, and history analytics",
       "answerTarget": "/guides/travel-stats-and-maps",
-      "currentBestCoverage": 0.55,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
-    {
-      "question": "How do I track updates across a whole trip?",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "answerTarget": "/guides/travel-day-intelligence",
       "currentBestCoverage": 0.55,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
@@ -3578,6 +3578,10 @@
       "rationale": "AI retrieval benefits from crawlable textual answers that directly address query fan-out subquestions.",
       "targets": [
         {
+          "question": "How do I track updates across a whole trip?",
+          "page": "/guides/travel-day-intelligence"
+        },
+        {
           "question": "What app shares a live trip plan with family or coworkers?",
           "page": "/guides/travel-day-intelligence"
         }
@@ -3607,7 +3611,7 @@
       "targets": [
         {
           "entity": "Pack",
-          "occurrences": 93
+          "occurrences": 94
         },
         {
           "entity": "PackAI",
@@ -3635,7 +3639,7 @@
         },
         {
           "entity": "AI travel assistant",
-          "occurrences": 15
+          "occurrences": 14
         }
       ]
     }

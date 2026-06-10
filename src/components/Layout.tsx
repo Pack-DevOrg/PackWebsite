@@ -28,16 +28,11 @@ const AmbientGlow = styled.div`
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(circle at 12% 18%, rgba(231, 35, 64, 0.18), transparent 28%),
-    radial-gradient(circle at 82% 8%, rgba(243, 210, 122, 0.14), transparent 24%),
-    radial-gradient(circle at 50% 78%, rgba(243, 210, 122, 0.08), transparent 32%),
-    radial-gradient(circle at 88% 48%, rgba(231, 35, 64, 0.1), transparent 24%),
-    radial-gradient(circle at 18% 72%, rgba(243, 210, 122, 0.08), transparent 22%);
+    radial-gradient(circle at 78% 6%, rgba(243, 210, 122, 0.1), transparent 36%),
+    radial-gradient(circle at 8% 88%, rgba(231, 35, 64, 0.06), transparent 30%);
 
   @media (max-width: 739px) {
-    background:
-      radial-gradient(circle at 80% 10%, rgba(243, 210, 122, 0.08), transparent 18%),
-      radial-gradient(circle at 15% 20%, rgba(231, 35, 64, 0.08), transparent 18%);
+    background: radial-gradient(circle at 80% 10%, rgba(243, 210, 122, 0.08), transparent 22%);
   }
 `;
 

@@ -196,9 +196,8 @@ const Frame = styled.div`
   border-radius: 2rem;
   border: 1px solid rgba(243, 210, 122, 0.12);
   background:
-    radial-gradient(circle at 0% 0%, rgba(231, 35, 64, 0.16), transparent 28%),
-    radial-gradient(circle at 100% 0%, rgba(198, 165, 88, 0.16), transparent 46%),
-    radial-gradient(circle at 80% 12%, rgba(198, 165, 88, 0.07), transparent 56%),
+    radial-gradient(circle at 0% 0%, rgba(231, 35, 64, 0.08), transparent 26%),
+    radial-gradient(circle at 100% 0%, rgba(198, 165, 88, 0.12), transparent 44%),
     linear-gradient(135deg, rgba(15, 11, 8, 0.98) 0%, rgba(19, 15, 11, 0.98) 44%, rgba(25, 20, 14, 0.94) 76%, rgba(22, 17, 11, 0.98) 100%),
     linear-gradient(180deg, rgba(14, 10, 8, 0.98), rgba(8, 7, 6, 1));
   box-shadow: var(--shadow-elevated);
@@ -284,18 +283,18 @@ const RailStatementAccent = styled.span`
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-size: 7rem;
+  font-size: 5.2rem;
   font-weight: 800;
   line-height: 0.82;
   letter-spacing: -0.08em;
   text-transform: uppercase;
 
   @media (max-width: 979px) {
-    font-size: 5.2rem;
+    font-size: 4.2rem;
   }
 
   @media (max-width: 739px) {
-    font-size: 3.5rem;
+    font-size: 3.1rem;
   }
 `;
 
@@ -384,7 +383,7 @@ const HeroGrid = styled.div`
 
 const CopyColumn = styled.div`
   display: grid;
-  gap: 1.15rem;
+  gap: 0.85rem;
   align-content: start;
   justify-items: center;
   position: relative;
@@ -405,15 +404,15 @@ const Headline = styled.h1`
   margin: 0;
   width: 100%;
   max-width: none;
-  font-size: 5.2rem;
-  line-height: 0.9;
+  font-size: 4.3rem;
+  line-height: 0.92;
   letter-spacing: -0.055em;
   color: rgba(255, 248, 236, 0.98);
   text-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
   animation: ${reveal} 560ms ease-out 140ms both;
 
   @media (max-width: 979px) {
-    font-size: 4.45rem;
+    font-size: 4rem;
   }
 
   @media (max-width: 739px) {
@@ -5288,6 +5287,27 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
   });
 
   useMountEffect(() => {
+    if (journeyOnly || typeof window === "undefined") {
+      return;
+    }
+
+    // Journey chapters lazy-load their stills when each becomes active; warm
+    // the cache during idle time so chapter switches never visibly pop in.
+    const timeoutId = window.setTimeout(() => {
+      const assets = window.matchMedia("(max-width: 739px)").matches
+        ? heroJourneyMobileStillAssets
+        : heroJourneyStillAssets;
+      Object.values(assets).forEach((asset) => {
+        const image = new Image();
+        image.decoding = "async";
+        image.src = asset.src;
+      });
+    }, 2600);
+
+    return () => window.clearTimeout(timeoutId);
+  });
+
+  useMountEffect(() => {
     let frameId = 0;
     const scrollElement = getPageScrollElement();
     const observedScrollTargets = new Set<EventTarget>([window]);
@@ -5602,25 +5622,6 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
             </RailStatement>
             <TopRail>
               <MarqueeStack aria-hidden="true">
-                <MarqueeViewport>
-                  <MarqueeTrack>
-                    <MarqueeGroup>
-                      {localizedContent.featureMarqueeItems.map((item) => (
-                        <MarqueeItem key={`feature-first-${item}`}>{item}</MarqueeItem>
-                      ))}
-                    </MarqueeGroup>
-                    <MarqueeGroup>
-                      {localizedContent.featureMarqueeItems.map((item) => (
-                        <MarqueeItem key={`feature-second-${item}`}>{item}</MarqueeItem>
-                      ))}
-                    </MarqueeGroup>
-                    <MarqueeGroup>
-                      {localizedContent.featureMarqueeItems.map((item) => (
-                        <MarqueeItem key={`feature-third-${item}`}>{item}</MarqueeItem>
-                      ))}
-                    </MarqueeGroup>
-                  </MarqueeTrack>
-                </MarqueeViewport>
                 <MarqueeViewport>
                   <MarqueeTrack $reverse>
                     <MarqueeGroup>

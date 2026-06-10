@@ -95,9 +95,10 @@ const ProductFilmSection = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(FILM_SRC, { method: "HEAD" })
+    fetch(FILM_SRC, { method: "GET", headers: { Range: "bytes=0-0" } })
       .then((response) => {
         const contentType = response.headers.get("content-type") ?? "";
+        void response.body?.cancel();
         // SPA hosting returns index.html (200) for missing files; require a
         // real video content type before showing the section.
         if (!cancelled && response.ok && contentType.startsWith("video/")) {

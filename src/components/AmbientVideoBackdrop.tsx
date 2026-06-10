@@ -57,9 +57,12 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
     motionQuery.addEventListener("change", onMotionChange);
 
     let isCancelled = false;
-    fetch(src, { method: "HEAD" })
+    // Ranged GET, not HEAD: vite's dev middleware lets HEAD fall through to
+    // the SPA fallback, which would mask the asset behind text/html.
+    fetch(src, { method: "GET", headers: { Range: "bytes=0-0" } })
       .then((response) => {
         const contentType = response.headers.get("content-type") ?? "";
+        void response.body?.cancel();
         if (!isCancelled && response.ok && contentType.startsWith("video/")) {
           setIsAvailable(true);
         }

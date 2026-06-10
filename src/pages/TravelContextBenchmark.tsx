@@ -811,6 +811,7 @@ const TravelContextBenchmark = () => (
       title="Pack DeeperBench | Travel Agent Benchmark"
       description="Pack DeeperBench is a synthetic benchmark for travel-planning architecture over private context, calendar constraints, public timing, deterministic flight inventory, and deterministic hotel inventory."
       path="/pack-deeperbench"
+      robots="noindex, follow"
       schema={[
         {
           "@type": "Dataset",

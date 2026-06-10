@@ -22,7 +22,7 @@ import { useMountEffect } from '@/hooks/useMountEffect';
 interface ExitIntentModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onConvert: (email: string) => void;
+  onConvert: (email: string) => Promise<{ success: boolean; message: string }>;
   intentScore: number;
   userBehavior: 'engaged' | 'browsing' | 'hesitant';
 }
@@ -60,8 +60,8 @@ const Modal = styled.div`
   max-width: 500px;
   width: 100%;
   position: relative;
-  border: 1px solid #f92f60;
-  box-shadow: 0 20px 60px rgba(249, 47, 96, 0.3);
+  border: 1px solid rgba(243, 210, 122, 0.35);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(243, 210, 122, 0.12);
   animation: ${slideInFromTop} 0.4s ease-out;
   
   @media (max-width: 768px) {
@@ -85,7 +85,7 @@ const CloseButton = styled.button`
   
   &:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #f92f60;
+    color: #f3d27a;
   }
 `;
 
@@ -95,13 +95,14 @@ const Header = styled.div`
 `;
 
 const Icon = styled.div`
-  font-size: 3rem;
+  display: flex;
+  justify-content: center;
   margin-bottom: 1rem;
-  color: #f92f60;
+  color: #f3d27a;
 `;
 
 const Title = styled.h2`
-  color: #f92f60;
+  color: #f3d27a;
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -119,6 +120,13 @@ const Form = styled.form`
   gap: 1rem;
 `;
 
+const FormError = styled.p`
+  margin: 0;
+  color: #ef6a6a;
+  font-size: 0.85rem;
+  text-align: center;
+`;
+
 const Input = styled.input`
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid transparent;
@@ -134,14 +142,14 @@ const Input = styled.input`
   
   &:focus {
     outline: none;
-    border-color: #f92f60;
+    border-color: rgba(243, 210, 122, 0.6);
     background: rgba(255, 255, 255, 0.15);
   }
 `;
 
 const SubmitButton = styled.button`
-  background: linear-gradient(135deg, #f92f60 0%, #e91e63 100%);
-  color: white;
+  background: linear-gradient(135deg, #ffd86f 0%, #f3d27a 38%, #f0c62d 74%, #f6a14f 100%);
+  color: #1c1405;
   border: none;
   border-radius: 8px;
   padding: 1rem 2rem;
@@ -152,7 +160,7 @@ const SubmitButton = styled.button`
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(249, 47, 96, 0.4);
+    box-shadow: 0 6px 20px rgba(240, 198, 45, 0.35);
   }
   
   &:disabled {
@@ -211,14 +219,19 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
 }) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [submitError, setSubmitError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || isSubmitting) return;
-    
+
     setIsSubmitting(true);
-    await onConvert(email);
+    setSubmitError('');
+    const result = await onConvert(email);
     setIsSubmitting(false);
+    if (!result.success) {
+      setSubmitError(result.message);
+    }
   };
 
   // Personalized content based on user behavior
@@ -231,7 +244,7 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
           subtitle: "You seem really interested in Pack. Join our exclusive waitlist to be the first to experience the future of travel planning.",
           benefits: [
             "Be among the first 1,000 users",
-            "50% off your first premium subscription",
+            "Early access before public launch",
             "Direct line to our founding team",
             "Shape the product with your feedback"
           ],
@@ -245,10 +258,10 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
           benefits: [
             "No commitment - just early access",
             "See real examples of AI-planned trips",
-            "Free travel planning consultation",
-            "Cancel anytime, no questions asked"
+            "Early access before public launch",
+            "Unsubscribe anytime, no questions asked"
           ],
-          urgency: "Free consultation ends soon"
+          urgency: "Early access spots are limited"
         };
       default:
         return {
@@ -305,6 +318,7 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Joining...' : 'Get Early Access'}
           </SubmitButton>
+          {submitError && <FormError role="alert">{submitError}</FormError>}
         </Form>
       </Modal>
     </Overlay>
@@ -381,7 +395,6 @@ export const ExitIntentOptimization: React.FC = () => {
    */
   const handleConversion = useCallback(async (email: string) => {
     try {
-      // Track the exit intent conversion
       trackCTAClick('Exit Intent Signup', 'exit_intent_modal', {
         intent_score: intentScore.score,
         user_behavior: getUserBehavior(),
@@ -389,11 +402,16 @@ export const ExitIntentOptimization: React.FC = () => {
         event_category: 'conversion',
       });
 
-      // Here you would typically call your API to save the email
-      // For now, just simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Show success and close modal
+      const { submitWaitlistSignup } = await import('../services/waitlistSignup');
+      const result = await submitWaitlistSignup({
+        email,
+        source: `${window.location.hostname}/exit-intent`,
+      });
+
+      if (!result.success) {
+        return result;
+      }
+
       trackConversion('exit_intent_conversion', {
         intent_score: intentScore.score,
         user_behavior: getUserBehavior(),
@@ -401,16 +419,17 @@ export const ExitIntentOptimization: React.FC = () => {
         event_category: 'conversion',
         value: 1,
       });
-      
+
       setShowModal(false);
-      
-      // Optional: Show success notification
-      // You could trigger a toast notification here
-      
+      return result;
     } catch (error) {
       if (env.DEV) {
         console.error('Exit intent conversion failed:', error);
       }
+      return {
+        success: false,
+        message: 'Something went wrong. Please try again.',
+      };
     }
   }, [trackCTAClick, trackConversion, intentScore.score, getUserBehavior]);
 

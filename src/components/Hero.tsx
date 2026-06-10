@@ -63,49 +63,28 @@ import type {
 
 const heroJourneyStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-still.webp?v=2026-04-20-5",
-    width: 788,
-    height: 1604,
+    src: "/images/hero-captures/plan-still.webp?v=2026-06-10-1",
+    width: 1320,
+    height: 2868,
   },
   search: {
-    src: "/images/hero-captures/search-still.webp?v=2026-04-14-1",
-    width: 798,
-    height: 2608,
+    src: "/images/hero-captures/search-still.webp?v=2026-06-10-1",
+    width: 1320,
+    height: 2868,
   },
   booking: {
-    src: "/images/hero-captures/booking-still.webp?v=2026-04-22-1",
-    width: 798,
-    height: 3756,
+    src: "/images/hero-captures/booking-still.webp?v=2026-06-10-1",
+    width: 1320,
+    height: 2868,
   },
   footprint: {
-    src: "/images/hero-captures/stats-still.webp?v=2026-04-22-1",
-    width: 806,
-    height: 3600,
+    src: "/images/hero-captures/stats-still.webp?v=2026-06-10-1",
+    width: 1320,
+    height: 2868,
   },
 } as const;
 
-const heroJourneyMobileStillAssets = {
-  outline: {
-    src: "/images/hero-captures/plan-mobile.webp?v=2026-04-20-5",
-    width: 576,
-    height: 1646,
-  },
-  search: {
-    src: "/images/hero-captures/search-mobile.webp?v=2026-04-19-1",
-    width: 798,
-    height: 2608,
-  },
-  booking: {
-    src: "/images/hero-captures/booking-mobile.webp?v=2026-04-20-1",
-    width: 798,
-    height: 3700,
-  },
-  footprint: {
-    src: "/images/hero-captures/stats-mobile.webp?v=2026-04-20-1",
-    width: 806,
-    height: 3560,
-  },
-} as const;
+const heroJourneyMobileStillAssets = heroJourneyStillAssets;
 
 const float = keyframes`
   0%, 100% {
@@ -4781,7 +4760,6 @@ const PlanShowcasePhone: React.FC<{
   const isOutlineScreen = screenKey === "outline";
   const isSearchScreen = screenKey === "search";
   const isBookingScreen = screenKey === "booking";
-  const phoneHeaderTitle = "Pack";
   const contentTravelDistance = isOutlineScreen
     ? JOURNEY_SCROLL_DISTANCES.outline
     : isSearchScreen
@@ -4820,107 +4798,22 @@ const PlanShowcasePhone: React.FC<{
     >
       <ReviewPhoneSwitch>
         <PlanPhoneInner data-hero-phone-inner={screenKey}>
-          <StatusBar>
-            <StatusTime>2:50</StatusTime>
-            <StatusCenter aria-hidden="true" />
-            <StatusIcons />
-          </StatusBar>
-
-          {isBookingScreen ? (
-            <>
-              <PlanHeader>
-                <PlanHeaderIcon aria-hidden="true">
-                  <X />
-                </PlanHeaderIcon>
-                <PlanHeaderTitle>Complete Booking</PlanHeaderTitle>
-                <PlanHeaderMeta>
-                  Ready to book
-                </PlanHeaderMeta>
-              </PlanHeader>
-
-              <PlanFlowScroll
-                ref={planScrollRef}
-                $scrollable={scrollablePreview}
-                data-hero-screen={screenKey}
-                data-hero-scroll="true"
-              >
-                <PlanScrollContent
-                  ref={planContentRef}
-                  $progress={scrollProgress}
-                  $travelDistance={measuredPlanTravelDistance}
-                  $scrollable={scrollablePreview}
-                  data-hero-screen-content={screenKey}
-                >
-                  {renderHeroJourneyStill(stillScreenKey, assetVariant)}
-                </PlanScrollContent>
-              </PlanFlowScroll>
-            </>
-          ) : (
-            <>
-              <PlanHeader>
-                <PlanHeaderIcon aria-hidden="true">
-                  <Menu />
-                </PlanHeaderIcon>
-                <PlanHeaderTitle>{phoneHeaderTitle}</PlanHeaderTitle>
-                <PlanHeaderMeta>
-                  <PlanHeaderMetaDot aria-hidden="true" />
-                  Live In flight
-                </PlanHeaderMeta>
-              </PlanHeader>
-
-              {isOutlineScreen ? (
-            <PlanFlowScroll
-              ref={planScrollRef}
+          <PlanFlowScroll
+            ref={planScrollRef}
+            $scrollable={scrollablePreview}
+            data-hero-screen={screenKey}
+            data-hero-scroll="true"
+          >
+            <PlanScrollContent
+              ref={planContentRef}
+              $progress={scrollProgress}
+              $travelDistance={measuredPlanTravelDistance}
               $scrollable={scrollablePreview}
-              data-hero-screen={screenKey}
-              data-hero-scroll="true"
+              data-hero-screen-content={screenKey}
             >
-              <PlanScrollContent
-                ref={planContentRef}
-                $progress={scrollProgress}
-                $travelDistance={measuredPlanTravelDistance}
-                $scrollable={scrollablePreview}
-                data-hero-screen-content={screenKey}
-              >
-                {renderHeroJourneyStill(stillScreenKey, assetVariant)}
-              </PlanScrollContent>
-            </PlanFlowScroll>
-              ) : (
-              <PlanFlowScroll
-                ref={planScrollRef}
-                $scrollable={scrollablePreview}
-                data-hero-screen={screenKey}
-                data-hero-scroll="true"
-              >
-                <PlanScrollContent
-                  ref={planContentRef}
-                  $progress={scrollProgress}
-                  $travelDistance={measuredPlanTravelDistance}
-                  $scrollable={scrollablePreview}
-                  data-hero-screen-content={screenKey}
-                >
-                  {renderHeroJourneyStill(stillScreenKey, assetVariant)}
-                </PlanScrollContent>
-              </PlanFlowScroll>
-              )}
-              <AppBottomComposer aria-hidden="true">
-                <ComposerTopRow>
-                  <ComposerPlaceholder>Where to next?</ComposerPlaceholder>
-                  <ComposerAction>
-                    <ChevronDown />
-                  </ComposerAction>
-                  <ComposerAction>
-                    <X />
-                  </ComposerAction>
-                </ComposerTopRow>
-                <ComposerToolbar>
-                  <Bolt />
-                  <Plus />
-                  <Mic />
-                </ComposerToolbar>
-              </AppBottomComposer>
-            </>
-          )}
+              {renderHeroJourneyStill(stillScreenKey, assetVariant)}
+            </PlanScrollContent>
+          </PlanFlowScroll>
         </PlanPhoneInner>
       </ReviewPhoneSwitch>
     </PlanPhone>
@@ -4977,82 +4870,22 @@ const ReviewShowcasePhone: React.FC<{
     >
       <ReviewPhoneSwitch>
         <PlanPhoneInner data-hero-phone-inner={screenKey}>
-          <StatusBar>
-            <StatusTime>2:47</StatusTime>
-            <StatusCenter aria-hidden="true" />
-            <StatusIcons />
-          </StatusBar>
-
-          <TripsHeader>
-            <TripsBack aria-hidden="true">
-              <ChevronDown />
-            </TripsBack>
-            <TripsTitle>Trips</TripsTitle>
-            <span />
-          </TripsHeader>
-
-          <TripsTabs>
-            <Tab>
-              <TabPill>
-                <TabIcon>
-                  <CalendarDays />
-                </TabIcon>
-              </TabPill>
-              <span>Upcoming</span>
-            </Tab>
-            <Tab $active>
-              <TabPill $active>
-                <TabIcon>
-                  <BarChart3 />
-                </TabIcon>
-              </TabPill>
-              <span>Stats</span>
-            </Tab>
-            <Tab>
-              <TabPill>
-                <TabIcon>
-                  <History />
-                </TabIcon>
-              </TabPill>
-              <span>Past</span>
-            </Tab>
-          </TripsTabs>
-
-          {screenKey === "footprint" ? (
-            <TravelScroll
-              $scrollable={scrollablePreview ? true : false}
-              ref={reviewScrollRef}
-              data-hero-screen={screenKey}
-              data-hero-scroll="true"
+          <TravelScroll
+            $scrollable={scrollablePreview ? true : false}
+            ref={reviewScrollRef}
+            data-hero-screen={screenKey}
+            data-hero-scroll="true"
+          >
+            <TravelScrollContent
+              ref={reviewContentRef}
+              $progress={scrollProgress}
+              $travelDistance={measuredReviewTravelDistance}
+              $scrollable={scrollablePreview}
+              data-hero-screen-content={screenKey}
             >
-              <TravelScrollContent
-                ref={reviewContentRef}
-                $progress={scrollProgress}
-                $travelDistance={measuredReviewTravelDistance}
-                $scrollable={scrollablePreview}
-                data-hero-screen-content={screenKey}
-              >
-                {renderHeroJourneyStill("footprint", assetVariant)}
-              </TravelScrollContent>
-            </TravelScroll>
-          ) : (
-            <TravelScroll
-              $scrollable={scrollablePreview ? true : false}
-              ref={reviewScrollRef}
-              data-hero-screen={screenKey}
-              data-hero-scroll="true"
-            >
-              <TravelScrollContent
-                ref={reviewContentRef}
-                $progress={scrollProgress}
-                $travelDistance={measuredReviewTravelDistance}
-                $scrollable={scrollablePreview}
-                data-hero-screen-content={screenKey}
-              >
-                {renderHeroJourneyStill("footprint", assetVariant)}
-              </TravelScrollContent>
-            </TravelScroll>
-          )}
+              {renderHeroJourneyStill("footprint", assetVariant)}
+            </TravelScrollContent>
+          </TravelScroll>
         </PlanPhoneInner>
       </ReviewPhoneSwitch>
     </PlanPhone>

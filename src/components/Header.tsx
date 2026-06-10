@@ -173,9 +173,36 @@ const baseNavItems = [
   { href: "/features", label: "Features" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/faq", label: "FAQ" },
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
 ] as const;
+
+const NavCta = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.66rem 1.3rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffd86f 0%, #f3d27a 38%, #f0c62d 74%, #f6a14f 100%);
+  color: #1c1405;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 216, 111, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 216, 111, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0.84rem 1rem;
+  }
+`;
 
 const Header: React.FC = () => {
   const location = useLocation();
@@ -188,11 +215,7 @@ const Header: React.FC = () => {
         ? t("nav.features")
         : item.href === "/how-it-works"
         ? t("nav.howItWorks")
-        : item.href === "/faq"
-        ? t("nav.faq")
-        : item.href === "/terms"
-        ? t("nav.terms")
-        : t("nav.privacy"),
+        : t("nav.faq"),
   }));
   const localizedNavItems = shouldExposeTsaForCurrentHost()
     ? [{ href: "/tsa", label: t("nav.tsaWaits") }, ...localizedBaseNavItems]
@@ -233,6 +256,21 @@ const Header: React.FC = () => {
                   {item.label}
                 </NavLink>
               ))}
+              <NavCta
+                to={`${pathFor("/")}#waitlist`}
+                onClick={(event) => {
+                  setIsMenuOpen(false);
+                  if (location.pathname === pathFor("/")) {
+                    const form = document.getElementById("waitlist");
+                    if (form) {
+                      event.preventDefault();
+                      form.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                  }
+                }}
+              >
+                {t("nav.joinWaitlist")}
+              </NavCta>
             </Navigation>
           </MobileNavigationPanel>
         </HeaderContainer>

@@ -442,6 +442,11 @@ const HeadlineLine = styled.span`
 
 const HeadlineAccent = styled.span`
   color: #f3d27a;
+  font-family: var(--font-display-serif);
+  font-style: italic;
+  font-weight: 420;
+  font-variation-settings: 'opsz' 144, 'SOFT' 40;
+  letter-spacing: -0.025em;
 `;
 
 const SupportingCopy = styled.p`
@@ -621,6 +626,15 @@ const JourneySectionTitle = styled.h2`
   line-height: 1.02;
   letter-spacing: -0.05em;
   text-wrap: balance;
+`;
+
+const JourneySectionTitleAccent = styled.span`
+  color: #f3d27a;
+  font-family: var(--font-display-serif);
+  font-style: italic;
+  font-weight: 420;
+  font-variation-settings: 'opsz' 144, 'SOFT' 40;
+  letter-spacing: -0.025em;
 `;
 
 const JourneySectionCopy = styled.p`
@@ -4032,7 +4046,9 @@ const heroContent = {
     supportingCopy:
       "One prompt to get the flights, hotel, and schedule you'd pick yourself.",
     journeyEyebrow: "Journey",
-    journeyTitle: "See the trip take shape without losing the thread.",
+    journeyTitlePre: "See the trip ",
+    journeyTitleAccent: "take shape",
+    journeyTitlePost: " without losing the thread.",
   },
   es: {
     featureMarqueeItems: [
@@ -4070,7 +4086,9 @@ const heroContent = {
     supportingCopy:
       "Un solo prompt para llegar al vuelo, hotel y plan que elegirías tú mismo.",
     journeyEyebrow: "Viaje",
-    journeyTitle: "Ve cómo toma forma el viaje sin perder el hilo.",
+    journeyTitlePre: "Ve cómo ",
+    journeyTitleAccent: "toma forma",
+    journeyTitlePost: " el viaje sin perder el hilo.",
   },
 } as const;
 
@@ -5475,7 +5493,13 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
     <OutlineStage ref={journeyStageRef}>
       <JourneySectionHeader>
         <JourneySectionEyebrow>{localizedContent.journeyEyebrow}</JourneySectionEyebrow>
-        <JourneySectionTitle>{localizedContent.journeyTitle}</JourneySectionTitle>
+        <JourneySectionTitle>
+          {localizedContent.journeyTitlePre}
+          <JourneySectionTitleAccent>
+            {localizedContent.journeyTitleAccent}
+          </JourneySectionTitleAccent>
+          {localizedContent.journeyTitlePost}
+        </JourneySectionTitle>
       </JourneySectionHeader>
       {shouldRenderJourneyShowcase ? (
         <>

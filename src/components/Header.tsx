@@ -181,21 +181,23 @@ const NavCta = styled(Link)`
   justify-content: center;
   padding: 0.66rem 1.3rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #ffd86f 0%, #f3d27a 38%, #f0c62d 74%, #f6a14f 100%);
-  color: #1c1405;
+  border: 1px solid rgba(243, 210, 122, 0.45);
+  background: rgba(243, 210, 122, 0.06);
+  color: #f3d27a;
   font-weight: 700;
   font-size: 0.8rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 216, 111, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.35s var(--ease-luxe), background 0.35s var(--ease-luxe),
+    color 0.35s var(--ease-luxe);
 
   &:hover,
   &:focus-visible {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 216, 111, 0.4);
+    border-color: rgba(243, 210, 122, 0.85);
+    background: rgba(243, 210, 122, 0.14);
+    color: #ffe9ae;
   }
 
   @media (max-width: 768px) {

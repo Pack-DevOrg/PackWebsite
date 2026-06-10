@@ -124,8 +124,9 @@ const FooterButton = styled.button`
 const Copyright = styled.p`
   margin: 0;
   color: var(--color-text-muted);
-  font-size: 0.76rem;
-  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
 `;
 
 const Footer = () => {

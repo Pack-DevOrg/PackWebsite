@@ -143,9 +143,6 @@ const LabsPlannerCorpusReviewPage = labsEnabled
     })
   : null;
 const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
-const WestLaLiveWorkZoningPage = React.lazy(
-  () => import("../pages/WestLaLiveWorkZoningPage")
-);
 
 const LoadingScreenContainer = styled.div`
   min-height: 60vh;
@@ -570,16 +567,6 @@ const NonHomeRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/west-la-live-work-zoning"
-          element={
-            <Layout>
-              <Suspense fallback={null}>
-                <WestLaLiveWorkZoningPage />
-              </Suspense>
-            </Layout>
-          }
-        />
-        <Route
           path="/guides/:guideSlug"
           element={
             <Layout>
@@ -992,16 +979,6 @@ const NonHomeRoutes: React.FC = () => {
                   <SemanticSearchOptimization page="features" />
                   <AITrainingOptimization page="features" />
                   <Features />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="west-la-live-work-zoning"
-            element={
-              <Layout>
-                <Suspense fallback={null}>
-                  <WestLaLiveWorkZoningPage />
                 </Suspense>
               </Layout>
             }

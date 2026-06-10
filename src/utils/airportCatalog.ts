@@ -1,17 +1,4 @@
-import airportsJson from "airports-json";
-
-type RawAirport = {
-  readonly iata_code?: string;
-  readonly type?: string;
-  readonly name?: string;
-  readonly municipality?: string;
-  readonly continent?: string;
-  readonly iso_country?: string;
-  readonly iso_region?: string;
-  readonly latitude_deg?: number | string;
-  readonly longitude_deg?: number | string;
-  readonly scheduled_service?: string;
-};
+import { getAllAirportCatalogEntries } from "@pack/schemas/locality-catalog";
 
 export type AirportCatalogEntry = {
   readonly iata: string;
@@ -103,30 +90,6 @@ const normalizeAliasKey = (value?: string | null): string => {
     .trim();
 };
 
-const parseCoordinate = (value?: number | string): number | null => {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value;
-  }
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-};
-
-const getAirportPriority = (airport: RawAirport): number => {
-  const typeScore =
-    airport.type === "large_airport"
-      ? 30
-      : airport.type === "medium_airport"
-        ? 20
-        : airport.type === "small_airport"
-          ? 10
-          : 0;
-  const serviceScore = airport.scheduled_service === "yes" ? 5 : 0;
-  return typeScore + serviceScore;
-};
-
 const getRegionName = (regionCode: string | null): string | null => {
   if (!regionCode) {
     return null;
@@ -142,36 +105,24 @@ const countryDisplayNames = new Intl.DisplayNames(["en"], {type: "region"});
 
 const airportMap = (() => {
   const map = new Map<string, AirportCatalogEntry>();
-  const priorityByIata = new Map<string, number>();
-  const airports = (airportsJson.airports ?? []) as readonly RawAirport[];
 
-  airports.forEach((airport) => {
-    const iata = normalizeCode(airport.iata_code);
-    const latitude = parseCoordinate(airport.latitude_deg);
-    const longitude = parseCoordinate(airport.longitude_deg);
-
-    if (!iata || latitude == null || longitude == null) {
+  getAllAirportCatalogEntries().forEach((airport) => {
+    const iata = normalizeCode(airport.iata);
+    if (!iata || !Number.isFinite(airport.latitude) || !Number.isFinite(airport.longitude)) {
       return;
     }
 
-    const regionCode = normalizeCode(airport.iso_region);
-    const nextEntry: AirportCatalogEntry = {
+    const regionCode = normalizeCode(airport.regionCode);
+    map.set(iata, {
       iata,
       name: airport.name?.trim() || iata,
-      cityName: airport.municipality?.trim() || null,
-      countryCode: normalizeCode(airport.iso_country),
+      cityName: airport.cityName?.trim() || null,
+      countryCode: normalizeCode(airport.countryCode),
       regionCode,
-      regionName: getRegionName(regionCode),
-      latitude,
-      longitude,
-    };
-
-    const nextPriority = getAirportPriority(airport);
-    const existingPriority = priorityByIata.get(iata) ?? Number.NEGATIVE_INFINITY;
-    if (!map.has(iata) || nextPriority >= existingPriority) {
-      map.set(iata, nextEntry);
-      priorityByIata.set(iata, nextPriority);
-    }
+      regionName: airport.regionName ?? getRegionName(regionCode),
+      latitude: airport.latitude,
+      longitude: airport.longitude,
+    });
   });
 
   return map;
@@ -179,10 +130,9 @@ const airportMap = (() => {
 
 const countryMap = (() => {
   const map = new Map<string, CountryCatalogEntry>();
-  const airports = (airportsJson.airports ?? []) as readonly RawAirport[];
 
-  airports.forEach((airport) => {
-    const countryCode = normalizeCode(airport.iso_country);
+  getAllAirportCatalogEntries().forEach((airport) => {
+    const countryCode = normalizeCode(airport.countryCode);
     if (!countryCode || map.has(countryCode)) {
       return;
     }
@@ -190,7 +140,7 @@ const countryMap = (() => {
     map.set(countryCode, {
       code: countryCode,
       name: countryDisplayNames.of(countryCode) ?? countryCode,
-      continentCode: normalizeCode(airport.continent),
+      continentCode: normalizeCode(airport.continentCode),
     });
   });
 

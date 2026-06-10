@@ -32,38 +32,6 @@ jest.mock('../utils/env', () => ({
   },
 }));
 
-jest.mock('framer-motion', () => {
-  const React = require('react');
-  const createStub = (tag: string) =>
-    React.forwardRef<any, any>((props, ref) => {
-      const {
-        children,
-        animate,
-        initial,
-        variants,
-        whileHover,
-        whileTap,
-        whileInView,
-        transition,
-        exit,
-        ...rest
-      } = props;
-      return React.createElement(tag, {...rest, ref}, children);
-    });
-
-  const motionProxy = new Proxy(
-    {},
-    {
-      get: (_target, prop: string) => {
-        const component = createStub(prop);
-        component.displayName = `MockMotion_${String(prop)}`;
-        return component;
-      },
-    },
-  );
-
-  return { motion: motionProxy };
-});
 
 jest.mock('../utils/recaptcha', () => ({
   executeRecaptchaAction: jest.fn().mockResolvedValue('test-token'),

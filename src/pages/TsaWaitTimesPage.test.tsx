@@ -264,12 +264,7 @@ describe("TsaWaitTimesPage", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "Live TSA airport security wait times by airport",
-      })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", {
-        name: "Data by Pack",
+        name: "Live TSA airport security wait times",
       })
     ).toBeInTheDocument();
     expect(
@@ -304,10 +299,9 @@ describe("TsaWaitTimesPage", () => {
     expect(
       screen.queryByRole("button", { name: /get email updates/i })
     ).not.toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: /Static source page/i })[0]).toHaveAttribute(
-      "href",
-      "https://tsa-board.trypackai.com/tsa/jfk"
-    );
+    expect(
+      screen.queryByRole("link", { name: /Static source page/i })
+    ).not.toBeInTheDocument();
   });
 
   it("auto-opens the waitlist modal once per session", async () => {

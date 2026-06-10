@@ -85,6 +85,7 @@ var markdownRouteMap = {
   '/travel-booking': '/travel-booking.md',
   '/upcoming-trip-details': '/upcoming-trip-details.md',
   '/airport-security-wait-times': '/airport-security-wait-times.md',
+  '/tsa': '/tsa-live-board.md',
   '/trip-calendar-sync': '/trip-calendar-sync.md',
   '/connected-accounts': '/connected-accounts.md',
   '/traveler-profiles': '/traveler-profiles.md',

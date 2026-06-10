@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   ChevronDown,
   X,
-  Database,
   ExternalLink,
   MapPinned,
   Search,
@@ -107,54 +106,6 @@ const HeroLink = styled.a`
   &:hover {
     border-color: rgba(243, 210, 122, 0.36);
     background: rgba(255, 248, 236, 0.1);
-  }
-`;
-
-const SourceDisclosure = styled.aside`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 1.35rem;
-  border: 1px solid rgba(243, 210, 122, 0.12);
-  background: rgba(255, 248, 236, 0.04);
-  padding: clamp(1rem, 3vw, 1.25rem);
-`;
-
-const SourceDisclosureBody = styled.div`
-  display: grid;
-  gap: 0.28rem;
-`;
-
-const SourceDisclosureTitle = styled.h2`
-  margin: 0;
-  color: #fff7e7;
-  font-size: 1.05rem;
-`;
-
-const SourceDisclosureText = styled.p`
-  margin: 0;
-  color: rgba(247, 240, 227, 0.7);
-  line-height: 1.5;
-`;
-
-const SourceDisclosureLinks = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-`;
-
-const SourceDisclosureLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
-  color: #fff0be;
-  font-weight: 750;
-  text-decoration: none;
-
-  &:hover {
-    color: #ffffff;
   }
 `;
 
@@ -293,14 +244,20 @@ const UtilityButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(243, 210, 122, 0.28);
-  background: linear-gradient(135deg, #f3d27a 0%, #eab54d 100%);
-  color: #100d0b;
-  font-weight: 800;
-  padding: 0.92rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 210, 122, 0.18);
+  background: rgba(255, 248, 236, 0.06);
+  color: #fff4cc;
+  font-weight: 750;
+  font-size: 0.92rem;
+  padding: 0.7rem 1rem;
   cursor: pointer;
-  box-shadow: 0 18px 40px rgba(243, 210, 122, 0.18);
+  transition: border-color 140ms ease, background 140ms ease;
+
+  &:hover {
+    border-color: rgba(243, 210, 122, 0.36);
+    background: rgba(255, 248, 236, 0.1);
+  }
 `;
 
 const UtilityNote = styled.div`
@@ -590,6 +547,18 @@ const SourceLinks = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
+`;
+
+const PanelFootnote = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(243, 210, 122, 0.08);
+  color: rgba(247, 240, 227, 0.5);
+  font-size: 0.82rem;
 `;
 
 const PaginationWrap = styled.div`
@@ -1368,13 +1337,6 @@ const getAirportSearchScore = (
 
 const FAQ_ITEMS = [
   {
-    id: "pack",
-    eyebrow: "Pack",
-    question: "Why is Pack publishing TSA wait times publicly?",
-    answer:
-      "Pack loves travelers. We want to give people the best travel experience we possibly can, and making airport wait information easier to find and easier to use is one small part of that.",
-  },
-  {
     id: "sources",
     eyebrow: "Sources",
     question: "How are these current wait times calculated?",
@@ -1436,6 +1398,13 @@ const FAQ_ITEMS = [
     question: "What if something looks wrong?",
     answer:
       "Tell us. Each card includes a quick way to reach support, and we would rather hear about a weird airport page, broken scrape, or misleading wait than leave it sitting there.",
+  },
+  {
+    id: "pack",
+    eyebrow: "Pack",
+    question: "Why is Pack publishing TSA wait times publicly?",
+    answer:
+      "Pack loves travelers. We want to give people the best travel experience we possibly can, and making airport wait information easier to find and easier to use is one small part of that.",
   },
 ];
 
@@ -1770,52 +1739,24 @@ const TsaWaitTimesPage: React.FC = () => {
     <Page>
       <PageSeo
         title="Live TSA Airport Security Wait Times | Pack"
-        description="Search live airport security wait times by airport, city, country, or code with Pack's public TSA board and crawlable airport pages."
+        description="Check live TSA security wait times by airport, city, country, or code. Refreshed every 15 minutes from public airport data, free from Pack."
         path="/tsa"
         schema={[TSA_FAQ_SCHEMA]}
       />
       <Hero>
-        <HeroEyebrow>Pack public airport security board</HeroEyebrow>
-        <HeroTitle>Live TSA airport security wait times by airport</HeroTitle>
+        <HeroEyebrow>Live airport security</HeroEyebrow>
+        <HeroTitle>Live TSA airport security wait times</HeroTitle>
         <HeroText>
-          Search Pack&apos;s public airport security board by airport code, city,
-          region, country, or airport name.
+          Check current security waits before you leave for the airport.
+          Refreshed every 15 minutes from public airport data.
         </HeroText>
         <HeroLinkRow>
-          <HeroLink href="#live-board">
-            <Search size={16} />
-            Search current waits
-          </HeroLink>
-          <HeroLink href="https://tsa-board.trypackai.com/tsa">
-            <Database size={16} />
-            Static TSA board
-          </HeroLink>
           <HeroLink href="/airport-security-wait-times">
             <ShieldCheck size={16} />
             Airport security in Pack
           </HeroLink>
         </HeroLinkRow>
       </Hero>
-      <SourceDisclosure aria-labelledby="tsa-source-credit-title">
-        <SourceDisclosureBody>
-          <SourceDisclosureTitle id="tsa-source-credit-title">
-            Data by Pack
-          </SourceDisclosureTitle>
-          <SourceDisclosureText>
-            Airport pages use this same airport-security feed.
-          </SourceDisclosureText>
-        </SourceDisclosureBody>
-        <SourceDisclosureLinks>
-          <SourceDisclosureLink href="https://tsa-board.trypackai.com/tsa">
-            Static board
-            <ExternalLink size={14} />
-          </SourceDisclosureLink>
-          <SourceDisclosureLink href="/airport-security-wait-times">
-            About this feature
-            <ArrowUpRight size={14} />
-          </SourceDisclosureLink>
-        </SourceDisclosureLinks>
-      </SourceDisclosure>
       <SearchWrap id="live-board" ref={resultsTopRef}>
         <ActionRow>
           <UtilityButton type="button" onClick={requestLocation}>
@@ -1833,9 +1774,6 @@ const TsaWaitTimesPage: React.FC = () => {
             Airports are sorted by distance from your current location.
           </UtilityNote>
         ) : null}
-        <UtilityNote>
-          Search by airport code, airport name, city, region, or country.
-        </UtilityNote>
         <ControlGrid>
           <SearchFieldWrap>
             <SearchBar>
@@ -1932,35 +1870,10 @@ const TsaWaitTimesPage: React.FC = () => {
                 </span>
                 <span>
                   {userLocation
-                    ? "Airports are sorted by distance from your location."
-                    : "Airports are sorted by the longest live pulled wait first."}
+                    ? "Sorted by distance from your location."
+                    : "Sorted by longest current wait."}
                 </span>
               </ResultsMeta>
-              {totalPages > 1 ? (
-                <PaginationWrap>
-                  <PaginationButton
-                    type="button"
-                    onClick={() =>
-                      changePage(Math.max(1, normalizedCurrentPage - 1))
-                    }
-                    disabled={normalizedCurrentPage === 1}
-                  >
-                    Previous
-                  </PaginationButton>
-                  <PaginationInfo>
-                    Page {normalizedCurrentPage} of {totalPages}
-                  </PaginationInfo>
-                  <PaginationButton
-                    type="button"
-                    onClick={() =>
-                      changePage(Math.min(totalPages, normalizedCurrentPage + 1))
-                    }
-                    disabled={normalizedCurrentPage === totalPages}
-                  >
-                    Next
-                  </PaginationButton>
-                </PaginationWrap>
-              ) : null}
               <AirportGrid>
               {visibleAirports.map((airport) => {
                 const observationGroups = groupObservationsByTerminal(
@@ -2076,12 +1989,6 @@ const TsaWaitTimesPage: React.FC = () => {
                       </SourceMetaWrap>
                       <SourceLinks>
                         <SupportLink
-                          href={`https://tsa-board.trypackai.com/tsa/${airport.airportCode.toLowerCase()}`}
-                        >
-                          Static source page
-                          <ExternalLink size={14} />
-                        </SupportLink>
-                        <SupportLink
                           href={buildAirportSupportMailtoHref({
                             airportCode: airport.airportCode,
                             airportName: airport.airportName,
@@ -2134,10 +2041,8 @@ const TsaWaitTimesPage: React.FC = () => {
           <FaqLeadEyebrow>FAQ</FaqLeadEyebrow>
           <FaqLeadTitle>How this board works</FaqLeadTitle>
           <FaqLeadText>
-            The useful part should be the wait times. These details exist so
-            travelers, answer engines, and assistants can understand where the
-            data comes from, how fresh it is, and where to go when an airport
-            only publishes a manual page.
+            Where the numbers come from, how often they refresh, and how much
+            to lean on them on a travel day.
           </FaqLeadText>
         </FaqLead>
         <FaqList>
@@ -2163,6 +2068,13 @@ const TsaWaitTimesPage: React.FC = () => {
             </FaqItem>
           ))}
         </FaqList>
+        <PanelFootnote>
+          <span>Prefer a plain-HTML version of this board?</span>
+          <SupportLink href="https://tsa-board.trypackai.com/tsa">
+            Static TSA board
+            <ExternalLink size={13} />
+          </SupportLink>
+        </PanelFootnote>
       </Panel>
 
       {isModalOpen ? (
@@ -2171,7 +2083,7 @@ const TsaWaitTimesPage: React.FC = () => {
             <ModalBody>
               <ModalHeader>
                 <ModalTitle id="tsa-email-title">
-                  Get early access to <BrandWord>Pack</BrandWord> and TSA times
+                  Get early access to <BrandWord>Pack</BrandWord>
                 </ModalTitle>
                 <ModalText>
                   <BrandWord>Pack</BrandWord> takes your inbox, calendar,

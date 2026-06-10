@@ -1229,17 +1229,18 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
               <CheckIcon size={32} />
             </SuccessIconContainer>
             <SuccessHeading>
-              You're on the list!
+              One more step — check your inbox
             </SuccessHeading>
             <SuccessCopy>
+              {`We sent a confirmation link to ${maskedSubmittedEmail}. Click it to secure your spot on the waitlist.`}{' '}
               {submittedMarketingEmailConsent
-                ? `We'll email you at ${maskedSubmittedEmail} with updates.`
-                : `We'll keep your spot on the waitlist for ${maskedSubmittedEmail}.`}{' '}
-              Follow us for more news!
+                ? "Once confirmed, we'll keep you posted with updates. "
+                : ''}
+              Didn&apos;t get it? Check spam, or submit your email again to resend.
             </SuccessCopy>
             <ShareContainer>
               <a
-                href="https://twitter.com/intent/tweet?text=I%20just%20joined%20the%20waitlist%20for%20Route%2C%20the%20future%20of%20travel%20planning!%20Check%20it%20out%20at%20https://www.trypackai.com%20%40trypackai"
+                href="https://twitter.com/intent/tweet?text=I%20just%20joined%20the%20waitlist%20for%20Pack%2C%20the%20future%20of%20AI%20trip%20planning!%20Check%20it%20out%20at%20https://www.trypackai.com%20%40trypackai"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

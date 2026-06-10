@@ -199,7 +199,7 @@ describe('WaitlistForm Component', () => {
     });
     
     // Should show success message
-    await screen.findByText(/you're on the list/i);
+    await screen.findByText(/check your inbox/i);
   });
 
   test('masks the submitted email in the success copy when marketing email updates are disabled', async () => {
@@ -213,9 +213,9 @@ describe('WaitlistForm Component', () => {
     fireEvent.change(emailInput, {target: {value: 'traveler@example.com'}});
     fireEvent.submit(form);
 
-    await screen.findByText(/you're on the list/i);
+    await screen.findByText(/check your inbox/i);
     expect(
-      screen.getByText(/we'll keep your spot on the waitlist for t\*+\w@example\.com/i),
+      screen.getByText(/we sent a confirmation link to t\*+\w@example\.com/i),
     ).toBeInTheDocument();
     expect(screen.queryByText(/traveler@example\.com/i)).not.toBeInTheDocument();
   });
@@ -233,9 +233,9 @@ describe('WaitlistForm Component', () => {
     fireEvent.click(marketingConsentCheckbox);
     fireEvent.submit(form);
 
-    await screen.findByText(/you're on the list/i);
+    await screen.findByText(/check your inbox/i);
     expect(
-      screen.getByText(/we'll email you at t\*+\w@example\.com with updates/i),
+      screen.getByText(/we sent a confirmation link to t\*+\w@example\.com/i),
     ).toBeInTheDocument();
     expect(screen.queryByText(/traveler@example\.com/i)).not.toBeInTheDocument();
   });

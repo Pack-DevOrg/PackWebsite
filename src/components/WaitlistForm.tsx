@@ -421,6 +421,32 @@ const Form = styled.form<{ $variant: WaitlistFormVariant }>`
   margin: 0 auto;
 `;
 
+const PlatformBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  align-self: center;
+  margin: 0 auto ${({ theme }) => theme.spacing[2]};
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 210, 122, 0.22);
+  background: rgba(243, 210, 122, 0.08);
+  color: rgba(255, 244, 214, 0.92);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f3d27a;
+  }
+`;
+
 const InputGroup = styled.div`
   position: relative;
   margin-bottom: ${(props) => props.theme.spacing[3]};
@@ -1134,6 +1160,9 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
             <FormTitle $variant={variant}>
               {t("waitlist.title")}
             </FormTitle>
+          ) : null}
+          {isHeroVariant ? (
+            <PlatformBadge>{t("waitlist.platformBadge")}</PlatformBadge>
           ) : null}
           <Form $variant={variant} onSubmit={handleSubmit}>
               <InputGroup>

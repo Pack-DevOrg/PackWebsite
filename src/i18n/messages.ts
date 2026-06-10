@@ -57,6 +57,7 @@ export const WEBSITE_MESSAGES: Record<SupportedLocale, Messages> = {
     'consent.settingsGpcNotice':
       'Global Privacy Control is active. Analytics and marketing cookies remain disabled while this signal is present.',
     'waitlist.title': 'Planning a trip?',
+    'waitlist.platformBadge': 'Coming soon to iOS',
     'waitlist.emailPlaceholder': 'Your email address',
     'waitlist.marketingOptIn':
       'Yes, email me Pack product updates, travel tips, and special offers.',
@@ -141,6 +142,7 @@ export const WEBSITE_MESSAGES: Record<SupportedLocale, Messages> = {
     'consent.settingsGpcNotice':
       'Global Privacy Control está activo. Las cookies de analítica y marketing permanecen desactivadas mientras esta señal esté presente.',
     'waitlist.title': '¿Planeando un viaje?',
+    'waitlist.platformBadge': 'Próximamente en iOS',
     'waitlist.emailPlaceholder': 'Tu correo electrónico',
     'waitlist.marketingOptIn':
       'Sí, envíenme novedades de Pack, consejos de viaje y ofertas especiales.',

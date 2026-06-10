@@ -3,6 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import AmbientVideoBackdrop from "./AmbientVideoBackdrop";
 import {
   Award,
   BarChart3,
@@ -5637,6 +5638,8 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
   return (
     <HeroSection>
       <Frame>
+        {/* Lights up automatically once public/videos/hero-ambient.mp4 exists. */}
+        <AmbientVideoBackdrop />
         <CopyScrim aria-hidden="true" />
         <HeroGrid>
           <CopyColumn>

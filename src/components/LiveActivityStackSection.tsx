@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import styled from "styled-components";
-import packLogo from "../assets/logo.png";
+import packLogo from "../assets/optimized/logo-mark-64.webp";
 import AccentWord from "./AccentWord";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";

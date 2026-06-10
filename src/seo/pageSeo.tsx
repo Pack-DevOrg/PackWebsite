@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export const SITE_ORIGIN = "https://www.trypackai.com";
-const DEFAULT_SHARE_IMAGE_URL = `${SITE_ORIGIN}/images/og-image.png`;
+const DEFAULT_SHARE_IMAGE_URL = `${SITE_ORIGIN}/images/og-image.jpg`;
 const DEFAULT_TWITTER_IMAGE_URL = `${SITE_ORIGIN}/images/twitter-card.png`;
 const DEFAULT_ROBOTS =
   "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1";

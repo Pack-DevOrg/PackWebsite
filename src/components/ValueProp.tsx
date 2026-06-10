@@ -2,6 +2,7 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 import { useI18n } from "@/i18n/I18nProvider";
 import AccentWord from "./AccentWord";
+import SectionEyebrow from "./SectionEyebrow";
 
 const sweep = keyframes`
   0% {
@@ -205,6 +206,7 @@ const Indicator = styled.span`
 
 const valuePropContent = {
   en: {
+    eyebrow: "Proof",
     titleSuffix: ", not responses.",
     microcopy:
       "The output should already look like the JFK to Barcelona trip above, not a chat thread full of suggestions.",
@@ -250,6 +252,7 @@ const valuePropContent = {
     ],
   },
   es: {
+    eyebrow: "Pruebas",
     titleSuffix: ", no respuestas.",
     microcopy:
       "La salida debería parecerse al viaje JFK a Barcelona de arriba, no a un chat lleno de sugerencias.",
@@ -303,6 +306,7 @@ const ValueProp: React.FC = () => {
   return (
     <Section>
       <Header>
+        <SectionEyebrow index="02" label={content.eyebrow} />
         <Title><AccentWord>Results</AccentWord>{content.titleSuffix}</Title>
         <Microcopy>{content.microcopy}</Microcopy>
       </Header>

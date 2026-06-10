@@ -15,6 +15,7 @@ import {
 import styled from "styled-components";
 import packLogo from "../assets/optimized/logo-mark-64.webp";
 import AccentWord from "./AccentWord";
+import SectionEyebrow from "./SectionEyebrow";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -555,8 +556,9 @@ const ActionIconWrap = styled.span`
   place-items: center;
 `;
 
-const liveActivityContent: Record<"en" | "es", { titlePrefix: string; titleAccent: string; microcopy: string; lockScreenDate: string; liveStates: LiveState[] }> = {
+const liveActivityContent: Record<"en" | "es", { eyebrow: string; titlePrefix: string; titleAccent: string; microcopy: string; lockScreenDate: string; liveStates: LiveState[] }> = {
   en: {
+    eyebrow: "Travel day",
     titlePrefix: "Travel, kept ",
     titleAccent: "current",
     microcopy:
@@ -693,6 +695,7 @@ const liveActivityContent: Record<"en" | "es", { titlePrefix: string; titleAccen
     ],
   },
   es: {
+    eyebrow: "Día de viaje",
     titlePrefix: "Tu viaje, siempre ",
     titleAccent: "al día",
     microcopy:
@@ -872,6 +875,7 @@ const LiveActivityStackSection: React.FC = () => {
   return (
     <Section id="live-activity-pile" ref={sectionRef}>
       <Header>
+        <SectionEyebrow index="01" label={localizedContent.eyebrow} />
         <Title>
           {localizedContent.titlePrefix}
           <AccentWord>{localizedContent.titleAccent}</AccentWord>.

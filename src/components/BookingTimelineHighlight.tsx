@@ -2,6 +2,7 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 import { useI18n } from "@/i18n/I18nProvider";
 import AccentWord from "./AccentWord";
+import SectionEyebrow from "./SectionEyebrow";
 
 const pulse = keyframes`
   0%, 100% {
@@ -166,6 +167,7 @@ const FooterNote = styled.p`
 
 const bookingTimelineContent = {
   en: {
+    eyebrow: "Booking",
     titlePrefix: "How Pack gets you ",
     titleAccent: "there",
     microcopy:
@@ -193,6 +195,7 @@ const bookingTimelineContent = {
     ],
   },
   es: {
+    eyebrow: "Reservas",
     titlePrefix: "Cómo Pack te lleva ",
     titleAccent: "allí",
     microcopy:
@@ -228,6 +231,7 @@ const BookingTimelineHighlightComponent: React.FC = () => {
   return (
     <Section id="booking-preview">
       <Header>
+        <SectionEyebrow index="03" label={localizedContent.eyebrow} />
         <Title>
           {localizedContent.titlePrefix}
           <AccentWord>{localizedContent.titleAccent}</AccentWord>

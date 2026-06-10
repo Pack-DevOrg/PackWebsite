@@ -63,6 +63,56 @@ const BottomRow = styled.div`
   border-top: 1px solid rgba(243, 210, 122, 0.1);
 `;
 
+const CtaRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(243, 210, 122, 0.1);
+`;
+
+const CtaStatement = styled.p`
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  letter-spacing: -0.03em;
+`;
+
+const CtaAccent = styled.span`
+  color: var(--color-accent);
+  font-family: var(--font-display-serif);
+  font-style: italic;
+  font-weight: 420;
+  font-variation-settings: 'opsz' 144, 'SOFT' 40;
+  letter-spacing: -0.025em;
+`;
+
+const CtaLink = styled(PrefetchLink)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(243, 210, 122, 0.45);
+  background: rgba(243, 210, 122, 0.06);
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.35s var(--ease-luxe), background 0.35s var(--ease-luxe);
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(243, 210, 122, 0.85);
+    background: rgba(243, 210, 122, 0.14);
+  }
+`;
+
 const SocialLinks = styled.div`
   display: flex;
   gap: 0.7rem;
@@ -174,6 +224,14 @@ const Footer = () => {
             </SocialLinks>
           </Meta>
         </TopRow>
+
+        <CtaRow>
+          <CtaStatement>
+            {t("footer.ctaPrefix")}
+            <CtaAccent>{t("footer.ctaAccent")}</CtaAccent>
+          </CtaStatement>
+          <CtaLink to={`${pathFor("/")}#waitlist`}>{t("nav.joinWaitlist")}</CtaLink>
+        </CtaRow>
 
         <BottomRow>
           <FooterLinks>

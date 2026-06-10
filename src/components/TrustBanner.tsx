@@ -1,6 +1,7 @@
 import styled, { keyframes } from "styled-components";
 import { useI18n } from "@/i18n/I18nProvider";
 import AccentWord from "./AccentWord";
+import SectionEyebrow from "./SectionEyebrow";
 
 const glow = keyframes`
   0%, 100% {
@@ -108,6 +109,7 @@ const Copy = styled.p`
 
 const trustBannerContent = {
   en: {
+    eyebrow: "Trust",
     titlePrefix: "Travel data, handled ",
     accent: "discreetly",
     casaLabel: "View our security certification",
@@ -120,6 +122,7 @@ const trustBannerContent = {
       "Email, calendar, and booking details stay encrypted, protected, and independently security reviewed (CASA Tier 2 certified).",
   },
   es: {
+    eyebrow: "Confianza",
     titlePrefix: "Datos de viaje tratados con ",
     accent: "discreción",
     casaLabel: "Ver nuestra certificación de seguridad",
@@ -140,6 +143,7 @@ const TrustBanner = () => {
   return (
     <Section>
       <Header>
+        <SectionEyebrow index="04" label={content.eyebrow} />
         <Title>{content.titlePrefix}<AccentWord>{content.accent}</AccentWord>.</Title>
         <CasaLink
           href="https://support.google.com/cloud/answer/13465431?hl=en"

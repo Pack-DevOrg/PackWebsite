@@ -407,11 +407,7 @@ const FormTitle = styled.h2<{ $variant: WaitlistFormVariant }>`
     $variant === 'hero' ? theme.spacing[2] : theme.spacing[3]};
   line-height: 1.08;
   text-align: center;
-  background: ${({ theme }) => theme.colors.gradients.primaryAccent};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  color: #f3d27a;
   font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
   padding-bottom: 0.08em;
   ${fadeSequence};
@@ -547,10 +543,8 @@ const SubmitButton = styled.button`
   justify-content: center;
   width: 100%;
   padding: ${(props) => props.theme.spacing[2]};
-  background:
-    linear-gradient(rgba(19, 19, 20, 0.94), rgba(19, 19, 20, 0.94)) padding-box,
-    linear-gradient(135deg, #ffd86f 0%, #f0c62d 34%, #f6a14f 66%, #e72340 100%) border-box;
-  color: white;
+  background: linear-gradient(135deg, #ffd86f 0%, #f3d27a 38%, #f0c62d 74%, #f6a14f 100%);
+  color: #1c1405;
   border-radius: var(--border-radius);
   font-weight: ${(props) => props.theme.typography.fontWeights.bold};
   letter-spacing: 0.03em;
@@ -558,9 +552,8 @@ const SubmitButton = styled.button`
   height: 50px;
   box-shadow:
     0 14px 32px rgba(0, 0, 0, 0.26),
-    0 0 24px rgba(240, 198, 45, 0.18),
-    0 0 18px rgba(231, 35, 64, 0.16),
-    0 0 0 1px rgba(255, 216, 111, 0.12);
+    0 0 24px rgba(240, 198, 45, 0.22),
+    0 0 0 1px rgba(255, 216, 111, 0.28);
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -1080,7 +1073,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
       // Show success message
       setMessage({
         type: "success",
-        text: "✅ Success! Welcome to the waitlist."
+        text: "Success! Welcome to the waitlist."
       });
       onSuccess?.(email);
     } catch (error) {
@@ -1095,7 +1088,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
       // Set message area for better visibility
       setMessage({
         type: "error",
-        text: `❌ ${errorMessage} Please check your connection and try again.`
+        text: `${errorMessage} Please check your connection and try again.`
       });
       
       // Clear message after 8 seconds
@@ -1110,6 +1103,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
       <GlobalStyle />
       <FormContainer
         $variant={variant}
+        id={isHeroVariant ? "waitlist" : undefined}
       >
         {!isSubmitted ? (
           <>

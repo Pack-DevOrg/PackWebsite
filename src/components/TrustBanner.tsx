@@ -110,26 +110,26 @@ const trustBannerContent = {
   en: {
     titlePrefix: "Travel data, handled ",
     accent: "discreetly",
-    casaLabel: "View CASA Tier 2",
+    casaLabel: "View our security certification",
     metrics: [
       { label: "Profiles", value: "Encrypted" },
       { label: "Context", value: "Protected" },
-      { label: "Review", value: "CASA Tier 2" },
+      { label: "Security", value: "Independently audited" },
     ],
     copy:
-      "Email, calendar, and booking details stay encrypted, protected, and independently reviewed.",
+      "Email, calendar, and booking details stay encrypted, protected, and independently security reviewed (CASA Tier 2 certified).",
   },
   es: {
     titlePrefix: "Datos de viaje tratados con ",
     accent: "discreción",
-    casaLabel: "Ver CASA Tier 2",
+    casaLabel: "Ver nuestra certificación de seguridad",
     metrics: [
       { label: "Perfiles", value: "Cifrados" },
       { label: "Contexto", value: "Protegido" },
-      { label: "Revisión", value: "CASA Tier 2" },
+      { label: "Seguridad", value: "Auditada independientemente" },
     ],
     copy:
-      "Los detalles de correo, calendario y reservas permanecen cifrados, protegidos y revisados de forma independiente.",
+      "Los detalles de correo, calendario y reservas permanecen cifrados, protegidos y revisados de forma independiente (certificación CASA Tier 2).",
   },
 } as const;
 

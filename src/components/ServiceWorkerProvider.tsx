@@ -331,7 +331,7 @@ export const OfflineIndicator: React.FC = () => {
         zIndex: 10001,
       }}
     >
-      📡 You're offline - Some content may be cached
+      You're offline — some content may be cached
     </div>
   );
 };

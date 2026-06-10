@@ -13,7 +13,7 @@
 
 import React, { useState, useCallback, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { X, Clock } from 'lucide-react';
+import { X, Clock, Rocket, Lightbulb, Plane } from 'lucide-react';
 import { useConversionTracking } from '../hooks/useConversionTracking';
 import { useConversionIntentScoring } from '../hooks/useConversionIntentScoring';
 import {env} from '../utils/env';
@@ -177,8 +177,12 @@ const BenefitItem = styled.li`
   font-size: 0.9rem;
   
   &::before {
-    content: '✨';
+    content: '';
     flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f3d27a;
   }
 `;
 
@@ -222,7 +226,7 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
     switch (userBehavior) {
       case 'engaged':
         return {
-          icon: '🚀',
+          icon: <Rocket size={44} aria-hidden="true" />,
           title: "Don't Miss Out on Early Access!",
           subtitle: "You seem really interested in Pack. Join our exclusive waitlist to be the first to experience the future of travel planning.",
           benefits: [
@@ -235,7 +239,7 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
         };
       case 'hesitant':
         return {
-          icon: '💡',
+          icon: <Lightbulb size={44} aria-hidden="true" />,
           title: "Still Deciding? We Get It!",
           subtitle: "Travel planning shouldn't be complicated. Let us show you how Pack can save you 10+ hours per trip.",
           benefits: [
@@ -248,7 +252,7 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
         };
       default:
         return {
-          icon: '✈️',
+          icon: <Plane size={44} aria-hidden="true" />,
           title: "Before You Go...",
           subtitle: "Join other travelers who trust Pack to plan their perfect trips in minutes, not hours.",
           benefits: [
@@ -299,7 +303,7 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
             required
           />
           <SubmitButton type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Joining...' : '🚀 Get Early Access'}
+            {isSubmitting ? 'Joining...' : 'Get Early Access'}
           </SubmitButton>
         </Form>
       </Modal>

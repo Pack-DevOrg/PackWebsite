@@ -1372,7 +1372,7 @@ const FAQ_ITEMS = [
     eyebrow: "Pack",
     question: "Why is Pack publishing TSA wait times publicly?",
     answer:
-      "Pack ❤️ travelers. We want to give people the best travel experience we possibly can, and making airport wait information easier to find and easier to use is one small part of that.",
+      "Pack loves travelers. We want to give people the best travel experience we possibly can, and making airport wait information easier to find and easier to use is one small part of that.",
   },
   {
     id: "sources",

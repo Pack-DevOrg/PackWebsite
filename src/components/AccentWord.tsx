@@ -7,6 +7,11 @@ const AccentWord = styled.span`
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  font-family: var(--font-display-serif);
+  font-style: italic;
+  font-weight: 420;
+  font-variation-settings: 'opsz' 144, 'SOFT' 40;
+  letter-spacing: -0.025em;
 `;
 
 export default AccentWord;

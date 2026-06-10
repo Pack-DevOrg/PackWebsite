@@ -62,22 +62,22 @@ import type {
 
 const heroJourneyStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-still.png?v=2026-04-20-5",
+    src: "/images/hero-captures/plan-still.webp?v=2026-04-20-5",
     width: 788,
     height: 1604,
   },
   search: {
-    src: "/images/hero-captures/search-still.png?v=2026-04-14-1",
+    src: "/images/hero-captures/search-still.webp?v=2026-04-14-1",
     width: 798,
     height: 2608,
   },
   booking: {
-    src: "/images/hero-captures/booking-still.png?v=2026-04-22-1",
+    src: "/images/hero-captures/booking-still.webp?v=2026-04-22-1",
     width: 798,
     height: 3756,
   },
   footprint: {
-    src: "/images/hero-captures/stats-still.png?v=2026-04-22-1",
+    src: "/images/hero-captures/stats-still.webp?v=2026-04-22-1",
     width: 806,
     height: 3600,
   },
@@ -85,22 +85,22 @@ const heroJourneyStillAssets = {
 
 const heroJourneyMobileStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-mobile.png?v=2026-04-20-5",
+    src: "/images/hero-captures/plan-mobile.webp?v=2026-04-20-5",
     width: 576,
     height: 1646,
   },
   search: {
-    src: "/images/hero-captures/search-mobile.png?v=2026-04-19-1",
+    src: "/images/hero-captures/search-mobile.webp?v=2026-04-19-1",
     width: 798,
     height: 2608,
   },
   booking: {
-    src: "/images/hero-captures/booking-mobile.png?v=2026-04-20-1",
+    src: "/images/hero-captures/booking-mobile.webp?v=2026-04-20-1",
     width: 798,
     height: 3700,
   },
   footprint: {
-    src: "/images/hero-captures/stats-mobile.png?v=2026-04-20-1",
+    src: "/images/hero-captures/stats-mobile.webp?v=2026-04-20-1",
     width: 806,
     height: 3560,
   },

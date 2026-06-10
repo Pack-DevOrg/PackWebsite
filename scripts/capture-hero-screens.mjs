@@ -1,3 +1,4 @@
+import {execFileSync} from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -255,10 +256,22 @@ const main = async () => {
 
     const captureTarget = page.locator("#__hero-capture-target");
     await captureTarget.waitFor();
+    const pngPath = path.join(outputDir, screen.fileName);
     await captureTarget.screenshot({
-      path: path.join(outputDir, screen.fileName),
+      path: pngPath,
       type: "png",
     });
+
+    // Hero.tsx serves the .webp variant; regenerate it whenever the PNG source changes.
+    const webpPath = pngPath.replace(/\.png$/, ".webp");
+    try {
+      execFileSync("cwebp", ["-quiet", "-q", "85", pngPath, "-o", webpPath]);
+    } catch (error) {
+      console.warn(
+        `[capture] Failed to generate ${path.basename(webpPath)} (is cwebp installed?). The site references the .webp files.`,
+        error?.message ?? error,
+      );
+    }
   }
 
   await browser.close();

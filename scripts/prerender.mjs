@@ -14,7 +14,14 @@ const routesToPrerender = [
   "/features",
   "/faq",
   "/how-it-works",
-  "/pack-deeperbench",
+  "/guides/travel-context-engine",
+  "/guides/event-trip-planning",
+  "/guides/travel-day-intelligence",
+  "/guides/trip-organization",
+  "/guides/booking-context",
+  "/guides/group-trip-planning",
+  "/guides/travel-stats-and-maps",
+  "/guides/reliable-ai-travel-planning",
   "/travel-history",
   "/travel-stats",
   "/loyalty-details",
@@ -62,6 +69,26 @@ async function prerender() {
 
   const ssrModule = await import(join(ssrDir, ssrEntry.file));
   const render = ssrModule.render;
+
+  // Guard against drift between the static route list above (which SEO tooling
+  // parses) and the enabled guide definitions in src/content/seoGuides.ts.
+  const expectedGuideRoutes = ssrModule.guideRoutesToPrerender ?? [];
+  const staticGuideRoutes = routesToPrerender.filter((route) =>
+    route.startsWith("/guides/")
+  );
+  const missingGuides = expectedGuideRoutes.filter(
+    (route) => !staticGuideRoutes.includes(route)
+  );
+  const staleGuides = staticGuideRoutes.filter(
+    (route) => !expectedGuideRoutes.includes(route)
+  );
+  if (missingGuides.length > 0 || staleGuides.length > 0) {
+    throw new Error(
+      `Guide routes drifted. Missing from prerender list: [${missingGuides.join(", ")}]. ` +
+        `Stale in prerender list: [${staleGuides.join(", ")}]. ` +
+        "Update routesToPrerender in scripts/prerender.mjs to match src/content/seoGuides.ts."
+    );
+  }
 
   for (const route of routesToPrerender) {
     const { html, head } = await render(route);

@@ -4,6 +4,11 @@ import { PassThrough } from "node:stream";
 import { StaticRouter } from "react-router-dom";
 import { ServerStyleSheet } from "styled-components";
 import { AppProviders, AppRoutes } from "./App";
+import { seoGuideDefinitions, isSeoGuideSlug } from "./content/seoGuides";
+
+export const guideRoutesToPrerender: readonly string[] = seoGuideDefinitions
+  .filter((definition) => isSeoGuideSlug(definition.slug))
+  .map((definition) => `/guides/${definition.slug}`);
 
 export interface RenderResult {
   readonly html: string;

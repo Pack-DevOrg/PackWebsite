@@ -513,6 +513,9 @@ function createGuideSchema(guide: SeoGuideDefinition): Record<string, unknown> {
 }
 
 const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
+  const [selectedMarketNodeId, setSelectedMarketNodeId] =
+    React.useState<MarketMapNodeId>("pack");
+
   if (!isSeoGuideSlug(slug)) {
     return null;
   }
@@ -522,8 +525,6 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
   const primaryFeatureLink = guide.relatedLinks[0];
   const shortIntro = getShortIntro(guide.intro);
   const visibleFaqs = guide.faqs.slice(0, MAX_VISIBLE_FAQS);
-  const [selectedMarketNodeId, setSelectedMarketNodeId] =
-    React.useState<MarketMapNodeId>("pack");
   const selectedMarketNode =
     marketMapNodes.find((node) => node.id === selectedMarketNodeId) ??
     marketMapNodes[marketMapNodes.length - 1];

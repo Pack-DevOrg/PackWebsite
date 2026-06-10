@@ -91,6 +91,14 @@ var markdownRouteMap = {
   '/trip-sharing': '/trip-sharing.md',
   '/live-trip-views': '/live-trip-views.md',
   '/trip-expenses': '/trip-expenses.md',
+  '/guides/travel-context-engine': '/guides/travel-context-engine.md',
+  '/guides/event-trip-planning': '/guides/event-trip-planning.md',
+  '/guides/travel-day-intelligence': '/guides/travel-day-intelligence.md',
+  '/guides/trip-organization': '/guides/trip-organization.md',
+  '/guides/booking-context': '/guides/booking-context.md',
+  '/guides/group-trip-planning': '/guides/group-trip-planning.md',
+  '/guides/travel-stats-and-maps': '/guides/travel-stats-and-maps.md',
+  '/guides/reliable-ai-travel-planning': '/guides/reliable-ai-travel-planning.md',
 };
 
 function handler(event) {
@@ -123,6 +131,14 @@ function handler(event) {
     if (uri === '/' || uri === '/verify') {
       return redirect('https://app.itsdoneai.com/app' + querySuffix, 302, 'Found');
     }
+  }
+
+  if (host === 'itsdoneai.com' || host === 'www.itsdoneai.com') {
+    return redirect(
+      'https://www.trypackai.com' + canonicalUri + querySuffix,
+      301,
+      'Moved Permanently'
+    );
   }
 
   if (uri !== canonicalUri) {

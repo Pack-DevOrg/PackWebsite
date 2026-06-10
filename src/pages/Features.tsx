@@ -399,14 +399,26 @@ const Features: React.FC = () => {
             {
               title: "Planificar",
               description:
-                "Viajes desde prompts, eventos, calendario y contexto real del viajero.",
-              href: "/trip-planning-from-events",
+                "Viajes desde prompts, reuniones, eventos del calendario y contexto real del viajero.",
+              href: "/guides/event-trip-planning",
+            },
+            {
+              title: "Conectar",
+              description:
+                "Correo, calendario, lealtad, historial y contexto del viajero trabajando como un solo viaje.",
+              href: "/guides/travel-context-engine",
             },
             {
               title: "Organizar",
               description:
                 "Confirmaciones, itinerarios, historial y detalles próximos en una vista más clara.",
               href: "/guides/trip-organization",
+            },
+            {
+              title: "Reservar",
+              description:
+                "Compara vuelos y hoteles con preferencias, lealtad y contexto de calendario.",
+              href: "/guides/booking-context",
             },
             {
               title: "Coordinar",
@@ -507,14 +519,26 @@ const Features: React.FC = () => {
             {
               title: "Plan",
               description:
-                "Trips from prompts, events, calendars, and real traveler context.",
-              href: "/trip-planning-from-events",
+                "Trips from prompts, meetings, calendar events, and real traveler context.",
+              href: "/guides/event-trip-planning",
+            },
+            {
+              title: "Connect",
+              description:
+                "Email, calendar, loyalty, history, and traveler context working as one trip.",
+              href: "/guides/travel-context-engine",
             },
             {
               title: "Organize",
               description:
                 "Confirmations, itineraries, history, and upcoming details in one clearer view.",
               href: "/guides/trip-organization",
+            },
+            {
+              title: "Book",
+              description:
+                "Compare flights and hotels with preferences, loyalty, and calendar context.",
+              href: "/guides/booking-context",
             },
             {
               title: "Coordinate",

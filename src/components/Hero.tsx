@@ -4097,9 +4097,9 @@ const JOURNEY_SCROLL_DISTANCES = {
 
 const MOBILE_INLINE_CROP_SCROLL_TOP: Partial<Record<JourneyShowcaseKey, number>> = {
   plan: 0,
-  search: 200,
-  booking: 170,
-  stats: 94,
+  search: 0,
+  booking: 0,
+  stats: 0,
 };
 
 const getPageScrollElement = (): HTMLElement => {

@@ -19,7 +19,6 @@ import TermsOfService from "@/pages/TermsOfService";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { lazyImportWithRetry } from "@/utils/lazyImportWithRetry";
 import { capabilityPageDefinitions } from "@/content/capabilityPages";
-import HomePage from "./HomePage";
 
 const FAQ = React.lazy(() => import("../pages/FAQ"));
 const Features = React.lazy(() => import("../pages/Features"));
@@ -39,6 +38,7 @@ const TravelContextBenchmarkPage = React.lazy(
   () => import("../pages/TravelContextBenchmark")
 );
 const SeoGuidePage = React.lazy(() => import("../pages/SeoGuidePage"));
+const NotFoundPage = React.lazy(() => import("../pages/NotFoundPage"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const EmailForwardingSetupPage = React.lazy(
   () => import("../pages/EmailForwardingSetup")
@@ -1110,9 +1110,27 @@ const NonHomeRoutes: React.FC = () => {
             <Route index element={<ConversationPage />} />
             <Route path="trips" element={<EnhancedTripsPage />} />
           </Route>
-          <Route path="*" element={<HomePage />} />
+          <Route
+            path="*"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <NotFoundPage />
+                </Suspense>
+              </Layout>
+            }
+          />
         </Route>
-        <Route path="*" element={<HomePage />} />
+        <Route
+          path="*"
+          element={
+            <Layout>
+              <Suspense fallback={null}>
+                <NotFoundPage />
+              </Suspense>
+            </Layout>
+          }
+        />
         </Routes>
       </Suspense>
       <DeferredExitIntentOptimization />

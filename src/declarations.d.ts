@@ -13,5 +13,4 @@ declare module '*.md?raw' {
 }
 
 declare module 'styled-components';
-declare module 'framer-motion';
 declare module 'lucide-react';

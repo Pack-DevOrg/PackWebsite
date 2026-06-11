@@ -63,24 +63,24 @@ import type {
 
 const heroJourneyStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-still.webp?v=2026-06-10-1",
+    src: "/images/hero-captures/plan-still.webp?v=2026-06-10-2",
     width: 1320,
-    height: 2868,
+    height: 3576,
   },
   search: {
-    src: "/images/hero-captures/search-still.webp?v=2026-06-10-1",
+    src: "/images/hero-captures/search-still.webp?v=2026-06-10-2",
     width: 1320,
-    height: 2868,
+    height: 5249,
   },
   booking: {
-    src: "/images/hero-captures/booking-still.webp?v=2026-06-10-1",
+    src: "/images/hero-captures/booking-still.webp?v=2026-06-10-2",
     width: 1320,
-    height: 2868,
+    height: 6169,
   },
   footprint: {
-    src: "/images/hero-captures/stats-still.webp?v=2026-06-10-1",
+    src: "/images/hero-captures/stats-still.webp?v=2026-06-10-2",
     width: 1320,
-    height: 2868,
+    height: 6762,
   },
 } as const;
 
@@ -4206,6 +4206,11 @@ const cssLengthToPixels = (value: string): number => {
   return numeric;
 };
 
+/* Every journey phone pans the same standardized distance per chapter,
+   regardless of how tall its capture is — taller stills simply reveal their
+   upper portion. Keeps the scroll feel uniform across chapters. */
+const JOURNEY_TRAVEL_CAP_MULTIPLIER = 0.75;
+
 const useMeasuredTravelDistance = (fallbackDistance: string, enabled = true) => {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const contentRef = React.useRef<HTMLDivElement | null>(null);
@@ -4239,7 +4244,11 @@ const useMeasuredTravelDistance = (fallbackDistance: string, enabled = true) => 
         Math.ceil(naturalContentHeight - container.clientHeight),
         0
       );
-      const resolvedDistance = Number.isFinite(nextDistance) ? nextDistance : fallbackPx;
+      const cappedDistance = Math.min(
+        nextDistance,
+        Math.ceil(container.clientHeight * JOURNEY_TRAVEL_CAP_MULTIPLIER)
+      );
+      const resolvedDistance = Number.isFinite(cappedDistance) ? cappedDistance : fallbackPx;
 
       travelDistanceRef.current = resolvedDistance;
       setTravelDistancePx((current) => {

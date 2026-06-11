@@ -36,6 +36,8 @@ export const WEBSITE_MESSAGES: Record<SupportedLocale, Messages> = {
     'footer.ctaAccent': 'handled.',
     'footer.privacyChoices': 'Manage Cookies',
     'footer.copyright': '{year} Pack. All rights reserved.',
+    'footer.sellerOfTravel':
+      'CST 2171820-70. Registration as a seller of travel does not constitute approval by the State of California.',
     'legal.termsShort': 'Terms',
     'legal.privacyShort': 'Privacy',
     'breadcrumb.features': 'Features',
@@ -123,6 +125,8 @@ export const WEBSITE_MESSAGES: Record<SupportedLocale, Messages> = {
     'footer.ctaAccent': 'resuelto.',
     'footer.privacyChoices': 'Tus opciones de privacidad',
     'footer.copyright': '{year} Pack. Todos los derechos reservados.',
+    'footer.sellerOfTravel':
+      'CST 2171820-70. Registration as a seller of travel does not constitute approval by the State of California.',
     'legal.termsShort': 'Términos',
     'legal.privacyShort': 'Privacidad',
     'breadcrumb.features': 'Funciones',

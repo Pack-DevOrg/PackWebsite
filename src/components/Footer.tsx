@@ -179,6 +179,14 @@ const Copyright = styled.p`
   text-transform: uppercase;
 `;
 
+const Disclosure = styled.p`
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+`;
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { openPrivacyPreferences } = useTracking();
@@ -247,6 +255,7 @@ const Footer = () => {
           </FooterLinks>
 
           <Copyright>{t("footer.copyright", { year: currentYear })}</Copyright>
+          <Disclosure>{t("footer.sellerOfTravel")}</Disclosure>
         </BottomRow>
       </FooterPanel>
     </FooterContainer>

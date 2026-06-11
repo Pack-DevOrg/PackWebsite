@@ -4086,6 +4086,28 @@ const JOURNEY_PHONE_STANDARD_WIDTH = "clamp(26rem, 31vw, 29rem)";
 const JOURNEY_PHONE_TABLET_WIDTH = "24rem";
 const JOURNEY_PHONE_MOBILE_WIDTH = "21rem";
 const JOURNEY_PREVIEW_SCROLL_DISTANCE = "18rem";
+
+/* All journey phones pan the same standardized distance: the full scroll
+   height of the SHORTEST capture (taller captures reveal their upper portion).
+   Derived from the manifest so it tracks asset changes automatically. */
+const JOURNEY_SHORTEST_STILL_RATIO = Math.min(
+  ...Object.values(heroJourneyStillAssets).map((asset) => asset.height / asset.width)
+);
+
+const getStandardizedJourneyTravelPx = (viewport: {
+  clientWidth: number;
+  clientHeight: number;
+}): number => {
+  if (viewport.clientWidth <= 0) {
+    return cssLengthToPixels(JOURNEY_PREVIEW_SCROLL_DISTANCE);
+  }
+  return Math.max(
+    0,
+    Math.floor(
+      viewport.clientWidth * JOURNEY_SHORTEST_STILL_RATIO - viewport.clientHeight
+    )
+  );
+};
 const JOURNEY_SCROLL_DISTANCES = {
   outline: "14rem",
   search: "21rem",
@@ -4206,11 +4228,6 @@ const cssLengthToPixels = (value: string): number => {
   return numeric;
 };
 
-/* Every journey phone pans the same standardized distance per chapter,
-   regardless of how tall its capture is — taller stills simply reveal their
-   upper portion. Keeps the scroll feel uniform across chapters. */
-const JOURNEY_TRAVEL_CAP_MULTIPLIER = 0.75;
-
 const useMeasuredTravelDistance = (fallbackDistance: string, enabled = true) => {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const contentRef = React.useRef<HTMLDivElement | null>(null);
@@ -4246,7 +4263,7 @@ const useMeasuredTravelDistance = (fallbackDistance: string, enabled = true) => 
       );
       const cappedDistance = Math.min(
         nextDistance,
-        Math.ceil(container.clientHeight * JOURNEY_TRAVEL_CAP_MULTIPLIER)
+        getStandardizedJourneyTravelPx(container)
       );
       const resolvedDistance = Number.isFinite(cappedDistance) ? cappedDistance : fallbackPx;
 
@@ -4288,6 +4305,9 @@ const usePreviewScrollSync = (
   scrollProgress: number,
   enabled: boolean
 ) => {
+  const animationFrameRef = React.useRef<number | null>(null);
+  const targetScrollTopRef = React.useRef(0);
+
   useIsomorphicLayoutEffect(() => {
     if (!enabled) {
       return;
@@ -4299,20 +4319,53 @@ const usePreviewScrollSync = (
       return;
     }
 
-    // The preview should move through one shared travel distance regardless of
-    // how tall an individual screen's content is. The browser will clamp any
-    // screen that has less real scroll room than the common preview distance.
-    const nextScrollTop = Math.max(
+    // One shared travel distance regardless of how tall an individual screen's
+    // content is: the full scroll height of the shortest capture. The browser
+    // clamps any screen with less real scroll room.
+    targetScrollTopRef.current = Math.max(
       0,
-      Math.round(scrollProgress * cssLengthToPixels(JOURNEY_PREVIEW_SCROLL_DISTANCE))
+      Math.round(scrollProgress * getStandardizedJourneyTravelPx(scrollContainer))
     );
 
-    if (Math.abs(scrollContainer.scrollTop - nextScrollTop) <= 1) {
+    if (
+      typeof window === "undefined" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
+      scrollContainer.scrollTop = targetScrollTopRef.current;
       return;
     }
 
-    scrollContainer.scrollTop = nextScrollTop;
+    if (animationFrameRef.current !== null) {
+      return; // the running loop picks up the new target
+    }
+
+    // Lerp toward the target so discrete page-scroll ticks render as a
+    // continuous glide instead of stepped jumps.
+    const step = () => {
+      const node = scrollContainerRef.current;
+      if (!node) {
+        animationFrameRef.current = null;
+        return;
+      }
+      const delta = targetScrollTopRef.current - node.scrollTop;
+      if (Math.abs(delta) < 0.6) {
+        node.scrollTop = targetScrollTopRef.current;
+        animationFrameRef.current = null;
+        return;
+      }
+      node.scrollTop = node.scrollTop + delta * 0.16;
+      animationFrameRef.current = window.requestAnimationFrame(step);
+    };
+    animationFrameRef.current = window.requestAnimationFrame(step);
   }, [enabled, scrollContainerRef, scrollProgress]);
+
+  useMountEffect(() => {
+    return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  });
 };
 
 const useInitialScrollTop = (

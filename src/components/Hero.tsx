@@ -4363,6 +4363,9 @@ const usePreviewScrollSync = (
     return () => {
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
+        // Null the handle so a remount (e.g. StrictMode's double-invoke)
+        // doesn't mistake the cancelled frame for a live loop forever.
+        animationFrameRef.current = null;
       }
     };
   });

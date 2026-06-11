@@ -4303,10 +4303,12 @@ const useMeasuredTravelDistance = (fallbackDistance: string, enabled = true) => 
 const usePreviewScrollSync = (
   scrollContainerRef: React.RefObject<HTMLDivElement | null>,
   scrollProgress: number,
-  enabled: boolean
+  enabled: boolean,
+  contentKey?: string
 ) => {
   const animationFrameRef = React.useRef<number | null>(null);
   const targetScrollTopRef = React.useRef(0);
+  const lastContentKeyRef = React.useRef(contentKey);
 
   useIsomorphicLayoutEffect(() => {
     if (!enabled) {
@@ -4327,10 +4329,22 @@ const usePreviewScrollSync = (
       Math.round(scrollProgress * getStandardizedJourneyTravelPx(scrollContainer))
     );
 
+    // On a chapter/content swap the container still sits at the previous
+    // chapter's scroll position — lerping from there reads as the phone
+    // scrolling backwards for a moment. Snap instead; lerp only within a
+    // chapter.
+    const isContentSwap = lastContentKeyRef.current !== contentKey;
+    lastContentKeyRef.current = contentKey;
+
     if (
+      isContentSwap ||
       typeof window === "undefined" ||
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
     ) {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
       scrollContainer.scrollTop = targetScrollTopRef.current;
       return;
     }
@@ -4357,7 +4371,7 @@ const usePreviewScrollSync = (
       animationFrameRef.current = window.requestAnimationFrame(step);
     };
     animationFrameRef.current = window.requestAnimationFrame(step);
-  }, [enabled, scrollContainerRef, scrollProgress]);
+  }, [enabled, scrollContainerRef, scrollProgress, contentKey]);
 
   useMountEffect(() => {
     return () => {
@@ -4844,7 +4858,8 @@ const PlanShowcasePhone: React.FC<{
   usePreviewScrollSync(
     planScrollRef,
     scrollProgress,
-    scrollablePreview
+    scrollablePreview,
+    screenKey
   );
   useInitialScrollTop(planScrollRef, initialScrollTop, scrollablePreview);
 
@@ -4916,7 +4931,8 @@ const ReviewShowcasePhone: React.FC<{
   usePreviewScrollSync(
     reviewScrollRef,
     scrollProgress,
-    scrollablePreview
+    scrollablePreview,
+    screenKey
   );
   useInitialScrollTop(reviewScrollRef, initialScrollTop, scrollablePreview);
 

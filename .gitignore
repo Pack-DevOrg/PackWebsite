@@ -23,6 +23,9 @@ legal-review/screenshots
 # Environment variables
 .env
 
+# Temporary screenshot and debug scripts
+.tmp-*.mjs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

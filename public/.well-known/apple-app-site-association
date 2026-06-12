@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["GW8YNJQZCK.com.doneai.app"],
+        "appIDs": ["GW8YNJQZCK.com.packai.app"],
         "components": [
           {
             "/": "/share/*",
@@ -17,7 +17,7 @@
     ]
   },
   "webcredentials": {
-    "apps": ["GW8YNJQZCK.com.doneai.app"]
+    "apps": ["GW8YNJQZCK.com.packai.app"]
   },
   "appclips": {
     "apps": []

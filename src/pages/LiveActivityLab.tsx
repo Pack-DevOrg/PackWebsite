@@ -2178,6 +2178,292 @@ const states: LiveActivityMock[] = [
     },
   },
   {
+    key: "flight_departure_no_gate",
+    label: "Departure · No Gate",
+    accent: "flight",
+    title: "DL 123 to New York",
+    relativeCountdown: formatRelativeCountdown(reactiveDepartureMinutesUntilLeave),
+    icon: "plane-takeoff",
+    statusBar: buildDepartureStatusBarSpec(
+      reactiveDepartureMinutesUntilLeave,
+      reactiveDepartureDriveMinutes,
+      reactiveDepartureTsaMinutes,
+      `${reactiveDepartureMinutesUntilDeparture}m`
+    ),
+    shownMetrics: [
+      {
+        title: `Boards ${reactiveDepartureMinutesUntilBoarding}m`,
+        value:
+          reactiveDepartureMinutesUntilLeave <= 0
+            ? "Leave now"
+            : `Leave in ${formatDurationLabel(reactiveDepartureMinutesUntilLeave)}`,
+        icon: "car",
+        tone: "accent",
+      },
+      {
+        // Gate/terminal not yet published by the airline — show TBA rather than
+        // omitting the row, so the card still reads as a real flight card.
+        title: "Gate",
+        value: "TBA",
+        icon: "building",
+        tone: "neutral",
+      },
+      {
+        title: "",
+        value: `Seat ${reactiveSeatLabel}`,
+        detail: `JFK • ${reactiveWeatherLabel}`,
+        hideTitle: true,
+        icon: "seat",
+      },
+    ],
+    actionRows: [
+      {
+        label: "Airport",
+        actions: [
+          { label: "Uber", icon: "car", primary: true },
+          { label: "Maps", icon: "map" },
+        ],
+      },
+    ],
+    lockScreen: {
+      fullMetricLimit: 3,
+      midMetricLimit: 2,
+      compactMetricLimit: 2,
+      showNextInMid: false,
+      showStatusBarInCompact: true,
+    },
+    dynamicIsland: {
+      expandedLeadingText: undefined,
+      // Gate omitted from the Island summary while TBA; lead with boarding time.
+      expandedText: `Gate TBA • Boards ${reactiveDepartureMinutesUntilBoarding}m`,
+      expandedTrailingText: undefined,
+      compactLeadingText: "TBA",
+      compactTrailingText: formatCompactMinuteToken(reactiveDepartureMinutesUntilBoarding),
+      minimalIcon: undefined,
+      minimalText: formatMinimalMinuteToken(reactiveDepartureMinutesUntilBoarding),
+      showsCountdown: false,
+    },
+  },
+  {
+    key: "flight_delayed",
+    label: "Flight Delayed",
+    accent: "flight",
+    title: "DL 123 to New York",
+    phaseLabel: "Delayed",
+    relativeCountdown: "Delayed · now boards 12:40",
+    icon: "plane-takeoff",
+    statusBar: {
+      accent: "flight",
+      leadingText: undefined,
+      countdownToken: "12:40",
+      countdownCaption: "Delayed",
+      detailText: `${formatDurationLabel(reactiveDepartureDriveMinutes)} Drive • ${formatDurationLabel(reactiveDepartureTsaMinutes)} TSA`,
+      endLabel: "12:40",
+      progressFraction: 0.38,
+      reservedFraction: 0.2,
+    },
+    shownMetrics: [
+      {
+        title: "New boarding",
+        value: "12:40",
+        detail: "Was 11:30",
+        icon: "clock",
+        tone: "warning",
+      },
+      {
+        title: `Terminal ${reactiveDepartureTerminal}`,
+        value: `Gate ${reactiveDepartureGate}`,
+        icon: "building",
+      },
+      {
+        title: "",
+        value: `Seat ${reactiveSeatLabel}`,
+        detail: `JFK • ${reactiveWeatherLabel}`,
+        hideTitle: true,
+        icon: "seat",
+      },
+    ],
+    actionRows: [
+      {
+        label: "Airport",
+        actions: [
+          { label: "Uber", icon: "car", primary: true },
+          { label: "Maps", icon: "map" },
+        ],
+      },
+    ],
+    lockScreen: {
+      fullMetricLimit: 3,
+      midMetricLimit: 2,
+      compactMetricLimit: 2,
+      showNextInMid: false,
+      showStatusBarInCompact: true,
+    },
+    dynamicIsland: {
+      expandedLeadingText: "Delayed",
+      expandedText: `Now boards 12:40 • Gate ${reactiveDepartureGate}`,
+      expandedTrailingText: "12:40",
+      compactLeadingText: "Delayed",
+      compactTrailingText: "12:40",
+      minimalIcon: undefined,
+      minimalText: "Late",
+      showsCountdown: false,
+    },
+  },
+  {
+    key: "activity_no_location",
+    label: "Activity · No Location",
+    accent: "flight",
+    title: "Team Standup",
+    // No address: this is the location-optional calendar event the app now
+    // supports. Still an intentional card — title + start countdown + time —
+    // but no drive metric and only a neutral Open Pack fallback action.
+    relativeCountdown: "in 22m",
+    icon: "calendar",
+    statusBar: {
+      leadingText: undefined,
+      countdownToken: "22m",
+      countdownCaption: "Starts",
+      endLabel: "10:00",
+      progressFraction: 0.41,
+      reservedFraction: 0,
+    },
+    shownMetrics: [
+      { title: "Starts in", value: "22m", icon: "clock", tone: "accent" },
+      { title: "At", value: "10:00", icon: "calendar" },
+    ],
+    actionRows: [
+      {
+        label: "Event",
+        actions: [{ label: "Open Pack", icon: "next" }],
+      },
+    ],
+    lockScreen: {
+      fullMetricLimit: 3,
+      midMetricLimit: 2,
+      compactMetricLimit: 2,
+      showNextInMid: false,
+      showStatusBarInCompact: true,
+    },
+    dynamicIsland: {
+      expandedLeadingText: "22m",
+      expandedText: "Team Standup",
+      expandedTrailingText: "10:00",
+      compactLeadingText: "22m",
+      compactTrailingText: "Standup",
+      minimalIcon: undefined,
+      minimalText: "22m",
+      showsCountdown: false,
+    },
+  },
+  {
+    key: "hotel_minimal",
+    label: "Hotel · Name Only",
+    accent: "ground",
+    title: "Hotel Bowery",
+    // Sparse but valid: name only — no address, no confirmation code. Name acts
+    // as the title and the action; no confirmation chip is shown.
+    relativeCountdown: `${formatDurationLabel(hotelCheckInMinutesUntilCheckIn)} away`,
+    icon: "bed",
+    statusBar: {
+      accent: "flight",
+      leadingText: undefined,
+      countdownToken: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
+      countdownCaption: "Check-in",
+      endLabel: "4:00 PM",
+      progressFraction: 0.51,
+      reservedFraction: 0,
+    },
+    shownMetrics: [
+      {
+        title: "Check-in",
+        value: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
+        icon: "clock",
+        tone: "accent",
+      },
+      { title: "At", value: "4:00 PM", icon: "bed" },
+    ],
+    actionRows: [
+      {
+        label: "Hotel",
+        actions: [{ label: "Open Pack", icon: "next" }],
+      },
+    ],
+    lockScreen: {
+      fullMetricLimit: 3,
+      midMetricLimit: 2,
+      compactMetricLimit: 2,
+      showNextInMid: false,
+      showStatusBarInCompact: true,
+    },
+    dynamicIsland: {
+      expandedLeadingText: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
+      expandedText: "Hotel Bowery",
+      expandedTrailingText: undefined,
+      compactLeadingText: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
+      compactTrailingText: "Bowery",
+      minimalIcon: undefined,
+      minimalText: formatMinimalMinuteToken(hotelCheckInMinutesUntilCheckIn),
+      showsCountdown: false,
+    },
+  },
+  {
+    key: "flight_cancelled",
+    label: "Flight Cancelled",
+    accent: "flight",
+    title: "DL 123 to New York",
+    phaseLabel: "Cancelled",
+    relativeCountdown: "Cancelled",
+    icon: "plane-takeoff",
+    statusBar: {
+      accent: "flight",
+      leadingText: undefined,
+      countdownToken: "Cancelled",
+      countdownCaption: "Cancelled",
+      endLabel: "12:45",
+      progressFraction: 1,
+      reservedFraction: 0,
+    },
+    shownMetrics: [
+      {
+        title: "Status",
+        value: "Cancelled",
+        detail: "Check rebooking options",
+        icon: "shield",
+        tone: "danger",
+      },
+      {
+        title: `Terminal ${reactiveDepartureTerminal}`,
+        value: `Gate ${reactiveDepartureGate}`,
+        icon: "building",
+        tone: "neutral",
+      },
+    ],
+    actionRows: [
+      {
+        label: "Airline",
+        actions: [{ label: "Open Pack", icon: "next" }],
+      },
+    ],
+    lockScreen: {
+      fullMetricLimit: 3,
+      midMetricLimit: 2,
+      compactMetricLimit: 2,
+      showNextInMid: false,
+      showStatusBarInCompact: true,
+    },
+    dynamicIsland: {
+      expandedLeadingText: "Cancelled",
+      expandedText: "DL 123 cancelled • check rebooking",
+      expandedTrailingText: undefined,
+      compactLeadingText: "Cancelled",
+      compactTrailingText: "DL 123",
+      minimalIcon: "shield",
+      minimalText: "Canc",
+      showsCountdown: false,
+    },
+  },
+  {
     key: "scrubber_activity",
     label: "Scrubber Activity",
     accent: "flight",
@@ -2338,6 +2624,11 @@ function getLocalizedStateActionLabel(
 
   const overridesByState: Record<string, Record<string, string>> = {
     flight_departure: { Airport: "Aeropuerto" },
+    flight_departure_no_gate: { Airport: "Aeropuerto" },
+    flight_delayed: { Airport: "Aeropuerto" },
+    activity_no_location: { Event: "Evento" },
+    hotel_minimal: { Hotel: "Hotel" },
+    flight_cancelled: { Airline: "Aerolínea" },
     flight_arrival: { "In Flight": "En vuelo" },
     flight_arrived: { Hotel: "Hotel" },
     hotel_checkin: { Hotel: "Hotel" },
@@ -2362,6 +2653,7 @@ function getLocalizedStateActionItemLabel(
   const translations: Record<string, string> = {
     Maps: "Mapas",
     Open: "Abrir",
+    "Open Pack": "Abrir Pack",
   };
 
   return translations[actionLabel] ?? actionLabel;

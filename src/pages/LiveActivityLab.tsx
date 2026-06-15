@@ -1418,6 +1418,33 @@ const CompactIslandSegment = styled.div<{ $align: "left" | "right" }>`
   overflow: hidden;
 `;
 
+// Leading column of the compact island: Pack logo stacked over the concise
+// time-remaining, mirroring the minimal presentation so the island stays narrow.
+const CompactLeadingStack = styled.div`
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  line-height: 1;
+`;
+
+const CompactTimeText = styled.span`
+  margin-top: 1px;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+`;
+
+const CompactGlyph = styled.span`
+  display: inline-flex;
+  align-items: center;
+  color: #ffffff;
+  flex: none;
+`;
+
 const CompactStatusMiniTrack = styled.div`
   position: relative;
   width: 26px;
@@ -1827,7 +1854,7 @@ function buildFlightDepartureMock(
       expandedText: `T${spec.terminalLabel} • Gate ${spec.gateLabel} • ${spec.boardingTimeLabel}`,
       expandedTrailingText: undefined,
       compactLeadingText: spec.gateLabel,
-      compactTrailingText: formatCompactMinuteToken(spec.minutesUntilBoarding),
+      compactTrailingText: `Gate ${spec.gateLabel}`,
       minimalIcon: undefined,
       minimalText: formatMinimalMinuteToken(spec.minutesUntilBoarding),
       showsCountdown: false,
@@ -2011,7 +2038,7 @@ const states: LiveActivityMock[] = [
       expandedText: "Baggage 7 • 35°",
       expandedTrailingText: "1h30m",
       compactLeadingText: "7",
-      compactTrailingText: "1h30m",
+      compactTrailingText: "Bag 7",
       minimalIcon: "baggage",
       minimalText: "1h30m",
       showsCountdown: false,
@@ -3060,16 +3087,6 @@ function renderIcon(icon: IconKey, size = 14) {
   return <Icon size={size} strokeWidth={2.1} aria-hidden="true" />;
 }
 
-function compactIslandValue(state: LiveActivityMock): string {
-  if (state.dynamicIsland.compactTrailingText) {
-    return state.dynamicIsland.compactTrailingText;
-  }
-  if (state.dynamicIsland.showsCountdown) {
-    return state.statusBar.countdownToken;
-  }
-  return state.statusBar.countdownCaption;
-}
-
 function normalizeInfoToken(value: string | undefined | null): string {
   return (value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
@@ -3601,17 +3618,24 @@ function renderExpandedIsland(state: LiveActivityMock) {
 }
 
 function renderCompactIsland(state: LiveActivityMock) {
+  // Leading: Pack logo over the concise time-remaining, then the kind glyph.
+  // Trailing: a short detail token (gate / seat / name) — never the time again,
+  // so if the authored token equals the time, fall back to the title.
+  const time = state.statusBar.countdownToken;
+  const rawDetail = state.dynamicIsland.compactTrailingText ?? state.title;
+  const detail = rawDetail === time ? state.title : rawDetail;
   return (
     <CompactIslandShell data-capture-target="dynamic-island-compact-raw">
       <CompactIslandSegment $align="left">
-        <DoneLogo src={packLogo} alt="Pack logo" $size={14} />
-        {state.dynamicIsland.compactLeadingText ? (
-          <IslandText>{state.dynamicIsland.compactLeadingText}</IslandText>
-        ) : null}
+        <CompactLeadingStack>
+          <DoneLogo src={packLogo} alt="Pack logo" $size={14} />
+          {time ? <CompactTimeText>{time}</CompactTimeText> : null}
+        </CompactLeadingStack>
+        <CompactGlyph>{renderIcon(state.icon, 12)}</CompactGlyph>
       </CompactIslandSegment>
       <CompactIslandCameraGap />
       <CompactIslandSegment $align="right">
-        <IslandText>{compactIslandValue(state)}</IslandText>
+        {detail ? <IslandText>{detail}</IslandText> : null}
       </CompactIslandSegment>
     </CompactIslandShell>
   );

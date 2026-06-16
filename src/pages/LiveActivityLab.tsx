@@ -23,6 +23,24 @@ import type { SupportedLocale } from "@/i18n/config";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import styled from "styled-components";
 import packLogo from "../assets/logo.png";
+import {
+  LAB_FIXTURE_LIST,
+  LAB_REFERENCE_NOW,
+} from "../labs/liveActivityModel/fixtures";
+import type { Action, ContentState } from "../labs/liveActivityModel/contentState";
+import {
+  buildDynamicIslandModel,
+  buildMetricBoxes,
+  buildStatusBarModel,
+  buildLockScreenSurfaceModelFor,
+} from "../labs/liveActivityModel/derivation";
+import { conciseTimeRemaining } from "../labs/liveActivityModel/helpers";
+import type {
+  DynamicIslandModel,
+  EmphasisColor,
+  MetricBox,
+  StatusBarModel,
+} from "../labs/liveActivityModel/viewModels";
 
 type AccentTone = "flight" | "arrival" | "ground" | "generic";
 type IconKey =
@@ -43,70 +61,51 @@ type IconKey =
   | "wifi"
   | "next";
 
+// Tone the lock-screen metric card paints, derived from the native MetricBox
+// EmphasisColor union. The lab keeps four tone tokens; the seven semantic
+// emphases collapse onto them.
+type MetricTone = "accent" | "warning" | "danger" | "neutral";
+
+// A lock-screen metric card, projected from a derived `MetricBox`.
 type MetricCard = {
   title: string;
   value: string;
   detail?: string;
-  hideTitle?: boolean;
-  icon?: IconKey;
-  tone?: "accent" | "warning" | "danger" | "neutral";
+  hideTitle: boolean;
+  tone: MetricTone;
 };
 
+// One lock-screen action button, projected from a derived `Action`.
 type ActionItem = {
   label: string;
   icon: IconKey;
   primary?: boolean;
 };
 
-type ActionRow = {
-  label: string;
-  actions: ActionItem[];
-};
-
-type StatusBarSpec = {
-  accent?: AccentTone;
-  leadingText?: string;
-  countdownToken: string;
-  countdownCaption: string;
-  detailText?: string;
-  startLabel?: string;
-  endLabel?: string;
-  progressFraction: number;
-  reservedFraction: number;
-  usesEndpointLabelStyleForEndText?: boolean;
-};
-
-type LiveActivityMock = {
+// Each lab surface renders from this fully-derived state: every display token is
+// computed by the model layer (`buildMetricBoxes`, `buildStatusBarModel`,
+// `buildDynamicIslandModel`, `buildLockScreenSurfaceModelFor`) from a
+// `ContentState` at `LAB_REFERENCE_NOW`. Only `label`/`title` carry through for
+// the directory and i18n; nothing here is hand-authored display copy.
+type LabState = {
   key: string;
   label: string;
   accent: AccentTone;
+  // Resolved primary title (e.g. flight_arrival surfaces the flight number).
   title: string;
-  phaseLabel?: string;
-  supportingText?: string;
-  relativeCountdown: string;
   icon: IconKey;
-  statusBar: StatusBarSpec;
-  shownMetrics: MetricCard[];
-  hiddenMetrics?: MetricCard[];
-  nextItem?: string;
-  nextEventCountdown?: string;
-  actionRows: ActionRow[];
+  // Concise live time-remaining to the island countdown target ("1h30m"/"22m").
+  compactTime: string;
+  metricBoxes: MetricBox[];
+  metricCards: MetricCard[];
+  statusBar: StatusBarModel | null;
+  dynamicIsland: DynamicIslandModel;
+  actions: ActionItem[];
   lockScreen: {
     fullMetricLimit: number;
     midMetricLimit: number;
     compactMetricLimit: number;
-    showNextInMid: boolean;
     showStatusBarInCompact: boolean;
-  };
-  dynamicIsland: {
-    expandedLeadingText?: string;
-    expandedText?: string;
-    expandedTrailingText?: string;
-    compactLeadingText?: string;
-    compactTrailingText?: string;
-    minimalIcon?: IconKey;
-    minimalText?: string;
-    showsCountdown: boolean;
   };
 };
 
@@ -127,7 +126,6 @@ type ScreenshotGroup = {
 };
 
 type LiveActivityLabContent = {
-  nextLabel: string;
   lockScreenTitle: string;
   lockScreenMeta: string;
   lockScreenDate: string;
@@ -176,7 +174,6 @@ const LIVE_ACTIVITY_LAB_CONTENT: Record<
   LiveActivityLabContent
 > = {
   en: {
-    nextLabel: "Next",
     lockScreenTitle: "Lock Screen",
     lockScreenMeta: "Native-sized crop",
     lockScreenDate: "Tuesday, March 24",
@@ -221,7 +218,6 @@ const LIVE_ACTIVITY_LAB_CONTENT: Record<
     },
   },
   es: {
-    nextLabel: "Siguiente",
     lockScreenTitle: "Pantalla bloqueada",
     lockScreenMeta: "Recorte con tamaño nativo",
     lockScreenDate: "Martes, 24 de marzo",
@@ -946,19 +942,6 @@ const ClusterIconWrap = styled.span<{ $accent: AccentTone }>`
   background: ${({ $accent }) => toneColors[$accent].accentSoft};
 `;
 
-const PhaseLabel = styled.div<{ $accent: AccentTone }>`
-  font-size: 0.72rem;
-  color: ${({ $accent }) => toneColors[$accent].accent};
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-`;
-
-const SupportingText = styled.div`
-  font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.62);
-  line-height: 1.35;
-`;
-
 const StatusFrame = styled.div<{ $accent: AccentTone }>`
   display: flex;
   flex-direction: column;
@@ -1200,48 +1183,11 @@ const MetricDetail = styled.div`
   line-height: 1.2;
 `;
 
-const NextRow = styled.div`
-  display: flex;
-  gap: 6px;
-  align-items: baseline;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.84);
-`;
-
-const NextLabel = styled.span`
-  color: rgba(255, 255, 255, 0.54);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-`;
-
 const ActionDock = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
 `;
-
-const ActionRowFrame = styled.div`
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  gap: 6px;
-  align-items: center;
-`;
-
-const ActionLabel = styled.div<{ $accent: AccentTone }>`
-  font-size: 0.58rem;
-  color: ${({ $accent }) => toneColors[$accent].accent};
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-family: SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas,
-    "Liberation Mono", monospace;
-`;
-
-function actionLabelTone(state: LiveActivityMock, row: ActionRow): AccentTone {
-  if (row.label === "Hotel") {
-    return "flight";
-  }
-  return state.accent;
-}
 
 const ActionButtons = styled.div<{ $count: number }>`
   display: grid;
@@ -1682,1287 +1628,198 @@ const WatchDestination = styled.div`
   text-overflow: ellipsis;
 `;
 
-type FlightDepartureLabSpec = {
-  flightNumber: string;
-  destination: string;
-  destinationCode: string;
-  destinationWeather: string;
-  terminalLabel: string;
-  gateLabel: string;
-  seatLabel: string;
-  boardingTimeLabel: string;
-  departureTimeLabel: string;
-  minutesUntilDeparture: number;
-  minutesUntilBoarding: number;
-  minutesUntilLeave: number;
-  driveMinutes: number;
-  tsaMinutes: number;
+// ---------------------------------------------------------------------------
+// Derive each lab state from a ContentState fixture.
+//
+// Every display token below is COMPUTED by the model layer at
+// `LAB_REFERENCE_NOW` (each fixture's own deterministic reference now, matching
+// the native review renders). The render helpers consume these derived models;
+// nothing here is hand-authored display copy.
+// ---------------------------------------------------------------------------
+
+// Accent tone per native event kind (mirrors the lab's prior per-state accent).
+function accentForKind(kind: string): AccentTone {
+  switch (kind) {
+    case "flight_departure":
+    case "flight_arrival":
+    case "activity":
+      return "flight";
+    case "flight_arrived":
+    case "hotel_checkin":
+      return "ground";
+    default:
+      return "generic";
+  }
+}
+
+// Project a native MetricBox EmphasisColor onto one of the lab's four metric
+// card tones. Native paints `leaveIn`/highlight pills with the dark-on-saffron
+// treatment, which reads as the accent tone here.
+function metricToneForEmphasis(emphasis: EmphasisColor): MetricTone {
+  switch (emphasis) {
+    case "accent":
+    case "dark":
+    case "success":
+      return "accent";
+    case "warning":
+      return "warning";
+    case "danger":
+      return "danger";
+    case "white":
+    case "secondary":
+    default:
+      return "neutral";
+  }
+}
+
+// Map an action's SF Symbol icon hint onto the lab IconKey union.
+function actionIconKey(icon: string | undefined): IconKey {
+  switch (icon) {
+    case "car.fill":
+    case "car":
+      return "car";
+    case "map.fill":
+    case "map":
+      return "map";
+    default:
+      return "next";
+  }
+}
+
+function projectMetricCard(box: MetricBox): MetricCard {
+  return {
+    title: box.title,
+    value: box.value,
+    detail: box.detail,
+    hideTitle: !box.showsTitle || box.title.length === 0,
+    tone: metricToneForEmphasis(box.emphasis),
+  };
+}
+
+function projectActions(actions: Action[]): ActionItem[] {
+  // Native renders the current-navigation actions; the lab dock shows the first
+  // two as a single row, matching the prior single-row presentation.
+  return actions.slice(0, 2).map((action) => ({
+    label: action.title,
+    icon: actionIconKey(action.icon),
+    primary: action.style === "primary",
+  }));
+}
+
+// Resolved primary title: flight_arrival surfaces the flight number, mirroring
+// the native `liveActivityTitle`.
+function resolveTitle(state: ContentState): string {
+  const primary = state.primary;
+  if (primary.kind !== "flight_arrival") {
+    return primary.title;
+  }
+  const flight = primary.details.find(
+    (r) =>
+      r.sourceKey.toLowerCase() === "flightlabel" ||
+      r.sourceKey.toLowerCase() === "flight"
+  );
+  const value = flight?.value.trim();
+  return value != null && value.length > 0 ? value : primary.title;
+}
+
+function buildLabState(key: string, state: ContentState, label: string): LabState {
+  const now = LAB_REFERENCE_NOW;
+  const dynamicIsland = buildDynamicIslandModel(state, now);
+  const statusBar = buildStatusBarModel(state, now);
+  const metricBoxes = buildMetricBoxes(state, now);
+  const lockScreen = buildLockScreenSurfaceModelFor(state, now);
+  const isPast = state.primary.startAt <= now;
+  const compactTime =
+    dynamicIsland.countdownTargetAt != null
+      ? conciseTimeRemaining(dynamicIsland.countdownTargetAt, now)
+      : "";
+  return {
+    key,
+    label,
+    accent: accentForKind(state.primary.kind),
+    title: resolveTitle(state),
+    icon: dynamicIsland.compactLeadingSymbolName ?? "calendar",
+    compactTime,
+    metricBoxes,
+    metricCards: metricBoxes.map(projectMetricCard),
+    statusBar,
+    dynamicIsland,
+    actions: projectActions(state.actions),
+    lockScreen: {
+      fullMetricLimit: lockScreen.fullMetricLimit,
+      midMetricLimit: lockScreen.midMetricLimit,
+      compactMetricLimit: lockScreen.compactMetricLimit,
+      showStatusBarInCompact: lockScreen.showStatusBarInCompact && !isPast,
+    },
+  };
+}
+
+// English directory labels per fixture key (the prior hand-authored `label`).
+const LAB_STATE_LABELS_EN: Record<string, string> = {
+  flight_departure: "Flight Departure",
+  flight_departure_sparse: "Departure · Sparse",
+  flight_arrival: "In Flight",
+  flight_arrival_delayed: "Flight Delayed",
+  flight_arrived: "Flight Arrived",
+  flight_arrived_sparse: "Arrived · Sparse",
+  hotel_checkin: "Hotel Check-in",
+  hotel_checkin_no_navigation: "Hotel · No Navigation",
+  activity: "Activity",
+  activity_long_title_no_navigation: "Activity · Long Title",
+  generic_event: "Generic",
+  scrubber_activity: "Scrubber Activity",
+  scrubber_hotel: "Scrubber Hotel",
+  scrubber_landed: "Scrubber Landed",
 };
 
-function formatDurationLabel(minutes: number): string {
-  if (minutes <= 0) {
-    return "0m";
-  }
-  if (minutes < 60) {
-    return `${minutes}m`;
-  }
-  const hours = Math.floor(minutes / 60);
-  const remaining = minutes % 60;
-  return remaining > 0 ? `${hours}h ${remaining}m` : `${hours}h`;
-}
-
-function formatRelativeCountdown(minutes: number): string {
-  if (minutes <= 0) {
-    return "Now";
-  }
-  return `in ${formatDurationLabel(minutes)}`;
-}
-
-function formatCompactMinuteToken(minutes: number): string {
-  if (minutes <= 0) {
-    return "Now";
-  }
-  return `${minutes}m`;
-}
-
-function formatMinimalMinuteToken(minutes: number): string {
-  if (minutes <= 0) {
-    return "Now";
-  }
-  if (minutes < 60) {
-    return `${minutes}m`;
-  }
-  return `${Math.floor(minutes / 60)}h`;
-}
-
-function dynamicIslandExpandedTrailingText(state: LiveActivityMock): string | null {
-  if (state.nextEventCountdown) {
-    return state.nextEventCountdown;
-  }
-  if (state.dynamicIsland.expandedTrailingText) {
-    return state.dynamicIsland.expandedTrailingText;
-  }
-  if (state.dynamicIsland.showsCountdown) {
-    return state.statusBar.countdownToken;
-  }
-  return null;
-}
-
-function buildDepartureStatusBarSpec(
-  minutesUntilLeave: number,
-  driveMinutes: number,
-  tsaMinutes: number,
-  departureTimeLabel: string
-): StatusBarSpec {
-  const safeDriveMinutes = Math.max(0, driveMinutes);
-  const safeTsaMinutes = Math.max(0, tsaMinutes);
-  const boardingBufferMinutes = 30;
-  const requiredMinutes = Math.max(
-    1,
-    safeDriveMinutes + safeTsaMinutes + boardingBufferMinutes
-  );
-  const preWarningWindowMinutes = Math.max(
-    requiredMinutes,
-    Math.round(requiredMinutes * 1.24)
-  );
-  const reservedWindowMinutes = Math.max(
-    18,
-    Math.round(requiredMinutes * 0.27)
-  );
-  const totalWindowMinutes = Math.max(
-    1,
-    preWarningWindowMinutes + reservedWindowMinutes
-  );
-  const clampedMinutesUntilLeave = Math.max(0, minutesUntilLeave);
-  const elapsedFraction = Math.max(
-    0,
-    Math.min(
-      1 - reservedWindowMinutes / totalWindowMinutes,
-      (preWarningWindowMinutes -
-        Math.min(preWarningWindowMinutes, clampedMinutesUntilLeave)) /
-        totalWindowMinutes
-    )
-  );
-
-  return {
-    countdownToken: departureTimeLabel,
-    countdownCaption: "",
-    detailText: `${formatDurationLabel(safeDriveMinutes)} Drive • ${formatDurationLabel(safeTsaMinutes)} TSA`,
-    progressFraction: elapsedFraction,
-    reservedFraction: reservedWindowMinutes / totalWindowMinutes,
-  };
-}
-
-function buildFlightDepartureMock(
-  spec: FlightDepartureLabSpec
-): LiveActivityMock {
-  const title = `${spec.flightNumber} to ${spec.destination}`;
-  return {
-    key: "flight_departure",
-    label: "Flight Departure",
-    accent: "flight",
-    title,
-    relativeCountdown: formatRelativeCountdown(spec.minutesUntilDeparture),
-    icon: "plane-takeoff",
-    statusBar: buildDepartureStatusBarSpec(
-      spec.minutesUntilLeave,
-      spec.driveMinutes,
-      spec.tsaMinutes,
-      spec.departureTimeLabel
-    ),
-    shownMetrics: [
-      {
-        title: `Boards ${spec.boardingTimeLabel}`,
-        value:
-          spec.minutesUntilLeave <= 0
-            ? "Leave now"
-            : `Leave in ${formatDurationLabel(spec.minutesUntilLeave)}`,
-        icon: "car",
-        tone: "accent",
-      },
-      {
-        title: `Terminal ${spec.terminalLabel}`,
-        value: `Gate ${spec.gateLabel}`,
-        icon: "building",
-      },
-      {
-        title: "",
-        value: `Seat ${spec.seatLabel}`,
-        detail: `${spec.destinationCode} • ${spec.destinationWeather}`,
-        hideTitle: true,
-        icon: "seat",
-      },
-    ],
-    actionRows: [
-      {
-        label: "Airport",
-        actions: [
-          {label: "Uber", icon: "car", primary: true},
-          {label: "Maps", icon: "map"},
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: undefined,
-      expandedText: `T${spec.terminalLabel} • Gate ${spec.gateLabel} • ${spec.boardingTimeLabel}`,
-      expandedTrailingText: undefined,
-      compactLeadingText: spec.gateLabel,
-      compactTrailingText: `Gate ${spec.gateLabel}`,
-      minimalIcon: undefined,
-      minimalText: formatMinimalMinuteToken(spec.minutesUntilBoarding),
-      showsCountdown: false,
-    },
-  };
-}
-
-const flightDepartureLabSpec: FlightDepartureLabSpec = {
-  flightNumber: "DL 123",
-  destination: "New York",
-  destinationCode: "JFK",
-  destinationWeather: "35°",
-  terminalLabel: "4",
-  gateLabel: "C12",
-  seatLabel: "12A",
-  boardingTimeLabel: "11:30",
-  departureTimeLabel: "12:45",
-  minutesUntilDeparture: 134,
-  minutesUntilBoarding: 104,
-  minutesUntilLeave: 35,
-  driveMinutes: 55,
-  tsaMinutes: 14,
+const LAB_STATE_LABELS_ES: Record<string, string> = {
+  flight_departure: "Salida del vuelo",
+  flight_departure_sparse: "Salida · Mínima",
+  flight_arrival: "En vuelo",
+  flight_arrival_delayed: "Vuelo retrasado",
+  flight_arrived: "Vuelo aterrizado",
+  flight_arrived_sparse: "Aterrizado · Mínima",
+  hotel_checkin: "Check-in del hotel",
+  hotel_checkin_no_navigation: "Hotel · Sin navegación",
+  activity: "Actividad",
+  activity_long_title_no_navigation: "Actividad · Título largo",
+  generic_event: "Genérico",
+  scrubber_activity: "Actividad scrubber",
+  scrubber_hotel: "Hotel scrubber",
+  scrubber_landed: "Aterrizado scrubber",
 };
-const reactiveLabBucket = Math.floor(Date.now() / (2 * 60 * 1000));
 
-function pickReactiveLabValue<T>(
-  values: readonly T[],
-  offset: number
-): T {
-  const normalizedIndex =
-    ((reactiveLabBucket + offset) % values.length + values.length) %
-    values.length;
-  return values[normalizedIndex] as T;
-}
-
-const reactiveDepartureDriveMinutes = pickReactiveLabValue([42, 47, 55, 63], 11);
-const reactiveDepartureTsaMinutes = pickReactiveLabValue([9, 14, 22, 31], 13);
-const reactiveDepartureMinutesUntilLeave = pickReactiveLabValue(
-  [28, 35, 41, 46],
-  5
-);
-const reactiveDepartureMinutesUntilDeparture =
-  134 + pickReactiveLabValue([0, 8, 16, 24], 3);
-const reactiveDepartureMinutesUntilBoarding = Math.max(
-  10,
-  reactiveDepartureMinutesUntilDeparture - 30
-);
-const reactiveDepartureTerminal = pickReactiveLabValue(["3", "4", "5", "6"], 29);
-const reactiveDepartureGate = pickReactiveLabValue(["A2", "B7", "C12", "D4"], 31);
-const reactiveSeatLabel = pickReactiveLabValue(["9C", "12A", "14F", "18D"], 43);
-const reactiveWeatherLabel = `${pickReactiveLabValue([31, 35, 38, 42], 53)}°`;
-const reactiveBaggageLabel = pickReactiveLabValue(
-  ["Claim 3", "Claim 5", "Claim 7", "Claim 9"],
-  47
-);
-const reactiveArrivalTerminal = pickReactiveLabValue(["1", "2", "4", "7"], 37);
-const reactiveArrivalGate = pickReactiveLabValue(["A9", "B14", "C12", "D6"], 41);
-const hotelCheckInDriveMinutes = pickReactiveLabValue([12, 18, 24, 35], 19);
-const hotelCheckInMinutesUntilCheckIn = 35;
-const activityDriveMinutes = pickReactiveLabValue([8, 10, 14, 17], 23);
-const activityMinutesUntilLeave = pickReactiveLabValue([18, 22, 27, 31], 5);
-const reactiveArrivalHotelDriveMinutes = pickReactiveLabValue([22, 28, 35, 41], 17);
-const reactiveHotelConfirmationCode = pickReactiveLabValue(
-  ["ABC123", "DMN448", "QRT772", "ZXC901"],
-  59
-);
-
-const states: LiveActivityMock[] = [
-  buildFlightDepartureMock({
-    ...flightDepartureLabSpec,
-    destinationWeather: reactiveWeatherLabel,
-    terminalLabel: reactiveDepartureTerminal,
-    gateLabel: reactiveDepartureGate,
-    seatLabel: reactiveSeatLabel,
-    boardingTimeLabel: `${reactiveDepartureMinutesUntilBoarding}m`,
-    departureTimeLabel: `${reactiveDepartureMinutesUntilDeparture}m`,
-    minutesUntilDeparture: reactiveDepartureMinutesUntilDeparture,
-    minutesUntilBoarding: reactiveDepartureMinutesUntilBoarding,
-    minutesUntilLeave: reactiveDepartureMinutesUntilLeave,
-    driveMinutes: reactiveDepartureDriveMinutes,
-    tsaMinutes: reactiveDepartureTsaMinutes,
-  }),
-  {
-    key: "flight_arrival",
-    label: "In Flight",
-    accent: "flight",
-    title: "DL 123",
-    relativeCountdown: "lands in 1h 2m",
-    icon: "plane",
-    statusBar: {
-      leadingText: `LAX ${reactiveDepartureMinutesUntilDeparture}m`,
-      countdownToken: "1h",
-      countdownCaption: "",
-      detailText: `${reactiveSeatLabel} • ${reactiveWeatherLabel}`,
-      endLabel: `${62 + pickReactiveLabValue([0, 6, 12, 18], 7)}m JFK`,
-      progressFraction: 0.63,
-      reservedFraction: 0,
-      usesEndpointLabelStyleForEndText: true,
-    },
-    shownMetrics: [
-      {
-        title: `Terminal ${reactiveArrivalTerminal}`,
-        value: `Gate ${reactiveArrivalGate}`,
-        icon: "building",
-      },
-      { title: `Seat ${reactiveSeatLabel}`, value: reactiveBaggageLabel, icon: "seat" },
-      { title: "Weather", value: reactiveWeatherLabel, tone: "accent" },
-    ],
-    actionRows: [
-      {
-        label: "In Flight",
-        actions: [{ label: "Wi-Fi", icon: "wifi" }],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: "Seat 12A",
-      expandedText: undefined,
-      expandedTrailingText: "1h 2m",
-      compactLeadingText: "1h 2m",
-      compactTrailingText: "12A",
-      minimalIcon: undefined,
-      minimalText: "1h",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "flight_arrived",
-    label: "Flight Arrived",
-    accent: "ground",
-    title: "Arrived",
-    relativeCountdown: "Now",
-    icon: "plane-landing",
-    statusBar: {
-      leadingText: `${reactiveBaggageLabel} • T${reactiveArrivalTerminal}`,
-      countdownToken: "Now",
-      countdownCaption: "Landed",
-      detailText: `${formatDurationLabel(reactiveArrivalHotelDriveMinutes)} Drive`,
-      endLabel: "JFK",
-      progressFraction: 1,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      { title: "Baggage", value: reactiveBaggageLabel, tone: "accent" },
-      {
-        title: "Next in",
-        value: "1h30m",
-        detail: "The TWA Hotel",
-      },
-      {
-        title: "Drive",
-        value: `${reactiveArrivalHotelDriveMinutes}m`,
-        detail: "The TWA Hotel",
-      },
-      { title: "Weather", value: reactiveWeatherLabel },
-    ],
-    actionRows: [
-      {
-        label: "Hotel",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: true,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: undefined,
-      expandedText: "Baggage 7 • 35°",
-      expandedTrailingText: "1h30m",
-      compactLeadingText: "7",
-      compactTrailingText: "Bag 7",
-      minimalIcon: "baggage",
-      minimalText: "1h30m",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "hotel_checkin",
-    label: "Hotel Check-in",
-    accent: "ground",
-    title: "The Ritz-Carlton NoMad",
-    relativeCountdown: `${formatDurationLabel(hotelCheckInMinutesUntilCheckIn)} away`,
-    icon: "bed",
-    statusBar: {
-      accent: "flight",
-      leadingText: undefined,
-      countdownToken: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      countdownCaption: "Check-in",
-      detailText: `${formatDurationLabel(hotelCheckInDriveMinutes)} Drive`,
-      endLabel: "4:00 PM",
-      progressFraction: 0.51,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      { title: "The Ritz-Carlton NoMad", value: "11 Madison Ave" },
-      { title: "Conf", value: reactiveHotelConfirmationCode, tone: "warning" },
-      { title: "Weather", value: reactiveWeatherLabel, tone: "accent" },
-    ],
-    actionRows: [
-      {
-        label: "Hotel",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      expandedText: "Ritz Carlton NoMad",
-      expandedTrailingText: undefined,
-      compactLeadingText: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      compactTrailingText: "NoMad",
-      minimalIcon: undefined,
-      minimalText: formatMinimalMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "activity",
-    label: "Activity",
-    accent: "flight",
-    title: "Dinner at Don Angie",
-    relativeCountdown: "in 1h 12m",
-    icon: "calendar",
-    statusBar: {
-      leadingText: undefined,
-      countdownToken: formatCompactMinuteToken(activityMinutesUntilLeave),
-      countdownCaption: "Leave",
-      detailText: `${formatDurationLabel(activityDriveMinutes)} Drive`,
-      endLabel: "19:30",
-      progressFraction: 0.49,
-      reservedFraction: 0.18,
-    },
-    shownMetrics: [
-      {
-        title: "Leave in",
-        value: formatCompactMinuteToken(activityMinutesUntilLeave),
-        icon: "car",
-        tone: "accent",
-      },
-      { title: "", value: "103 Greenwich Ave", hideTitle: true },
-      {
-        title: "Drive",
-        value: formatCompactMinuteToken(activityDriveMinutes),
-        icon: "car",
-        tone: "warning",
-      },
-      { title: "After", value: "Ritz-Carlton NoMad", detail: "11 Madison Ave" },
-      { title: "Weather", value: reactiveWeatherLabel, tone: "accent" },
-    ],
-    actionRows: [
-      {
-        label: "Event",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-      {
-        label: "Hotel",
-        actions: [
-          { label: "Uber", icon: "car" },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: formatCompactMinuteToken(activityMinutesUntilLeave),
-      expandedText: "Dinner at Don Angie",
-      expandedTrailingText: undefined,
-      compactLeadingText: formatCompactMinuteToken(activityMinutesUntilLeave),
-      compactTrailingText: "Dinner",
-      minimalIcon: undefined,
-      minimalText: "2h50",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "generic",
-    label: "Generic",
-    accent: "generic",
-    title: "Pickup rental car",
-    supportingText: "JFK Terminal 4",
-    relativeCountdown: "in 42m",
-    icon: "sparkles",
-    statusBar: {
-      leadingText: undefined,
-      countdownToken: "42m",
-      countdownCaption: "Start",
-      endLabel: "14:00",
-      progressFraction: 0,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      { title: "Starts in", value: "42m", icon: "clock", tone: "accent" },
-      { title: "Next in", value: "2h", detail: "Hotel check-in", icon: "next" },
-    ],
-    actionRows: [
-      {
-        label: "Event",
-        actions: [{ label: "Open", icon: "next" }],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: undefined,
-      expandedText: "Starts in",
-      expandedTrailingText: undefined,
-      compactLeadingText: "42m",
-      compactTrailingText: "2h",
-      minimalIcon: undefined,
-      minimalText: "42m",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "flight_departure_no_gate",
-    label: "Departure · No Gate",
-    accent: "flight",
-    title: "DL 123 to New York",
-    relativeCountdown: formatRelativeCountdown(reactiveDepartureMinutesUntilLeave),
-    icon: "plane-takeoff",
-    statusBar: buildDepartureStatusBarSpec(
-      reactiveDepartureMinutesUntilLeave,
-      reactiveDepartureDriveMinutes,
-      reactiveDepartureTsaMinutes,
-      `${reactiveDepartureMinutesUntilDeparture}m`
-    ),
-    shownMetrics: [
-      {
-        title: `Boards ${reactiveDepartureMinutesUntilBoarding}m`,
-        value:
-          reactiveDepartureMinutesUntilLeave <= 0
-            ? "Leave now"
-            : `Leave in ${formatDurationLabel(reactiveDepartureMinutesUntilLeave)}`,
-        icon: "car",
-        tone: "accent",
-      },
-      {
-        // Gate/terminal not yet published by the airline — show TBA rather than
-        // omitting the row, so the card still reads as a real flight card.
-        title: "Gate",
-        value: "TBA",
-        icon: "building",
-        tone: "neutral",
-      },
-      {
-        title: "",
-        value: `Seat ${reactiveSeatLabel}`,
-        detail: `JFK • ${reactiveWeatherLabel}`,
-        hideTitle: true,
-        icon: "seat",
-      },
-    ],
-    actionRows: [
-      {
-        label: "Airport",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: undefined,
-      // Gate omitted from the Island summary while TBA; lead with boarding time.
-      expandedText: `Gate TBA • Boards ${reactiveDepartureMinutesUntilBoarding}m`,
-      expandedTrailingText: undefined,
-      compactLeadingText: "TBA",
-      compactTrailingText: formatCompactMinuteToken(reactiveDepartureMinutesUntilBoarding),
-      minimalIcon: undefined,
-      minimalText: formatMinimalMinuteToken(reactiveDepartureMinutesUntilBoarding),
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "flight_delayed",
-    label: "Flight Delayed",
-    accent: "flight",
-    title: "DL 123 to New York",
-    phaseLabel: "Delayed",
-    relativeCountdown: "Delayed · now boards 12:40",
-    icon: "plane-takeoff",
-    statusBar: {
-      accent: "flight",
-      leadingText: undefined,
-      countdownToken: "12:40",
-      countdownCaption: "Delayed",
-      detailText: `${formatDurationLabel(reactiveDepartureDriveMinutes)} Drive • ${formatDurationLabel(reactiveDepartureTsaMinutes)} TSA`,
-      endLabel: "12:40",
-      progressFraction: 0.38,
-      reservedFraction: 0.2,
-    },
-    shownMetrics: [
-      {
-        title: "New boarding",
-        value: "12:40",
-        detail: "Was 11:30",
-        icon: "clock",
-        tone: "warning",
-      },
-      {
-        title: `Terminal ${reactiveDepartureTerminal}`,
-        value: `Gate ${reactiveDepartureGate}`,
-        icon: "building",
-      },
-      {
-        title: "",
-        value: `Seat ${reactiveSeatLabel}`,
-        detail: `JFK • ${reactiveWeatherLabel}`,
-        hideTitle: true,
-        icon: "seat",
-      },
-    ],
-    actionRows: [
-      {
-        label: "Airport",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: "Delayed",
-      expandedText: `Now boards 12:40 • Gate ${reactiveDepartureGate}`,
-      expandedTrailingText: "12:40",
-      compactLeadingText: "Delayed",
-      compactTrailingText: "12:40",
-      minimalIcon: undefined,
-      minimalText: "Late",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "activity_no_location",
-    label: "Activity · No Location",
-    accent: "flight",
-    title: "Team Standup",
-    // No address: this is the location-optional calendar event the app now
-    // supports. Still an intentional card — title + start countdown + time —
-    // but no drive metric and only a neutral Open Pack fallback action.
-    relativeCountdown: "in 22m",
-    icon: "calendar",
-    statusBar: {
-      leadingText: undefined,
-      countdownToken: "22m",
-      countdownCaption: "Starts",
-      endLabel: "10:00",
-      progressFraction: 0.41,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      { title: "Starts in", value: "22m", icon: "clock", tone: "accent" },
-      { title: "At", value: "10:00", icon: "calendar" },
-    ],
-    actionRows: [
-      {
-        label: "Event",
-        actions: [{ label: "Open Pack", icon: "next" }],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: "22m",
-      expandedText: "Team Standup",
-      expandedTrailingText: "10:00",
-      compactLeadingText: "22m",
-      compactTrailingText: "Standup",
-      minimalIcon: undefined,
-      minimalText: "22m",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "hotel_minimal",
-    label: "Hotel · Name Only",
-    accent: "ground",
-    title: "Hotel Bowery",
-    // Sparse but valid: name only — no address, no confirmation code. Name acts
-    // as the title and the action; no confirmation chip is shown.
-    relativeCountdown: `${formatDurationLabel(hotelCheckInMinutesUntilCheckIn)} away`,
-    icon: "bed",
-    statusBar: {
-      accent: "flight",
-      leadingText: undefined,
-      countdownToken: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      countdownCaption: "Check-in",
-      endLabel: "4:00 PM",
-      progressFraction: 0.51,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      {
-        title: "Check-in",
-        value: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
-        icon: "clock",
-        tone: "accent",
-      },
-      { title: "At", value: "4:00 PM", icon: "bed" },
-    ],
-    actionRows: [
-      {
-        label: "Hotel",
-        actions: [{ label: "Open Pack", icon: "next" }],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      expandedText: "Hotel Bowery",
-      expandedTrailingText: undefined,
-      compactLeadingText: formatCompactMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      compactTrailingText: "Bowery",
-      minimalIcon: undefined,
-      minimalText: formatMinimalMinuteToken(hotelCheckInMinutesUntilCheckIn),
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "flight_cancelled",
-    label: "Flight Cancelled",
-    accent: "flight",
-    title: "DL 123 to New York",
-    phaseLabel: "Cancelled",
-    relativeCountdown: "Cancelled",
-    icon: "plane-takeoff",
-    statusBar: {
-      accent: "flight",
-      leadingText: undefined,
-      countdownToken: "Cancelled",
-      countdownCaption: "Cancelled",
-      endLabel: "12:45",
-      progressFraction: 1,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      {
-        title: "Status",
-        value: "Cancelled",
-        detail: "Check rebooking options",
-        icon: "shield",
-        tone: "danger",
-      },
-      {
-        title: `Terminal ${reactiveDepartureTerminal}`,
-        value: `Gate ${reactiveDepartureGate}`,
-        icon: "building",
-        tone: "neutral",
-      },
-    ],
-    actionRows: [
-      {
-        label: "Airline",
-        actions: [{ label: "Open Pack", icon: "next" }],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: "Cancelled",
-      expandedText: "DL 123 cancelled • check rebooking",
-      expandedTrailingText: undefined,
-      compactLeadingText: "Cancelled",
-      compactTrailingText: "DL 123",
-      minimalIcon: "shield",
-      minimalText: "Canc",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "scrubber_activity",
-    label: "Scrubber Activity",
-    accent: "flight",
-    title: "Scrubber: ViewThatFits",
-    supportingText: "1 Infinite Loop, Cupertino, CA",
-    relativeCountdown: "35m remaining",
-    nextEventCountdown: "1h20m",
-    icon: "calendar",
-    statusBar: {
-      leadingText: undefined,
-      countdownToken: "35m",
-      countdownCaption: "Remaining",
-      endLabel: "09:20",
-      progressFraction: 0.84,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      { title: "Remaining", value: "35m", icon: "clock", tone: "accent" },
-      { title: "Address", value: "1 Infinite Loop", detail: "Cupertino, CA", tone: "accent" },
-      { title: "Next in", value: "1h20m", detail: "QA compare hotel scrubber" },
-    ],
-    actionRows: [
-      {
-        label: "Event",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: undefined,
-      expandedText: "Scrubber activity",
-      expandedTrailingText: "1h20m",
-      compactLeadingText: undefined,
-      compactTrailingText: "1h20m",
-      minimalIcon: undefined,
-      minimalText: "1h20m",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "scrubber_hotel",
-    label: "Scrubber Hotel",
-    accent: "ground",
-    title: "Scrubber: Fixed Layout",
-    supportingText: "The Ritz-Carlton NoMad • 11 Madison Ave",
-    relativeCountdown: "35m remaining",
-    nextEventCountdown: "1h20m",
-    icon: "bed",
-    statusBar: {
-      leadingText: undefined,
-      countdownToken: "35m",
-      countdownCaption: "Remaining",
-      endLabel: "16:00",
-      progressFraction: 0.82,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      { title: "Remaining", value: "35m", icon: "clock", tone: "accent" },
-      { title: "Hotel", value: "The Ritz-Carlton NoMad", detail: "11 Madison Ave", tone: "accent" },
-      { title: "Next in", value: "1h20m", detail: "Dinner after check-in" },
-    ],
-    actionRows: [
-      {
-        label: "Hotel",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: undefined,
-      expandedText: "Fixed layout",
-      expandedTrailingText: "1h20m",
-      compactLeadingText: undefined,
-      compactTrailingText: "1h20m",
-      minimalIcon: undefined,
-      minimalText: "1h20m",
-      showsCountdown: false,
-    },
-  },
-  {
-    key: "scrubber_landed",
-    label: "Scrubber Landed",
-    accent: "ground",
-    title: "Scrubber: Driven Rail",
-    supportingText: "1 Idlewild Dr, Queens, NY 11430",
-    relativeCountdown: "35m remaining",
-    nextEventCountdown: "1h20m",
-    icon: "plane-landing",
-    statusBar: {
-      leadingText: undefined,
-      countdownToken: "35m",
-      countdownCaption: "Remaining",
-      endLabel: "ARR",
-      progressFraction: 0.86,
-      reservedFraction: 0,
-    },
-    shownMetrics: [
-      { title: "Remaining", value: "35m", icon: "clock", tone: "accent" },
-      { title: "Address", value: "1 Idlewild Dr", detail: "Queens, NY", tone: "accent" },
-      { title: "Next in", value: "1h20m", detail: "Hotel check-in next" },
-    ],
-    actionRows: [
-      {
-        label: "Transfer",
-        actions: [
-          { label: "Uber", icon: "car", primary: true },
-          { label: "Maps", icon: "map" },
-          { label: "Uber", icon: "car" },
-        ],
-      },
-    ],
-    lockScreen: {
-      fullMetricLimit: 3,
-      midMetricLimit: 2,
-      compactMetricLimit: 2,
-      showNextInMid: false,
-      showStatusBarInCompact: true,
-    },
-    dynamicIsland: {
-      expandedLeadingText: undefined,
-      expandedText: "Driven rail",
-      expandedTrailingText: "1h20m",
-      compactLeadingText: undefined,
-      compactTrailingText: "1h20m",
-      minimalIcon: undefined,
-      minimalText: "1h20m",
-      showsCountdown: false,
-    },
-  },
-];
-
-function getLocalizedStateActionLabel(
-  stateKey: LiveActivityMock["key"],
-  rowLabel: string,
-  locale: SupportedLocale
-): string {
+// Spanish translations for the derived action button labels.
+function localizeActionLabel(label: string, locale: SupportedLocale): string {
   if (locale !== "es") {
-    return rowLabel;
+    return label;
   }
-
-  const overridesByState: Record<string, Record<string, string>> = {
-    flight_departure: { Airport: "Aeropuerto" },
-    flight_departure_no_gate: { Airport: "Aeropuerto" },
-    flight_delayed: { Airport: "Aeropuerto" },
-    activity_no_location: { Event: "Evento" },
-    hotel_minimal: { Hotel: "Hotel" },
-    flight_cancelled: { Airline: "Aerolínea" },
-    flight_arrival: { "In Flight": "En vuelo" },
-    flight_arrived: { Hotel: "Hotel" },
-    hotel_checkin: { Hotel: "Hotel" },
-    activity: { Event: "Evento", Hotel: "Hotel" },
-    generic: { Event: "Evento" },
-    scrubber_activity: { Event: "Evento" },
-    scrubber_hotel: { Hotel: "Hotel" },
-    scrubber_landed: { Transfer: "Traslado" },
-  };
-
-  return overridesByState[stateKey]?.[rowLabel] ?? rowLabel;
-}
-
-function getLocalizedStateActionItemLabel(
-  actionLabel: string,
-  locale: SupportedLocale
-): string {
-  if (locale !== "es") {
-    return actionLabel;
-  }
-
   const translations: Record<string, string> = {
     Maps: "Mapas",
     Open: "Abrir",
-    "Open Pack": "Abrir Pack",
+    "Uber to airport": "Uber al aeropuerto",
+    "Uber to hotel": "Uber al hotel",
+    "Uber to dinner": "Uber a cena",
+    Uber: "Uber",
   };
-
-  return translations[actionLabel] ?? actionLabel;
+  return translations[label] ?? label;
 }
 
-function getLocalizedLiveActivityStates(
-  locale: SupportedLocale
-): LiveActivityMock[] {
-  if (locale !== "es") {
-    return states;
-  }
-
-  return states.map((state) => {
-    const translatedActionRows = state.actionRows.map((row) => ({
-      ...row,
-      label: getLocalizedStateActionLabel(state.key, row.label, locale),
-      actions: row.actions.map((action) => ({
-        ...action,
-        label: getLocalizedStateActionItemLabel(action.label, locale),
-      })),
-    }));
-
-    switch (state.key) {
-      case "flight_departure":
-        return {
-          ...state,
-          label: "Salida del vuelo",
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: state.shownMetrics[0].title.replace("Boards ", "Aborda "),
-              value:
-                state.shownMetrics[0].value === "Leave now"
-                  ? "Sal ahora"
-                  : state.shownMetrics[0].value.replace("Leave in ", "Salir en "),
-            },
-            {
-              ...state.shownMetrics[1],
-              title: state.shownMetrics[1].title.replace("Terminal ", "Terminal "),
-              value: state.shownMetrics[1].value.replace("Gate ", "Puerta "),
-            },
-            {
-              ...state.shownMetrics[2],
-              value: state.shownMetrics[2].value.replace("Seat ", "Asiento "),
-            },
-          ],
-          actionRows: translatedActionRows,
-          dynamicIsland: {
-            ...state.dynamicIsland,
-            expandedText: state.dynamicIsland.expandedText?.replace(
-              "Gate ",
-              "Puerta "
-            ),
-          },
-        };
-      case "flight_arrival":
-        return {
-          ...state,
-          label: "En vuelo",
-          relativeCountdown: "aterriza en 1h 2m",
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: state.shownMetrics[0].title.replace("Terminal ", "Terminal "),
-              value: state.shownMetrics[0].value.replace("Gate ", "Puerta "),
-            },
-            {
-              ...state.shownMetrics[1],
-              title: state.shownMetrics[1].title.replace("Seat ", "Asiento "),
-            },
-            {
-              ...state.shownMetrics[2],
-              title: "Clima",
-            },
-          ],
-          actionRows: translatedActionRows,
-          dynamicIsland: {
-            ...state.dynamicIsland,
-            expandedLeadingText: state.dynamicIsland.expandedLeadingText?.replace(
-              "Seat ",
-              "Asiento "
-            ),
-          },
-        };
-      case "flight_arrived":
-        return {
-          ...state,
-          label: "Vuelo aterrizado",
-          title: "Llegó",
-          relativeCountdown: "Ahora",
-          statusBar: {
-            ...state.statusBar,
-            countdownCaption: "Aterrizó",
-            detailText: state.statusBar.detailText?.replace("Drive", "Trayecto"),
-          },
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: "Equipaje",
-            },
-            state.shownMetrics[1],
-            {
-              ...state.shownMetrics[2],
-              title: "Trayecto",
-            },
-            {
-              ...state.shownMetrics[3],
-              title: "Clima",
-            },
-          ],
-          actionRows: translatedActionRows,
-          dynamicIsland: {
-            ...state.dynamicIsland,
-            expandedText: "Equipaje 7 • 35°",
-          },
-        };
-      case "hotel_checkin":
-        return {
-          ...state,
-          label: "Check-in del hotel",
-          relativeCountdown: `${formatDurationLabel(
-            hotelCheckInMinutesUntilCheckIn
-          )} de distancia`,
-          statusBar: {
-            ...state.statusBar,
-            countdownCaption: "Check-in",
-            detailText: state.statusBar.detailText?.replace("Drive", "Trayecto"),
-          },
-          shownMetrics: [
-            state.shownMetrics[0],
-            {
-              ...state.shownMetrics[1],
-              title: "Conf.",
-            },
-            {
-              ...state.shownMetrics[2],
-              title: "Clima",
-            },
-          ],
-          actionRows: translatedActionRows,
-        };
-      case "activity":
-        return {
-          ...state,
-          label: "Actividad",
-          title: "Cena en Don Angie",
-          relativeCountdown: "en 1h 12m",
-          statusBar: {
-            ...state.statusBar,
-            countdownCaption: "Salir",
-            detailText: state.statusBar.detailText?.replace("Drive", "Trayecto"),
-          },
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: "Salir en",
-            },
-            state.shownMetrics[1],
-            {
-              ...state.shownMetrics[2],
-              title: "Trayecto",
-            },
-            {
-              ...state.shownMetrics[3],
-              title: "Después",
-            },
-            {
-              ...state.shownMetrics[4],
-              title: "Clima",
-            },
-          ],
-          actionRows: translatedActionRows,
-        };
-      case "generic":
-        return {
-          ...state,
-          label: "Genérico",
-          title: "Recoger auto de alquiler",
-          relativeCountdown: "en 42m",
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: "Empieza",
-            },
-            {
-              ...state.shownMetrics[1],
-              title: "Siguiente",
-              value: "Check-in del hotel",
-            },
-          ],
-          actionRows: translatedActionRows,
-        };
-      case "scrubber_activity":
-        return {
-          ...state,
-          label: "Actividad scrubber",
-          title: "Scrubber: ViewThatFits",
-          relativeCountdown: "a 1m",
-          statusBar: {
-            ...state.statusBar,
-            countdownCaption: "Salir",
-          },
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: "Dirección",
-            },
-            {
-              ...state.shownMetrics[1],
-              title: "Siguiente",
-              value: "QA compara scrubber de hotel",
-            },
-          ],
-          actionRows: translatedActionRows,
-          dynamicIsland: {
-            ...state.dynamicIsland,
-            expandedLeadingText: "Actividad",
-            expandedText: "Actividad scrubber",
-            compactLeadingText: "Actividad",
-          },
-        };
-      case "scrubber_hotel":
-        return {
-          ...state,
-          label: "Hotel scrubber",
-          title: "Scrubber: Diseño fijo",
-          relativeCountdown: "a 1m",
-          statusBar: {
-            ...state.statusBar,
-            countdownCaption: "Salir",
-          },
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: "Hotel",
-            },
-            {
-              ...state.shownMetrics[1],
-              title: "Conf.",
-            },
-          ],
-          actionRows: translatedActionRows,
-          dynamicIsland: {
-            ...state.dynamicIsland,
-            expandedLeadingText: "Hotel",
-            expandedText: "Diseño fijo",
-            compactLeadingText: "Hotel",
-          },
-        };
-      case "scrubber_landed":
-        return {
-          ...state,
-          label: "Aterrizado scrubber",
-          title: "Scrubber: Riel guiado",
-          relativeCountdown: "a 1m",
-          statusBar: {
-            ...state.statusBar,
-            countdownCaption: "Salir",
-          },
-          shownMetrics: [
-            {
-              ...state.shownMetrics[0],
-              title: "Dirección",
-            },
-            {
-              ...state.shownMetrics[1],
-              title: "Siguiente",
-              value: "Check-in del hotel después",
-            },
-          ],
-          actionRows: translatedActionRows,
-          dynamicIsland: {
-            ...state.dynamicIsland,
-            expandedLeadingText: "Traslado",
-          },
-        };
-      default:
-        return {
-          ...state,
-          actionRows: translatedActionRows,
-        };
+function getLocalizedLiveActivityStates(locale: SupportedLocale): LabState[] {
+  const labels =
+    locale === "es" ? LAB_STATE_LABELS_ES : LAB_STATE_LABELS_EN;
+  return LAB_FIXTURE_LIST.map(({ key, state }) => {
+    const labState = buildLabState(key, state, labels[key] ?? key);
+    if (locale !== "es") {
+      return labState;
     }
+    return {
+      ...labState,
+      actions: labState.actions.map((action) => ({
+        ...action,
+        label: localizeActionLabel(action.label, locale),
+      })),
+    };
   });
 }
 
@@ -2987,17 +1844,12 @@ function buildNativeReviewUrl(fileName: string): string {
   )}`;
 }
 
-function getNativeReviewBaseName(state: LiveActivityMock): string {
-  switch (state.key) {
-    case "generic":
-      return "generic_event";
-    default:
-      return state.key;
-  }
+function getNativeReviewBaseName(state: LabState): string {
+  return state.key;
 }
 
 function getScreenshotSurfaces(
-  state: LiveActivityMock,
+  state: LabState,
   localizedContent: LiveActivityLabContent
 ): ScreenshotSurface[] {
   const nativeReviewBaseName = getNativeReviewBaseName(state);
@@ -3058,7 +1910,7 @@ function getScreenshotSurfaces(
 }
 
 function getScreenshotGroups(
-  localizedStates: LiveActivityMock[],
+  localizedStates: LabState[],
   localizedContent: LiveActivityLabContent
 ): ScreenshotGroup[] {
   return localizedStates.map((state) => ({
@@ -3067,19 +1919,6 @@ function getScreenshotGroups(
     title: state.title,
     surfaces: getScreenshotSurfaces(state, localizedContent),
   }));
-}
-
-function markerFraction(statusBar: StatusBarSpec): number {
-  const cappedProgress = Math.max(0, Math.min(1, statusBar.progressFraction));
-  const cappedReserved = Math.max(0, Math.min(1, statusBar.reservedFraction));
-  return Math.min(
-    1,
-    cappedProgress + Math.max(0.02, 1 - cappedProgress - cappedReserved) * 0.02
-  );
-}
-
-function metricMinHeight(metrics: MetricCard[]): number {
-  return 0;
 }
 
 function renderIcon(icon: IconKey, size = 14) {
@@ -3091,270 +1930,41 @@ function normalizeInfoToken(value: string | undefined | null): string {
   return (value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-function isDuplicateInfoValue(
-  candidate: string,
-  blockedValues: readonly string[]
-): boolean {
-  const normalizedCandidate = normalizeInfoToken(candidate);
-  if (!normalizedCandidate) {
-    return true;
+// Map a derived EmphasisColor onto the lab's AccentTone, used for the status-bar
+// fill and countdown color so emphasis is honored visually.
+function accentForEmphasis(
+  emphasis: EmphasisColor,
+  fallback: AccentTone
+): AccentTone {
+  switch (emphasis) {
+    case "success":
+      return "ground";
+    case "danger":
+    case "warning":
+    case "accent":
+      return "flight";
+    default:
+      return fallback;
   }
-
-  return blockedValues.some((blockedValue) => {
-    if (!blockedValue) {
-      return false;
-    }
-    if (normalizedCandidate === blockedValue) {
-      return true;
-    }
-    if (
-      blockedValue.length >= 4 &&
-      (normalizedCandidate.includes(blockedValue) ||
-        blockedValue.includes(normalizedCandidate))
-    ) {
-      return true;
-    }
-    if (
-      /^[0-9]+[hm]/.test(blockedValue) &&
-      normalizedCandidate.startsWith(blockedValue)
-    ) {
-      return true;
-    }
-    return false;
-  });
 }
 
-function shouldRenderCompactStatusMiniBar(state: LiveActivityMock): boolean {
-  return (
-    state.statusBar.progressFraction > 0 || state.statusBar.reservedFraction > 0
-  );
+// The live countdown token shown when no explicit trailing/minimal text exists:
+// concise time-remaining to the island countdown target ("1h30m" / "22m").
+function islandCountdownToken(state: LabState): string {
+  return state.compactTime || state.statusBar?.countdownToken || "";
 }
 
-function watchTimerIcon(state: LiveActivityMock): IconKey {
-  return state.statusBar.countdownCaption === "Leave" ? "car" : "clock";
-}
-
-function watchTimerText(state: LiveActivityMock): string {
-  if (state.relativeCountdown === "Now") {
-    return "Now";
-  }
-  if (state.key === "flight_arrival" && state.statusBar.countdownCaption === "Lands in") {
-    return state.statusBar.countdownToken;
-  }
-  if (state.statusBar.countdownCaption) {
-    return `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`;
-  }
-  return state.statusBar.countdownToken;
-}
-
-function pickUniqueWatchSubtitle(state: LiveActivityMock): string | undefined {
-  const blocked = new Set([normalizeInfoToken(state.title)]);
-  const candidates = [state.supportingText, state.phaseLabel];
-
-  for (const candidate of candidates) {
-    const normalizedCandidate = normalizeInfoToken(candidate);
-    if (!normalizedCandidate || blocked.has(normalizedCandidate)) {
-      continue;
-    }
-    return candidate;
-  }
-
-  return undefined;
-}
-
-function watchIsCountdownLikeLine(value: string | undefined): boolean {
-  const normalized = normalizeInfoToken(value);
-  if (!normalized) {
-    return false;
-  }
-  if (
-    normalized.startsWith("leave in ") ||
-    normalized.startsWith("starts in ")
-  ) {
-    return true;
-  }
-  if (normalized === "leave now" || normalized === "starts now") {
-    return true;
-  }
-  if (normalized.startsWith("in ") && normalized.includes("m")) {
-    return true;
-  }
-  return false;
-}
-
-function watchDestinationLine(state: LiveActivityMock): string | undefined {
-  const blockedFragments = [
-    "leave in",
-    "starts in",
-    "drive ",
-    "terminal",
-    "gate ",
-    "seat ",
-    "boarding",
-    "check-in",
-    "check in",
-  ];
-  const expandedLines = watchExpandedLines(state);
-
-  for (const line of expandedLines) {
-    const trimmed = line.trim();
-    if (
-      !trimmed ||
-      watchIsCountdownLikeLine(trimmed) ||
-      isDuplicateInfoValue(trimmed, [state.title])
-    ) {
-      continue;
-    }
-    const normalized = trimmed.toLowerCase();
-    if (blockedFragments.some((fragment) => normalized.includes(fragment))) {
-      continue;
-    }
-    return trimmed;
-  }
-
-  const subtitle = pickUniqueWatchSubtitle(state);
-  if (!subtitle || isDuplicateInfoValue(subtitle, [state.title])) {
-    return undefined;
-  }
-  return subtitle;
-}
-
-function watchDetailLines(
-  state: LiveActivityMock,
-  destinationLine: string | undefined
-): string[] {
-  const blockedValues = [
-    normalizeInfoToken(state.title),
-    normalizeInfoToken(destinationLine),
-    normalizeInfoToken(pickUniqueWatchSubtitle(state)),
-    normalizeInfoToken(state.statusBar.countdownToken),
-    normalizeInfoToken(state.statusBar.countdownCaption),
-    normalizeInfoToken(
-      state.statusBar.countdownCaption
-        ? `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`
-        : undefined
-    ),
-  ].filter((value): value is string => value.length > 0);
-  const blocked = new Set(blockedValues);
-  const detailLines: string[] = [];
-
-  for (const line of watchExpandedLines(state)) {
-    const normalized = normalizeInfoToken(line);
-    if (
-      !normalized ||
-      watchIsCountdownLikeLine(line) ||
-      blocked.has(normalized) ||
-      isDuplicateInfoValue(line, blockedValues)
-    ) {
-      continue;
-    }
-    blocked.add(normalized);
-    blockedValues.push(normalized);
-    detailLines.push(line);
-    if (detailLines.length === 2) {
-      break;
-    }
-  }
-
-  return detailLines;
-}
-
-function watchMetricCandidates(metric: MetricCard): string[] {
-  const candidates: string[] = [];
-  const title = metric.title.trim();
-  const value = metric.value.trim();
-  const detail = metric.detail?.trim();
-
-  if (!value) {
-    return candidates;
-  }
-
-  const titleToken = normalizeInfoToken(title);
-
-  if (titleToken === "conf") {
-    candidates.push(`Conf ${value}`);
-  } else if (!title || metric.hideTitle) {
-    candidates.push(value);
-  } else if (title.length <= 10 && value.length <= 16) {
-    candidates.push(`${title} ${value}`);
-  } else {
-    candidates.push(value);
-  }
-
-  if (detail) {
-    candidates.push(detail);
-  }
-
-  return candidates;
-}
-
-function watchExpandedLines(state: LiveActivityMock): string[] {
-  const subtitle = pickUniqueWatchSubtitle(state);
-  const blockedValues = [
-    normalizeInfoToken(state.title),
-    normalizeInfoToken(subtitle),
-    normalizeInfoToken(state.statusBar.leadingText),
-    normalizeInfoToken(state.statusBar.startLabel),
-    normalizeInfoToken(state.statusBar.endLabel),
-    normalizeInfoToken(state.statusBar.countdownToken),
-    normalizeInfoToken(state.statusBar.countdownCaption),
-    normalizeInfoToken(
-      state.statusBar.countdownCaption
-        ? `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`
-        : undefined
-    ),
-  ].filter((value): value is string => value.length > 0);
-  const blocked = new Set(blockedValues);
-
-  const candidates = [
-    state.dynamicIsland.expandedLeadingText,
-    ...(state.dynamicIsland.expandedText
-      ?.split("•")
-      .map((part) => part.trim()) ?? []),
-    ...state.shownMetrics.flatMap(watchMetricCandidates),
-  ].filter((value): value is string =>
-    Boolean(value && value.trim().length > 0)
-  );
-
-  const uniqueLines: string[] = [];
-  for (const candidate of candidates) {
-    const normalizedCandidate = normalizeInfoToken(candidate);
-    if (
-      !normalizedCandidate ||
-      blocked.has(normalizedCandidate) ||
-      isDuplicateInfoValue(candidate, blockedValues)
-    ) {
-      continue;
-    }
-    blocked.add(normalizedCandidate);
-    blockedValues.push(normalizedCandidate);
-    uniqueLines.push(candidate);
-    if (uniqueLines.length === 3) {
-      break;
-    }
-  }
-
-  return uniqueLines;
-}
-
-function renderMetricCard(
-  state: LiveActivityMock,
-  metric: MetricCard,
-  minimumHeight: number
-) {
+function renderMetricCard(state: LabState, metric: MetricCard, index: number) {
   const secondaryLine = metric.detail;
   return (
     <Metric
-      key={`${state.key}-${metric.title}-${metric.value}-${
-        metric.detail ?? ""
-      }`}
-      $tone={metric.tone ?? "neutral"}
-      style={{ minHeight: `${minimumHeight}px` }}
+      key={`${state.key}-metric-${index}`}
+      $tone={metric.tone}
     >
       <MetricHeader>
         {!metric.hideTitle ? <MetricTitle>{metric.title}</MetricTitle> : null}
       </MetricHeader>
-      <MetricValue $tone={metric.tone ?? "neutral"}>{metric.value}</MetricValue>
+      <MetricValue $tone={metric.tone}>{metric.value}</MetricValue>
       {secondaryLine ? (
         <MetricDetail
           style={
@@ -3374,17 +1984,24 @@ function shouldRenderActionIcon(action: ActionItem): boolean {
   return action.icon === "car" || action.icon === "map";
 }
 
-function renderStatusBar(state: LiveActivityMock) {
-  const statusAccent = state.statusBar.accent ?? state.accent;
-  const leftText = state.statusBar.leadingText || state.statusBar.startLabel;
+function renderStatusBar(state: LabState) {
+  const status = state.statusBar;
+  if (status == null) {
+    return null;
+  }
+  const fillAccent = accentForEmphasis(
+    status.progressColor ?? status.countdownEmphasis,
+    state.accent
+  );
+  const leftText = status.leadingText || status.startLabel;
   const rightText =
-    state.statusBar.endLabel ||
-    (state.statusBar.countdownCaption
-      ? `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`
-      : state.statusBar.countdownToken);
+    status.endLabel ||
+    (status.countdownCaption
+      ? `${status.countdownToken} ${status.countdownCaption}`
+      : status.countdownToken);
   const hasLeadingText = Boolean(leftText);
   return (
-    <StatusFrame $accent={statusAccent}>
+    <StatusFrame $accent={fillAccent}>
       <StatusRow $hasLeading={hasLeadingText}>
         {hasLeadingText ? (
           <LeadingWrap>
@@ -3393,48 +2010,110 @@ function renderStatusBar(state: LiveActivityMock) {
         ) : null}
         <Track>
           <TrackClip>
-            <ProgressFill
-              $width={state.statusBar.progressFraction}
-              $accent={statusAccent}
-            />
-            <ReservedFill $width={state.statusBar.reservedFraction} />
+            <ProgressFill $width={status.progressFraction} $accent={fillAccent} />
+            <ReservedFill $width={status.reservedFraction} />
           </TrackClip>
         </Track>
         <CountdownRail>
-          {state.statusBar.usesEndpointLabelStyleForEndText ? (
+          {status.usesEndpointLabelStyleForEndText ? (
             <EndpointValue>{rightText}</EndpointValue>
           ) : (
-            <CountdownValue $accent={statusAccent}>{rightText}</CountdownValue>
+            <CountdownValue $accent={fillAccent}>{rightText}</CountdownValue>
           )}
         </CountdownRail>
       </StatusRow>
-      {state.statusBar.detailText ? (
-        <StatusDetailText>{state.statusBar.detailText}</StatusDetailText>
+      {status.detailText ? (
+        <StatusDetailText>{status.detailText}</StatusDetailText>
       ) : null}
     </StatusFrame>
   );
 }
 
-function renderWatchStatusBar(state: LiveActivityMock) {
-  const statusAccent = state.statusBar.accent ?? state.accent;
+function shouldRenderWatchMiniBar(state: LabState): boolean {
+  const status = state.statusBar;
+  return status != null && (status.progressFraction > 0 || status.reservedFraction > 0);
+}
 
+function renderWatchStatusBar(state: LabState) {
+  const status = state.statusBar;
+  if (status == null) {
+    return null;
+  }
+  const fillAccent = accentForEmphasis(
+    status.progressColor ?? status.countdownEmphasis,
+    state.accent
+  );
   return (
     <WatchMiniStatusBar>
       <WatchMiniTrack>
-        <ProgressFill
-          $width={state.statusBar.progressFraction}
-          $accent={statusAccent}
-        />
-        <ReservedFill $width={state.statusBar.reservedFraction} />
+        <ProgressFill $width={status.progressFraction} $accent={fillAccent} />
+        <ReservedFill $width={status.reservedFraction} />
       </WatchMiniTrack>
     </WatchMiniStatusBar>
   );
 }
 
-function renderWatchSurface(state: LiveActivityMock) {
-  const destinationLine = watchDestinationLine(state);
-  const detailLines = watchDetailLines(state, destinationLine);
-  const showsMiniBar = shouldRenderCompactStatusMiniBar(state);
+function watchTimerIcon(state: LabState): IconKey {
+  return state.statusBar?.countdownCaption === "Leave" ? "car" : "clock";
+}
+
+function watchTimerText(state: LabState): string {
+  const status = state.statusBar;
+  if (status == null) {
+    return islandCountdownToken(state);
+  }
+  if (status.countdownCaption) {
+    return `${status.countdownToken} ${status.countdownCaption}`;
+  }
+  return status.countdownToken;
+}
+
+// Watch detail lines, derived from the lock-screen metric boxes: short
+// "title value" (or value-only) fragments, de-duplicated against the title and
+// the timer chip. Native's small widget mirrors these same metric tokens.
+function watchDetailCandidates(state: LabState): string[] {
+  const lines: string[] = [];
+  for (const metric of state.metricCards) {
+    const title = metric.title.trim();
+    const value = metric.value.trim();
+    if (!value) {
+      continue;
+    }
+    if (metric.hideTitle || !title) {
+      lines.push(value);
+    } else if (title.length <= 10 && value.length <= 16) {
+      lines.push(`${title} ${value}`);
+    } else {
+      lines.push(value);
+    }
+    if (metric.detail) {
+      lines.push(metric.detail.trim());
+    }
+  }
+  return lines;
+}
+
+function renderWatchSurface(state: LabState) {
+  const blocked = new Set<string>([
+    normalizeInfoToken(state.title),
+    normalizeInfoToken(watchTimerText(state)),
+    normalizeInfoToken(state.statusBar?.countdownToken),
+  ]);
+  const lines: string[] = [];
+  for (const candidate of watchDetailCandidates(state)) {
+    const token = normalizeInfoToken(candidate);
+    if (!token || blocked.has(token)) {
+      continue;
+    }
+    blocked.add(token);
+    lines.push(candidate);
+    if (lines.length === 3) {
+      break;
+    }
+  }
+  const destinationLine = lines.length > 0 ? lines[lines.length - 1] : undefined;
+  const detailLines = destinationLine ? lines.slice(0, -1).slice(0, 2) : lines.slice(0, 2);
+  const showsMiniBar = shouldRenderWatchMiniBar(state);
 
   return (
     <WatchCard $accent={state.accent}>
@@ -3449,10 +2128,7 @@ function renderWatchSurface(state: LiveActivityMock) {
       {detailLines.length > 0 || showsMiniBar ? (
         <WatchDetailBlock>
           {detailLines.map((line, index) => (
-            <WatchDetailLine
-              key={`${state.key}-${line}`}
-              $accented={index === 0}
-            >
+            <WatchDetailLine key={`${state.key}-watch-${index}`} $accented={index === 0}>
               {line}
             </WatchDetailLine>
           ))}
@@ -3472,68 +2148,58 @@ function renderWatchSurface(state: LiveActivityMock) {
   );
 }
 
-function renderMetricRow(state: LiveActivityMock, metrics: MetricCard[]) {
-  const visibleMetrics = metrics.slice(0, 3);
-  const minimumHeight = metricMinHeight(visibleMetrics);
+function renderMetricRow(state: LabState) {
+  const visibleMetrics = state.metricCards.slice(
+    0,
+    Math.min(3, state.lockScreen.fullMetricLimit)
+  );
 
   return (
     <MetricRow
       key={`${state.key}-metrics`}
       $count={Math.max(1, visibleMetrics.length)}
     >
-      {visibleMetrics.map((metric) =>
-        renderMetricCard(state, metric, minimumHeight)
+      {visibleMetrics.map((metric, index) =>
+        renderMetricCard(state, metric, index)
       )}
     </MetricRow>
   );
 }
 
-function renderActionRows(state: LiveActivityMock) {
+function renderActionRows(state: LabState) {
+  const visibleActions = state.actions.slice(0, 2);
+  if (visibleActions.length === 0) {
+    return null;
+  }
   return (
     <ActionDock>
-      {state.actionRows.map((row) => {
-        const visibleActions = row.actions.slice(0, 2);
-        return (
-          <ActionRowFrame key={`${state.key}-${row.label}`}>
-            <ActionLabel $accent={actionLabelTone(state, row)}>
-              {row.label}
-            </ActionLabel>
-            <ActionButtons $count={visibleActions.length}>
-              {visibleActions.map((action) => (
-                <ActionPill
-                  key={`${state.key}-${row.label}-${action.label}-${action.icon}`}
-                  $primary={action.primary}
-                  $accent={state.accent}
-                >
-                  {shouldRenderActionIcon(action) ? (
-                    <ActionIconWrap>{renderIcon(action.icon, 12)}</ActionIconWrap>
-                  ) : null}
-                  <span>{action.label}</span>
-                </ActionPill>
-              ))}
-            </ActionButtons>
-          </ActionRowFrame>
-        );
-      })}
+      <ActionButtons $count={visibleActions.length}>
+        {visibleActions.map((action, index) => (
+          <ActionPill
+            key={`${state.key}-action-${index}`}
+            $primary={action.primary}
+            $accent={state.accent}
+          >
+            {shouldRenderActionIcon(action) ? (
+              <ActionIconWrap>{renderIcon(action.icon, 12)}</ActionIconWrap>
+            ) : null}
+            <span>{action.label}</span>
+          </ActionPill>
+        ))}
+      </ActionButtons>
     </ActionDock>
   );
 }
 
-function renderTopRow(state: LiveActivityMock) {
+function renderTopRow(state: LabState) {
   return (
     <TopRow>
       <DoneLogo src={packLogo} alt="Pack logo" $size={20} />
       <TitleBlock>
-        {state.phaseLabel ? (
-          <PhaseLabel $accent={state.accent}>{state.phaseLabel}</PhaseLabel>
-        ) : null}
         <TitleRow>
           <LiveTitle>{state.title}</LiveTitle>
-          <CountdownCluster>{state.relativeCountdown}</CountdownCluster>
+          <CountdownCluster>{islandCountdownToken(state)}</CountdownCluster>
         </TitleRow>
-        {state.supportingText ? (
-          <SupportingText>{state.supportingText}</SupportingText>
-        ) : null}
       </TitleBlock>
       <ClusterIconWrap $accent={state.accent}>
         {renderIcon(state.icon, 12)}
@@ -3542,32 +2208,21 @@ function renderTopRow(state: LiveActivityMock) {
   );
 }
 
-function renderLiveActivityContent(
-  state: LiveActivityMock,
-  localizedContent: LiveActivityLabContent
-) {
-  const metrics = state.shownMetrics.slice(0, state.lockScreen.fullMetricLimit);
-  const showNextItem =
-    Boolean(state.nextItem) && state.lockScreen.showNextInMid === true;
+function renderLiveActivityContent(state: LabState) {
+  const hasMetrics = state.metricCards.length > 0;
 
   return (
     <LiveActivityFrame $accent={state.accent}>
       {renderTopRow(state)}
       {renderStatusBar(state)}
-      {metrics.length > 0 ? renderMetricRow(state, metrics) : null}
-      {showNextItem ? (
-        <NextRow>
-          <NextLabel>{localizedContent.nextLabel}</NextLabel>
-          <span>{state.nextItem}</span>
-        </NextRow>
-      ) : null}
-      {state.actionRows.length > 0 ? renderActionRows(state) : null}
+      {hasMetrics ? renderMetricRow(state) : null}
+      {renderActionRows(state)}
     </LiveActivityFrame>
   );
 }
 
 function renderLockScreenSurface(
-  state: LiveActivityMock,
+  state: LabState,
   localizedContent: LiveActivityLabContent
 ) {
   return (
@@ -3584,7 +2239,7 @@ function renderLockScreenSurface(
             <LockScreenDate>{localizedContent.lockScreenDate}</LockScreenDate>
             <LockScreenActivityWrap>
               <div data-capture-target="lock-screen-raw">
-                {renderLiveActivityContent(state, localizedContent)}
+                {renderLiveActivityContent(state)}
               </div>
             </LockScreenActivityWrap>
           </LockScreenCrop>
@@ -3594,21 +2249,27 @@ function renderLockScreenSurface(
   );
 }
 
-function renderExpandedIsland(state: LiveActivityMock) {
-  const trailingText = dynamicIslandExpandedTrailingText(state);
+function renderExpandedIsland(state: LabState) {
+  const di = state.dynamicIsland;
+  // Trailing: explicit token if present, else the live countdown (mirrors
+  // native, which shows the countdown in the trailing slot, never the compact
+  // detail token).
+  const trailingText =
+    di.expandedTrailingText ??
+    (di.showsCountdown ? islandCountdownToken(state) : undefined);
 
   return (
     <IslandExpanded data-capture-target="dynamic-island-expanded-raw">
       <IslandRegion>
         <ExpandedLogoWrap>
           <DoneLogo src={packLogo} alt="Pack logo" $size={16} />
-          {state.dynamicIsland.expandedLeadingText ? (
-            <IslandText>{state.dynamicIsland.expandedLeadingText}</IslandText>
+          {di.expandedLeadingText ? (
+            <IslandText>{di.expandedLeadingText}</IslandText>
           ) : null}
         </ExpandedLogoWrap>
       </IslandRegion>
       <IslandRegion $align="center">
-        <IslandText>{state.dynamicIsland.expandedText ?? state.title}</IslandText>
+        <IslandText>{di.expandedText ?? state.title}</IslandText>
       </IslandRegion>
       <IslandRegion $align="end">
         {trailingText ? <IslandText>{trailingText}</IslandText> : null}
@@ -3617,13 +2278,12 @@ function renderExpandedIsland(state: LiveActivityMock) {
   );
 }
 
-function renderCompactIsland(state: LiveActivityMock) {
+function renderCompactIsland(state: LabState) {
   // Leading: Pack logo over the concise time-remaining, then the kind glyph.
-  // Trailing: a short detail token (gate / seat / name) — never the time again,
-  // so if the authored token equals the time, fall back to the title.
-  const time = state.statusBar.countdownToken;
-  const rawDetail = state.dynamicIsland.compactTrailingText ?? state.title;
-  const detail = rawDetail === time ? state.title : rawDetail;
+  // Trailing: the derived compact detail token (gate / seat / claim / name).
+  const time = islandCountdownToken(state);
+  const glyph = state.dynamicIsland.compactLeadingSymbolName ?? state.icon;
+  const detail = state.dynamicIsland.compactTrailingText;
   return (
     <CompactIslandShell data-capture-target="dynamic-island-compact-raw">
       <CompactIslandSegment $align="left">
@@ -3631,7 +2291,7 @@ function renderCompactIsland(state: LiveActivityMock) {
           <DoneLogo src={packLogo} alt="Pack logo" $size={14} />
           {time ? <CompactTimeText>{time}</CompactTimeText> : null}
         </CompactLeadingStack>
-        <CompactGlyph>{renderIcon(state.icon, 12)}</CompactGlyph>
+        <CompactGlyph>{renderIcon(glyph, 12)}</CompactGlyph>
       </CompactIslandSegment>
       <CompactIslandCameraGap />
       <CompactIslandSegment $align="right">
@@ -3641,9 +2301,10 @@ function renderCompactIsland(state: LiveActivityMock) {
   );
 }
 
-function renderMinimalIsland(state: LiveActivityMock) {
-  const minimalText = state.dynamicIsland.minimalText ?? state.statusBar.countdownToken;
-  const minimalIcon = state.dynamicIsland.minimalIcon ?? state.icon;
+function renderMinimalIsland(state: LabState) {
+  const di = state.dynamicIsland;
+  const minimalText = di.minimalText ?? islandCountdownToken(state);
+  const minimalIcon = di.minimalSymbolName ?? di.compactLeadingSymbolName ?? state.icon;
 
   return (
     <MinimalIslandPill data-capture-target="dynamic-island-minimal-raw">
@@ -3656,7 +2317,7 @@ function renderMinimalIsland(state: LiveActivityMock) {
 }
 
 function renderDynamicIslandSurface(
-  state: LiveActivityMock,
+  state: LabState,
   localizedContent: LiveActivityLabContent
 ) {
   return (
@@ -3687,7 +2348,7 @@ function renderDynamicIslandSurface(
 }
 
 function renderWatchSurfaceSection(
-  state: LiveActivityMock,
+  state: LabState,
   localizedContent: LiveActivityLabContent
 ) {
   return (
@@ -3708,7 +2369,7 @@ function renderWatchSurfaceSection(
 }
 
 function renderCaptureStateCard(
-  state: LiveActivityMock,
+  state: LabState,
   localizedContent: LiveActivityLabContent
 ) {
   return (
@@ -3734,7 +2395,7 @@ function renderCaptureStateCard(
 }
 
 function renderCaptureMode(
-  localizedStates: LiveActivityMock[],
+  localizedStates: LabState[],
   localizedContent: LiveActivityLabContent
 ) {
   return (

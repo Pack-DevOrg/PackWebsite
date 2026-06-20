@@ -817,7 +817,7 @@ const TravelContextBenchmark = () => (
           "@type": "Dataset",
           name: "Pack DeeperBench",
           description:
-            "Synthetic benchmark for evidence-grounded travel planning over household context, calendar constraints, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 100 of 100 cases; selected hard-case baselines are not the official full-corpus score.",
+            "Synthetic benchmark for evidence-grounded travel planning over household context, calendar constraints, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 93 of 100 cases; selected hard-case baselines are not the official full-corpus score.",
           url: buildAbsoluteUrl("/pack-deeperbench"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {

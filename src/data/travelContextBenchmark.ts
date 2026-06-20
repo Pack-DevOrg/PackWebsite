@@ -10,7 +10,7 @@ import {
 export const benchmarkOverview = {
   name: "Pack DeeperBench",
   version: "pack-deeperbench-v0",
-  status: "Pack hard-100 full run verified May 21, 2026",
+  status: "Pack hard-100 full run verified June 16, 2026",
   corpus: {
     household: "Synthetic household",
     people: 4,
@@ -33,13 +33,13 @@ export const benchmarkOverview = {
 export const latestVerifiedPackRun = {
   label: "Pack hard-100 run",
   summary:
-    "The run includes all 100 hard-corpus cases. Final pass count was 100/100.",
-  hard100Composite: "100/100",
-  hard100TotalCost: "$5.22",
-  averageHard100Cost: "$0.0522",
-  hard100Runtime: "24m24s wall clock",
-  averageHard100Runtime: "49.5s processing/case",
-  llmCalls: "628 LLM calls",
+    "The run includes all 100 hard-corpus cases. Final pass count was 93/100.",
+  hard100Composite: "93/100",
+  hard100TotalCost: "$4.74",
+  averageHard100Cost: "$0.0474",
+  hard100Runtime: "4m08s wall clock",
+  averageHard100Runtime: "19.2s processing/case",
+  llmCalls: "389 LLM calls",
   travelerOutcome: "Book, decline, mark impossible, or ask a clarifying question",
   hiddenContext: "Dates, travelers, obligations, credits, and preferences recovered from private context",
   evidenceGrounding: "Answers must cite the right supporting records and avoid misleading lookalikes",

@@ -5,7 +5,6 @@ import {
   FlightOutlineSchema,
   HotelChunkSchema,
   HotelOutlineSchema,
-  TimelineChunkSchema,
   type FlightChunk,
   type FlightOutline,
   type HotelChunk,

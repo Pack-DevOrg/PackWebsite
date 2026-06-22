@@ -31,11 +31,6 @@ interface FlightRouteMapProps {
   readonly visitedCountryCodes?: readonly string[];
 }
 
-interface MapPath {
-  readonly id: string;
-  readonly d: string;
-}
-
 interface MapArc {
   readonly id: string;
   readonly d: string;

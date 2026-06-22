@@ -481,9 +481,9 @@ describe('Consent Flow Utility Functions', () => {
 
   test('handles missing environment variables', () => {
     const originalEnv = env;
+    const testGlobal = globalThis as { __TEST_ENV__?: unknown };
     
-    // @ts-ignore - Mock empty env
-    (globalThis as { __TEST_ENV__?: any }).__TEST_ENV__ = {};
+    testGlobal.__TEST_ENV__ = {};
     
     expect(() => {
       render(
@@ -494,6 +494,6 @@ describe('Consent Flow Utility Functions', () => {
     }).not.toThrow();
     
     // Restore original env
-    (globalThis as { __TEST_ENV__?: any }).__TEST_ENV__ = originalEnv;
+    testGlobal.__TEST_ENV__ = originalEnv;
   });
 });

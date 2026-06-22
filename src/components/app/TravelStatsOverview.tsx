@@ -72,16 +72,6 @@ const normalizeCountryName = (value: string): string =>
     .replace(/\s+/g, " ")
     .trim();
 
-const CONTINENT_LABEL: Record<string, string> = {
-  AF: "Africa",
-  AN: "Antarctica",
-  AS: "Asia",
-  EU: "Europe",
-  NA: "North America",
-  OC: "Oceania",
-  SA: "South America",
-};
-
 const formatLarge = (value: number): string => {
   if (!Number.isFinite(value)) {
     return "0";
@@ -231,7 +221,6 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
 
     trips.forEach((trip) => {
       const start = parseDate(trip.startDate);
-      const end = parseDate(trip.endDate);
       const nights = dayDiff(trip.startDate, trip.endDate);
       tripDurations.push(nights);
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- SEO schema factories are intentionally colocated with the PageSeo component. */
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -203,7 +204,8 @@ export function createWebPageSchema(
 }
 
 function stripSchemaContext(node: Record<string, unknown>): Record<string, unknown> {
-  const {"@context": _context, ...schemaNode} = node;
+  const schemaNode = {...node};
+  delete schemaNode["@context"];
   return schemaNode;
 }
 

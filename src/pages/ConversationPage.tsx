@@ -948,7 +948,7 @@ export const ConversationPage: React.FC = () => {
       setPlannerState((prev) =>
         prev.status === "completed"
           ? { ...prev }
-          : { status: "completed", jobId: (prev as any).jobId ?? "" }
+          : { status: "completed", jobId: prev.jobId ?? "" }
       );
       addMessage(localizedContent.savedToTrips, "ai");
     } catch (err) {
@@ -1271,7 +1271,7 @@ export const ConversationPage: React.FC = () => {
 
           {plannerState.status !== "idle" &&
             plannerState.status !== "failed" &&
-            (plannerState as any).progress?.length === 0 &&
+            plannerState.progress?.length === 0 &&
             timelineItems.length > 0 && (
               <DiscoveryList>
                 <DiscoveryItem>

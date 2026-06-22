@@ -24,13 +24,6 @@ declare global {
   }
 }
 
-interface ConfigureGoogleAdsOptions {
-  readonly gtmId: string;
-  readonly analyticsConsent: boolean;
-  readonly marketingConsent: boolean;
-  readonly onLoaded: () => void;
-}
-
 interface LoadGA4Options {
   readonly measurementId: string;
   readonly analyticsConsent: boolean;

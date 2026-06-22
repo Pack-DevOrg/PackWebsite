@@ -63,7 +63,7 @@ interface ConversionEventParams {
   time_on_page?: number;
   
   // Additional metadata
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface UseConversionTrackingReturn {

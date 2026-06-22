@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Performance context hook is intentionally colocated with its provider. */
 import React, { createContext, useContext, useState } from 'react';
 import { useMountEffect } from '@/hooks/useMountEffect';
 
@@ -19,6 +20,20 @@ interface PerformanceProviderProps {
   children: React.ReactNode;
 }
 
+type NavigatorWithConnection = Navigator & {
+  readonly connection?: {
+    readonly effectiveType?: string;
+    readonly saveData?: boolean;
+  };
+};
+
+type PerformanceWithMemory = Performance & {
+  readonly memory?: {
+    readonly usedJSHeapSize: number;
+    readonly jsHeapSizeLimit: number;
+  };
+};
+
 const PerformanceProvider: React.FC<PerformanceProviderProps> = ({ children }) => {
   const [isSlowConnection, setIsSlowConnection] = useState(false);
   const [reduceAnimations, setReduceAnimations] = useState(false);
@@ -26,16 +41,14 @@ const PerformanceProvider: React.FC<PerformanceProviderProps> = ({ children }) =
 
   useMountEffect(() => {
     // Check connection speed
-    if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
-      if (connection) {
-        const isSlowNetwork = connection.effectiveType === 'slow-2g' || 
-                             connection.effectiveType === '2g' ||
-                             connection.saveData;
-        setIsSlowConnection(isSlowNetwork);
-        setReduceAnimations(isSlowNetwork);
-        setPreloadImages(!isSlowNetwork);
-      }
+    const connection = (navigator as NavigatorWithConnection).connection;
+    if (connection) {
+      const isSlowNetwork = connection.effectiveType === 'slow-2g' ||
+                           connection.effectiveType === '2g' ||
+                           connection.saveData === true;
+      setIsSlowConnection(isSlowNetwork);
+      setReduceAnimations(isSlowNetwork);
+      setPreloadImages(!isSlowNetwork);
     }
 
     // Check for reduced motion preference
@@ -45,12 +58,10 @@ const PerformanceProvider: React.FC<PerformanceProviderProps> = ({ children }) =
     }
 
     // Memory pressure detection
-    if ('memory' in performance) {
-      const memory = (performance as any).memory;
-      if (memory && memory.usedJSHeapSize / memory.jsHeapSizeLimit > 0.8) {
-        setReduceAnimations(true);
-        setPreloadImages(false);
-      }
+    const memory = (performance as PerformanceWithMemory).memory;
+    if (memory && memory.usedJSHeapSize / memory.jsHeapSizeLimit > 0.8) {
+      setReduceAnimations(true);
+      setPreloadImages(false);
     }
   });
 

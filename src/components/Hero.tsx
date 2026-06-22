@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- Hero retains staged app-screen fragments used for capture iteration and visual experiments. */
 import React, { ReactNode, Suspense, startTransition, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";

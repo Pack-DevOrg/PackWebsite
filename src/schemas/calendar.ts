@@ -7,7 +7,7 @@
  */
 
 import { z } from 'zod';
-import { ApiResponseSchema, DateRangeSchema, TokenProvider } from './common';
+import { ApiResponseSchema, TokenProvider } from './common';
 import { PaginationSchema } from './common';
 
 /**

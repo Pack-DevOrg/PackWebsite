@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- FAQ schema helpers are intentionally exported from the route module for SEO reuse. */
 import React, { useState } from "react";
 import styled from "styled-components";
 import {
@@ -980,7 +981,7 @@ const FAQ: React.FC = () => {
     return "";
   };
 
-  const extractTextFromChildren = (children: any): string => {
+  const extractTextFromChildren = (children: React.ReactNode): string => {
     if (typeof children === "string") {
       return children;
     }

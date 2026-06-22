@@ -5,6 +5,13 @@ interface ConversationalAIContentProps {
   page: string;
 }
 
+type WindowWithIdleCallback = Window & {
+  readonly requestIdleCallback?: (
+    callback: () => void,
+    options?: { readonly timeout?: number }
+  ) => number;
+};
+
 const ConversationalAIContentInstance: React.FC<ConversationalAIContentProps> = ({
   page,
 }) => {
@@ -189,8 +196,9 @@ const ConversationalAIContentInstance: React.FC<ConversationalAIContentProps> = 
     };
 
     const runWhenIdle = (cb: () => void) => {
-      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-        (window as any).requestIdleCallback(cb, { timeout: 600 });
+      const idleWindow = typeof window === "undefined" ? null : (window as WindowWithIdleCallback);
+      if (idleWindow?.requestIdleCallback) {
+        idleWindow.requestIdleCallback(cb, { timeout: 600 });
       } else {
         setTimeout(cb, 150);
       }

@@ -227,7 +227,6 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
   isVisible,
   onClose,
   onConvert,
-  intentScore,
   userBehavior,
 }) => {
   const [email, setEmail] = useState('');

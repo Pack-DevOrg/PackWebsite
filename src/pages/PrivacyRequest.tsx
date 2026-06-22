@@ -436,7 +436,8 @@ const PrivacyRequestPage: React.FC = () => {
 
     setFieldErrors((errors) => {
       if (!errors[field as string]) return errors;
-      const { [field as string]: _removed, ...rest } = errors;
+      const rest = { ...errors };
+      delete rest[field as string];
       return rest;
     });
   };

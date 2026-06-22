@@ -1,6 +1,6 @@
 import React from "react";
 
-export const lazyImportWithRetry = <TModule extends { default: React.ComponentType<any> }>(
+export const lazyImportWithRetry = <TModule extends { default: React.ComponentType<unknown> }>(
   importer: () => Promise<TModule>,
   key: string
 ) =>

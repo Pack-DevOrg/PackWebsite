@@ -35,7 +35,6 @@
 import React, { useState } from "react";
 import styled, {
   createGlobalStyle,
-  ThemeProps,
   useTheme,
   css,
 } from "styled-components";
@@ -896,7 +895,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   const validateEmail = (email: string): boolean => {
     // Use a more permissive regex that follows RFC 5322 standard
     const regex =
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
     return regex.test(email);
   };
 

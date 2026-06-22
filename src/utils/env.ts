@@ -9,7 +9,7 @@ const resolveViteEnv = (): ViteEnv | undefined => {
     if (typeof __APP_ENV__ === 'string') {
       try {
         return JSON.parse(__APP_ENV__) as ViteEnv;
-      } catch (error) {
+      } catch {
         return undefined;
       }
     }

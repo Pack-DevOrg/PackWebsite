@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- Live Activity lab keeps alternate device mock components staged for screenshot iteration. */
 import React, { useState } from "react";
 import {
   BedDouble,

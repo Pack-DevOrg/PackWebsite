@@ -7,7 +7,7 @@ const ReactQueryDevtools =
     ? React.lazy(async () => {
         const module = await import("@tanstack/react-query-devtools");
         return {
-          default: module.ReactQueryDevtools as unknown as React.ComponentType<any>,
+          default: module.ReactQueryDevtools as unknown as React.ComponentType<Record<string, unknown>>,
         };
       })
     : null;

@@ -1,17 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 import {
-  MessageSquareText,
   PlaneTakeoff,
   Calendar,
   Globe,
   Smartphone,
-  Zap,
   Shield,
-  Users,
-  MapPin,
   Clock,
-  Heart,
   Brain,
   Map,
   BadgeCheck,

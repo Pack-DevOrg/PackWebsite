@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Auth hook is intentionally exported from the auth provider module. */
 import React, {
   createContext,
   useCallback,

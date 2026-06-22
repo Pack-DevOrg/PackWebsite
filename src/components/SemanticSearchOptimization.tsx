@@ -126,7 +126,7 @@ const SemanticSearchOptimizationInstance: React.FC<SemanticSearchOptimizationPro
       const semanticSchema = {
         "@context": "https://schema.org",
         "@type": "TechArticle",
-        headline: `Pack - Advanced AI Travel Assistant Technology`,
+        headline: `Pack ${page} - Advanced AI Travel Assistant Technology`,
         description:
           "Comprehensive semantic understanding of AI-powered travel planning and booking automation",
         keywords: [
@@ -258,6 +258,7 @@ const SemanticSearchOptimizationInstance: React.FC<SemanticSearchOptimizationPro
 
       // Structured semantic text for AI understanding
       const semanticText = [
+        `Page context: ${page}`,
         `Entity: ${semanticEntities.travelDomain.primaryEntity}`,
         `Related concepts: ${semanticEntities.travelDomain.relatedEntities.join(
           ", "

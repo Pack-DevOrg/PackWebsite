@@ -8,7 +8,6 @@ import {
   Plane,
   Trash2,
   Clock,
-  Hotel as HotelIcon,
   Route as RouteIcon,
   ChevronDown,
 } from "lucide-react";

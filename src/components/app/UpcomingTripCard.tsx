@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import styled from "styled-components";
 import {
   Calendar,
-  Clock,
   Plane,
   Trash2,
   Armchair,

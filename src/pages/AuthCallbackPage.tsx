@@ -141,10 +141,10 @@ const StatusDot = styled.span<{ $state: CallbackState }>`
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 999px;
-  background: ${({ $state, theme }) =>
-    $state === "error" ? theme.colors.secondary.main : theme.colors.primary.main};
+  background: ${({ $state }) =>
+    $state === "error" ? "var(--color-secondary)" : "var(--color-primary)"};
   box-shadow: 0 0 18px
-    ${({ $state, theme }) =>
+    ${({ $state }) =>
       $state === "error" ? "rgba(231, 35, 64, 0.45)" : "rgba(243, 210, 122, 0.45)"};
 `;
 

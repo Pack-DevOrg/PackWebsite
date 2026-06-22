@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
-import { Sparkles, Wand2, Plane, Loader2, Search, TrendingUp, Clock } from "lucide-react";
+import { Sparkles, Wand2, Plane, Loader2, Search, TrendingUp } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/auth/AuthContext";
 import { useApiClient } from "@/api/useApiClient";

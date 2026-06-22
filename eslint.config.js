@@ -8,7 +8,7 @@ const isStrict = process.env.PACK_LINT_STRICT === '1';
 const strictness = isStrict ? 'error' : 'warn';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['archive', 'dist'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],

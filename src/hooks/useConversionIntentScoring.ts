@@ -59,7 +59,7 @@ interface UseConversionIntentScoringReturn {
   isHighIntent: boolean;
   shouldShowIntervention: boolean;
   resetTracking: () => void;
-  getDetailedAnalytics: () => Record<string, any>;
+  getDetailedAnalytics: () => Record<string, unknown>;
 }
 
 /**

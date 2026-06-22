@@ -5,7 +5,6 @@ import GlobalStyles from "../styles/GlobalStyles";
 import { useI18n } from "../i18n/I18nProvider";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import Header from "./Header";
-import Breadcrumbs from "./Breadcrumbs";
 
 const StyledLayout = styled.div`
   display: flex;

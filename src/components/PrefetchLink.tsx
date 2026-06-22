@@ -29,6 +29,13 @@ interface PrefetchLinkProps extends LinkProps {
   priority?: 'high' | 'low';
 }
 
+type WindowWithIdleCallback = Window & {
+  readonly requestIdleCallback?: (
+    callback: () => void,
+    options?: { readonly timeout?: number }
+  ) => number;
+};
+
 // Route -> Lazy Component mapping for prefetching
 const routeComponentMap: Record<string, () => Promise<{ default: React.ComponentType }>> = {
   '/faq': () => import('../pages/FAQ'),
@@ -63,8 +70,9 @@ const prefetchRoute = (to: string): void => {
       return;
     }
 
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(
+    const idleWindow = window as WindowWithIdleCallback;
+    if (idleWindow.requestIdleCallback) {
+      idleWindow.requestIdleCallback(
         () => {
           componentLoader().catch((err) => {
             if (env.DEV) {

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- I18n hook and helpers are intentionally colocated with the provider. */
 import React, {createContext, useContext, useMemo} from 'react';
 import {Helmet} from 'react-helmet-async';
 import {useLocation} from 'react-router-dom';

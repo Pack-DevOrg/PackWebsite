@@ -5,6 +5,7 @@ import theme from './theme';
 // Type declaration for theme to ensure type safety when accessing theme properties
 declare module 'styled-components' {
   type Theme = typeof theme;
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface DefaultTheme extends Theme {}
 }
 

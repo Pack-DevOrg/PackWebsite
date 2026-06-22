@@ -465,7 +465,11 @@ const EmailInput = styled.input`
   border: 1px solid ${(props) => props.theme.colors.border.input};
   border-radius: var(--border-radius); /* Kept as CSS var for now */
   color: ${(props) => props.theme.colors.text.primary};
-  transition: all 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
   height: 50px;
   font-size: 16px;
   line-height: 1.2;
@@ -484,7 +488,9 @@ const EmailInput = styled.input`
 
   &::placeholder {
     color: rgba(255, 248, 236, 0.78);
-    transition: all 0.3s ease;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
   }
 
   &:focus::placeholder {
@@ -574,7 +580,12 @@ const SubmitButton = styled.button`
   border-radius: var(--border-radius);
   font-weight: ${(props) => props.theme.typography.fontWeights.bold};
   letter-spacing: 0.03em;
-  transition: all 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    filter 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
   height: 50px;
   box-shadow:
     0 14px 32px rgba(0, 0, 0, 0.26),
@@ -601,7 +612,7 @@ const SubmitButton = styled.button`
       rgba(255, 255, 255, 0.2),
       transparent
     );
-    transition: all 0.6s ease;
+    transition: left 0.6s ease;
   }
 
   &:hover:not(:disabled) {
@@ -618,7 +629,7 @@ const SubmitButton = styled.button`
   }
 
   &:active:not(:disabled) {
-    transform: translateY(1px);
+    transform: translateY(1px) scale(0.96);
     box-shadow:
       0 10px 22px rgba(0, 0, 0, 0.3),
       0 0 14px rgba(240, 198, 45, 0.16),

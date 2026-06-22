@@ -187,7 +187,13 @@ const Button = styled.button<{ $variant?: 'primary' | 'secondary' | 'minimal'; d
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
   border: none;
   white-space: nowrap;
 
@@ -211,6 +217,10 @@ const Button = styled.button<{ $variant?: 'primary' | 'secondary' | 'minimal'; d
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(249, 47, 96, 0.4);
           }
+
+          &:active {
+            transform: scale(0.96);
+          }
         `;
       case 'secondary':
         return `
@@ -222,6 +232,10 @@ const Button = styled.button<{ $variant?: 'primary' | 'secondary' | 'minimal'; d
             border-color: #f92f60;
             color: #f92f60;
           }
+
+          &:active {
+            transform: scale(0.96);
+          }
         `;
       case 'minimal':
       default:
@@ -232,6 +246,10 @@ const Button = styled.button<{ $variant?: 'primary' | 'secondary' | 'minimal'; d
           
           &:hover {
             color: #f92f60;
+          }
+
+          &:active {
+            transform: scale(0.96);
           }
         `;
     }

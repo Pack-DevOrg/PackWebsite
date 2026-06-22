@@ -81,7 +81,10 @@ const CloseButton = styled.button`
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
   
   &:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -134,7 +137,10 @@ const Input = styled.input`
   padding: 1rem;
   color: #ffffff;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   
   &::placeholder {
     color: rgba(255, 255, 255, 0.6);
@@ -156,11 +162,18 @@ const SubmitButton = styled.button`
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
   
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(240, 198, 45, 0.35);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.96);
   }
   
   &:disabled {

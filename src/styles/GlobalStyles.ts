@@ -137,6 +137,8 @@ const GlobalStyles = createGlobalStyle`
 
   html, body {
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     line-height: 1.5;
     height: 100%;
     min-height: 100vh;
@@ -158,6 +160,7 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1;
     margin-bottom: var(--space-2);
     letter-spacing: -0.025em;
+    text-wrap: balance;
   }
 
   h1 {
@@ -175,6 +178,13 @@ const GlobalStyles = createGlobalStyle`
   p {
     margin-bottom: var(--space-2);
     color: var(--color-text-secondary);
+    text-wrap: pretty;
+  }
+
+  li,
+  figcaption,
+  blockquote {
+    text-wrap: pretty;
   }
 
   a {
@@ -205,6 +215,8 @@ const GlobalStyles = createGlobalStyle`
     border: none;
     cursor: pointer;
     font-family: inherit;
+    min-height: 44px;
+    touch-action: manipulation;
   }
 
   input, button {
@@ -233,7 +245,7 @@ const GlobalStyles = createGlobalStyle`
     max-width: 100%;
     height: auto;
   }
-  
+
   /* Reusable centered container utility */
   .container {
     width: 100%;

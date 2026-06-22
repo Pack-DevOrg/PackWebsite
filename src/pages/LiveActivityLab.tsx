@@ -691,6 +691,8 @@ const ScreenshotImage = styled.img`
   max-height: 220px;
   height: auto;
   object-fit: contain;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  outline-offset: -1px;
 `;
 
 const ScreenshotLabelCell = styled.div`

@@ -1059,6 +1059,8 @@ const AssetImage = styled.img`
   max-height: 24rem;
   object-fit: contain;
   border-radius: 18px;
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  outline-offset: -1px;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
 `;
 

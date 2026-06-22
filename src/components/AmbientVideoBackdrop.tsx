@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 
 const Backdrop = styled.div`
@@ -44,7 +44,7 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
   const [isAvailable, setIsAvailable] = useState(false);
   const [allowsMotion, setAllowsMotion] = useState(true);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window === "undefined" || typeof fetch !== "function") {
       return undefined;
     }

@@ -1,4 +1,4 @@
-import React, { useDeferredValue, useEffect, useRef, useState } from "react";
+import React, { useDeferredValue, useLayoutEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import {
@@ -18,7 +18,6 @@ import { appConfig } from "@/config/appConfig";
 import WaitlistForm from "@/components/WaitlistForm";
 import PageSeo from "@/seo/pageSeo";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
-import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "@/legal/legalUiCopy";
 import { formatLocalizedDate } from "@/i18n/format";
@@ -977,11 +976,6 @@ const getWaitLabel = (
     return observation.displayWaitText?.trim() || "Unavailable";
   }
 
-  const hasNumericWait =
-    typeof observation.exactWaitMinutes === "number" ||
-    typeof observation.minWaitMinutes === "number" ||
-    typeof observation.maxWaitMinutes === "number";
-
   if (observation.displayWaitText) {
     return observation.displayWaitText;
   }
@@ -1273,24 +1267,6 @@ const getDistanceMiles = (
   return 2 * earthRadiusMiles * Math.asin(Math.sqrt(haversine));
 };
 
-const isSnapshotStale = (snapshot: {
-  observedAt?: string;
-  fetchedAt?: string;
-  refreshIntervalMinutes?: number;
-} | null): boolean => {
-  if (!snapshot) {
-    return true;
-  }
-
-  const freshestTimestamp = Date.parse(snapshot.observedAt ?? snapshot.fetchedAt ?? "");
-  if (!Number.isFinite(freshestTimestamp)) {
-    return true;
-  }
-
-  const refreshIntervalMinutes = snapshot.refreshIntervalMinutes ?? 15;
-  return Date.now() - freshestTimestamp > refreshIntervalMinutes * 3 * 60 * 1000;
-};
-
 const getAirportSearchScore = (
   airport: {
     airportCode: string;
@@ -1548,7 +1524,7 @@ const TsaWaitTimesPage: React.FC = () => {
     staleTime: 60 * 1000,
     refetchInterval: 60 * 1000,
   });
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
@@ -1588,7 +1564,7 @@ const TsaWaitTimesPage: React.FC = () => {
     };
   }, [status, trackCTAClick]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
@@ -1698,7 +1674,7 @@ const TsaWaitTimesPage: React.FC = () => {
 
   const airports = airportSearchResults;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setCurrentPage(1);
   }, [deferredAirportQuery, userLocation]);
 

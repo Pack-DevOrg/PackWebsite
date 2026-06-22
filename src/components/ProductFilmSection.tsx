@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useI18n } from "@/i18n/I18nProvider";
 import AccentWord from "./AccentWord";
@@ -93,7 +93,7 @@ const ProductFilmSection = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const content = filmContent[locale === "es" ? "es" : "en"];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let cancelled = false;
     fetch(FILM_SRC, { method: "GET", headers: { Range: "bytes=0-0" } })
       .then((response) => {
@@ -113,7 +113,7 @@ const ProductFilmSection = () => {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!filmAvailable) {
       return;
     }

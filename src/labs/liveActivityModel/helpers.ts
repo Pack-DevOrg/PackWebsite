@@ -202,7 +202,7 @@ export function hotelCompactToken(raw: string | null | undefined): string | null
   }
   const words = trimmed
     .split(/\s+/)
-    .map((w) => w.replace(/^[,\-]+|[,\-]+$/g, ''))
+    .map((w) => w.replace(/^[,-]+|[,-]+$/g, ''))
     .filter((w) => w.length > 0);
   const stopWords = new Set([
     'hotel', 'hotels', 'inn', 'resort', 'resorts', 'suite', 'suites', 'lodge',

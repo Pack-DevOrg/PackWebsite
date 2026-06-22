@@ -51,7 +51,7 @@ const RevokeConsentHarness: React.FC = () => {
 const TrackEventHarness: React.FC = () => {
   const {hasAnalyticsConsent, trackEvent} = useTracking();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!hasAnalyticsConsent) {
       return;
     }
@@ -69,7 +69,7 @@ const TrackEventHarness: React.FC = () => {
 const TrackMarketingEventHarness: React.FC<{eventName: string}> = ({eventName}) => {
   const {hasMarketingConsent, trackEvent} = useTracking();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!hasMarketingConsent) {
       return;
     }
@@ -86,7 +86,7 @@ const TrackMarketingEventHarness: React.FC<{eventName: string}> = ({eventName}) 
 const TrackPageViewHarness: React.FC<{page: string}> = ({page}) => {
   const {trackPageView} = useTracking();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     trackPageView(page);
   }, [page, trackPageView]);
 

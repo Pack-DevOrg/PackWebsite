@@ -5,5 +5,6 @@ import {useEffect} from "react";
  * Prefer derived state, event handlers, and query abstractions everywhere else.
  */
 export function useMountEffect(effect: () => void | (() => void)): void {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effect, []);
 }

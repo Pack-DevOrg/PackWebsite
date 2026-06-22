@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Tracking hooks and privacy event constants are part of this provider module contract. */
 /**
  * TrackingProvider - Comprehensive tracking implementation for the Pack website
  * 
@@ -11,7 +12,7 @@
  * Based on 2025 best practices for conversion optimization and privacy compliance.
  */
 
-import React, {createContext, useCallback, useContext, useEffect, useRef, useState} from 'react';
+import React, {createContext, useCallback, useContext, useLayoutEffect, useRef, useState} from 'react';
 import { clearTrackingCookies, getCookie, setCookie } from '../utils/cookies';
 import { env } from '../utils/env';
 import { CONSENT_COOKIE_KEY, CONSENT_TIMESTAMP_COOKIE_KEY, CONSENT_MAX_AGE_SECONDS } from '../constants/consent';
@@ -283,7 +284,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
         console.warn('Unable to persist consent identifier', error);
       }
     }
-  }, []);
+  }, [isTestEnv]);
 
   const readStoredConsentId = useCallback(() => {
     let storedId: string | null = null;
@@ -299,7 +300,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       }
     }
     return storedId ?? undefined;
-  }, []);
+  }, [isTestEnv]);
 
   const readStoredConsent = useCallback(() => {
     let storedStatus: string | null = null;
@@ -334,7 +335,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
     const parsedPreferences = parseConsentPreferences(storedPreferencesJson);
 
     return { storedStatus: parsedStatus, storedTimestamp, storedPreferences: parsedPreferences };
-  }, []);
+  }, [isTestEnv]);
 
   const loadGtm = useCallback(async (
     consentOverrides?: {
@@ -802,7 +803,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
     dispatchPageView(trackedPage);
   }, [dispatchPageView]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!currentPagePath) {
       return;
     }

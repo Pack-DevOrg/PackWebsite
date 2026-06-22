@@ -439,7 +439,7 @@ export const SharedTravelPlan: React.FC = () => {
     URL.revokeObjectURL(url);
 
     setActionFeedback(localizedContent.calendarDownloadedFeedback);
-  }, [localizedContent.calendarDownloadedFeedback, localizedContent.noDatesFeedback, shareId, travelPlan]);
+  }, [localizedContent, shareId, travelPlan]);
 
   const handleDownloadApp = useCallback(() => {
     setActionFeedback(localizedContent.downloadAppFeedback);
@@ -841,9 +841,13 @@ const SharedTravelPlanLoader: React.FC<{
         }
 
         if (!response.ok) {
+          const errorPayload =
+            parsedJson && typeof parsedJson === 'object'
+              ? (parsedJson as { readonly error?: unknown; readonly message?: unknown })
+              : null;
           const message =
-            (parsedJson as any)?.error ||
-            (parsedJson as any)?.message ||
+            (typeof errorPayload?.error === 'string' && errorPayload.error) ||
+            (typeof errorPayload?.message === 'string' && errorPayload.message) ||
             rawText.slice(0, 200) ||
             localizedContent.sharedLinkNotFound;
           throw new Error(message);

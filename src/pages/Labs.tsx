@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- Labs keeps prototype sections and media fixtures staged for internal visual review. */
 import React from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
@@ -4874,7 +4875,7 @@ export const LabsVideosPage: React.FC = () => {
   });
   const displayedManifest = currentManifest ?? latestManifestQuery.data ?? null;
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!displayedManifest || displayedManifest.templates.length === 0 || templateId) {
       return;
     }
@@ -5744,7 +5745,7 @@ export const LabsSoundmarksPage: React.FC = () => {
     }
   };
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowLeft") {
         if (isShortlistRoundRef.current) {

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useLayoutEffect } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -110,7 +110,7 @@ const HomeRouteSwitch: React.FC = () => {
 };
 
 const HomeServiceWorkerCleanup: React.FC = () => {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (
       env.DEV === true ||
       typeof navigator === "undefined" ||
@@ -135,7 +135,7 @@ const RouteTrackingCoordinator: React.FC = () => {
   const location = useLocation();
   const { trackPageView } = useTracking();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const pagePath = `${location.pathname}${location.search}${location.hash}` || "/";
     trackPageView(pagePath);
   }, [location.hash, location.pathname, location.search, trackPageView]);

@@ -34,29 +34,26 @@ jest.mock('../utils/env', () => ({
 }));
 
 
-const trackConversionMock = jest.fn();
-const trackFormSubmitMock = jest.fn();
-const trackFormStartMock = jest.fn();
+const mockTrackEvent = jest.fn();
 
-jest.mock('../hooks/useConversionTracking', () => ({
-  useConversionTracking: () => ({
-    trackConversion: trackConversionMock,
-    trackFormStart: trackFormStartMock,
-    trackFormSubmit: trackFormSubmitMock,
-    trackCTAClick: jest.fn(),
-    trackScrollMilestone: jest.fn(),
-    trackVideoEngagement: jest.fn(),
-    trackABTest: jest.fn(),
-    startEngagementTracking: jest.fn(),
-    stopEngagementTracking: jest.fn(),
-    trackFeatureUsage: jest.fn(),
-    trackTimelineAction: jest.fn(),
-    trackQuickAction: jest.fn(),
-    trackPerformance: jest.fn(),
-    trackNetworkError: jest.fn(),
-    trackRevenue: jest.fn(),
-    updateUserProperties: jest.fn(),
-  }),
+jest.mock('../components/TrackingProvider', () => ({
+  useTracking: () => {
+    const trackingStatus = window.localStorage.getItem('tracking-consent');
+    const hasConsent = trackingStatus === 'granted' || trackingStatus === 'partial';
+
+    return {
+      hasAnalyticsConsent: hasConsent,
+      hasConsent,
+      hasMarketingConsent: hasConsent,
+      gpcApplies: false,
+      trackEvent: mockTrackEvent,
+      trackPageView: jest.fn(),
+      grantConsent: jest.fn(),
+      revokeConsent: jest.fn(),
+      applyConsentDecision: jest.fn(),
+      openPrivacyPreferences: jest.fn(),
+    };
+  },
 }));
 
 jest.mock('../utils/recaptcha', () => ({
@@ -153,7 +150,7 @@ describe('WaitlistForm marketing payload', () => {
     expect(payload.fbc).toBeUndefined();
     expect(payload.fbp).toBeUndefined();
 
-    expect(trackConversionMock).toHaveBeenCalledWith(
+    expect(mockTrackEvent).toHaveBeenCalledWith(
       'generate_lead',
       expect.objectContaining({
         event_id: expect.stringMatching(/^evt_/),
@@ -166,10 +163,11 @@ describe('WaitlistForm marketing payload', () => {
       }),
     );
 
-    expect(trackFormSubmitMock).toHaveBeenCalledWith(
-      'waitlist_form',
+    expect(mockTrackEvent).toHaveBeenCalledWith(
+      'form_submit',
       expect.objectContaining({
         event_id: expect.stringMatching(/^evt_/),
+        form_name: 'waitlist_form',
         gbraid: 'test-gbraid',
         ttclid: 'test-ttclid',
         ttp: 'test-ttp',

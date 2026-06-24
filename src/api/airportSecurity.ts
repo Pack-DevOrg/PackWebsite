@@ -102,6 +102,7 @@ async function fetchPublicAirportSecurityViaApi(
     buildPublicAirportSecurityPath("/airport-security/public-current"),
     {
       method: "GET",
+      cache: "no-store",
       headers: {
         Accept: "application/json",
         ...(recaptchaToken ? { "X-Recaptcha-Token": recaptchaToken } : {}),
@@ -196,6 +197,7 @@ export async function fetchPublicAirportSecuritySummary(): Promise<AirportWaitTi
       try {
         const response = await fetch(publicBoardUrl, {
           method: "GET",
+          cache: "no-store",
           headers: {
             Accept: "application/json",
           },

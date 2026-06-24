@@ -12,9 +12,9 @@
  */
 
 // Bump versions to flush old caches after deploys
-const CACHE_NAME = 'pack-v1.0.11';
-const STATIC_CACHE = 'pack-static-v1.0.11';
-const DYNAMIC_CACHE = 'pack-dynamic-v1.0.11';
+const CACHE_NAME = 'pack-v1.0.12';
+const STATIC_CACHE = 'pack-static-v1.0.12';
+const DYNAMIC_CACHE = 'pack-dynamic-v1.0.12';
 
 // Static assets that change rarely
 const STATIC_ASSETS = [
@@ -434,12 +434,17 @@ async function handleGenericRequest(request) {
  */
 
 function shouldBypassServiceWorker(request) {
-  return hasAuthorizationHeader(request) || isExternalGenericRequest(request);
+  return (
+    hasAuthorizationHeader(request) ||
+    isAirportWaitTimesRequest(request) ||
+    isExternalGenericRequest(request)
+  );
 }
 
 function shouldBypassCaching(request, response) {
   return (
     hasAuthorizationHeader(request) ||
+    isAirportWaitTimesRequest(request) ||
     isExternalGenericRequest(request) ||
     hasSensitiveResponseCacheHeaders(response)
   );
@@ -452,6 +457,14 @@ function hasAuthorizationHeader(request) {
 function isExternalGenericRequest(request) {
   const url = new URL(request.url);
   return url.origin !== self.location.origin && !isStaticAsset(request) && !isAPIRequest(request);
+}
+
+function isAirportWaitTimesRequest(request) {
+  const url = new URL(request.url);
+  return (
+    url.pathname.includes('/airport-wait-times/public/current.json') ||
+    url.pathname.includes('/airport-security/public-current')
+  );
 }
 
 function hasSensitiveResponseCacheHeaders(response) {

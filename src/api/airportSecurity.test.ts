@@ -176,6 +176,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(global.fetch).toHaveBeenCalledWith(
       'https://cdn.example.com/airport-wait-times/public/current.json',
       expect.objectContaining({
+        cache: 'no-store',
         method: 'GET',
         headers: expect.objectContaining({
           Accept: 'application/json',
@@ -205,6 +206,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
     expect(global.fetch).toHaveBeenCalledWith(
       'https://tsa-board.trypackai.com/airport-wait-times/public/current.json',
       expect.objectContaining({
+        cache: 'no-store',
         method: 'GET',
         headers: expect.objectContaining({
           Accept: 'application/json',
@@ -253,6 +255,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
       2,
       'http://localhost:5173/dev/airport-security/public-current',
       expect.objectContaining({
+        cache: 'no-store',
         method: 'GET',
         headers: expect.objectContaining({
           Accept: 'application/json',
@@ -297,6 +300,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
       2,
       'https://api.example.com/prod/airport-security/public-current',
       expect.objectContaining({
+        cache: 'no-store',
         method: 'GET',
         headers: expect.objectContaining({
           Accept: 'application/json',

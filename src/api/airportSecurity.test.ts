@@ -1,7 +1,7 @@
 import {
   fetchPublicAirportSecuritySummary,
 } from './airportSecurity';
-import {appConfig} from '@/config/appConfig';
+import {appConfig, isLocalhostHostname} from '@/config/appConfig';
 import {env} from '@/utils/env';
 import {executeRecaptchaAction} from '@/utils/recaptcha';
 
@@ -10,8 +10,7 @@ jest.mock('@/config/appConfig', () => ({
     apiBaseUrl: 'https://api.example.com/prod',
     environment: 'dev',
   },
-  isLocalhostHostname: (hostname: string) =>
-    hostname === 'localhost' || hostname === '127.0.0.1',
+  isLocalhostHostname: jest.fn(),
 }));
 
 jest.mock('@/utils/env', () => ({
@@ -26,27 +25,12 @@ jest.mock('@/utils/recaptcha', () => ({
 }));
 
 describe('fetchPublicAirportSecuritySummary', () => {
-  const originalLocation = window.location;
-
   beforeEach(() => {
     jest.clearAllMocks();
     window.localStorage.clear();
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: {
-        origin: 'https://trypackai.com',
-        hostname: 'trypackai.com',
-      },
-    });
     global.fetch = jest.fn();
+    (isLocalhostHostname as jest.Mock).mockReturnValue(false);
     (executeRecaptchaAction as jest.Mock).mockResolvedValue('test-recaptcha-token');
-  });
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: originalLocation,
-    });
   });
 
   afterEach(() => {
@@ -88,13 +72,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
   });
 
   it('uses the prod public board on localhost without browser-side reCAPTCHA', async () => {
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: {
-        origin: 'http://localhost:5173',
-        hostname: 'localhost',
-      },
-    });
+    (isLocalhostHostname as jest.Mock).mockReturnValue(true);
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -124,13 +102,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
   });
 
   it('prefers the explicit public board URL on localhost when it is configured', async () => {
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: {
-        origin: 'http://localhost:5173',
-        hostname: 'localhost',
-      },
-    });
+    (isLocalhostHostname as jest.Mock).mockReturnValue(true);
     env.VITE_PUBLIC_TSA_BOARD_URL =
       'https://tsa-board.trypackai.com/airport-wait-times/public/current.json';
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -217,13 +189,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
   });
 
   it('falls back to the API path when the direct edge board URL is unavailable', async () => {
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: {
-        origin: 'http://localhost:5173',
-        hostname: 'localhost',
-      },
-    });
+    (isLocalhostHostname as jest.Mock).mockReturnValue(true);
     env.VITE_PUBLIC_TSA_BOARD_URL =
       'https://cdn.example.com/airport-wait-times/public/current.json';
     (global.fetch as jest.Mock)
@@ -253,7 +219,7 @@ describe('fetchPublicAirportSecuritySummary', () => {
     );
     expect(global.fetch).toHaveBeenNthCalledWith(
       2,
-      'http://localhost:5173/dev/airport-security/public-current',
+      `${window.location.origin}/dev/airport-security/public-current`,
       expect.objectContaining({
         cache: 'no-store',
         method: 'GET',

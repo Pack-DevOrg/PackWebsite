@@ -836,6 +836,17 @@ function buildDefaultMetricBoxes(args: {
       showsTitle: true,
     }),
   ];
+  if (!isPast) {
+    boxes.push(
+      makeMetricBox({
+        title: 'At',
+        value: shortTimeLabel(args.startAt),
+        detail: null,
+        emphasis: 'white',
+        kind: 'unknown',
+      }),
+    );
+  }
   if (nextValue != null && nextValue.length > 0) {
     const nextUpMinutes =
       args.nextUpStartAt != null
@@ -1468,10 +1479,12 @@ function buildDynamicIslandSurfaceModel(args: {
     }
     case 'flight_arrived': {
       const minimalClaim = detailLabeledValue(['baggage', 'bags'], args.detailRecords);
+      const carousel = detailItemValue(['baggage', 'bags'], args.detailRecords);
       const weather = compactDestinationWeather(args.detailRecords);
       const fallbackLocation = compactLeadingLocation(args.secondaryText);
       const expandedLeading = minimalClaim ?? weather;
       const fallbackArrivalToken = minimalClaim ?? weather ?? fallbackLocation ?? 'Landed';
+      const arrivedTrailingText = carousel ?? weather ?? 'Landed';
       const countdownTargetAt = args.nextUpStartAt ?? null;
       return {
         expandedLeadingText: expandedLeading ?? undefined,
@@ -1479,7 +1492,7 @@ function buildDynamicIslandSurfaceModel(args: {
         expandedTrailingText:
           countdownTargetAt == null ? (weather ?? fallbackLocation ?? undefined) : undefined,
         compactLeadingSymbolName: compactSymbol,
-        compactTrailingText: fallbackArrivalToken,
+        compactTrailingText: arrivedTrailingText,
         minimalSymbolName: 'plane-landing',
         minimalText: countdownTargetAt == null ? fallbackArrivalToken : undefined,
         showsCountdown: countdownTargetAt != null,
@@ -1528,7 +1541,7 @@ function buildDynamicIslandSurfaceModel(args: {
         expandedText: undefined,
         expandedTrailingText: undefined,
         compactLeadingSymbolName: compactSymbol,
-        compactTrailingText: args.currentTitle,
+        compactTrailingText: undefined,
         minimalSymbolName: undefined,
         minimalText: undefined,
         showsCountdown: true,

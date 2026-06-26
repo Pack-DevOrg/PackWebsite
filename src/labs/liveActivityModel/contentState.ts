@@ -8,8 +8,8 @@
 // faithful to the schema so the ported derivation logic reads the same keys
 // the native renderer does.
 
-// Mirrors LiveActivityEventKindSchema. The native renderer also encounters
-// `calendar_event` (see fixtures/generic), which falls through to the default
+// Mirrors LiveActivityEventKindSchema. Older/generated payloads can still carry
+// legacy strings such as `calendar_event`, which fall through to the default
 // builders, so the union is widened to a plain string to stay faithful.
 export type EventKind =
   | 'generic'

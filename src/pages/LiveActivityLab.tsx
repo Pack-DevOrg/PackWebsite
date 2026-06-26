@@ -2283,7 +2283,7 @@ function renderExpandedIsland(state: LabState) {
 
 function renderCompactIsland(state: LabState) {
   // Leading: Pack logo over the concise time-remaining, then the kind glyph.
-  // Trailing: the derived compact detail token (gate / seat / claim / name).
+  // Trailing: the derived compact detail token (gate / seat / carousel / drive).
   const time = islandCountdownToken(state);
   const glyph = state.dynamicIsland.compactLeadingSymbolName ?? state.icon;
   const detail = state.dynamicIsland.compactTrailingText;

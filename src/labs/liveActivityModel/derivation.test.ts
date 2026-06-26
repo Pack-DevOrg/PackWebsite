@@ -24,9 +24,9 @@ const NOW = LAB_REFERENCE_NOW;
 describe('flight_arrived', () => {
   const state = LAB_FIXTURES.flight_arrived;
 
-  it('renders the baggage claim as the compact trailing token with the landing-plane icon', () => {
+  it('renders the baggage carousel as the compact trailing token with the landing-plane icon', () => {
     const island = buildDynamicIslandModel(state, NOW);
-    expect(island.compactTrailingText).toBe('Bag 7');
+    expect(island.compactTrailingText).toBe('7');
     expect(island.compactLeadingSymbolName).toBe('plane-landing');
   });
 
@@ -48,6 +48,16 @@ describe('flight_arrived', () => {
     expect(bar?.countdownCaption).toBe('Landed');
     expect(Number.isFinite(bar?.progressFraction)).toBe(true);
     expect(bar?.progressFraction).toBe(1);
+  });
+});
+
+describe('flight_arrived_sparse', () => {
+  const state = LAB_FIXTURES.flight_arrived_sparse;
+
+  it('uses a short landed compact trailing token when baggage and weather are absent', () => {
+    const island = buildDynamicIslandModel(state, NOW);
+    expect(island.compactTrailingText).toBe('Landed');
+    expect(island.compactTrailingText).not.toBe('ORD - Chicago');
   });
 });
 
@@ -99,9 +109,16 @@ describe('flight_arrival', () => {
 describe('generic_event', () => {
   const state = LAB_FIXTURES.generic_event;
 
-  it('renders the event title as compact trailing with the calendar icon', () => {
+  it('keeps the compact island left-only with the calendar icon', () => {
     const island = buildDynamicIslandModel(state, NOW);
-    expect(island.compactTrailingText).toBe('Team sync');
+    expect(island.compactTrailingText).toBeUndefined();
     expect(island.compactLeadingSymbolName).toBe('calendar');
+  });
+
+  it('keeps countdown primary and adds the absolute start time box', () => {
+    const boxes = buildMetricBoxes(state, NOW);
+    expect(boxes[0]?.title).toBe('Starts in');
+    expect(boxes.some((box) => box.title === 'At')).toBe(true);
+    expect(boxes.some((box) => box.title === 'Next in')).toBe(false);
   });
 });

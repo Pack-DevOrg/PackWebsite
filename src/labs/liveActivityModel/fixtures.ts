@@ -421,20 +421,21 @@ export const activityLongTitleNoNavigation: ContentState = {
 
 export const genericEvent: ContentState = {
   primary: {
-    kind: 'calendar_event',
+    kind: 'generic',
     title: 'Team sync',
     startAt: minutesFromNow(30),
-    secondaryText: 'Midtown',
-    details: [record('location', 'Location:', 'Office')],
-  },
-  next: {
-    kind: 'activity',
-    title: 'Dinner',
-    startAt: minutesFromNow(180),
-    secondaryText: '53rd Street',
+    scheduledStartAt: minutesFromNow(30),
+    secondaryText: 'Open Pack for details',
     details: [],
   },
-  actions: [],
+  actions: [
+    {
+      id: 'open_pack',
+      title: 'Open Pack',
+      url: 'https://trypackai.com',
+      style: 'primary',
+    },
+  ],
 };
 
 export const scrubberActivity: ContentState = makeScrubberState({

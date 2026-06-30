@@ -142,6 +142,12 @@ const LabsPlannerCorpusReviewPage = labsEnabled
       return { default: module.LabsPlannerCorpusReviewPage };
     })
   : null;
+const LabsSurfaceGalleryPage = labsEnabled
+  ? React.lazy(async () => {
+      const module = await import("../pages/Labs");
+      return { default: module.LabsSurfaceGalleryPage };
+    })
+  : null;
 const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
 
 const LoadingScreenContainer = styled.div`
@@ -728,6 +734,18 @@ const NonHomeRoutes: React.FC = () => {
               <Layout>
                 <Suspense fallback={null}>
                   <LabsPlannerCorpusReviewPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+        ) : null}
+        {LabsSurfaceGalleryPage ? (
+          <Route
+            path="/labs/surface-gallery"
+            element={
+              <Layout>
+                <Suspense fallback={null}>
+                  <LabsSurfaceGalleryPage />
                 </Suspense>
               </Layout>
             }

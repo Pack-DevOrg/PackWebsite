@@ -6708,6 +6708,54 @@ export const LabsPlannerCorpusReviewPage: React.FC = () => {
   );
 };
 
+export const LabsSurfaceGalleryPage: React.FC = () => {
+  const { locale, pathFor } = useI18n();
+  const localizedContent = labsContent[locale];
+
+  const surfaces = [
+    { slug: 'home', title: 'Home', label: 'Main conversation screen' },
+    { slug: 'trips', title: 'Trips', label: 'Trip list and management' },
+    { slug: 'packs', title: 'Packs', label: 'Social packs screen' },
+    { slug: 'settings', title: 'Settings', label: 'App settings' },
+    { slug: 'stats-hub', title: 'Stats Hub', label: 'Travel statistics' },
+    { slug: 'trophy-room', title: 'Trophy Room', label: 'Achievements and trophies' },
+    { slug: 'travel-preferences', title: 'Travel Preferences', label: 'Flight, hotel, and car preferences' },
+    { slug: 'connected-services', title: 'Connected Services', label: 'Linked accounts' },
+    { slug: 'privacy-forwarding', title: 'Privacy Forwarding', label: 'Email forwarding setup' },
+  ];
+
+  return (
+    <LabsShell
+      title={localizedContent.surfaceGallery?.title ?? 'Surface Gallery'}
+      description={localizedContent.surfaceGallery?.description ?? 'One screenshot from every Pack surface, captured from a real E2E simulator session.'}
+    >
+      <BreadcrumbRow aria-label="Labs breadcrumb">
+        <BreadcrumbLink to={pathFor('/labs')}>{localizedContent.crumbs.labs}</BreadcrumbLink>
+        <BreadcrumbLink to={pathFor('/labs/surface-gallery')}>Surface Gallery</BreadcrumbLink>
+      </BreadcrumbRow>
+      <Grid>
+        {surfaces.map((surface) => (
+          <SectionCard key={surface.slug}>
+            <AssetPreview>
+              <img
+                src={'/labs/screenshots/surface-gallery-' + surface.slug + '.png'}
+                alt={surface.title}
+                loading="lazy"
+                style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+              />
+            </AssetPreview>
+            <Meta>
+              <Kicker>{surface.label}</Kicker>
+              <CardTitle>{surface.title}</CardTitle>
+            </Meta>
+          </SectionCard>
+        ))}
+      </Grid>
+    </LabsShell>
+  );
+};
+
+
 const LabsPage: React.FC = () => {
   return <LabsHomePage />;
 };

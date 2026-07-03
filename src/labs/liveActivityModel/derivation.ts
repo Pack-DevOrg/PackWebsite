@@ -24,7 +24,6 @@ import {
   hotelCompactToken,
   activityCompactToken,
   joinStatusParts,
-  leaveTimingSummary,
   parseMinutes,
   shortTimeLabel,
   splitPrimaryAndSecondaryInfo,
@@ -426,39 +425,20 @@ function buildFlightDepartureMetricBoxes(args: {
   const destinationWeather = compactDestinationWeather(args.detailRecords);
   const boxes: MetricBox[] = [];
 
-  if (args.hasCurrentNavigationTarget && args.driveMinutes != null) {
-    const leave = leaveTimingSummary(
-      args.startAt,
-      args.driveMinutes,
-      args.tsaMinutes,
-      30,
-      args.now,
-    );
-    boxes.push(
-      makeMetricBox({
-        title:
-          boardingLabel != null
-            ? `Boards ${boardingLabel}`
-            : `Departs ${trackClockLabel(args.startAt) ?? shortTimeLabel(args.startAt)}`,
-        value: `Leave ${leave.value}`,
-        valueDate: undefined,
-        detail: null,
-        emphasis: 'dark',
-        kind: 'leaveIn',
-      }),
-    );
-  } else {
-    boxes.push(
-      makeMetricBox({
-        title: boardingLabel != null ? `Boards ${boardingLabel}` : 'Departs',
-        value: `Departs ${trackClockLabel(args.startAt) ?? shortTimeLabel(args.startAt)}`,
-        valueDate: undefined,
-        detail: null,
-        emphasis: 'white',
-        kind: 'status',
-      }),
-    );
-  }
+  // Mirror of the native change: the status slider carries the live leave-by
+  // countdown + drive/TSA legend, so the first tile complements it with the
+  // absolute boarding/departure times instead of a second leave countdown.
+  const departsLabel = twelveHourClockLabel(args.startAt) ?? shortTimeLabel(args.startAt);
+  boxes.push(
+    makeMetricBox({
+      title: boardingLabel != null ? 'Boards' : 'Departs',
+      value: boardingLabel ?? departsLabel,
+      valueDate: undefined,
+      detail: boardingLabel != null ? `Departs ${departsLabel}` : null,
+      emphasis: 'white',
+      kind: 'boarding',
+    }),
+  );
 
   const terminalLine = terminalLabel != null ? `Terminal ${terminalLabel}` : 'Terminal TBD';
   const gateLine = gateLabel != null ? `Gate ${gateLabel}` : 'Gate TBD';
@@ -579,6 +559,7 @@ function buildFlightArrivedMetricBoxes(args: {
       makeMetricBox({
         title: 'Next in',
         value: compactCountdownToken(Math.max(0, ceilMinutesUntil(args.nextUpStartAt, args.now))),
+        valueDate: args.nextUpStartAt,
         detail: destinationName,
         emphasis: 'white',
         kind: 'next',
@@ -606,7 +587,9 @@ function buildFlightArrivedMetricBoxes(args: {
       makeMetricBox({
         title: 'Drive',
         value: formatMinutes(Math.max(0, args.driveMinutes)),
-        detail: destinationName,
+        // The "Next in" tile already names the destination — repeating it under
+        // the drive time reads as duplicate info on a three-tile row.
+        detail: args.nextUpStartAt == null ? destinationName : null,
         emphasis: 'white',
         kind: 'travel',
         showsTitle: true,
@@ -638,13 +621,15 @@ function buildHotelCheckInMetricBoxes(args: {
   now: Date;
 }): MetricBox[] {
   const hotelInfo = splitPrimaryAndSecondaryInfo(args.secondaryText);
-  const hotelValue =
-    args.currentTitle.replace(/^[\s]+|[\s]+$/g, '').length > 0
-      ? args.currentTitle
-      : (hotelInfo.primary != null && hotelInfo.primary.length > 0 ? hotelInfo.primary : null) ??
-        'Hotel';
   const addressValue = detailItemValue(['address'], args.detailRecords);
   const confirmationValue = detailItemValue(['confirmation', 'conf'], args.detailRecords);
+  // Mirror of the native change: the hotel NAME is already the card title, so
+  // the tiles carry the live check-in countdown, the address, and the conf.
+  const addressLine =
+    (addressValue != null && addressValue.length > 0 ? addressValue : null) ??
+    (hotelInfo.secondary != null && hotelInfo.secondary.length > 0
+      ? hotelInfo.secondary
+      : null);
 
   const isCurrentlyAtEvent =
     args.phaseStartAt != null && args.phaseStartAt <= args.now && args.startAt > args.now;
@@ -655,6 +640,7 @@ function buildHotelCheckInMetricBoxes(args: {
       makeMetricBox({
         title: 'Remaining',
         value: compactCountdownToken(Math.max(0, ceilMinutesUntil(args.startAt, args.now))),
+        valueDate: args.startAt,
         detail: null,
         emphasis: 'white',
         kind: 'leaveIn',
@@ -672,6 +658,7 @@ function buildHotelCheckInMetricBoxes(args: {
             nextUpMinutes != null
               ? compactCountdownToken(nextUpMinutes)
               : args.nextUpTitle.replace(/^[\s]+|[\s]+$/g, ''),
+          valueDate: args.nextUpStartAt,
           detail: nextUpMinutes == null ? null : args.nextUpTitle.replace(/^[\s]+|[\s]+$/g, ''),
           emphasis: 'white',
           kind: 'next',
@@ -679,20 +666,32 @@ function buildHotelCheckInMetricBoxes(args: {
         }),
       );
     }
+  } else {
+    boxes.push(
+      makeMetricBox({
+        title: 'Check-in',
+        value: compactCountdownToken(Math.max(0, ceilMinutesUntil(args.startAt, args.now))),
+        valueDate: args.startAt,
+        detail: null,
+        emphasis: 'white',
+        kind: 'checkIn',
+      }),
+    );
   }
 
-  boxes.push(
-    makeMetricBox({
-      title: 'Hotel',
-      value: hotelValue,
-      detail: addressValue != null && addressValue.length > 0 ? addressValue : hotelInfo.secondary,
-      emphasis: 'white',
-      kind: 'hotel',
-      showsTitle: true,
-      valueLineLimit: 2,
-      detailLineLimit: 2,
-    }),
-  );
+  if (addressLine != null) {
+    boxes.push(
+      makeMetricBox({
+        title: 'Address',
+        value: addressLine,
+        detail: null,
+        emphasis: 'white',
+        kind: 'address',
+        showsTitle: true,
+        valueLineLimit: 2,
+      }),
+    );
+  }
 
   if (confirmationValue != null && confirmationValue.length > 0) {
     boxes.push(
@@ -702,16 +701,6 @@ function buildHotelCheckInMetricBoxes(args: {
         detail: null,
         emphasis: 'white',
         kind: 'confirmation',
-      }),
-    );
-  } else {
-    boxes.push(
-      makeMetricBox({
-        title: 'Check-in',
-        value: shortTimeLabel(args.startAt),
-        detail: null,
-        emphasis: 'white',
-        kind: 'checkIn',
       }),
     );
   }
@@ -735,38 +724,26 @@ function buildActivityMetricBoxes(args: {
   const isCurrentlyAtEvent =
     args.phaseStartAt != null && args.phaseStartAt <= args.now && args.startAt > args.now;
   const calculatedDriveMinutes = args.hasCurrentNavigationTarget ? args.driveMinutes ?? null : null;
-  // Native passes now=Date() default here (not the timeline now).
-  const leave = leaveTimingSummary(args.startAt, calculatedDriveMinutes, null, 0, args.now);
-  const leaveValue =
-    calculatedDriveMinutes != null
-      ? compactCountdownToken(
-          Math.max(
-            0,
-            ceilMinutesUntil(args.startAt, args.now) - Math.max(0, calculatedDriveMinutes),
-          ),
-        )
-      : null;
   const activeRemainingValue = compactCountdownToken(
     Math.max(0, ceilMinutesUntil(args.startAt, args.now)),
   );
   const cleanedNextUpTitle =
     args.nextUpTitle != null ? args.nextUpTitle.replace(/^[\s]+|[\s]+$/g, '') : null;
 
+  // Mirror of the native change: the slider trailing carries the live leave-by
+  // countdown when a drive estimate exists, so the first tile is a live
+  // countdown to the event itself (clock detail only when the slider trailing
+  // is busy with the leave countdown).
   const boxes: MetricBox[] = [
     makeMetricBox({
-      title: isCurrentlyAtEvent
-        ? 'Remaining'
-        : calculatedDriveMinutes != null
-          ? 'Leave in'
-          : 'Starts in',
-      value: isCurrentlyAtEvent
-        ? activeRemainingValue
-        : calculatedDriveMinutes != null
-          ? leaveValue ?? leave.value
-          : '',
-      valueDate: !isCurrentlyAtEvent && calculatedDriveMinutes == null ? args.startAt : undefined,
-      detail: null,
-      emphasis: isCurrentlyAtEvent || calculatedDriveMinutes == null ? 'white' : leave.emphasis,
+      title: isCurrentlyAtEvent ? 'Remaining' : 'Starts in',
+      value: activeRemainingValue,
+      valueDate: args.startAt,
+      detail:
+        !isCurrentlyAtEvent && calculatedDriveMinutes != null
+          ? twelveHourClockLabel(args.startAt)
+          : null,
+      emphasis: 'white',
       kind: 'leaveIn',
     }),
     makeMetricBox({
@@ -780,13 +757,14 @@ function buildActivityMetricBoxes(args: {
     }),
   ];
 
-  if (!isCurrentlyAtEvent) {
+  if (!isCurrentlyAtEvent && calculatedDriveMinutes != null) {
+    // No "Drive --" placeholder tile when there's nowhere to navigate.
     boxes.push(
       makeMetricBox({
         title: 'Drive',
-        value: calculatedDriveMinutes != null ? formatMinutes(Math.max(0, calculatedDriveMinutes)) : '--',
+        value: formatMinutes(Math.max(0, calculatedDriveMinutes)),
         detail: null,
-        emphasis: calculatedDriveMinutes != null ? 'white' : 'secondary',
+        emphasis: 'white',
         kind: 'travel',
       }),
     );
@@ -805,6 +783,7 @@ function buildActivityMetricBoxes(args: {
             ? compactCountdownToken(nextUpMinutes)
             : cleanedNextUpTitle
           : cleanedNextUpTitle,
+        valueDate: isCurrentlyAtEvent ? args.nextUpStartAt : undefined,
         detail: isCurrentlyAtEvent && args.nextUpStartAt != null ? cleanedNextUpTitle : null,
         emphasis: 'white',
         kind: 'next',
@@ -830,23 +809,15 @@ function buildDefaultMetricBoxes(args: {
       value: isPast
         ? shortTimeLabel(args.startAt)
         : compactCountdownToken(Math.max(0, ceilMinutesUntil(args.startAt, args.now))),
+      valueDate: isPast ? undefined : args.startAt,
       detail: null,
       emphasis: 'white',
       kind: 'status',
       showsTitle: true,
     }),
   ];
-  if (!isPast) {
-    boxes.push(
-      makeMetricBox({
-        title: 'At',
-        value: shortTimeLabel(args.startAt),
-        detail: null,
-        emphasis: 'white',
-        kind: 'unknown',
-      }),
-    );
-  }
+  // No "At h:mm" tile: the status slider's trailing now shows the absolute
+  // start time for a generic event (mirrors the native dedup).
   if (nextValue != null && nextValue.length > 0) {
     const nextUpMinutes =
       args.nextUpStartAt != null
@@ -957,7 +928,7 @@ function buildFlightDepartureStatusBarModel(args: {
   tsaMinutes?: number | null;
   now: Date;
 }): StatusBarModel {
-  const departureTimeLabel = trackClockLabel(args.startAt) ?? shortTimeLabel(args.startAt);
+  const departureTimeLabel = twelveHourClockLabel(args.startAt) ?? shortTimeLabel(args.startAt);
   const minutesUntilDeparture = Math.max(0, ceilMinutesUntil(args.startAt, args.now));
 
   if (!args.hasCurrentNavigationTarget || args.driveMinutes == null) {
@@ -985,7 +956,9 @@ function buildFlightDepartureStatusBarModel(args: {
   const safeDriveMinutes = Math.max(0, args.driveMinutes);
   const safeTsaMinutes = Math.max(0, args.tsaMinutes ?? 10);
   const fixedTravelWindowMinutes = STATUS_BAR_TRAVEL_WINDOW_MINUTES;
-  const requiredMinutes = Math.max(1, safeDriveMinutes + safeTsaMinutes);
+  // drive + TSA + the 30m boarding buffer — mirrors the native leave-by model
+  // ("leave" targets arriving by boarding).
+  const requiredMinutes = Math.max(1, safeDriveMinutes + safeTsaMinutes + 30);
   const leaveByAt = addMinutes(args.startAt, -requiredMinutes);
   const minutesUntilLeave = ceilMinutesUntil(leaveByAt, args.now);
   const reservedWindowMinutes = Math.min(requiredMinutes, fixedTravelWindowMinutes);
@@ -1008,20 +981,22 @@ function buildFlightDepartureStatusBarModel(args: {
       ? elapsedFraction
       : clamp(1 - reservedFraction + lateFraction * reservedFraction, 0, 1);
 
+  // Trailing = the LIVE leave-by countdown ("1h5m Leave"); the absolute times
+  // live in the "Boards/Departs" tile (mirrors the native change).
   return {
     mode: 'travel',
     leadingText: undefined,
     countdownToken: compactCountdownToken(minutesUntilLeave),
-    countdownCaption: '',
+    countdownCaption: 'Leave',
     progressFraction: elapsedFraction,
     reservedFraction,
     markerFraction,
     startLabel: undefined,
-    endLabel: departureTimeLabel,
+    endLabel: undefined,
     detailText: driveTimingDetailText(args.driveMinutes, args.tsaMinutes) ?? undefined,
     countdownEmphasis: minutesUntilLeave > 0 ? 'white' : 'danger',
     progressColor: undefined,
-    usesEndpointLabelStyleForEndText: true,
+    usesEndpointLabelStyleForEndText: false,
     countdownTargetAt: leaveByAt,
     trackStartAt,
     warningStartAt: leaveByAt,
@@ -1170,9 +1145,7 @@ function buildTravelEventStatusBarModel(args: {
 
   if (!args.hasCurrentNavigationTarget || args.driveMinutes == null) {
     const minutesUntilStart = ceilMinutesUntil(args.startAt, args.now);
-    const eventTimeLabel = usesFixedEventTimeEndpoint
-      ? twelveHourClockLabel(args.startAt)
-      : trackClockLabel(args.startAt);
+    const eventTimeLabel = twelveHourClockLabel(args.startAt);
     const countdownTrackStartAt = usesFixedEventTimeEndpoint
       ? addSeconds(args.startAt, -3 * 60 * 60)
       : null;
@@ -1258,9 +1231,9 @@ function buildTravelEventStatusBarModel(args: {
     minutesUntilLeave >= 0
       ? elapsedFraction
       : clamp(1 - reservedFraction + lateFraction * reservedFraction, 0, 1);
-  // Native: isHotelCheckIn is false on this branch, so eventTimeLabel uses trackClockLabel.
-  const eventTimeLabel = trackClockLabel(args.startAt);
 
+  // Trailing = the LIVE leave-by countdown ("1h2m Leave"); the absolute start
+  // time lives in the "Starts in" tile's detail (mirrors the native change).
   return {
     mode: 'travel',
     leadingText: undefined,
@@ -1270,11 +1243,11 @@ function buildTravelEventStatusBarModel(args: {
     reservedFraction,
     markerFraction,
     startLabel: undefined,
-    endLabel: eventTimeLabel ?? undefined,
+    endLabel: undefined,
     detailText: detailText ?? undefined,
     countdownEmphasis: minutesUntilLeave > 0 ? 'white' : 'danger',
     progressColor: undefined,
-    usesEndpointLabelStyleForEndText: true,
+    usesEndpointLabelStyleForEndText: false,
     countdownTargetAt: leaveByAt,
     trackStartAt,
     warningStartAt: leaveByAt,
@@ -1283,25 +1256,36 @@ function buildTravelEventStatusBarModel(args: {
 }
 
 function buildDefaultStatusBarModel(args: { startAt: Date; now: Date }): StatusBarModel {
-  const minutesUntilStart = ceilMinutesUntil(args.startAt, args.now);
+  const minutesUntilStart = Math.max(0, ceilMinutesUntil(args.startAt, args.now));
+  const countdownTrackStartAt = addSeconds(args.startAt, -3 * 60 * 60);
+  const boundedNow = args.now < countdownTrackStartAt ? countdownTrackStartAt : args.now;
+  const progressCutoff = boundedNow < args.startAt ? boundedNow : args.startAt;
+  const progressFraction = clamp(
+    secondsBetween(progressCutoff, countdownTrackStartAt) /
+      Math.max(1, secondsBetween(args.startAt, countdownTrackStartAt)),
+    0,
+    1,
+  );
+  // Trailing = the absolute start time (endpoint style); the live countdown
+  // lives in the "Starts in" tile (mirrors the native dedup).
   return {
-    mode: 'travel',
+    mode: 'duration',
     leadingText: undefined,
     countdownToken: compactCountdownToken(minutesUntilStart),
     countdownCaption: 'Start',
-    progressFraction: 0,
+    progressFraction,
     reservedFraction: 0,
-    markerFraction: 0,
-    startLabel: trackClockLabel(args.startAt) ?? undefined,
-    endLabel: undefined,
+    markerFraction: progressFraction,
+    startLabel: undefined,
+    endLabel: twelveHourClockLabel(args.startAt) ?? undefined,
     detailText: undefined,
     countdownEmphasis: 'white',
     progressColor: undefined,
-    usesEndpointLabelStyleForEndText: false,
+    usesEndpointLabelStyleForEndText: true,
     countdownTargetAt: args.startAt,
-    trackStartAt: undefined,
+    trackStartAt: countdownTrackStartAt,
     warningStartAt: undefined,
-    trackEndAt: undefined,
+    trackEndAt: args.startAt,
   };
 }
 

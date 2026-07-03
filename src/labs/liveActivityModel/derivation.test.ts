@@ -115,10 +115,12 @@ describe('generic_event', () => {
     expect(island.compactLeadingSymbolName).toBe('calendar');
   });
 
-  it('keeps countdown primary and adds the absolute start time box', () => {
+  it('keeps countdown primary without a duplicate absolute-time box', () => {
+    // The absolute start time lives at the status slider trailing (endpoint
+    // style); a second "At" tile was the same time twice on one card.
     const boxes = buildMetricBoxes(state, NOW);
     expect(boxes[0]?.title).toBe('Starts in');
-    expect(boxes.some((box) => box.title === 'At')).toBe(true);
+    expect(boxes.some((box) => box.title === 'At')).toBe(false);
     expect(boxes.some((box) => box.title === 'Next in')).toBe(false);
   });
 });

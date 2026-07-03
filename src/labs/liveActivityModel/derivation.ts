@@ -440,32 +440,50 @@ function buildFlightDepartureMetricBoxes(args: {
     }),
   );
 
-  const terminalLine = terminalLabel != null ? `Terminal ${terminalLabel}` : 'Terminal TBD';
-  const gateLine = gateLabel != null ? `Gate ${gateLabel}` : 'Gate TBD';
-  boxes.push(
-    makeMetricBox({
-      title: terminalLine,
-      value: gateLine,
-      detail: null,
-      emphasis: 'white',
-      kind: 'terminal',
-    }),
-  );
+  // Mirror of the native absent-data contract: no placeholders — a missing
+  // field yields its tile, a half-known pair collapses to the known half.
+  if (gateLabel != null || terminalLabel != null) {
+    boxes.push(
+      makeMetricBox({
+        title:
+          gateLabel != null && terminalLabel != null
+            ? `Terminal ${terminalLabel}`
+            : '',
+        value: gateLabel != null ? `Gate ${gateLabel}` : `Terminal ${terminalLabel}`,
+        detail: null,
+        emphasis: 'white',
+        kind: 'terminal',
+        showsTitle: gateLabel != null && terminalLabel != null,
+      }),
+    );
+  }
 
-  const seatLine = seatLabel != null ? `Seat ${seatLabel}` : 'Seat TBD';
   const destinationLine = [airports.destination, destinationWeather]
     .filter((v): v is string => v != null && v.length > 0)
     .join(' • ');
-  boxes.push(
-    makeMetricBox({
-      title: '',
-      value: seatLine,
-      detail: destinationLine.length === 0 ? airports.destination : destinationLine,
-      emphasis: 'white',
-      kind: 'seat',
-      showsTitle: false,
-    }),
-  );
+  if (seatLabel != null) {
+    boxes.push(
+      makeMetricBox({
+        title: '',
+        value: `Seat ${seatLabel}`,
+        detail: destinationLine.length === 0 ? airports.destination : destinationLine,
+        emphasis: 'white',
+        kind: 'seat',
+        showsTitle: false,
+      }),
+    );
+  } else if (destinationLine.length > 0) {
+    boxes.push(
+      makeMetricBox({
+        title: '',
+        value: destinationLine,
+        detail: null,
+        emphasis: 'white',
+        kind: 'arrival',
+        showsTitle: false,
+      }),
+    );
+  }
   return boxes;
 }
 
@@ -477,41 +495,64 @@ function buildFlightArrivalMetricBoxes(args: {
 }): MetricBox[] {
   const seatValue = detailItemValue(['seat'], args.detailRecords);
   const destinationWeather = compactDestinationWeather(args.detailRecords);
-  const terminalLabel = detailItemValue(['terminal'], args.detailRecords) ?? 'TBD';
-  const gateLabel = detailItemValue(['gate'], args.detailRecords) ?? 'TBD';
+  const terminalLabel = detailItemValue(['terminal'], args.detailRecords);
+  const gateLabel = detailItemValue(['gate'], args.detailRecords);
   const baggageClaim = detailItemValue(['baggage', 'bags'], args.detailRecords);
-  const delay = delaySummary(args.startAt, args.scheduledStartAt);
 
-  const boxes: MetricBox[] = [
-    makeMetricBox({
-      title: 'Weather',
-      value: destinationWeather != null && destinationWeather.length > 0 ? destinationWeather : '--',
-      detail: null,
-      emphasis: destinationWeather != null && destinationWeather.length > 0 ? 'white' : 'secondary',
-      kind: 'status',
-    }),
-  ];
-  boxes.push(
-    makeMetricBox({
-      title: `Terminal ${terminalLabel}`,
-      value: `Gate ${gateLabel}`,
-      detail: null,
-      emphasis: 'white',
-      kind: 'terminal',
-      showsTitle: true,
-    }),
-  );
-  const topLine = seatValue != null ? `Seat ${seatValue}` : 'Baggage';
-  const bottomLine = baggageClaim ?? delay.text;
-  boxes.push(
-    makeMetricBox({
-      title: topLine,
-      value: bottomLine,
-      detail: null,
-      emphasis: 'white',
-      kind: seatValue != null ? 'seat' : 'baggage',
-    }),
-  );
+  // Mirror of the native absent-data contract: no "--"/"TBD" placeholders.
+  const boxes: MetricBox[] = [];
+  if (destinationWeather != null && destinationWeather.length > 0) {
+    boxes.push(
+      makeMetricBox({
+        title: 'Weather',
+        value: destinationWeather,
+        detail: null,
+        emphasis: 'white',
+        kind: 'status',
+      }),
+    );
+  }
+  if (gateLabel != null || terminalLabel != null) {
+    boxes.push(
+      makeMetricBox({
+        title:
+          gateLabel != null && terminalLabel != null
+            ? `Terminal ${terminalLabel}`
+            : '',
+        value: gateLabel != null ? `Gate ${gateLabel}` : `Terminal ${terminalLabel}`,
+        detail: null,
+        emphasis: 'white',
+        kind: 'terminal',
+        showsTitle: gateLabel != null && terminalLabel != null,
+      }),
+    );
+  }
+  const delayText =
+    args.scheduledStartAt != null
+      ? delaySummary(args.startAt, args.scheduledStartAt).text
+      : null;
+  const bottomLine = baggageClaim ?? delayText;
+  if (bottomLine != null) {
+    boxes.push(
+      makeMetricBox({
+        title: seatValue != null ? `Seat ${seatValue}` : 'Baggage',
+        value: bottomLine,
+        detail: null,
+        emphasis: 'white',
+        kind: seatValue != null ? 'seat' : 'baggage',
+      }),
+    );
+  } else if (seatValue != null) {
+    boxes.push(
+      makeMetricBox({
+        title: 'Seat',
+        value: seatValue,
+        detail: null,
+        emphasis: 'white',
+        kind: 'seat',
+      }),
+    );
+  }
   return prioritizeMetricBoxes(boxes);
 }
 
@@ -523,7 +564,7 @@ function buildFlightArrivedMetricBoxes(args: {
   nextUpSecondaryText?: string;
   now: Date;
 }): MetricBox[] {
-  const baggageValue = detailItemValue(['baggage', 'bags'], args.detailRecords) ?? 'TBD';
+  const baggageValue = detailItemValue(['baggage', 'bags'], args.detailRecords);
   const weatherValue = compactDestinationWeather(args.detailRecords);
   const destinationInfo = splitPrimaryAndSecondaryInfo(args.nextUpSecondaryText);
   const cleanedNextUpTitle =
@@ -543,16 +584,20 @@ function buildFlightArrivedMetricBoxes(args: {
     ? destinationInfo.primary ?? shortenedSecondaryAddress ?? args.nextUpSecondaryText ?? null
     : shortenedSecondaryAddress ?? args.nextUpSecondaryText ?? null;
 
-  const boxes: MetricBox[] = [
-    makeMetricBox({
-      title: 'Baggage',
-      value: baggageValue,
-      detail: null,
-      emphasis: 'white',
-      kind: 'baggage',
-      showsTitle: true,
-    }),
-  ];
+  // Mirror of the native absent-data contract: no "Baggage TBD" placeholder.
+  const boxes: MetricBox[] = [];
+  if (baggageValue != null) {
+    boxes.push(
+      makeMetricBox({
+        title: 'Baggage',
+        value: baggageValue,
+        detail: null,
+        emphasis: 'white',
+        kind: 'baggage',
+        showsTitle: true,
+      }),
+    );
+  }
 
   if (args.nextUpStartAt != null) {
     boxes.push(
@@ -597,16 +642,18 @@ function buildFlightArrivedMetricBoxes(args: {
     );
   }
 
-  boxes.push(
-    makeMetricBox({
-      title: 'Weather',
-      value: weatherValue != null && weatherValue.length > 0 ? weatherValue : '--',
-      detail: null,
-      emphasis: weatherValue != null && weatherValue.length > 0 ? 'white' : 'secondary',
-      kind: 'status',
-      showsTitle: true,
-    }),
-  );
+  if (weatherValue != null && weatherValue.length > 0) {
+    boxes.push(
+      makeMetricBox({
+        title: 'Weather',
+        value: weatherValue,
+        detail: null,
+        emphasis: 'white',
+        kind: 'status',
+        showsTitle: true,
+      }),
+    );
+  }
   return prioritizeMetricBoxes(boxes);
 }
 

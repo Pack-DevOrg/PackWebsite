@@ -1434,13 +1434,16 @@ function buildDynamicIslandSurfaceModel(args: {
       const boardingTargetAt = addMinutes(args.startAt, -30);
       const gate = detailItemValue(['gate'], args.detailRecords);
       const terminal = detailItemValue(['terminal'], args.detailRecords);
+      const seat = detailItemValue(['seat'], args.detailRecords);
       const gateOrTerminal = gate ?? (terminal != null ? `T${terminal}` : null);
+      // Mirrors the native fallback chain: gate/terminal, then the seat, then
+      // EMPTY — never a mangled title word in the pill.
       return {
-        expandedLeadingText: gateOrTerminal ?? undefined,
+        expandedLeadingText: gateOrTerminal ?? seat ?? undefined,
         expandedText: undefined,
         expandedTrailingText: undefined,
         compactLeadingSymbolName: compactSymbol,
-        compactTrailingText: gateOrTerminal ?? compactTitleToken(args.currentTitle) ?? undefined,
+        compactTrailingText: gateOrTerminal ?? seat ?? undefined,
         minimalSymbolName: undefined,
         minimalText: undefined,
         showsCountdown: true,
@@ -1449,12 +1452,18 @@ function buildDynamicIslandSurfaceModel(args: {
     }
     case 'flight_arrival': {
       const seatText = detailItemValue(['seat'], args.detailRecords);
+      const arrivalGate = detailItemValue(['gate'], args.detailRecords);
+      const arrivalTerminal = detailItemValue(['terminal'], args.detailRecords);
+      const arrivalGateOrTerminal =
+        arrivalGate ?? (arrivalTerminal != null ? `T${arrivalTerminal}` : null);
+      // Mirrors the native fallback chain: seat, then arrival gate/terminal,
+      // then EMPTY — never a mangled title word in the pill.
       return {
         expandedLeadingText: undefined,
         expandedText: undefined,
         expandedTrailingText: seatText ?? undefined,
         compactLeadingSymbolName: compactSymbol,
-        compactTrailingText: seatText ?? compactTitleToken(args.currentTitle) ?? undefined,
+        compactTrailingText: seatText ?? arrivalGateOrTerminal ?? undefined,
         minimalSymbolName: undefined,
         minimalText: undefined,
         showsCountdown: true,

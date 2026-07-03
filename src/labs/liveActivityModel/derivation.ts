@@ -1131,7 +1131,11 @@ function buildTravelEventStatusBarModel(args: {
       reservedFraction: 0,
       markerFraction: progressFraction,
       startLabel: undefined,
-      endLabel: twelveHourClockLabel(args.startAt) ?? undefined,
+      // Mirrors the native change: during a LIVE event the trailing time is
+      // the endpoint, and the copy says so ("Ends 9:31 PM").
+      endLabel: twelveHourClockLabel(args.startAt) != null
+        ? `Ends ${twelveHourClockLabel(args.startAt)}`
+        : undefined,
       detailText: undefined,
       countdownEmphasis: 'white',
       progressColor: undefined,

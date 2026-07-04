@@ -380,41 +380,6 @@ export function delaySummary(
   return { text: `Delay -${Math.abs(minutes)}m`, emphasis: 'success' };
 }
 
-/**
- * Port of `leaveTimingSummary(startAt:driveMinutes:tsaMinutes:boardingBufferMinutes:now:)`.
- * Returns the leave-in value string, the leave-by date, the drive/TSA/board
- * detail line, and the emphasis color.
- */
-export function leaveTimingSummary(
-  startAt: Date,
-  driveMinutes: number | null | undefined,
-  tsaMinutes: number | null | undefined,
-  boardingBufferMinutes: number,
-  now: Date,
-): { value: string; valueDate: Date; detail: string; emphasis: EmphasisColor } {
-  const safeDriveMinutes = Math.max(0, driveMinutes ?? 0);
-  const safeTsaMinutes = Math.max(0, tsaMinutes ?? 10);
-  const requiredMinutes = safeDriveMinutes + safeTsaMinutes + boardingBufferMinutes;
-  const leaveByAt = new Date(startAt.getTime() - requiredMinutes * 60000);
-  // Swift: Int((leaveByAt - now) / 60) truncates toward zero.
-  const minutesUntilLeave = Math.trunc(
-    (leaveByAt.getTime() - now.getTime()) / 60000,
-  );
-  const detail = `Drive ${formatMinutes(safeDriveMinutes)} • TSA ${formatMinutes(
-    safeTsaMinutes,
-  )} • Board ${formatMinutes(boardingBufferMinutes)}`;
-  if (minutesUntilLeave >= 0) {
-    const emphasis: EmphasisColor = minutesUntilLeave <= 20 ? 'warning' : 'white';
-    return {
-      value: `in ${formatMinutes(minutesUntilLeave)}`,
-      valueDate: leaveByAt,
-      detail,
-      emphasis,
-    };
-  }
-  return { value: 'Now', valueDate: leaveByAt, detail, emphasis: 'danger' };
-}
-
 /** Port of `driveTimingDetailText(driveMinutes:tsaMinutes:)`. */
 export function driveTimingDetailText(
   driveMinutes: number | null | undefined,

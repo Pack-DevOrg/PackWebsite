@@ -166,6 +166,52 @@ export const flightDepartureSparse: ContentState = {
   ],
 };
 
+// WORST-CASE WIDTH stress fixture (mirror of native flightDepartureMaxWidth).
+// Widest legal content in every slot so spacing fit is verified: an 8h59m
+// countdown (boarding = startAt − 30m), long title/airline, wide gate/terminal,
+// 2-char-plus seat, sub-zero weather, long hotel next-up.
+export const flightDepartureMaxWidth: ContentState = {
+  primary: {
+    kind: 'flight_departure',
+    title: 'UA 8888 to San Francisco Intl',
+    startAt: minutesFromNow(8 * 60 + 59 + 30),
+    secondaryText: 'SFO - EWR',
+    details: [
+      record('flightLabel', 'Flight', 'UA 8888'),
+      record('boarding', 'Boarding', '11:30 PM'),
+      record('terminal', 'Terminal', '8'),
+      record('gate', 'Gate', 'C55'),
+      record('seat', 'Seat', '56K'),
+      record('drive', 'Drive:', '125m'),
+      record('tsa', 'TSA:', '45m'),
+      record('weather', 'Weather:', '-15'),
+    ],
+    flight: { originAirportCode: 'SFO', destinationAirportCode: 'EWR', airlineName: 'United Airlines' },
+  },
+  next: {
+    kind: 'hotel_checkin',
+    title: 'The Ritz-Carlton Battery Park',
+    startAt: minutesFromNow(8 * 60 + 59 + 30 + 300),
+    secondaryText: 'Two West Street, New York, NY 10004',
+    details: [],
+  },
+  travel: {
+    driveMinutes: 125,
+    tsaMinutes: 45,
+    leaveByAt: minutesFromNow(8 * 60 + 59 + 30 - (125 + 45)),
+  },
+  actions: [
+    {
+      id: 'primary',
+      title: 'Uber to airport',
+      url: 'https://m.uber.com/ul/?action=setPickup',
+      icon: 'car.fill',
+      style: 'primary',
+    },
+    { id: 'maps', title: 'Maps', url: 'http://maps.apple.com/?daddr=SFO', icon: 'map.fill', style: 'secondary' },
+  ],
+};
+
 export const flightArrival: ContentState = {
   primary: {
     kind: 'flight_arrival',
@@ -498,6 +544,7 @@ export const scrubberLanded: ContentState = makeScrubberState({
 export const LAB_FIXTURES: Record<string, ContentState> = {
   flight_departure: flightDeparture,
   flight_departure_sparse: flightDepartureSparse,
+  flight_departure_max_width: flightDepartureMaxWidth,
   flight_arrival: flightArrival,
   flight_arrival_delayed: flightArrivalDelayed,
   flight_arrived: flightArrived,

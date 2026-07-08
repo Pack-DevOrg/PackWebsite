@@ -572,9 +572,9 @@ const BarList = styled.div`
 
 const BarRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(7.25rem, 0.7fr) minmax(7rem, 1fr) 4.75rem;
-  gap: var(--space-2);
-  align-items: center;
+  grid-template-columns: minmax(7.25rem, 1fr) auto;
+  gap: 0.45rem var(--space-2);
+  align-items: end;
 
   @media (max-width: 520px) {
     grid-template-columns: 1fr;
@@ -593,6 +593,7 @@ const BarValue = styled.span`
   font-size: var(--font-size-small);
   font-weight: 700;
   text-align: right;
+  overflow-wrap: anywhere;
 
   @media (max-width: 520px) {
     text-align: left;
@@ -601,6 +602,7 @@ const BarValue = styled.span`
 
 const BarTrack = styled.span`
   display: block;
+  grid-column: 1 / -1;
   height: 0.8rem;
   overflow: hidden;
   border-radius: 999px;
@@ -665,6 +667,16 @@ const RubricDescription = styled.span`
 
 const maxShootoutCost = Math.max(...shootoutChartRows.map((row) => row.costUsd));
 const maxShootoutRuntime = Math.max(...shootoutChartRows.map((row) => row.runtimeMinutes));
+const packShootoutRow = shootoutChartRows.find((row) => row.system === "Pack");
+
+if (!packShootoutRow) {
+  throw new Error("Missing Pack shootout chart row");
+}
+
+const formatPackRelativeScale = (value: number, baseline: number): string => {
+  const multiple = value / baseline;
+  return multiple === 1 ? "1x Pack" : `${multiple.toFixed(1)}x Pack`;
+};
 
 const metricChartGroups = [
   {
@@ -679,20 +691,22 @@ const metricChartGroups = [
   },
   {
     title: "Total spend",
-    helper: "Full model and tool cost for each ten-case hard-set run.",
+    helper:
+      "Full model and tool cost for each ten-case hard-set run, with Pack-relative scale.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
-      label: row.costLabel,
+      label: `${row.costLabel} (${formatPackRelativeScale(row.costUsd, packShootoutRow.costUsd)})`,
       percent: (row.costUsd / maxShootoutCost) * 100,
       tone: row.tone,
     })),
   },
   {
     title: "Runtime",
-    helper: "Observed wait time for each ten-case hard-set evaluation.",
+    helper:
+      "Observed wait time for each ten-case hard-set evaluation, with Pack-relative scale.",
     rows: shootoutChartRows.map((row) => ({
       system: row.system,
-      label: row.runtimeLabel,
+      label: `${row.runtimeLabel} (${formatPackRelativeScale(row.runtimeMinutes, packShootoutRow.runtimeMinutes)})`,
       percent: (row.runtimeMinutes / maxShootoutRuntime) * 100,
       tone: row.tone,
     })),

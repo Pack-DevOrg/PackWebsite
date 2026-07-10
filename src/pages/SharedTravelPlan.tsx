@@ -73,9 +73,50 @@ const SharedTravelHotelOutlineChunkSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
+const SharedTravelCarRentalPickupOutlineChunkSchema = z.object({
+  id: z.string(),
+  type: z.literal('carRentalPickupOutline'),
+  carRentalId: z.string().optional(),
+  pickupCity: z.string(),
+  pickupDate: DateOnlyStringSchema,
+  days: z.number().int().positive().optional(),
+  pickupLocation: z.string().optional(),
+  company: z.string().optional(),
+  alreadyBooked: z.boolean().default(false),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
+const SharedTravelCarRentalDropoffOutlineChunkSchema = z.object({
+  id: z.string(),
+  type: z.literal('carRentalDropoffOutline'),
+  carRentalId: z.string().optional(),
+  returnCity: z.string().optional(),
+  returnDate: DateOnlyStringSchema,
+  returnLocation: z.string().optional(),
+  company: z.string().optional(),
+  alreadyBooked: z.boolean().default(false),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
+const SharedTravelActivityOutlineChunkSchema = z.object({
+  id: z.string(),
+  type: z.literal('activityOutline'),
+  title: z.string(),
+  location: z.string().optional(),
+  date: DateOnlyStringSchema,
+  time: z.string().optional(),
+  endDate: DateOnlyStringSchema.optional(),
+  category: z.string().optional(),
+  alreadyBooked: z.boolean().default(false),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
 const SharedTravelOutlineChunkSchema = z.union([
   SharedTravelFlightOutlineChunkSchema,
   SharedTravelHotelOutlineChunkSchema,
+  SharedTravelCarRentalPickupOutlineChunkSchema,
+  SharedTravelCarRentalDropoffOutlineChunkSchema,
+  SharedTravelActivityOutlineChunkSchema,
 ]);
 
 const SharedTravelChunkSchema = z.union([
@@ -83,6 +124,9 @@ const SharedTravelChunkSchema = z.union([
   SharedTravelHotelChunkSchema,
   SharedTravelFlightOutlineChunkSchema,
   SharedTravelHotelOutlineChunkSchema,
+  SharedTravelCarRentalPickupOutlineChunkSchema,
+  SharedTravelCarRentalDropoffOutlineChunkSchema,
+  SharedTravelActivityOutlineChunkSchema,
 ]);
 
 const SharedTravelDataSchema = z.object({

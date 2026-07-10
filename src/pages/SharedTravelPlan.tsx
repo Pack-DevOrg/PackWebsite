@@ -9,7 +9,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
-import { CalendarRange, Download, Plane, ShieldCheck, Sparkles, ExternalLink } from 'lucide-react';
+import { CalendarRange, Car, Download, Plane, ShieldCheck, Sparkles, Ticket, ExternalLink } from 'lucide-react';
 import { executeRecaptchaAction, loadRecaptchaScript } from '../utils/recaptcha';
 import { appConfig } from '../config/appConfig';
 import { useMountEffect } from '../hooks/useMountEffect';
@@ -170,6 +170,97 @@ const formatDate = (dateString: string, locale: SupportedLocale): string => {
       });
 };
 
+/** The date each chunk sorts/renders by, across all chunk types. */
+const chunkStartDate = (
+  chunk: SharedTravelChunk | SharedTravelOutlineChunk
+): string | undefined => {
+  switch (chunk.type) {
+    case 'hotel':
+    case 'hotelOutline':
+      return chunk.checkIn;
+    case 'carRentalPickupOutline':
+      return chunk.pickupDate;
+    case 'carRentalDropoffOutline':
+      return chunk.returnDate;
+    default:
+      // flight, flightOutline, activityOutline
+      return chunk.date;
+  }
+};
+
+type ChunkKind = 'flight' | 'hotel' | 'car' | 'event';
+
+/** Human-readable title, meta line, kind and optional detail for a chunk. */
+const describeChunk = (
+  chunk: SharedTravelChunk | SharedTravelOutlineChunk,
+  content: SharedTravelContent,
+  locale: SupportedLocale
+): { kind: ChunkKind; title: string; meta: string; detail?: string } => {
+  switch (chunk.type) {
+    case 'flight':
+      return {
+        kind: 'flight',
+        title: `${chunk.origin} -> ${chunk.destination}`,
+        meta: chunk.airline || content.flightLabel,
+        detail: chunk.flightNumber
+          ? `${content.flightLabel} ${chunk.flightNumber}`
+          : undefined,
+      };
+    case 'flightOutline':
+      return {
+        kind: 'flight',
+        title: `${chunk.origin} -> ${chunk.destination}`,
+        meta: content.flightLabel,
+      };
+    case 'hotel':
+      return {
+        kind: 'hotel',
+        title: chunk.name || chunk.location,
+        meta: content.stay,
+        detail: chunk.checkOut
+          ? `${content.checkOut}: ${formatDate(chunk.checkOut, locale)}`
+          : undefined,
+      };
+    case 'hotelOutline':
+      return {
+        kind: 'hotel',
+        title: chunk.location,
+        meta: content.stay,
+        detail: chunk.checkOut
+          ? `${content.checkOut}: ${formatDate(chunk.checkOut, locale)}`
+          : undefined,
+      };
+    case 'carRentalPickupOutline':
+      return {
+        kind: 'car',
+        title: chunk.company || content.carPickupLabel,
+        meta: content.carPickupLabel,
+        detail: chunk.pickupLocation || chunk.pickupCity,
+      };
+    case 'carRentalDropoffOutline':
+      return {
+        kind: 'car',
+        title: chunk.company || content.carReturnLabel,
+        meta: content.carReturnLabel,
+        detail: chunk.returnLocation || chunk.returnCity,
+      };
+    case 'activityOutline':
+      return {
+        kind: 'event',
+        title: chunk.title,
+        meta: content.eventLabel,
+        detail: chunk.location,
+      };
+  }
+};
+
+const CHUNK_ICONS: Record<ChunkKind, typeof Plane> = {
+  flight: Plane,
+  hotel: CalendarRange,
+  car: Car,
+  event: Ticket,
+};
+
 type SharedTravelContent = {
   fallbackSharedBy: string;
   invalidDescription: string;
@@ -203,6 +294,9 @@ type SharedTravelContent = {
   outlineHolds: string;
   alreadyBooked: string;
   checkOut: string;
+  carPickupLabel: string;
+  carReturnLabel: string;
+  eventLabel: string;
   invalidShareLink: string;
   securityUnavailable: string;
   sharedLinkNotFound: string;
@@ -245,6 +339,9 @@ const SHARED_TRAVEL_CONTENT: Record<SupportedLocale, SharedTravelContent> = {
     outlineHolds: 'Outline holds',
     alreadyBooked: 'Already booked',
     checkOut: 'Check-out',
+    carPickupLabel: 'Car pickup',
+    carReturnLabel: 'Car return',
+    eventLabel: 'Event',
     invalidShareLink: 'Invalid share link',
     securityUnavailable: 'Security verification unavailable; still trying to load the shared plan.',
     sharedLinkNotFound: 'Shared link not found or expired',
@@ -285,6 +382,9 @@ const SHARED_TRAVEL_CONTENT: Record<SupportedLocale, SharedTravelContent> = {
     outlineHolds: 'Elementos del esquema',
     alreadyBooked: 'Ya reservado',
     checkOut: 'Salida',
+    carPickupLabel: 'Recogida de auto',
+    carReturnLabel: 'Devolución de auto',
+    eventLabel: 'Evento',
     invalidShareLink: 'Enlace compartido no válido',
     securityUnavailable: 'La verificación de seguridad no está disponible; igualmente intentaremos cargar el plan.',
     sharedLinkNotFound: 'Enlace compartido no encontrado o expirado',
@@ -329,18 +429,10 @@ const buildIcs = (
   ];
 
   chunks.forEach((chunk, index) => {
-    const summary =
-      chunk.type === 'flight'
-        ? `${localizedContent.flightLabel}: ${chunk.origin} -> ${chunk.destination}`
-        : chunk.type === 'flightOutline'
-        ? `${localizedContent.plannedFlightLabel}: ${chunk.origin} -> ${chunk.destination}`
-        : `${localizedContent.stayLabel}: ${(chunk as SharedTravelHotelChunk | SharedTravelHotelOutlineChunk).name || chunk.location}`;
+    const described = describeChunk(chunk, localizedContent, 'en');
+    const summary = `${described.meta}: ${described.title}`;
 
-    const startDate =
-      chunk.type === 'hotel' || chunk.type === 'hotelOutline'
-        ? chunk.checkIn
-        : chunk.date;
-
+    const startDate = chunkStartDate(chunk);
     const formattedStart = startDate ? formatDateForIcs(startDate) : null;
     if (!formattedStart) {
       return;
@@ -351,17 +443,7 @@ const buildIcs = (
         ? formatDateForIcs(chunk.checkOut || chunk.checkIn, 1)
         : formatDateForIcs(startDate, 1);
 
-    const description =
-      chunk.type === 'flight' || chunk.type === 'flightOutline'
-        ? [
-            (chunk as SharedTravelFlightChunk | SharedTravelFlightOutlineChunk).airline,
-            (chunk as SharedTravelFlightChunk).flightNumber
-              ? `Flight ${(chunk as SharedTravelFlightChunk).flightNumber}`
-              : null,
-          ]
-            .filter(Boolean)
-            .join(' - ')
-        : chunk.location;
+    const description = described.detail ?? '';
 
     lines.push('BEGIN:VEVENT');
     lines.push(`UID:${shareId || 'shared-trip'}-${index}@trypackai.com`);
@@ -497,13 +579,7 @@ export const SharedTravelPlan: React.FC = () => {
       ...(travelPlan.chunks || []),
       ...(travelPlan.outlineChunks || []),
     ]
-      .map((chunk) => {
-        const startDate =
-          chunk.type === 'hotel' || chunk.type === 'hotelOutline'
-            ? chunk.checkIn
-            : chunk.date;
-        return { chunk, startDate };
-      })
+      .map((chunk) => ({ chunk, startDate: chunkStartDate(chunk) }))
       .filter((item): item is TimelineItem => Boolean(item.startDate));
 
     return items.sort(
@@ -707,17 +783,14 @@ export const SharedTravelPlan: React.FC = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {timelineItems.map((item) => {
                       const key = `${item.chunk.type}-${item.chunk.id}`;
-                      const isFlight =
-                        item.chunk.type === 'flight' || item.chunk.type === 'flightOutline';
-                      const title = isFlight
-                        ? `${item.chunk.origin} -> ${item.chunk.destination}`
-                        : (item.chunk as SharedTravelHotelChunk | SharedTravelHotelOutlineChunk).name ||
-                          item.chunk.location;
+                      const described = describeChunk(
+                        item.chunk,
+                        localizedContent,
+                        locale
+                      );
+                      const { title, meta, detail } = described;
+                      const ChunkIcon = CHUNK_ICONS[described.kind];
                       const dateLabel = formatDate(item.startDate, locale);
-                      const meta =
-                        item.chunk.type === 'flight' || item.chunk.type === 'flightOutline'
-                          ? (item.chunk as SharedTravelFlightChunk).airline || localizedContent.flightLabel
-                          : localizedContent.stay;
 
                       return (
                         <div key={key} style={styles.timelineItemRow}>
@@ -762,7 +835,7 @@ export const SharedTravelPlan: React.FC = () => {
                                 fontSize: '0.9rem',
                               }}
                             >
-                              {isFlight ? <Plane size={18} /> : <CalendarRange size={18} />}
+                              <ChunkIcon size={18} />
                               <span>{meta}</span>
                               {dateLabel && <strong style={{ color: palette.text }}>{dateLabel}</strong>}
                             </div>
@@ -776,18 +849,9 @@ export const SharedTravelPlan: React.FC = () => {
                             >
                               {title}
                             </div>
-                            {isFlight && (item.chunk as SharedTravelFlightChunk).flightNumber && (
+                            {detail && (
                               <div style={{ color: palette.textMuted, fontSize: '0.9rem' }}>
-                                {localizedContent.flightLabel} {(item.chunk as SharedTravelFlightChunk).flightNumber}
-                              </div>
-                            )}
-                            {!isFlight && (item.chunk as SharedTravelHotelChunk | SharedTravelHotelOutlineChunk).checkOut && (
-                              <div style={{ color: palette.textMuted, fontSize: '0.9rem' }}>
-                                {localizedContent.checkOut}:{' '}
-                                {formatDate(
-                                  (item.chunk as SharedTravelHotelChunk | SharedTravelHotelOutlineChunk).checkOut!,
-                                  locale
-                                )}
+                                {detail}
                               </div>
                             )}
                           </div>

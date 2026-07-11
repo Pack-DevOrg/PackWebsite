@@ -72,9 +72,9 @@ describe('flight_departure', () => {
 
   it('renders the tight leave-by countdown token from the island target', () => {
     const island = buildDynamicIslandModel(state, NOW);
-    // The leave-by override retargets the island countdown to leaveByAt (22m out).
+    // The leave-by override retargets the island countdown to leaveByAt (65m out).
     expect(island.countdownTargetAt).toBeDefined();
-    expect(conciseTimeRemaining(island.countdownTargetAt as Date, NOW)).toBe('22m');
+    expect(conciseTimeRemaining(island.countdownTargetAt as Date, NOW)).toBe('1h5m');
   });
 
   it('builds a travel status bar with a finite in-range progress fraction', () => {

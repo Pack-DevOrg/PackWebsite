@@ -24,7 +24,7 @@ export type EventKind =
 export type DetailValueKind = 'text' | 'phone' | 'email' | 'url';
 
 // Mirrors LiveActivityDetailRecordSchema. The widget looks values up by stable
-// `sourceKey` (e.g. "gate", "seat", "terminal", "baggage", "weather"); the
+// `sourceKey` (e.g. "gate", "seat", "terminal", "baggage_claim", "weather"); the
 // `label`/`value` pair carries the display pieces.
 export interface DetailRecord {
   sourceKey: string;
@@ -41,6 +41,10 @@ export interface FlightInfo {
   // Structured boarding instant driving the "Boards in" countdown; producers
   // stamp real boarding time when plausible, else departure − 35m.
   boardingAt?: Date;
+  // Structured scheduled/estimated arrival instant; lets native synthesize the
+  // in-flight phase card pre-takeoff. Producers stamp a real arrival datetime
+  // when one exists, else forward clock-delta from departure.
+  arrivalAt?: Date;
 }
 
 // Mirrors LiveActivityActionSchema.

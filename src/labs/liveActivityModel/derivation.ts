@@ -1479,11 +1479,14 @@ function buildDynamicIslandSurfaceModel(args: {
   detailRecords: DetailRecord[];
   secondaryText?: string;
   nextUpStartAt?: Date;
+  boardingAt?: Date;
 }): DynamicIslandModel {
   const compactSymbol = compactLeadingSymbolName(args.kind);
   switch (args.kind) {
     case 'flight_departure': {
-      const boardingTargetAt = addMinutes(args.startAt, -30);
+      // Prefer the structured content-state boarding instant; the constant is
+      // only the legacy fallback for states that predate flight.boardingAt.
+      const boardingTargetAt = args.boardingAt ?? addMinutes(args.startAt, -30);
       const gate = detailItemValue(['gate'], args.detailRecords);
       const terminal = detailItemValue(['terminal'], args.detailRecords);
       const seat = detailItemValue(['seat'], args.detailRecords);
@@ -1613,6 +1616,7 @@ export function buildDynamicIslandModel(state: ContentState, now: Date): Dynamic
     detailRecords,
     secondaryText: primary.secondaryText,
     nextUpStartAt: state.next?.startAt,
+    boardingAt: primary.flight?.boardingAt,
   });
   return applyLeaveByToIsland(base, state.travel?.leaveByAt, now);
 }

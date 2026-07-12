@@ -38,6 +38,9 @@ export interface FlightInfo {
   originAirportCode: string;
   destinationAirportCode: string;
   airlineName?: string;
+  // Structured boarding instant driving the "Boards in" countdown; producers
+  // stamp real boarding time when plausible, else departure − 35m.
+  boardingAt?: Date;
 }
 
 // Mirrors LiveActivityActionSchema.

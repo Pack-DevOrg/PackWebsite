@@ -80,7 +80,15 @@ export interface Travel {
 export interface ContentState {
   primary: EventStop;
   next?: EventStop;
+  // Trip-rail pager window: ordered future stops after `primary` (max 3);
+  // upcoming[0] is normally the same stop as `next`. The native pager walks
+  // [primary's flight phases] + upcoming.
+  upcoming?: EventStop[];
   travel?: Travel;
   phaseStartAt?: Date;
+  // Manually-focused pager position (absolute index into the synthesized card
+  // sequence); absent = follow the live/auto card. Mutated in place by the
+  // native prev/next intents; the server never emits it.
+  pagerFocus?: number;
   actions: Action[];
 }

@@ -21,9 +21,10 @@ function minutesFromNow(minutes: number): Date {
 // Native explicit absolute anchors for the primary flight-departure fixture.
 const flightDepartureReferenceStartAt = new Date(1_773_938_700 * 1000);
 const flightDepartureReferenceNextUpAt = new Date(1_773_950_400 * 1000);
-// startAt (snapshotNow + 134m) − drive(55) − tsa(14) = +65m.
-// Mirrors native flightDepartureReferenceLeaveByAt (drive + tsa, no buffer).
-const flightDepartureReferenceLeaveByAt = minutesFromNow(65);
+// startAt (snapshotNow + 134m) − drive(55) − tsa(14) − boarding buffer(30) = +35m.
+// Mirrors native flightDepartureReferenceLeaveByAt. The 30m is the FLIGHT
+// boarding buffer (arrive by boarding); ground/calendar events have none.
+const flightDepartureReferenceLeaveByAt = minutesFromNow(35);
 
 // Native scrubber anchors.
 const scrubberReferenceStartAt = minutesFromNow(35);
@@ -200,7 +201,8 @@ export const flightDepartureMaxWidth: ContentState = {
   travel: {
     driveMinutes: 125,
     tsaMinutes: 45,
-    leaveByAt: minutesFromNow(8 * 60 + 59 + 30 - (125 + 45)),
+    // drive + tsa + 30m flight boarding buffer (events have no buffer).
+    leaveByAt: minutesFromNow(8 * 60 + 59 + 30 - (125 + 45 + 30)),
   },
   actions: [
     {

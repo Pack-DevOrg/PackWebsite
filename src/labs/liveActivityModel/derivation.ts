@@ -1003,9 +1003,10 @@ function buildFlightDepartureStatusBarModel(args: {
   const safeDriveMinutes = Math.max(0, args.driveMinutes);
   const safeTsaMinutes = Math.max(0, args.tsaMinutes ?? 10);
   const fixedTravelWindowMinutes = STATUS_BAR_TRAVEL_WINDOW_MINUTES;
-  // drive + TSA exactly — mirrors the native leave-by model ("leave" is
-  // coordinated to arrive on time, no early-arrival buffer).
-  const requiredMinutes = Math.max(1, safeDriveMinutes + safeTsaMinutes);
+  // drive + TSA + 30m boarding buffer — mirrors the native FLIGHT leave-by
+  // model (arrive by boarding, not by scheduled departure). Flights only:
+  // the ground/event branch has no buffer.
+  const requiredMinutes = Math.max(1, safeDriveMinutes + safeTsaMinutes + 30);
   const leaveByAt = addMinutes(args.startAt, -requiredMinutes);
   const minutesUntilLeave = ceilMinutesUntil(leaveByAt, args.now);
   const reservedWindowMinutes = Math.min(requiredMinutes, fixedTravelWindowMinutes);

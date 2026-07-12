@@ -2419,6 +2419,27 @@ function renderCaptureMode(
   );
 }
 
+// CANONICAL-SOURCE NOTICE: this lab is a hand-maintained TS recreation of the
+// native SwiftUI surfaces and it DRIFTS. The source of truth for how the Live
+// Activities actually render is the real-render labs gallery in PackApp —
+// `npm run live-activity:suite` → manual-live-activity-review/index.html
+// (640-cell matrix of real ImageRenderer pixels per state × phase × device ×
+// surface, plus on-device ActivityKit captures). Verify against that gallery,
+// not this recreation.
+const CanonicalGalleryBanner = styled.div`
+  margin: 16px 0 4px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 212, 49, 0.45);
+  border-radius: 12px;
+  background: rgba(255, 212, 49, 0.08);
+  font-size: 13px;
+  line-height: 1.5;
+
+  code {
+    font-size: 12px;
+  }
+`;
+
 const LiveActivityLab: React.FC = () => {
   const { locale } = useI18n();
   const [nativeReviewVersion, setNativeReviewVersion] = useState(() =>
@@ -2454,6 +2475,14 @@ const LiveActivityLab: React.FC = () => {
           <Eyebrow>{localizedContent.eyebrow}</Eyebrow>
           <Title>{localizedContent.title}</Title>
           <Intro>{localizedContent.reviewIntro}</Intro>
+          <CanonicalGalleryBanner>
+            This lab is a TypeScript recreation and drifts from the native
+            widget. The canonical source of truth is the real-render labs
+            gallery in PackApp: run <code>npm run live-activity:suite</code>{" "}
+            and open <code>manual-live-activity-review/index.html</code> — the
+            full real-pixel matrix (state × phase × device × surface) plus
+            on-device ActivityKit captures.
+          </CanonicalGalleryBanner>
         </Header>
 
         <ScreenshotSection data-lab-root="live-activity">

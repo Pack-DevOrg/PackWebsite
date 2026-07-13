@@ -134,17 +134,31 @@ export function compactDestinationWeather(records: DetailRecord[]): string | nul
   return `${digits}°`;
 }
 
-/** Port of `compactLeadingLocation(_:)`. */
-export function compactLeadingLocation(raw: string | null | undefined): string | null {
+/**
+ * Port of `trimmedNonEmpty(_:)`. Producers ship ready-to-render display
+ * strings now, so no comma/segment surgery happens here.
+ */
+export function trimmedNonEmpty(raw: string | null | undefined): string | null {
   if (raw == null) {
     return null;
   }
   const trimmed = trim(raw);
-  if (trimmed.length === 0) {
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+/**
+ * Port of `expandedLocationDetail(_:)`. KEPT (not dead): the CLIENT producer
+ * still joins hotel/activity secondaryText as "day label • display address",
+ * so this drops that leading day segment; a plain display address passes
+ * through unchanged.
+ */
+export function expandedLocationDetail(raw: string | null | undefined): string | null {
+  const trimmed = trimmedNonEmpty(raw);
+  if (trimmed == null) {
     return null;
   }
-  const firstSegment = trimmed.split(',')[0]?.trim();
-  return firstSegment != null && firstSegment.length > 0 ? firstSegment : trimmed;
+  const tail = trimmed.split('•').at(-1)?.trim();
+  return tail != null && tail.length > 0 ? tail : trimmed;
 }
 
 /** Port of `compactTitleToken(_:)`. */
@@ -213,34 +227,6 @@ export function hotelCompactToken(raw: string | null | undefined): string | null
     return firstMeaningful;
   }
   return compactTitleToken(raw);
-}
-
-/** Port of `splitPrimaryAndSecondaryInfo(_:)`. */
-export function splitPrimaryAndSecondaryInfo(
-  raw: string | null | undefined,
-): { primary: string | null; secondary: string | null } {
-  if (raw == null) {
-    return { primary: null, secondary: null };
-  }
-  const trimmed = trim(raw);
-  if (trimmed.length === 0) {
-    return { primary: null, secondary: null };
-  }
-  // Swift split(separator: ",", maxSplits: 1) => at most two parts.
-  const commaIndex = trimmed.indexOf(',');
-  let primary: string | null;
-  let secondary: string | null;
-  if (commaIndex === -1) {
-    primary = trim(trimmed);
-    secondary = null;
-  } else {
-    primary = trim(trimmed.slice(0, commaIndex));
-    secondary = trim(trimmed.slice(commaIndex + 1));
-  }
-  return {
-    primary: primary != null && primary.length > 0 ? primary : null,
-    secondary: secondary != null && secondary.length > 0 ? secondary : null,
-  };
 }
 
 // ---------------------------------------------------------------------------

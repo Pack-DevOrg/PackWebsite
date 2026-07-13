@@ -95,4 +95,8 @@ export interface ContentState {
   // native prev/next intents; the server never emits it.
   pagerFocus?: number;
   actions: Action[];
+  // The AT-AIRPORT rail card's action set (terminal amenities + terminal map),
+  // carried alongside `actions` on flight_departure payloads; the widget swaps
+  // it in when the at-airport card is focused and falls back to `actions`.
+  airportActions?: Action[];
 }

@@ -13,7 +13,7 @@ import type { Action, ContentState, DetailRecord } from './contentState';
 import {
   compactCountdownToken,
   compactDestinationWeather,
-  compactLeadingLocation,
+  expandedLocationDetail,
   compactLeadingSymbolName,
   compactTitleToken,
   delaySummary,
@@ -26,7 +26,7 @@ import {
   joinStatusParts,
   parseMinutes,
   shortTimeLabel,
-  splitPrimaryAndSecondaryInfo,
+  trimmedNonEmpty,
   trackClockLabel,
   twelveHourClockLabel,
 } from './helpers';
@@ -566,23 +566,20 @@ function buildFlightArrivedMetricBoxes(args: {
 }): MetricBox[] {
   const baggageValue = detailItemValue(['baggage', 'bags'], args.detailRecords);
   const weatherValue = compactDestinationWeather(args.detailRecords);
-  const destinationInfo = splitPrimaryAndSecondaryInfo(args.nextUpSecondaryText);
+  // Mirror of the simplified native `resolveArrivalDestination`: producers
+  // ship a display-clean address, so no comma/segment shortening happens here.
   const cleanedNextUpTitle =
     args.nextUpTitle != null ? args.nextUpTitle.replace(/^[\s]+|[\s]+$/g, '') : null;
   const normalizedNextUpTitle = cleanedNextUpTitle?.toLowerCase();
-  const shortenedSecondaryAddress =
-    splitPrimaryAndSecondaryInfo(destinationInfo.secondary).primary ??
-    destinationInfo.secondary;
   const isGenericDestinationTitle =
     normalizedNextUpTitle === 'hotel check-in' ||
     normalizedNextUpTitle === 'hotel' ||
     normalizedNextUpTitle === 'check-in';
-  const destinationName = !isGenericDestinationTitle
-    ? cleanedNextUpTitle ?? destinationInfo.primary ?? 'Hotel'
-    : destinationInfo.primary ?? 'Hotel';
-  const destinationDetail = !isGenericDestinationTitle
-    ? destinationInfo.primary ?? shortenedSecondaryAddress ?? args.nextUpSecondaryText ?? null
-    : shortenedSecondaryAddress ?? args.nextUpSecondaryText ?? null;
+  const destinationAddress = expandedLocationDetail(args.nextUpSecondaryText);
+  const destinationName =
+    (!isGenericDestinationTitle ? cleanedNextUpTitle : null) ?? destinationAddress ?? 'Hotel';
+  const destinationDetail =
+    destinationName === destinationAddress ? null : destinationAddress;
 
   // Mirror of the native absent-data contract: no "Baggage TBD" placeholder.
   const boxes: MetricBox[] = [];
@@ -667,16 +664,14 @@ function buildHotelCheckInMetricBoxes(args: {
   phaseStartAt?: Date;
   now: Date;
 }): MetricBox[] {
-  const hotelInfo = splitPrimaryAndSecondaryInfo(args.secondaryText);
   const addressValue = detailItemValue(['address'], args.detailRecords);
   const confirmationValue = detailItemValue(['confirmation', 'conf'], args.detailRecords);
   // Mirror of the native change: the hotel NAME is already the card title, so
   // the tiles carry the live check-in countdown, the address, and the conf.
+  // The secondaryText fallback only drops the client's "day label • " join.
   const addressLine =
     (addressValue != null && addressValue.length > 0 ? addressValue : null) ??
-    (hotelInfo.secondary != null && hotelInfo.secondary.length > 0
-      ? hotelInfo.secondary
-      : null);
+    expandedLocationDetail(args.secondaryText);
 
   const isCurrentlyAtEvent =
     args.phaseStartAt != null && args.phaseStartAt <= args.now && args.startAt > args.now;
@@ -1529,7 +1524,7 @@ function buildDynamicIslandSurfaceModel(args: {
       const minimalClaim = detailLabeledValue(['baggage', 'bags'], args.detailRecords);
       const carousel = detailItemValue(['baggage', 'bags'], args.detailRecords);
       const weather = compactDestinationWeather(args.detailRecords);
-      const fallbackLocation = compactLeadingLocation(args.secondaryText);
+      const fallbackLocation = trimmedNonEmpty(args.secondaryText);
       const expandedLeading = minimalClaim ?? weather;
       const fallbackArrivalToken = minimalClaim ?? weather ?? fallbackLocation ?? 'Landed';
       const arrivedTrailingText = carousel ?? weather ?? 'Landed';

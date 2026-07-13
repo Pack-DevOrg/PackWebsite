@@ -28,6 +28,7 @@ const SOURCE_EXT = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs']);
 // Import specifiers that must never appear in website source.
 const FORBIDDEN_SPECIFIERS = [
   /['"]@pack\/shared-lib(\/[^'"]*)?['"]/,
+  /['"]@pack\/server-secure(\/[^'"]*)?['"]/,
   /['"]@pack\/schemas\/[^'"]*\.server['"]/,
   /['"]@pack\/schemas\/generated-major-city-code-catalog['"]/,
   /['"]@pack\/schemas\/generated-locality-catalog-source['"]/,

@@ -3331,6 +3331,14 @@ const labsContent = {
         "Use labs as the internal review surface for creative output. Each section is separated so you can inspect surfaces, review exports, and compare variants without mixing contexts.",
       sections: [
         {
+          slug: "upcoming",
+          title: "Upcoming Field Dashboard",
+          description:
+            "Explore a personalized, time-sensitive view of trip fragments, calendar events, locations, and the next best action.",
+          href: "/labs/upcoming",
+          kicker: "Product concept",
+        },
+        {
           slug: "design-labs",
           title: "Design Labs",
           description:
@@ -3590,6 +3598,14 @@ const labsContent = {
       description:
         "Usa labs como la superficie interna de revisión para el trabajo creativo. Cada sección está separada para que puedas inspeccionar superficies, revisar exports y comparar variantes sin mezclar contextos.",
       sections: [
+        {
+          slug: "upcoming",
+          title: "Upcoming Field Dashboard",
+          description:
+            "Explora una vista personalizada y contextual de los proximos eventos, ubicaciones y acciones del viaje.",
+          href: "/labs/upcoming",
+          kicker: "Concepto de producto",
+        },
         {
           slug: "design-labs",
           title: "Design Labs",

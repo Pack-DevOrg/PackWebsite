@@ -148,6 +148,9 @@ const LabsSurfaceGalleryPage = labsEnabled
       return { default: module.LabsSurfaceGalleryPage };
     })
   : null;
+const LabsUpcomingPage = labsEnabled
+  ? React.lazy(() => import("../pages/UpcomingLab"))
+  : null;
 const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
 
 const LoadingScreenContainer = styled.div`
@@ -751,6 +754,16 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
         ) : null}
+        {LabsUpcomingPage ? (
+          <Route
+            path="/labs/upcoming"
+            element={
+              <Suspense fallback={null}>
+                <LabsUpcomingPage />
+              </Suspense>
+            }
+          />
+        ) : null}
         {LabsPage ? (
           <Route
             path="/labs/live-activities"
@@ -1059,6 +1072,9 @@ const NonHomeRoutes: React.FC = () => {
           ) : null}
           {LabsPlannerCorpusReviewPage ? (
             <Route path="labs/planner-corpus-review" element={<Layout><Suspense fallback={null}><LabsPlannerCorpusReviewPage /></Suspense></Layout>} />
+          ) : null}
+          {LabsUpcomingPage ? (
+            <Route path="labs/upcoming" element={<Suspense fallback={null}><LabsUpcomingPage /></Suspense>} />
           ) : null}
           {LabsPage ? (
             <Route path="labs/live-activities" element={<Layout><Suspense fallback={null}><LiveActivityLab /></Suspense></Layout>} />

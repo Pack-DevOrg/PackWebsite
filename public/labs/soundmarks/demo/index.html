@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pack Soundmark Demo</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Pack audio identity</p>
+          <h1 id="page-title">Soundmark demo</h1>
+          <p class="lede">
+            Compare short audio sketches for the moments when Pack captures,
+            organizes, or nudges a travel plan.
+          </p>
+        </div>
+        <div class="now-playing" aria-live="polite">
+          <span class="status-label">Now playing</span>
+          <strong id="nowPlaying">Nothing yet</strong>
+        </div>
+      </section>
+
+      <section class="sound-grid" aria-label="Soundmark options">
+        <article class="sound-card" data-sound="passport-stamp-chime">
+          <div>
+            <p class="use-case">Primary brand sound</p>
+            <h2>Passport Stamp Chime</h2>
+            <p>A tactile stamp click followed by a warm two-note lift.</p>
+          </div>
+          <button type="button" class="play-button" data-src="../passport-stamp-chime.wav">
+            Play
+          </button>
+        </article>
+
+        <article class="sound-card" data-sound="packed-chime">
+          <div>
+            <p class="use-case">Trip ready</p>
+            <h2>Packed Chime</h2>
+            <p>A clean rising confirmation for a completed itinerary.</p>
+          </div>
+          <button type="button" class="play-button" data-src="../packed-chime.wav">
+            Play
+          </button>
+        </article>
+
+        <article class="sound-card" data-sound="compass-ping">
+          <div>
+            <p class="use-case">Live travel update</p>
+            <h2>Compass Ping</h2>
+            <p>A bright locator tone for airport, route, or timing updates.</p>
+          </div>
+          <button type="button" class="play-button" data-src="../compass-ping.wav">
+            Play
+          </button>
+        </article>
+
+        <article class="sound-card" data-sound="pack-pulse">
+          <div>
+            <p class="use-case">Calm notification</p>
+            <h2>Pack Pulse</h2>
+            <p>A soft tap-and-tone reminder that feels useful, not urgent.</p>
+          </div>
+          <button type="button" class="play-button" data-src="../pack-pulse.wav">
+            Play
+          </button>
+        </article>
+
+        <article class="sound-card" data-sound="gentle-nudge">
+          <div>
+            <p class="use-case">Needs attention</p>
+            <h2>Gentle Nudge</h2>
+            <p>A tiny UI prompt for missing info or quiet reminders.</p>
+          </div>
+          <button type="button" class="play-button" data-src="../gentle-nudge.wav">
+            Play
+          </button>
+        </article>
+      </section>
+
+      <section class="scenario-panel" aria-labelledby="scenario-title">
+        <div>
+          <p class="eyebrow">Product moments</p>
+          <h2 id="scenario-title">Try it in context</h2>
+        </div>
+        <div class="scenario-list">
+          <button type="button" class="scenario" data-src="../passport-stamp-chime.wav">
+            <span>Email confirmation imported</span>
+            <strong>Passport Stamp Chime</strong>
+          </button>
+          <button type="button" class="scenario" data-src="../packed-chime.wav">
+            <span>Your trip is ready</span>
+            <strong>Packed Chime</strong>
+          </button>
+          <button type="button" class="scenario" data-src="../compass-ping.wav">
+            <span>Airport timing changed</span>
+            <strong>Compass Ping</strong>
+          </button>
+          <button type="button" class="scenario" data-src="../gentle-nudge.wav">
+            <span>Add traveler details</span>
+            <strong>Gentle Nudge</strong>
+          </button>
+        </div>
+      </section>
+
+      <section class="notes" aria-labelledby="notes-title">
+        <h2 id="notes-title">How to use these</h2>
+        <p>
+          Treat these as sketches, not final production assets. Pick the strongest
+          direction, then generate or commission polished variants in WAV and test
+          them on iPhone speakers at low volume.
+        </p>
+      </section>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

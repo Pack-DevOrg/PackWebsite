@@ -138,6 +138,9 @@ const SharedTravelDataSchema = z.object({
   createdAt: z.string().datetime(),
   sharedBy: z.string().optional(),
   thumbnailUrl: z.string().url().optional(),
+  heroImageUrl: z.string().url().optional(),
+  heroImageNightUrl: z.string().url().optional(),
+  destinationTimeZone: z.string().optional(),
 });
 
 const SharedTravelResponseSchema = z.object({
@@ -503,7 +506,35 @@ export const SharedTravelPlan: React.FC = () => {
   const ogTitle = rawTitle.length > 90 ? `${rawTitle.substring(0, 87)}...` : rawTitle;
   const ogDescription = rawDescription.length > 160 ? `${rawDescription.substring(0, 157)}...` : rawDescription;
 
+  // Destination hero art: the night variant between 19:00–06:00 in the
+  // destination's local time (matching the app's day/night tile window),
+  // otherwise the day variant.
+  const heroImage = useMemo(() => {
+    if (!travelPlan?.heroImageUrl) {
+      return undefined;
+    }
+    if (travelPlan.heroImageNightUrl && travelPlan.destinationTimeZone) {
+      try {
+        const hour = Number.parseInt(
+          new Intl.DateTimeFormat('en-US', {
+            timeZone: travelPlan.destinationTimeZone,
+            hour: 'numeric',
+            hourCycle: 'h23',
+          }).format(new Date()),
+          10,
+        );
+        if (Number.isInteger(hour) && (hour >= 19 || hour < 6)) {
+          return travelPlan.heroImageNightUrl;
+        }
+      } catch {
+        // Unknown timezone — fall through to the day image.
+      }
+    }
+    return travelPlan.heroImageUrl;
+  }, [travelPlan]);
+
   const ogImage =
+    heroImage ||
     travelPlan?.thumbnailUrl ||
     `${WEBSITE_URL}/images/share-card.png?v=20260410a`;
   const ogImageAlt = travelPlan?.title ? `${travelPlan.title} - Pack` : 'Shared travel plan on Pack';

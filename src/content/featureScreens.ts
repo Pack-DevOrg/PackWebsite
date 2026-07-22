@@ -90,15 +90,7 @@ export const FEATURE_SCREENS: readonly FeatureScreen[] = [
     caption: "The surface that's already working",
     blurb:
       "Forwarded confirmations, calendar events, live updates — Pack is organizing your travel before you even open the app.",
-    capabilitySlugs: ["trip-updates"],
-  },
-  {
-    id: "onboarding",
-    label: "Start",
-    caption: "Ready in under a minute",
-    blurb:
-      "Sign in, connect what you like, done. Pack is useful in the first minute, not after an hour of setup.",
-    capabilitySlugs: ["connected-accounts"],
+    capabilitySlugs: ["trip-updates", "connected-accounts"],
   },
 ];
 

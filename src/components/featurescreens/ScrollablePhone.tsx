@@ -35,6 +35,13 @@ const HeaderImage = styled.img`
   flex-shrink: 0;
   user-select: none;
   pointer-events: none;
+  /* Overlap the capture by 1px: fractional image heights otherwise leave a
+     sub-pixel gap where the frame background reads as a dark bar. The strip's
+     bottom rows and the capture's top rows are the same pixels, so the
+     overlap is invisible. */
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
 `;
 
 const ScrollViewport = styled.div`

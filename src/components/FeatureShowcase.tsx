@@ -7,7 +7,6 @@ import {
   CreditCard,
   Home,
   Luggage,
-  Rocket,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -20,6 +19,7 @@ import { FEATURE_SCREENS } from "@/content/featureScreens";
 import CarouselTabBand from "./CarouselTabBand";
 import FeaturePhone, { useFeatureMediaAvailable } from "./FeaturePhone";
 import ScrollablePhone from "./featurescreens/ScrollablePhone";
+import LiveActivityPhone from "./featurescreens/LiveActivityPhone";
 import { FEATURE_CAPTURES } from "@/content/featureCaptures";
 
 /**
@@ -228,7 +228,6 @@ const SCREEN_ICONS: Record<string, ReactNode> = {
   packs: <Users />,
   preferences: <SlidersHorizontal />,
   home: <Home />,
-  onboarding: <Rocket />,
 };
 
 export default function FeatureShowcase({ panels }: FeatureShowcaseProps) {
@@ -298,7 +297,10 @@ export default function FeatureShowcase({ panels }: FeatureShowcaseProps) {
             const capture = FEATURE_CAPTURES[screen.id];
             return (
               <DeckCard key={screen.id} $offset={offset} id={`feature-${screen.id}`}>
-                {capture ? (
+                {screen.id === "day-of" ? (
+                  // Day-of IS the Lock Screen: the real Live Activity golden.
+                  <LiveActivityPhone />
+                ) : capture ? (
                   // The real screen, scrollable — visitors explore it directly.
                   <ScrollablePhone
                     src={capture.src}

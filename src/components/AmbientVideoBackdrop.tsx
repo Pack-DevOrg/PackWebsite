@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 const Backdrop = styled.div`
   position: absolute;
@@ -18,7 +18,35 @@ const Video = styled.video`
      hero-ambient footage; the sky band is expendable. */
   object-position: 50% 72%;
   opacity: 0.78;
-  filter: saturate(1) brightness(0.88);
+  /* Soft-focus treatment: the gentle blur (with a scale to hide its edge
+     halo) and crushed shadows make upscaling softness read as intentional
+     depth-of-field instead of low bitrate. */
+  transform: scale(1.06);
+  filter: saturate(1.05) brightness(0.84) contrast(1.07) blur(2.2px);
+`;
+
+/* Animated film grain over the footage — moving grain masks banding and
+   compression softness far better than a static texture (a still grain pane
+   reads as dirt). Same feTurbulence tile as Layout's GrainOverlay. */
+const grainShift = keyframes`
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-4%, 3%); }
+  50% { transform: translate(3%, -4%); }
+  75% { transform: translate(-3%, -2%); }
+  100% { transform: translate(4%, 2%); }
+`;
+
+const Grain = styled.div`
+  position: absolute;
+  inset: -6%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.11;
+  mix-blend-mode: overlay;
+  animation: ${grainShift} 0.9s steps(5) infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 /* Light legibility wash — the footage carries the emotion; only the frame
@@ -27,8 +55,9 @@ const Scrim = styled.div`
   position: absolute;
   inset: 0;
   background:
+    radial-gradient(120% 95% at 50% 42%, transparent 52%, rgba(8, 7, 6, 0.6) 100%),
     linear-gradient(90deg, rgba(8, 7, 6, 0.64) 0%, rgba(8, 7, 6, 0.36) 42%, rgba(8, 7, 6, 0.16) 100%),
-    linear-gradient(180deg, rgba(8, 7, 6, 0.2) 0%, transparent 26%, rgba(8, 7, 6, 0.72) 100%);
+    linear-gradient(180deg, rgba(8, 7, 6, 0.2) 0%, transparent 26%, rgba(8, 7, 6, 0.34) 64%, rgba(8, 7, 6, 0.9) 100%);
 `;
 
 interface AmbientVideoBackdropProps {
@@ -90,6 +119,7 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
       <Video autoPlay muted loop playsInline preload="metadata" poster={poster}>
         <source src={src} type="video/mp4" />
       </Video>
+      <Grain />
       <Scrim />
     </Backdrop>
   );

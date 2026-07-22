@@ -1,6 +1,5 @@
 import { useCallback, useRef } from "react";
 import styled from "styled-components";
-import { Menu } from "lucide-react";
 
 /**
  * The interactive feature phone: a REAL app capture — a tall stitched
@@ -8,8 +7,11 @@ import { Menu } from "lucide-react";
  * capture pipeline) — inside a phone shell whose content actually scrolls.
  * Desktop scrolls with the wheel or a drag; mobile scrolls natively. The
  * captures are content-band only (fixed app chrome is cropped so seams can
- * stitch), so the shell paints the status bar and Pack header itself.
+ * stitch); the fixed header is the app's REAL header, cropped from the same
+ * screenshots (rows 0-320), so shell and content are continuous pixels.
  */
+const APP_HEADER_SRC = "/images/feature-captures/app-header.webp";
+const APP_HEADER_ASPECT = 1320 / 320;
 const Frame = styled.div`
   width: 100%;
   aspect-ratio: 1206 / 2622;
@@ -25,44 +27,14 @@ const Frame = styled.div`
     0 24px 70px rgba(0, 0, 0, 0.55);
 `;
 
-const StatusBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.9rem 1.35rem 0.2rem;
-  color: #f5f1e8;
-  font-size: 0.72rem;
-  font-weight: 700;
+const HeaderImage = styled.img`
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: ${APP_HEADER_ASPECT};
   flex-shrink: 0;
-
-  i {
-    display: inline-block;
-    background: #f5f1e8;
-    border-radius: 2px;
-    margin-left: 0.28rem;
-  }
-`;
-
-const AppHeader = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  padding: 0.5rem 1.1rem 0.6rem;
-  flex-shrink: 0;
-
-  svg {
-    width: 17px;
-    height: 17px;
-    color: #f5f1e8;
-  }
-`;
-
-const Wordmark = styled.span`
-  justify-self: center;
-  color: #ff9800;
-  font-weight: 800;
-  font-size: 0.98rem;
-  letter-spacing: -0.01em;
+  user-select: none;
+  pointer-events: none;
 `;
 
 const ScrollViewport = styled.div`
@@ -101,6 +73,8 @@ type ScrollablePhoneProps = {
   readonly height: number;
   readonly alt: string;
   readonly eager?: boolean;
+  /** Single-screen capture with its own real chrome — skip the header strip. */
+  readonly fullBleed?: boolean;
 };
 
 export default function ScrollablePhone({
@@ -109,6 +83,7 @@ export default function ScrollablePhone({
   height,
   alt,
   eager,
+  fullBleed,
 }: ScrollablePhoneProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const drag = useRef<{ pointerId: number; lastY: number } | null>(null);
@@ -135,19 +110,16 @@ export default function ScrollablePhone({
 
   return (
     <Frame>
-      <StatusBar aria-hidden="true">
-        <span>9:41</span>
-        <span>
-          <i style={{ width: 14, height: 4 }} />
-          <i style={{ width: 8, height: 8, borderRadius: 4 }} />
-          <i style={{ width: 16, height: 7, opacity: 0.85 }} />
-        </span>
-      </StatusBar>
-      <AppHeader aria-hidden="true">
-        <Menu />
-        <Wordmark>Pack.</Wordmark>
-        <span />
-      </AppHeader>
+      {!fullBleed && (
+        <HeaderImage
+          src={APP_HEADER_SRC}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+        />
+      )}
       <ScrollViewport
         ref={viewportRef}
         onPointerDown={onPointerDown}

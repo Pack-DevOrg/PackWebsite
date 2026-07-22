@@ -25,6 +25,15 @@ const Video = styled.video`
   filter: saturate(1.05) brightness(0.84) contrast(1.07) blur(2.2px);
 `;
 
+/* Frost veil — a faint milky warm-white haze over the blurred footage, so the
+   treatment reads as frosted glass rather than an out-of-focus video. */
+const Frost = styled.div`
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 236, 0.07) 0%, rgba(255, 248, 236, 0.035) 45%, rgba(255, 248, 236, 0.015) 100%);
+`;
+
 /* Animated film grain over the footage — moving grain masks banding and
    compression softness far better than a static texture (a still grain pane
    reads as dirt). Same feTurbulence tile as Layout's GrainOverlay. */
@@ -119,6 +128,7 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
       <Video autoPlay muted loop playsInline preload="metadata" poster={poster}>
         <source src={src} type="video/mp4" />
       </Video>
+      <Frost />
       <Grain />
       <Scrim />
     </Backdrop>

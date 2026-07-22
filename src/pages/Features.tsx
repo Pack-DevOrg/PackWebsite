@@ -7,7 +7,7 @@ import {
   Shield,
   Clock,
   Brain,
-  Map,
+  Map as MapIcon,
   BadgeCheck,
   RefreshCw,
   Link2,
@@ -18,6 +18,7 @@ import {
 import WaitlistForm from "../components/WaitlistForm";
 import FeatureShowcase from "../components/FeatureShowcase";
 import PrefetchLink from "../components/PrefetchLink";
+import { FEATURE_SCREENS } from "@/content/featureScreens";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo from "@/seo/pageSeo";
 import {
@@ -74,21 +75,6 @@ const Subtitle = styled.p`
 
 
 
-
-const FeaturesGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
-  margin-bottom: var(--space-5);
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
 
 const SystemsSection = styled.section`
   display: grid;
@@ -165,68 +151,6 @@ const SystemDescription = styled.p`
   line-height: 1.55;
 `;
 
-const FeatureCard = styled(PrefetchLink)`
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--border-radius);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: var(--space-4);
-  display: grid;
-  gap: var(--space-3);
-  color: inherit;
-  text-decoration: none;
-  transition: transform 160ms ease-out, box-shadow 160ms ease-out;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-
-    &:hover {
-      transform: none;
-    }
-  }
-`;
-
-const FeatureHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-`;
-
-const FeatureIcon = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: rgba(243, 210, 122, 0.12);
-  border: 1px solid rgba(243, 210, 122, 0.2);
-  border-radius: 50%;
-  color: var(--color-accent);
-  flex-shrink: 0;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-`;
-
-const FeatureTitle = styled.h3`
-  font-size: var(--font-size-large);
-  margin-bottom: 0;
-  color: var(--color-text-primary);
-  font-weight: 600;
-`;
-
-const FeatureDescription = styled.p`
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-  font-size: var(--font-size-small);
-`;
-
 const ComparisonSection = styled.div`
   background: rgba(255, 255, 255, 0.03);
   border-radius: var(--border-radius);
@@ -292,7 +216,7 @@ const Features: React.FC = () => {
   const { locale, pathFor } = useI18n();
   const capabilityIcons: Record<CapabilityPageSlug, React.ReactNode> = {
     "travel-history": <Brain />,
-    "travel-stats": <Map />,
+    "travel-stats": <MapIcon />,
     "loyalty-details": <BadgeCheck />,
     "trip-planning-from-events": <Calendar />,
     "trip-updates": <RefreshCw />,
@@ -549,6 +473,18 @@ const Features: React.FC = () => {
           })),
         };
   const coreFeatures = localizedContent.coreFeatures;
+  // Tag each localized capability card into the demo screen that shows it,
+  // so the showcase panel can render them beside the right clip.
+  const featureBySlug = new Map(coreFeatures.map((feature) => [feature.href, feature]));
+  const showcasePanels = Object.fromEntries(
+    FEATURE_SCREENS.map((screen) => [
+      screen.id,
+      screen.capabilitySlugs.flatMap((slug) => {
+        const feature = featureBySlug.get(slug);
+        return feature ? [feature] : [];
+      }),
+    ]),
+  );
   const featuresSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -588,7 +524,7 @@ const Features: React.FC = () => {
         </Subtitle>
       </PageHeader>
 
-      <FeatureShowcase />
+      <FeatureShowcase panels={showcasePanels} />
 
       <SystemsSection>
         <ComparisonTitle>{localizedContent.systemsTitle}</ComparisonTitle>
@@ -602,23 +538,6 @@ const Features: React.FC = () => {
           ))}
         </SystemsGrid>
       </SystemsSection>
-
-      <div>
-        <FeaturesGrid>
-          {coreFeatures.map((feature, index) => (
-            <FeatureCard
-              key={index}
-              to={pathFor(`/${feature.href}`)}
-            >
-              <FeatureHeader>
-                <FeatureIcon>{feature.icon}</FeatureIcon>
-                <FeatureTitle>{feature.title}</FeatureTitle>
-              </FeatureHeader>
-              <FeatureDescription>{feature.description}</FeatureDescription>
-            </FeatureCard>
-          ))}
-        </FeaturesGrid>
-      </div>
 
       <ComparisonSection>
         <ComparisonTitle>

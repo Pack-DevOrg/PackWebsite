@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import WaitlistForm from "@/components/WaitlistForm";
 import PrefetchLink from "@/components/PrefetchLink";
+import FeaturePhone, { useFeatureMediaAvailable } from "@/components/FeaturePhone";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 import {
@@ -10,6 +11,7 @@ import {
   capabilityPageDefinitionMap,
   type CapabilityPageSlug,
 } from "@/content/capabilityPages";
+import { capabilityScreenMap } from "@/content/featureScreens";
 
 const PageContainer = styled.section`
   max-width: 1120px;
@@ -19,6 +21,50 @@ const PageContainer = styled.section`
   @media (min-width: 768px) {
     padding: var(--space-5) var(--space-4);
   }
+`;
+
+const PageGrid = styled.div<{ $withPhone: boolean }>`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+
+  @media (min-width: 1080px) {
+    grid-template-columns: ${({ $withPhone }) =>
+      $withPhone ? "minmax(13rem, 16rem) minmax(0, 1fr)" : "minmax(0, 1fr)"};
+    align-items: start;
+  }
+`;
+
+/* The demo clip of this feature's screen rides along as you read. */
+const PhoneRail = styled.aside`
+  display: none;
+
+  @media (min-width: 1080px) {
+    display: grid;
+    gap: var(--space-2);
+    position: sticky;
+    top: 5.5rem;
+  }
+`;
+
+const PhoneRailCaption = styled(PrefetchLink)`
+  justify-self: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  text-decoration: none;
+
+  b {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+`;
+
+const ContentColumn = styled.div`
+  min-width: 0;
 `;
 
 const Hero = styled.div`
@@ -310,6 +356,9 @@ interface CapabilityLandingPageProps {
 const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) => {
   const { pathFor } = useI18n();
   const page = capabilityPageDefinitionMap[slug];
+  const screen = capabilityScreenMap[slug];
+  const mediaAvailable = useFeatureMediaAvailable();
+  const withPhone = Boolean(screen) && mediaAvailable;
   const canonicalPath = `/${page.slug}`;
   const capabilitySchema = {
     "@context": "https://schema.org",
@@ -337,6 +386,22 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         path={canonicalPath}
         schema={[capabilitySchema]}
       />
+      <PageGrid $withPhone={withPhone}>
+        {withPhone && screen ? (
+          <PhoneRail>
+            <FeaturePhone
+              screenId={screen.id}
+              active
+              withVideo
+              loop
+              preload="auto"
+            />
+            <PhoneRailCaption to={pathFor("/features")}>
+              In the app: <b>{screen.label}</b> — see all screens
+            </PhoneRailCaption>
+          </PhoneRail>
+        ) : null}
+        <ContentColumn>
       <Hero>
         <Eyebrow>Pack feature</Eyebrow>
         <Title>{page.pageTitle}</Title>
@@ -442,6 +507,8 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         </CtaBody>
         <WaitlistForm />
       </CtaSection>
+        </ContentColumn>
+      </PageGrid>
     </PageContainer>
   );
 };

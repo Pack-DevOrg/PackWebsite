@@ -63,26 +63,28 @@ import type {
   PlanHotelOption,
 } from "./hero/heroJourneyData";
 
+// Re-captured 2026-07-22 from the current build: the luxury Tokyo journey
+// (ANA First / Park Hyatt / Panamera / $5,520 total) + the new stats screen.
 const heroJourneyStillAssets = {
   outline: {
-    src: "/images/hero-captures/plan-still.webp?v=2026-06-10-2",
+    src: "/images/hero-captures/plan-still.webp?v=2026-07-22",
     width: 1320,
-    height: 3576,
+    height: 4588,
   },
   search: {
-    src: "/images/hero-captures/search-still.webp?v=2026-06-10-2",
+    src: "/images/hero-captures/search-still.webp?v=2026-07-22",
     width: 1320,
-    height: 5249,
+    height: 6644,
   },
   booking: {
-    src: "/images/hero-captures/booking-still.webp?v=2026-06-10-2",
+    src: "/images/hero-captures/booking-still.webp?v=2026-07-22",
     width: 1320,
-    height: 6169,
+    height: 5475,
   },
   footprint: {
-    src: "/images/hero-captures/stats-still.webp?v=2026-06-10-2",
+    src: "/images/hero-captures/stats-still.webp?v=2026-07-22",
     width: 1320,
-    height: 6762,
+    height: 2709,
   },
 } as const;
 
@@ -202,7 +204,7 @@ const CopyScrim = styled.div`
   filter: blur(22px);
   transform: translateX(-2%);
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 
   @media (max-width: 979px) {
     width: 100%;
@@ -354,6 +356,8 @@ const MarqueeItem = styled.span`
 `;
 
 const HeroGrid = styled.div`
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 1.2rem;
   padding: clamp(0.85rem, 2.2vw, 1.2rem) clamp(1.5rem, 4vw, 3rem) clamp(2.6rem, 5vw, 4.5rem);

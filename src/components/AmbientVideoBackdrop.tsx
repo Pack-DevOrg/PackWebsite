@@ -1,10 +1,15 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 const Backdrop = styled.div`
   position: absolute;
   inset: 0;
-  z-index: -1;
+  /* z-index 0 (NOT -1): with a negative z-index the video sits "behind" the
+     host's near-opaque background in Chrome's occlusion model — it still
+     paints, but the browser judges it invisible and keeps pausing autoplay
+     (plays a couple frames per repaint). Hero content stacks above via its
+     own z-index. */
+  z-index: 0;
   border-radius: inherit;
   overflow: hidden;
   pointer-events: none;
@@ -57,11 +62,68 @@ interface AmbientVideoBackdropProps {
  * 200, so the content-type must actually be video/*). Honors reduced motion.
  */
 const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
-  src = "/videos/hero-ambient.mp4",
-  poster = "/videos/hero-ambient-poster.webp",
+  // Version the URLs whenever the asset is replaced: the file name never
+  // changes, so browser media caches and CloudFront would otherwise keep
+  // serving the previous video indefinitely.
+  src = "/videos/hero-ambient.mp4?v=20260723a",
+  poster = "/videos/hero-ambient-poster.webp?v=20260723a",
 }) => {
   const [isAvailable, setIsAvailable] = useState(false);
   const [allowsMotion, setAllowsMotion] = useState(true);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const resumeTimerRef = useRef<number | null>(null);
+
+  // Chrome opportunistically pauses muted autoplay video it judges occluded —
+  // its heuristic misfires behind the hero's overlay stack and playback ends
+  // up ratcheting a few frames per repaint. Whenever the tab is visible and
+  // the hero is in the viewport, make sure the loop is actually playing.
+  const ensurePlaying = useCallback(() => {
+    if (resumeTimerRef.current !== null) {
+      window.clearTimeout(resumeTimerRef.current);
+    }
+    resumeTimerRef.current = window.setTimeout(() => {
+      resumeTimerRef.current = null;
+      const video = videoRef.current;
+      if (!video || document.hidden) return;
+      const rect = video.getBoundingClientRect();
+      const inViewport = rect.bottom > 0 && rect.top < window.innerHeight;
+      if (inViewport && video.paused && !video.ended) {
+        void video.play().catch(() => undefined);
+      }
+    }, 150);
+  }, []);
+
+  const attachVideo = useCallback(
+    (video: HTMLVideoElement | null) => {
+      videoRef.current = video;
+      if (video) {
+        ensurePlaying();
+      }
+    },
+    [ensurePlaying],
+  );
+
+  useLayoutEffect(() => {
+    if (typeof document === "undefined") return undefined;
+    const onVisible = () => ensurePlaying();
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver === "function" && videoRef.current) {
+      observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) ensurePlaying();
+      });
+      observer.observe(videoRef.current);
+    }
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
+      observer?.disconnect();
+      if (resumeTimerRef.current !== null) {
+        window.clearTimeout(resumeTimerRef.current);
+      }
+    };
+  }, [ensurePlaying, isAvailable]);
 
   useLayoutEffect(() => {
     if (typeof window === "undefined" || typeof fetch !== "function") {
@@ -102,7 +164,16 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
 
   return (
     <Backdrop aria-hidden="true">
-      <Video autoPlay muted loop playsInline preload="metadata" poster={poster}>
+      <Video
+        ref={attachVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={poster}
+        onPause={ensurePlaying}
+      >
         <source src={src} type="video/mp4" />
       </Video>
       <Frost />

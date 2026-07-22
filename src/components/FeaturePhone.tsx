@@ -43,14 +43,21 @@ function pickDelivery(): {rendition: "" | "-small"; autoplay: boolean} {
   return {rendition: slow || smallLayout ? "-small" : "", autoplay: true};
 }
 
-/** HEAD-gate on the export manifest so SEO never depends on media assets. */
+/**
+ * HEAD-gate on the export manifest so SEO never depends on media assets.
+ * Checks content-type, not just status: the SPA's 404 fallback answers any
+ * missing path with index.html and HTTP 200, which would otherwise open the
+ * gate and render broken players when the clips aren't deployed.
+ */
 export function useFeatureMediaAvailable(): boolean {
   const [available, setAvailable] = useState(false);
   useEffect(() => {
     let cancelled = false;
     fetch(`${FEATURE_MEDIA_BASE}/features.json`, { method: "HEAD" })
       .then((response) => {
-        if (!cancelled && response.ok) setAvailable(true);
+        const isJson =
+          response.headers.get("content-type")?.includes("json") ?? false;
+        if (!cancelled && response.ok && isJson) setAvailable(true);
       })
       .catch(() => {});
     return () => {

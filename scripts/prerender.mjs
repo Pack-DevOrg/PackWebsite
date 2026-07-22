@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -109,8 +109,53 @@ async function prerender() {
   }
 }
 
+const escapeXml = (text) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/**
+ * Inject <video:video> entries for the feature demo clips into the /features
+ * sitemap URL, generated from the demo pipeline's manifest so the sitemap
+ * can never drift from the files actually shipped. The urlset already
+ * declares the video namespace; public/sitemap.xml stays hand-maintained
+ * and only the dist copy carries the generated entries.
+ */
+function injectVideoSitemapEntries() {
+  const sitemapPath = join(distDir, "sitemap.xml");
+  const manifestPath = join(distDir, "videos", "features", "features.json");
+  if (!existsSync(sitemapPath) || !existsSync(manifestPath)) return;
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  const base = "https://www.trypackai.com/videos/features";
+  const entries = manifest.features
+    .map(
+      (clip) => `    <video:video>
+      <video:thumbnail_loc>${base}/${clip.poster}</video:thumbnail_loc>
+      <video:title>${escapeXml(`Pack app demo — ${clip.title}`)}</video:title>
+      <video:description>${escapeXml(clip.blurb)}</video:description>
+      <video:content_loc>${base}/${clip.file}</video:content_loc>
+      <video:duration>${Math.max(1, Math.round(clip.duration))}</video:duration>
+      <video:publication_date>${manifest.recordedAt}</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:live>no</video:live>
+    </video:video>`,
+    )
+    .join("\n");
+  const sitemap = readFileSync(sitemapPath, "utf8");
+  const updated = sitemap.replace(
+    /(<url>\s*<loc>https:\/\/www\.trypackai\.com\/features<\/loc>[\s\S]*?)(<\/url>)/,
+    `$1${entries}\n  $2`,
+  );
+  if (updated === sitemap) {
+    throw new Error("[prerender] /features sitemap entry not found for video injection");
+  }
+  writeFileSync(sitemapPath, updated);
+  console.log(
+    `[prerender] Injected ${manifest.features.length} video sitemap entries for /features`,
+  );
+}
+
 prerender()
   .then(() => {
+    injectVideoSitemapEntries();
     process.exit(0);
   })
   .catch((error) => {

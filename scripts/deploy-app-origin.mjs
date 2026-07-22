@@ -151,6 +151,8 @@ run("aws", [
   "--delete",
   "--exclude",
   "assets/*",
+  "--exclude",
+  "videos/*",
 ]);
 run("aws", [
   "s3",
@@ -160,6 +162,18 @@ run("aws", [
   "--delete",
   "--cache-control",
   "public, max-age=31536000, immutable",
+]);
+// Feature demo clips: stable filenames (not fingerprinted), so a day of
+// browser cache — not immutable. Each deploy invalidates the edge, so the
+// CDN always serves the latest within minutes of a ship.
+run("aws", [
+  "s3",
+  "sync",
+  `${distDir}/videos/`,
+  `${appBucket}/videos/`,
+  "--delete",
+  "--cache-control",
+  "public, max-age=86400",
 ]);
 run("aws", [
   "s3",

@@ -8,6 +8,7 @@ import { FEATURE_SCREENS } from "@/content/featureScreens";
 import { orderedSeoGuideSlugs, seoGuideDefinitionMap } from "@/content/seoGuides";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo from "@/seo/pageSeo";
+import { createAllFeatureVideoSchemas } from "@/seo/videoSchema";
 import {
   capabilityPageDefinitionMap,
   capabilityPageDefinitions,
@@ -272,7 +273,7 @@ const Features: React.FC = () => {
         title="Pack Features | AI trip planning, booking, and travel organization"
         description="Explore Pack features for AI trip planning, booking, connected travel data, collaboration, and travel-day coordination."
         path="/features"
-        schema={[featuresSchema]}
+        schema={[featuresSchema, ...createAllFeatureVideoSchemas("/features")]}
       />
       <PageHeader>
         <Title>{localizedContent.pageTitle}</Title>

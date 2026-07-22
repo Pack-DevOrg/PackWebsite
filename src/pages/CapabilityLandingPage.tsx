@@ -8,6 +8,7 @@ import CarouselTabBand from "@/components/CarouselTabBand";
 import { capabilityIcons } from "@/components/capabilityIcons";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
+import { createFeatureVideoSchema } from "@/seo/videoSchema";
 import {
   capabilityPageDefinitionMap,
   type CapabilityPageSlug,
@@ -319,6 +320,11 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
   const mediaAvailable = useFeatureMediaAvailable();
   const withPhone = Boolean(screen) && mediaAvailable;
   const canonicalPath = `/${page.slug}`;
+  // The clip of this capability's screen plays in the page's phone rail;
+  // its VideoObject makes the page eligible for video indexing.
+  const videoSchema = screen
+    ? createFeatureVideoSchema(screen.id, canonicalPath)
+    : null;
   const capabilitySchema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -343,7 +349,7 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         title={`${page.pageTitle} | Pack`}
         description={page.pageSubtitle}
         path={canonicalPath}
-        schema={[capabilitySchema]}
+        schema={videoSchema ? [capabilitySchema, videoSchema] : [capabilitySchema]}
       />
       <BandWrap>
         <CarouselTabBand

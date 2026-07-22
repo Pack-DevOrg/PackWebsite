@@ -49,12 +49,6 @@ export const FEATURE_CAPTURES: Partial<Record<string, FeatureCapture>> = {
     height: 2709,
     alt: "Pack stats: 22.7 times around the earth, travel-day streaks, geography and records, and a world map of visited regions",
   },
-  "day-of": {
-    src: "/images/feature-captures/day-of.webp",
-    width: 1320,
-    height: 9096,
-    alt: "Pack trip details: destination, route map, day-by-day timeline with hotels and flights, trip statistics, and insights",
-  },
   packs: {
     src: "/images/feature-captures/packs.webp",
     width: 1320,
@@ -72,13 +66,6 @@ export const FEATURE_CAPTURES: Partial<Record<string, FeatureCapture>> = {
     width: 1320,
     height: 2868,
     alt: "Pack home: a live in-flight Live Activity, tonight's hotel and the queue, and the composer ready for the next trip",
-    fullBleed: true,
-  },
-  onboarding: {
-    src: "/images/feature-captures/onboarding.webp",
-    width: 1320,
-    height: 2868,
-    alt: "Pack welcome: sign in with Google, Apple, or SSO and start planning in under a minute",
     fullBleed: true,
   },
 };

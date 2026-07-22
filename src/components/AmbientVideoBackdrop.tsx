@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
 const Backdrop = styled.div`
   position: absolute;
@@ -18,44 +18,21 @@ const Video = styled.video`
      hero-ambient footage; the sky band is expendable. */
   object-position: 50% 72%;
   opacity: 0.78;
-  /* Soft-focus treatment: the gentle blur (with a scale to hide its edge
-     halo) and crushed shadows make upscaling softness read as intentional
-     depth-of-field instead of low bitrate. */
-  transform: scale(1.06);
-  filter: saturate(1.05) brightness(0.84) contrast(1.07) blur(2.2px);
+  /* The soft-focus look (blur, crushed shadows, living grain) is BAKED into
+     the mp4 by the encode pipeline. Do not add CSS filter/mix-blend layers on
+     this element — any per-frame filter or blend breaks the browser's
+     hardware video path and stutters at 60fps. */
 `;
 
 /* Frost veil — a faint milky warm-white haze over the blurred footage, so the
-   treatment reads as frosted glass rather than an out-of-focus video. */
+   treatment reads as frosted glass rather than an out-of-focus video. A plain
+   translucent gradient: no backdrop-filter, no blend mode, so it composites
+   for free above the hardware video layer. */
 const Frost = styled.div`
   position: absolute;
   inset: 0;
   background:
     linear-gradient(180deg, rgba(255, 248, 236, 0.07) 0%, rgba(255, 248, 236, 0.035) 45%, rgba(255, 248, 236, 0.015) 100%);
-`;
-
-/* Animated film grain over the footage — moving grain masks banding and
-   compression softness far better than a static texture (a still grain pane
-   reads as dirt). Same feTurbulence tile as Layout's GrainOverlay. */
-const grainShift = keyframes`
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-4%, 3%); }
-  50% { transform: translate(3%, -4%); }
-  75% { transform: translate(-3%, -2%); }
-  100% { transform: translate(4%, 2%); }
-`;
-
-const Grain = styled.div`
-  position: absolute;
-  inset: -6%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.11;
-  mix-blend-mode: overlay;
-  animation: ${grainShift} 0.9s steps(5) infinite;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
 `;
 
 /* Light legibility wash — the footage carries the emotion; only the frame
@@ -129,7 +106,6 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
         <source src={src} type="video/mp4" />
       </Video>
       <Frost />
-      <Grain />
       <Scrim />
     </Backdrop>
   );

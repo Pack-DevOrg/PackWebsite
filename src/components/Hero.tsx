@@ -321,8 +321,9 @@ const MarqueeItem = styled.span`
   padding: 0.66rem 0.98rem;
   border-radius: 999px;
   border: 1px solid rgba(243, 210, 122, 0.22);
-  background: rgba(10, 8, 6, 0.72);
-  backdrop-filter: blur(6px);
+  /* Solid fill, deliberately no backdrop-filter: blurring the moving video
+     behind each animating chip re-rasters every frame and stutters at 60fps. */
+  background: rgba(10, 8, 6, 0.82);
   color: rgba(255, 244, 214, 0.96);
   font-size: 0.68rem;
   letter-spacing: 0.1em;

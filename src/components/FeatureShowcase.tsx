@@ -19,6 +19,8 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { FEATURE_SCREENS } from "@/content/featureScreens";
 import CarouselTabBand from "./CarouselTabBand";
 import FeaturePhone, { useFeatureMediaAvailable } from "./FeaturePhone";
+import ScrollablePhone from "./featurescreens/ScrollablePhone";
+import { FEATURE_CAPTURES } from "@/content/featureCaptures";
 
 /**
  * The interactive features explorer. The shared CarouselTabBand on top walks
@@ -293,15 +295,27 @@ export default function FeatureShowcase({ panels }: FeatureShowcaseProps) {
             let offset = index - active;
             if (offset > count / 2) offset -= count;
             if (offset < -count / 2) offset += count;
+            const capture = FEATURE_CAPTURES[screen.id];
             return (
               <DeckCard key={screen.id} $offset={offset} id={`feature-${screen.id}`}>
-                <FeaturePhone
-                  screenId={screen.id}
-                  active={offset === 0}
-                  withVideo={mediaAvailable && Math.abs(offset) <= 1}
-                  preload={offset === 0 ? "auto" : "metadata"}
-                  onEnded={offset === 0 ? () => go(1) : undefined}
-                />
+                {capture ? (
+                  // The real screen, scrollable — visitors explore it directly.
+                  <ScrollablePhone
+                    src={capture.src}
+                    width={capture.width}
+                    height={capture.height}
+                    alt={capture.alt}
+                    eager={offset === 0}
+                  />
+                ) : (
+                  <FeaturePhone
+                    screenId={screen.id}
+                    active={offset === 0}
+                    withVideo={mediaAvailable && Math.abs(offset) <= 1}
+                    preload={offset === 0 ? "auto" : "metadata"}
+                    onEnded={offset === 0 ? () => go(1) : undefined}
+                  />
+                )}
               </DeckCard>
             );
           })}

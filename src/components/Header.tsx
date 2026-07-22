@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import styled from "styled-components";
+import { BorderBeam } from "@pack/web-effects/border-beam";
 import { shouldExposeTsaForCurrentHost } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
 import logoPMark from "@/assets/optimized/logo-mark-64.webp";
@@ -258,21 +259,23 @@ const Header: React.FC = () => {
                   {item.label}
                 </NavLink>
               ))}
-              <NavCta
-                to={`${pathFor("/")}#waitlist`}
-                onClick={(event) => {
-                  setIsMenuOpen(false);
-                  if (location.pathname === pathFor("/")) {
-                    const form = document.getElementById("waitlist");
-                    if (form) {
-                      event.preventDefault();
-                      form.scrollIntoView({ behavior: "smooth", block: "center" });
+              <BorderBeam size="sm" colorVariant="sunset" theme="dark">
+                <NavCta
+                  to={`${pathFor("/")}#waitlist`}
+                  onClick={(event) => {
+                    setIsMenuOpen(false);
+                    if (location.pathname === pathFor("/")) {
+                      const form = document.getElementById("waitlist");
+                      if (form) {
+                        event.preventDefault();
+                        form.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }
                     }
-                  }
-                }}
-              >
-                {t("nav.joinWaitlist")}
-              </NavCta>
+                  }}
+                >
+                  {t("nav.joinWaitlist")}
+                </NavCta>
+              </BorderBeam>
             </Navigation>
           </MobileNavigationPanel>
         </HeaderContainer>

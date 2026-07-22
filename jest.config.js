@@ -6,6 +6,12 @@ export default {
     '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
     '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/src/__mocks__/fileMock.js',
     '^@/(.*)$': '<rootDir>/src/$1',
+    // Vendored web effects: mock in jest. The real builds touch browser-only
+    // APIs (matchMedia, canvas) that jsdom provides inconsistently across
+    // suites, and resolving them through the workspace symlink pulls the
+    // repo-root react (invalid hook calls). Real components are covered by
+    // the browser preview and the SSR prerender build.
+    '^@pack/web-effects/.*$': '<rootDir>/src/__mocks__/webEffectsMock.tsx',
     // PackWebsite is part of a workspace and some deps may be hoisted to the repo root.
     // Prefer the website-local React copy so React + renderer resolve consistently (avoids invalid hook calls when the
     // root workspace pulls a different React major version).

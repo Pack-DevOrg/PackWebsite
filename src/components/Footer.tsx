@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { BorderBeam } from "@pack/web-effects/border-beam";
 import { Instagram, Linkedin, Twitter } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useTracking } from "./TrackingProvider";
@@ -238,7 +239,9 @@ const Footer = () => {
             {t("footer.ctaPrefix")}
             <CtaAccent>{t("footer.ctaAccent")}</CtaAccent>
           </CtaStatement>
-          <CtaLink to={`${pathFor("/")}#waitlist`}>{t("nav.joinWaitlist")}</CtaLink>
+          <BorderBeam size="sm" colorVariant="sunset" theme="dark">
+            <CtaLink to={`${pathFor("/")}#waitlist`}>{t("nav.joinWaitlist")}</CtaLink>
+          </BorderBeam>
         </CtaRow>
 
         <BottomRow>

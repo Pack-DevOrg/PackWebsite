@@ -2679,62 +2679,6 @@ const BookingFooter = styled.div`
     inset 0 1px 0 rgba(255, 248, 236, 0.04);
 `;
 
-const AppBottomComposer = styled.div`
-  position: absolute;
-  left: 0.88rem;
-  right: 0.88rem;
-  bottom: 0.88rem;
-  z-index: 3;
-  display: grid;
-  gap: 0.56rem;
-  padding: 0.82rem 0.86rem 0.76rem;
-  border-radius: 1.18rem;
-  background: rgba(46, 46, 46, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.32);
-`;
-
-const ComposerTopRow = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 0.42rem;
-  align-items: center;
-`;
-
-const ComposerPlaceholder = styled.span`
-  color: rgba(168, 168, 168, 0.92);
-  font-size: 0.75rem;
-`;
-
-const ComposerAction = styled.span<{ $filled?: boolean }>`
-  display: inline-grid;
-  place-items: center;
-  width: 2.02rem;
-  height: 2.02rem;
-  border-radius: 999px;
-  border: 1.5px solid rgba(240, 198, 45, 0.92);
-  background: ${({ $filled }) => ($filled ? "#f0c62d" : "transparent")};
-  color: ${({ $filled }) => ($filled ? "#191919" : "#f0c62d")};
-
-  svg {
-    width: 0.9rem;
-    height: 0.9rem;
-    stroke-width: 2;
-  }
-`;
-
-const ComposerToolbar = styled.div`
-  display: flex;
-  gap: 0.72rem;
-  color: rgba(168, 168, 168, 0.88);
-
-  svg {
-    width: 0.9rem;
-    height: 0.9rem;
-    stroke-width: 2;
-  }
-`;
-
 const OutlineActionBar = styled.div`
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;

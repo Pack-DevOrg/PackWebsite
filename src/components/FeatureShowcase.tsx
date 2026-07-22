@@ -1,7 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import styled from "styled-components";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarClock,
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
+  Home,
+  Luggage,
+  Rocket,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import PrefetchLink from "./PrefetchLink";
 import { useI18n } from "@/i18n/I18nProvider";
 import { FEATURE_SCREENS } from "@/content/featureScreens";
@@ -37,72 +51,89 @@ const Section = styled.section`
   gap: var(--space-3);
 `;
 
-const PillBar = styled.div`
+/* The app's CarouselTabs, translated: an underline tab track flush inside a
+   hairline header band, flanked by the day-pager's bare chevrons. Flat
+   surfaces, no fills, no borders on the segments themselves — the sliding
+   saffron underline is the only accent, exactly like the app. */
+const TabBand = styled.div`
   display: grid;
   grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: stretch;
+  gap: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 `;
 
-const PillScroller = styled.nav`
+const TabTrack = styled.nav`
+  position: relative;
   display: flex;
-  gap: 0.35rem;
+  align-items: stretch;
+  height: 42px;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding: 0.15rem 0.1rem;
 
   &::-webkit-scrollbar {
     display: none;
   }
-
-  @media (min-width: ${RAIL_BREAKPOINT}px) {
-    justify-content: center;
-    flex-wrap: wrap;
-    overflow-x: visible;
-  }
 `;
 
-const Pill = styled.button<{ $active: boolean }>`
-  flex-shrink: 0;
-  border: 1px solid
-    ${({ $active }) =>
-      $active ? "var(--color-accent)" : "rgba(243, 210, 122, 0.16)"};
-  color: ${({ $active }) => ($active ? "var(--color-accent)" : "#b9b3a6")};
-  background: ${({ $active }) =>
-    $active ? "rgba(243, 210, 122, 0.08)" : "transparent"};
-  border-radius: 999px;
-  padding: 0.34rem 0.8rem;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 140ms ease, color 140ms ease;
-
-  &:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-  }
-`;
-
-const AxisButton = styled.button`
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 50%;
-  border: 1px solid rgba(243, 210, 122, 0.24);
-  background: rgba(243, 210, 122, 0.06);
-  color: var(--color-accent);
-  font-size: 1rem;
-  line-height: 1;
-  cursor: pointer;
+const TabSegment = styled.button<{ $active: boolean }>`
+  flex: 1 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 140ms ease, background 140ms ease;
+  gap: 6px;
+  padding: 0 0.85rem;
+  border: 0;
+  background: transparent;
+  color: ${({ $active }) =>
+    $active ? "var(--color-text-primary)" : "var(--color-text-secondary)"};
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 160ms ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
 
   &:hover {
-    border-color: var(--color-accent);
-    background: rgba(243, 210, 122, 0.12);
+    color: var(--color-text-primary);
+  }
+`;
+
+const TabUnderline = styled.span`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  border-radius: 1.5px;
+  background: var(--color-accent);
+  transition: transform 180ms ease, width 180ms ease;
+  will-change: transform, width;
+`;
+
+const ArrowButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.55rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 160ms ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: var(--color-accent);
   }
 `;
 
@@ -272,13 +303,31 @@ const PanelFeatureDescription = styled.span`
   line-height: 1.5;
 `;
 
+const SCREEN_ICONS: Record<string, ReactNode> = {
+  plan: <Sparkles />,
+  search: <Search />,
+  book: <CreditCard />,
+  "day-of": <CalendarClock />,
+  trips: <Luggage />,
+  stats: <TrendingUp />,
+  packs: <Users />,
+  preferences: <SlidersHorizontal />,
+  home: <Home />,
+  onboarding: <Rocket />,
+};
+
+/* The underline stops short of the segment edges, like the app's 18px inset —
+   scaled down when a segment is narrow so it never collapses to nothing. */
+const underlineInset = (segmentWidth: number) => Math.min(18, segmentWidth * 0.18);
+
 export default function FeatureShowcase({ panels }: FeatureShowcaseProps) {
   const { pathFor } = useI18n();
   const [active, setActive] = useState(0);
   const mediaAvailable = useFeatureMediaAvailable();
   const sectionRef = useRef<HTMLElement | null>(null);
   const sectionInView = useRef(false);
-  const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const segmentRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const underlineRef = useRef<HTMLSpanElement | null>(null);
   const count = FEATURE_SCREENS.length;
 
   const go = useCallback(
@@ -319,37 +368,56 @@ export default function FeatureShowcase({ panels }: FeatureShowcaseProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [go]);
 
+  // Slide the underline beneath the active segment (measured, so it works
+  // for both the equal-width desktop track and the scrolled mobile track).
   useEffect(() => {
-    const pill = pillRefs.current[FEATURE_SCREENS[active].id];
-    pill?.scrollIntoView?.({ block: "nearest", inline: "center", behavior: "smooth" });
+    const place = () => {
+      const segment = segmentRefs.current[FEATURE_SCREENS[active].id];
+      const underline = underlineRef.current;
+      if (!segment || !underline) return;
+      const inset = underlineInset(segment.offsetWidth);
+      underline.style.width = `${Math.max(0, segment.offsetWidth - inset * 2)}px`;
+      underline.style.transform = `translateX(${segment.offsetLeft + inset}px)`;
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [active]);
+
+  useEffect(() => {
+    const segment = segmentRefs.current[FEATURE_SCREENS[active].id];
+    segment?.scrollIntoView?.({ block: "nearest", inline: "center", behavior: "smooth" });
   }, [active]);
 
   return (
     <Section ref={sectionRef} aria-label="Pack features, shown in the real app">
-      <PillBar>
-        <AxisButton type="button" aria-label="Previous screen" onClick={() => go(-1)}>
-          ‹
-        </AxisButton>
-        <PillScroller aria-label="Jump to a screen">
+      <TabBand>
+        <ArrowButton type="button" aria-label="Previous screen" onClick={() => go(-1)}>
+          <ChevronLeft aria-hidden="true" />
+        </ArrowButton>
+        <TabTrack aria-label="Jump to a screen" role="tablist">
           {FEATURE_SCREENS.map((screen, index) => (
-            <Pill
+            <TabSegment
               key={screen.id}
               ref={el => {
-                pillRefs.current[screen.id] = el;
+                segmentRefs.current[screen.id] = el;
               }}
               type="button"
+              role="tab"
               $active={index === active}
-              aria-current={index === active}
+              aria-selected={index === active}
               onClick={() => setActive(index)}
             >
+              {SCREEN_ICONS[screen.id]}
               {screen.label}
-            </Pill>
+            </TabSegment>
           ))}
-        </PillScroller>
-        <AxisButton type="button" aria-label="Next screen" onClick={() => go(1)}>
-          ›
-        </AxisButton>
-      </PillBar>
+          <TabUnderline ref={underlineRef} aria-hidden="true" />
+        </TabTrack>
+        <ArrowButton type="button" aria-label="Next screen" onClick={() => go(1)}>
+          <ChevronRight aria-hidden="true" />
+        </ArrowButton>
+      </TabBand>
       <ShowcaseGrid>
         <DeckViewport>
           {FEATURE_SCREENS.map((screen, index) => {

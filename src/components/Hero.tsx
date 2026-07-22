@@ -198,7 +198,7 @@ const CopyScrim = styled.div`
   bottom: 0;
   width: min(56%, 48rem);
   background:
-    linear-gradient(90deg, rgba(8, 7, 6, 0.74) 0%, rgba(8, 7, 6, 0.58) 56%, rgba(8, 7, 6, 0.36) 76%, rgba(8, 7, 6, 0.1) 100%);
+    linear-gradient(90deg, rgba(8, 7, 6, 0.86) 0%, rgba(8, 7, 6, 0.7) 56%, rgba(8, 7, 6, 0.46) 76%, rgba(8, 7, 6, 0.16) 100%);
   filter: blur(22px);
   transform: translateX(-2%);
   pointer-events: none;

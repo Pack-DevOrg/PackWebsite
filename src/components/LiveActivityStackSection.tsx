@@ -1,123 +1,74 @@
 import React from "react";
-import {
-  BedDouble,
-  Building2,
-  CalendarDays,
-  CarFront,
-  MapPinned,
-  Plane,
-  PlaneLanding,
-  PlaneTakeoff,
-  Ticket,
-  Wifi,
-  type LucideIcon,
-} from "lucide-react";
 import styled from "styled-components";
-import packLogo from "../assets/optimized/logo-mark-64.webp";
 import AccentWord from "./AccentWord";
 import SectionEyebrow from "./SectionEyebrow";
-import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useMountEffect } from "@/hooks/useMountEffect";
 
-type AccentTone = "flight" | "ground";
-type IconKey =
-  | "plane-takeoff"
-  | "plane"
-  | "plane-landing"
-  | "bed"
-  | "calendar"
-  | "car"
-  | "building"
-  | "seat"
-  | "map"
-  | "wifi";
+/**
+ * Lock-screen Live Activities, shown with the REAL widget renders: the
+ * lock-screen goldens from the app's SwiftUI review suite (the same assets
+ * the app's own onboarding shows), pixel-identical to the shipped widget.
+ * The section only paints the lock-screen backdrop (notch, clock, date) and
+ * the pile animation — the activity itself is never recreated in DOM.
+ * Regenerate the webp goldens if the Live Activity design changes:
+ * PackApp/assets/images/onboarding/live-activity-{flight,event}.webp.
+ */
+type ActivityKind = "flight" | "event";
 
-type MetricCard = {
-  title: string;
-  value: string;
-  detail?: string;
-  hideTitle?: boolean;
-  tone?: "accent" | "warning" | "neutral";
+const GOLDEN_ASPECT = 1116 / 466;
+
+const toneGlow: Record<ActivityKind, string> = {
+  flight: "rgba(240, 198, 45, 0.12)",
+  event: "rgba(126, 211, 139, 0.12)",
 };
 
-type ActionItem = {
-  label: string;
-  icon: IconKey;
-  primary?: boolean;
-};
-
-type ActionRow = {
-  label: string;
-  actions: ActionItem[];
-};
-
-type LiveState = {
-  key: string;
-  accent: AccentTone;
-  label: string;
-  title: string;
-  relativeCountdown: string;
-  icon: IconKey;
-  statusBar: {
-    accent?: AccentTone;
-    leadingText?: string;
-    countdownToken: string;
-    countdownCaption: string;
-    endLabel?: string;
-    progressFraction: number;
-    reservedFraction: number;
-    usesEndpointLabelStyleForEndText?: boolean;
-  };
-  shownMetrics: MetricCard[];
-  actionRows: ActionRow[];
+type ActivityCard = {
+  key: ActivityKind;
+  src: string;
+  alt: string;
   top: string;
   left: string;
   rotate: string;
 };
 
-const toneColors: Record<AccentTone, { accent: string; accentSoft: string; glow: string }> = {
-  flight: {
-    accent: "#f0c62d",
-    accentSoft: "rgba(240, 198, 45, 0.18)",
-    glow: "rgba(240, 198, 45, 0.12)",
+const activityCards: readonly ActivityCard[] = [
+  {
+    key: "flight",
+    src: "/images/live-activities/live-activity-flight.webp",
+    alt: "Pack flight Live Activity with boarding countdown, leave-by time, drive time, and security wait",
+    top: "0rem",
+    left: "1%",
+    rotate: "-5deg",
   },
-  ground: {
-    accent: "#7ed38b",
-    accentSoft: "rgba(126, 211, 139, 0.18)",
-    glow: "rgba(126, 211, 139, 0.12)",
+  {
+    key: "event",
+    src: "/images/live-activities/live-activity-event.webp",
+    alt: "Pack event Live Activity with start countdown, leave-by time, and venue",
+    top: "8rem",
+    left: "48%",
+    rotate: "6deg",
   },
-};
+];
 
-const metricToneColors = {
-  accent: {
-    background: "rgba(240, 198, 45, 0.12)",
-    border: "rgba(240, 198, 45, 0.2)",
-    value: "#f7d661",
+const localized = {
+  en: {
+    eyebrow: "Travel day",
+    titlePrefix: "Travel, kept ",
+    titleAccent: "current",
+    microcopy:
+      "Departure, arrival, and hotel check-in stay on the lock screen so you always know what happens next.",
+    lockScreenDate: "Tuesday, March 10",
   },
-  warning: {
-    background: "rgba(255, 175, 72, 0.12)",
-    border: "rgba(255, 175, 72, 0.2)",
-    value: "#ffcc86",
-  },
-  neutral: {
-    background: "rgba(255, 255, 255, 0.045)",
-    border: "rgba(255, 255, 255, 0.08)",
-    value: "rgba(255, 255, 255, 0.95)",
+  es: {
+    eyebrow: "Día de viaje",
+    titlePrefix: "Tu viaje, siempre ",
+    titleAccent: "al día",
+    microcopy:
+      "Salida, llegada y check-in del hotel permanecen en la pantalla de bloqueo para que siempre sepas qué sigue.",
+    lockScreenDate: "Martes, 10 de marzo",
   },
 } as const;
-
-const iconMap: Record<IconKey, LucideIcon> = {
-  "plane-takeoff": PlaneTakeoff,
-  plane: Plane,
-  "plane-landing": PlaneLanding,
-  bed: BedDouble,
-  calendar: CalendarDays,
-  car: CarFront,
-  building: Building2,
-  seat: Ticket,
-  map: MapPinned,
-  wifi: Wifi,
-};
 
 const Section = styled.section`
   display: grid;
@@ -167,10 +118,10 @@ const Microcopy = styled.p`
 
 const Pile = styled.div`
   position: relative;
-  min-height: 59rem;
+  min-height: 29rem;
 
   @media (max-width: 860px) {
-    min-height: 89rem;
+    min-height: 44rem;
     padding: 0 0.35rem;
   }
 `;
@@ -223,7 +174,7 @@ const LockScreenCropFrame = styled.div`
   }
 `;
 
-const LockScreenCrop = styled.div<{ $accent: AccentTone }>`
+const LockScreenCrop = styled.div<{ $kind: ActivityKind }>`
   position: relative;
   width: 100%;
   height: 100%;
@@ -232,7 +183,7 @@ const LockScreenCrop = styled.div<{ $accent: AccentTone }>`
   flex-direction: column;
   align-items: center;
   background:
-    radial-gradient(circle at top center, ${({ $accent }) => toneColors[$accent].glow}, transparent 24%),
+    radial-gradient(circle at top center, ${({ $kind }) => toneGlow[$kind]}, transparent 24%),
     linear-gradient(180deg, rgba(42, 42, 42, 0.92) 0%, rgba(20, 20, 20, 1) 54%, rgba(9, 9, 9, 1) 100%);
 
   @media (max-width: 860px) {
@@ -274,585 +225,20 @@ const LockScreenActivityWrap = styled.div`
   }
 `;
 
-const LiveActivityFrame = styled.div<{ $accent: AccentTone }>`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 361px;
-  padding: 10px;
-  border-radius: 26px;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(18, 18, 18, 0.98),
-      rgba(30, 30, 30, 0.94) 64%,
-      ${({ $accent }) => toneColors[$accent].glow}
-    );
-  border: 1px solid ${({ $accent }) => toneColors[$accent].accentSoft};
-
-  @media (max-width: 860px) {
-    gap: 6px;
-    width: min(100%, 340px);
-    padding: 12px;
-    border-radius: 24px;
-  }
-`;
-
-const TopRow = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 6px;
-  align-items: start;
-`;
-
-const DoneLogo = styled.img<{ $size: number }>`
-  width: ${({ $size }) => `${$size}px`};
-  height: ${({ $size }) => `${$size}px`};
-  object-fit: contain;
-`;
-
-const TitleBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TitleRow = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px;
-  align-items: start;
-  min-height: 24px;
-`;
-
-const LiveTitle = styled.div`
-  font-size: 0.92rem;
-  font-weight: 600;
-  line-height: 1.12;
-  color: rgba(255, 255, 255, 0.96);
-`;
-
-const CountdownCluster = styled.div`
-  min-width: 58px;
-  display: flex;
-  justify-content: flex-end;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.76rem;
-  font-weight: 600;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  font-family:
-    SFMono-Regular,
-    ui-monospace,
-    Menlo,
-    Monaco,
-    Consolas,
-    "Liberation Mono",
-    monospace;
-`;
-
-const StatusFrame = styled.div<{ $accent: AccentTone }>`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 7px 8px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid ${({ $accent }) => toneColors[$accent].accentSoft};
-`;
-
-const StatusRow = styled.div<{ $hasLeading: boolean }>`
-  display: grid;
-  grid-template-columns: ${({ $hasLeading }) =>
-    $hasLeading ? "max-content minmax(0, 1fr) max-content" : "minmax(0, 1fr) max-content"};
-  gap: 8px;
-  align-items: center;
-`;
-
-const LeadingText = styled.div`
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.64);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const Track = styled.div`
-  position: relative;
-  height: 6px;
-  overflow: visible;
-`;
-
-const TrackClip = styled.div`
-  position: relative;
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-`;
-
-const ProgressFill = styled.div<{ $width: number; $accent: AccentTone }>`
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: ${({ $width }) => `${Math.max(0, Math.min(1, $width)) * 100}%`};
-  background: ${({ $accent }) => toneColors[$accent].accent};
-`;
-
-const ReservedFill = styled.div<{ $width: number }>`
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: ${({ $width }) => `${Math.max(0, Math.min(1, $width)) * 100}%`};
-  background: rgba(255, 79, 102, 0.92);
-`;
-
-const Marker = styled.div<{ $left: number }>`
-  position: absolute;
-  top: 50%;
-  left: ${({ $left }) => `${Math.max(0, Math.min(1, $left)) * 100}%`};
-  width: 11px;
-  height: 11px;
-  border-radius: 999px;
-  background: rgba(210, 210, 210, 1);
-  transform: translate(-50%, -50%);
-  box-shadow:
-    0 0 0 1px rgba(8, 8, 8, 0.92),
-    0 1px 4px rgba(0, 0, 0, 0.35);
-`;
-
-const CountdownRail = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  line-height: 1;
-  gap: 0.14rem;
-  font-variant-numeric: tabular-nums;
-  font-family:
-    SFMono-Regular,
-    ui-monospace,
-    Menlo,
-    Monaco,
-    Consolas,
-    "Liberation Mono",
-    monospace;
-`;
-
-const CountdownValue = styled.div<{ $accent: AccentTone }>`
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: ${({ $accent }) => toneColors[$accent].accent};
-`;
-
-const EndpointValue = styled.div`
-  font-size: 0.72rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.64);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const MetricRow = styled.div<{ $count: number }>`
-  display: grid;
-  grid-template-columns: repeat(${({ $count }) => $count}, minmax(0, 1fr));
-  gap: 8px;
-`;
-
-const Metric = styled.div<{ $tone: keyof typeof metricToneColors }>`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 4px 6px 4px 7px;
-  border-radius: 12px;
-  background: ${({ $tone }) => metricToneColors[$tone].background};
-  border: 1px solid ${({ $tone }) => metricToneColors[$tone].border};
-`;
-
-const MetricTitle = styled.div`
-  font-size: 0.58rem;
-  color: rgba(255, 255, 255, 0.58);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
-  font-family:
-    SFMono-Regular,
-    ui-monospace,
-    Menlo,
-    Monaco,
-    Consolas,
-    "Liberation Mono",
-    monospace;
-`;
-
-const MetricValue = styled.div<{ $tone: keyof typeof metricToneColors }>`
-  font-size: 0.7rem;
-  font-weight: 600;
-  line-height: 1.12;
-  color: ${({ $tone }) => metricToneColors[$tone].value};
-`;
-
-const MetricDetail = styled.div`
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.2;
-`;
-
-const ActionDock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`;
-
-const ActionRowFrame = styled.div`
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  gap: 6px;
-  align-items: center;
-`;
-
-const ActionLabel = styled.div<{ $accent: AccentTone }>`
-  font-size: 0.58rem;
-  color: ${({ $accent }) => toneColors[$accent].accent};
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-family:
-    SFMono-Regular,
-    ui-monospace,
-    Menlo,
-    Monaco,
-    Consolas,
-    "Liberation Mono",
-    monospace;
-`;
-
-const ActionButtons = styled.div<{ $count: number }>`
-  display: grid;
-  grid-template-columns: repeat(${({ $count }) => Math.max(1, Math.min(2, $count))}, minmax(0, 1fr));
-  gap: 6px;
+const GoldenImage = styled.img`
+  display: block;
   width: 100%;
+  height: auto;
+  aspect-ratio: ${GOLDEN_ASPECT};
+  user-select: none;
+  pointer-events: none;
 `;
-
-const ActionPill = styled.div<{ $primary?: boolean; $accent: AccentTone }>`
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.32rem;
-  min-height: 32px;
-  padding: 6px 10px;
-  border-radius: 13px;
-  background: ${({ $primary }) => ($primary ? "#f0c62d" : "rgba(255, 255, 255, 0.05)")};
-  border: 1px solid ${({ $primary }) =>
-    $primary ? "rgba(255, 255, 255, 0.14)" : "rgba(255, 255, 255, 0.08)"};
-  color: ${({ $primary }) => ($primary ? "#131313" : "rgba(255,255,255,0.92)")};
-  font-size: 0.68rem;
-  font-weight: 600;
-  box-shadow: ${({ $primary, $accent }) =>
-    $primary ? `0 10px 24px ${toneColors[$accent].glow}` : "none"};
-`;
-
-const ActionIconWrap = styled.span`
-  display: inline-grid;
-  place-items: center;
-`;
-
-const liveActivityContent: Record<"en" | "es", { eyebrow: string; titlePrefix: string; titleAccent: string; microcopy: string; lockScreenDate: string; liveStates: LiveState[] }> = {
-  en: {
-    eyebrow: "Travel day",
-    titlePrefix: "Travel, kept ",
-    titleAccent: "current",
-    microcopy:
-      "Departure, arrival, and hotel check-in stay on the lock screen so you always know what happens next.",
-    lockScreenDate: "Tuesday, March 10",
-    liveStates: [
-      {
-        key: "flight_departure",
-        label: "Flight departure",
-        accent: "flight",
-        title: "DL 123 to New York",
-        relativeCountdown: "in 2h 14m",
-        icon: "plane-takeoff",
-        statusBar: {
-          countdownToken: "12:45",
-          countdownCaption: "",
-          progressFraction: 0.56,
-          reservedFraction: 0.18,
-        },
-        shownMetrics: [
-          { title: "Boards 11:30", value: "Leave in 35m", tone: "accent" },
-          { title: "Terminal 4", value: "Gate C12" },
-          { title: "", value: "Seat 12A", detail: "JFK 35°", hideTitle: true },
-        ],
-        actionRows: [
-          {
-            label: "Airport",
-            actions: [
-              { label: "Uber", icon: "car", primary: true },
-              { label: "Maps", icon: "map" },
-            ],
-          },
-        ],
-        top: "0rem",
-        left: "1%",
-        rotate: "-5deg",
-      },
-      {
-        key: "flight_arrival",
-        label: "In flight",
-        accent: "flight",
-        title: "DL 123",
-        relativeCountdown: "lands in 1hr 02mn",
-        icon: "plane",
-        statusBar: {
-          leadingText: "LAX 07:58",
-          countdownToken: "1h",
-          countdownCaption: "",
-          endLabel: "09:00 JFK",
-          progressFraction: 0.63,
-          reservedFraction: 0,
-          usesEndpointLabelStyleForEndText: true,
-        },
-        shownMetrics: [
-          { title: "Terminal 4", value: "Gate C12" },
-          { title: "Seat 12A", value: "Bag 7" },
-          { title: "Weather", value: "35°", tone: "accent" },
-        ],
-        actionRows: [
-          {
-            label: "In Flight",
-            actions: [{ label: "Wi-Fi", icon: "wifi" }],
-          },
-        ],
-        top: "8rem",
-        left: "48%",
-        rotate: "6deg",
-      },
-      {
-        key: "flight_arrived",
-        label: "Flight arrived",
-        accent: "ground",
-        title: "Arrived",
-        relativeCountdown: "Now",
-        icon: "plane-landing",
-        statusBar: {
-          leadingText: "Bag 7 • T4",
-          countdownToken: "Now",
-          countdownCaption: "Landed",
-          endLabel: "JFK",
-          progressFraction: 1,
-          reservedFraction: 0,
-        },
-        shownMetrics: [
-          { title: "Baggage", value: "Claim 7", tone: "accent" },
-          { title: "", value: "The TWA Hotel", detail: "1 Idlewild Dr, Queens, NY", hideTitle: true },
-          { title: "Weather", value: "35°" },
-        ],
-        actionRows: [
-          {
-            label: "Hotel",
-            actions: [
-              { label: "Uber", icon: "car", primary: true },
-              { label: "Maps", icon: "map" },
-            ],
-          },
-        ],
-        top: "23rem",
-        left: "5%",
-        rotate: "-4deg",
-      },
-      {
-        key: "hotel_checkin",
-        label: "Hotel check-in",
-        accent: "ground",
-        title: "The Ritz-Carlton NoMad",
-        relativeCountdown: "35m away",
-        icon: "bed",
-        statusBar: {
-          accent: "flight",
-          countdownToken: "18m",
-          countdownCaption: "Leave",
-          endLabel: "4:00 PM",
-          progressFraction: 0.51,
-          reservedFraction: 0.21,
-        },
-        shownMetrics: [
-          { title: "The Ritz-Carlton NoMad", value: "11 Madison Ave" },
-          { title: "Conf", value: "ABC123", tone: "warning" },
-        ],
-        actionRows: [
-          {
-            label: "Hotel",
-            actions: [
-              { label: "Uber", icon: "car", primary: true },
-              { label: "Maps", icon: "map" },
-            ],
-          },
-        ],
-        top: "37rem",
-        left: "47%",
-        rotate: "5deg",
-      },
-    ],
-  },
-  es: {
-    eyebrow: "Día de viaje",
-    titlePrefix: "Tu viaje, siempre ",
-    titleAccent: "al día",
-    microcopy:
-      "La salida, la llegada y el check-in del hotel permanecen en la pantalla bloqueada para que siempre sepas qué sigue.",
-    lockScreenDate: "Martes, 10 de marzo",
-    liveStates: [
-      {
-        key: "flight_departure",
-        label: "Salida del vuelo",
-        accent: "flight",
-        title: "DL 123 a Nueva York",
-        relativeCountdown: "en 2 h 14 min",
-        icon: "plane-takeoff",
-        statusBar: {
-          countdownToken: "12:45",
-          countdownCaption: "",
-          progressFraction: 0.56,
-          reservedFraction: 0.18,
-        },
-        shownMetrics: [
-          { title: "Embarca 11:30", value: "Sal en 35 min", tone: "accent" },
-          { title: "Terminal 4", value: "Puerta C12" },
-          { title: "", value: "Asiento 12A", detail: "JFK 35°", hideTitle: true },
-        ],
-        actionRows: [
-          {
-            label: "Aeropuerto",
-            actions: [
-              { label: "Uber", icon: "car", primary: true },
-              { label: "Mapas", icon: "map" },
-            ],
-          },
-        ],
-        top: "0rem",
-        left: "1%",
-        rotate: "-5deg",
-      },
-      {
-        key: "flight_arrival",
-        label: "En vuelo",
-        accent: "flight",
-        title: "DL 123",
-        relativeCountdown: "aterriza en 1 h 02 min",
-        icon: "plane",
-        statusBar: {
-          leadingText: "LAX 07:58",
-          countdownToken: "1 h",
-          countdownCaption: "",
-          endLabel: "09:00 JFK",
-          progressFraction: 0.63,
-          reservedFraction: 0,
-          usesEndpointLabelStyleForEndText: true,
-        },
-        shownMetrics: [
-          { title: "Terminal 4", value: "Puerta C12" },
-          { title: "Asiento 12A", value: "Equipaje 7" },
-          { title: "Clima", value: "35°", tone: "accent" },
-        ],
-        actionRows: [
-          {
-            label: "En vuelo",
-            actions: [{ label: "Wi-Fi", icon: "wifi" }],
-          },
-        ],
-        top: "8rem",
-        left: "48%",
-        rotate: "6deg",
-      },
-      {
-        key: "flight_arrived",
-        label: "Vuelo aterrizado",
-        accent: "ground",
-        title: "Llegaste",
-        relativeCountdown: "Ahora",
-        icon: "plane-landing",
-        statusBar: {
-          leadingText: "Equipaje 7 • T4",
-          countdownToken: "Ahora",
-          countdownCaption: "Aterrizó",
-          endLabel: "JFK",
-          progressFraction: 1,
-          reservedFraction: 0,
-        },
-        shownMetrics: [
-          { title: "Equipaje", value: "Banda 7", tone: "accent" },
-          { title: "", value: "The TWA Hotel", detail: "1 Idlewild Dr, Queens, NY", hideTitle: true },
-          { title: "Clima", value: "35°" },
-        ],
-        actionRows: [
-          {
-            label: "Hotel",
-            actions: [
-              { label: "Uber", icon: "car", primary: true },
-              { label: "Mapas", icon: "map" },
-            ],
-          },
-        ],
-        top: "23rem",
-        left: "5%",
-        rotate: "-4deg",
-      },
-      {
-        key: "hotel_checkin",
-        label: "Check-in del hotel",
-        accent: "ground",
-        title: "The Ritz-Carlton NoMad",
-        relativeCountdown: "a 35 min",
-        icon: "bed",
-        statusBar: {
-          accent: "flight",
-          countdownToken: "18 min",
-          countdownCaption: "Salir",
-          endLabel: "4:00 PM",
-          progressFraction: 0.51,
-          reservedFraction: 0.21,
-        },
-        shownMetrics: [
-          { title: "The Ritz-Carlton NoMad", value: "11 Madison Ave" },
-          { title: "Conf.", value: "ABC123", tone: "warning" },
-        ],
-        actionRows: [
-          {
-            label: "Hotel",
-            actions: [
-              { label: "Uber", icon: "car", primary: true },
-              { label: "Mapas", icon: "map" },
-            ],
-          },
-        ],
-        top: "37rem",
-        left: "47%",
-        rotate: "5deg",
-      },
-    ],
-  },
-};
-
-function renderIcon(icon: IconKey, size = 13) {
-  const Icon = iconMap[icon];
-  return <Icon size={size} strokeWidth={2.1} aria-hidden="true" />;
-}
-
-function markerFraction(progressFraction: number, reservedFraction: number): number {
-  const cappedProgress = Math.max(0, Math.min(1, progressFraction));
-  const cappedReserved = Math.max(0, Math.min(1, reservedFraction));
-  return Math.min(1, cappedProgress + Math.max(0.02, 1 - cappedProgress - cappedReserved) * 0.02);
-}
-
-function shouldRenderActionIcon(action: ActionItem): boolean {
-  return action.icon === "car" || action.icon === "map";
-}
 
 const LiveActivityStackSection: React.FC = () => {
   const { locale } = useI18n();
   const [visible, setVisible] = React.useState(false);
   const sectionRef = React.useRef<HTMLElement | null>(null);
-  const localizedContent = liveActivityContent[locale];
+  const content = localized[locale];
 
   useMountEffect(() => {
     const node = sectionRef.current;
@@ -875,121 +261,36 @@ const LiveActivityStackSection: React.FC = () => {
   return (
     <Section id="live-activity-pile" ref={sectionRef}>
       <Header>
-        <SectionEyebrow index="01" label={localizedContent.eyebrow} />
+        <SectionEyebrow index="01" label={content.eyebrow} />
         <Title>
-          {localizedContent.titlePrefix}
-          <AccentWord>{localizedContent.titleAccent}</AccentWord>.
+          {content.titlePrefix}
+          <AccentWord>{content.titleAccent}</AccentWord>.
         </Title>
-        <Microcopy>{localizedContent.microcopy}</Microcopy>
+        <Microcopy>{content.microcopy}</Microcopy>
       </Header>
 
       <Pile>
-        {localizedContent.liveStates.map((state, index) => {
-          const statusAccent = state.statusBar.accent ?? state.accent;
-          const rightText =
-            state.statusBar.endLabel ||
-            (state.statusBar.countdownCaption
-              ? `${state.statusBar.countdownToken} ${state.statusBar.countdownCaption}`
-              : state.statusBar.countdownToken);
-          const hasLeadingText = Boolean(state.statusBar.leadingText);
-
-          return (
-            <Card
-              key={state.key}
-              $visible={visible}
-              $index={index}
-              $top={state.top}
-              $left={state.left}
-              $rotate={state.rotate}
-            >
-              <LockScreenCropFrame>
-                <LockScreenCrop $accent={state.accent}>
-                  <LockScreenNotch />
-                  <LockScreenTime>9:41</LockScreenTime>
-                  <LockScreenDate>{localizedContent.lockScreenDate}</LockScreenDate>
-                  <LockScreenActivityWrap>
-                    <LiveActivityFrame $accent={state.accent}>
-                      <TopRow>
-                        <DoneLogo src={packLogo} alt="Pack logo" $size={24} />
-                        <TitleBlock>
-                          <TitleRow>
-                            <LiveTitle>{state.title}</LiveTitle>
-                            <CountdownCluster>{state.relativeCountdown}</CountdownCluster>
-                          </TitleRow>
-                        </TitleBlock>
-                      </TopRow>
-
-                      <StatusFrame $accent={statusAccent}>
-                        <StatusRow $hasLeading={hasLeadingText}>
-                          {hasLeadingText ? <LeadingText>{state.statusBar.leadingText}</LeadingText> : null}
-                          <Track>
-                            <TrackClip>
-                              <ProgressFill
-                                $width={state.statusBar.progressFraction}
-                                $accent={statusAccent}
-                              />
-                              <ReservedFill $width={state.statusBar.reservedFraction} />
-                            </TrackClip>
-                            <Marker
-                              $left={markerFraction(
-                                state.statusBar.progressFraction,
-                                state.statusBar.reservedFraction
-                              )}
-                            />
-                          </Track>
-                          <CountdownRail>
-                            {state.statusBar.usesEndpointLabelStyleForEndText ? (
-                              <EndpointValue>{rightText}</EndpointValue>
-                            ) : (
-                              <CountdownValue $accent={statusAccent}>{rightText}</CountdownValue>
-                            )}
-                          </CountdownRail>
-                        </StatusRow>
-                      </StatusFrame>
-
-                      <MetricRow $count={Math.max(1, state.shownMetrics.length)}>
-                        {state.shownMetrics.map((metric) => (
-                          <Metric
-                            key={`${state.key}-${metric.title}-${metric.value}-${metric.detail ?? ""}`}
-                            $tone={metric.tone ?? "neutral"}
-                          >
-                            {!metric.hideTitle ? <MetricTitle>{metric.title}</MetricTitle> : null}
-                            <MetricValue $tone={metric.tone ?? "neutral"}>{metric.value}</MetricValue>
-                            {metric.detail ? <MetricDetail>{metric.detail}</MetricDetail> : null}
-                          </Metric>
-                        ))}
-                      </MetricRow>
-
-                      <ActionDock>
-                        {state.actionRows.map((row) => (
-                          <ActionRowFrame key={`${state.key}-${row.label}`}>
-                            <ActionLabel $accent={row.label === "Hotel" ? "flight" : state.accent}>
-                              {row.label}
-                            </ActionLabel>
-                            <ActionButtons $count={row.actions.length}>
-                              {row.actions.map((action) => (
-                                <ActionPill
-                                  key={`${state.key}-${row.label}-${action.label}`}
-                                  $primary={action.primary}
-                                  $accent={state.accent}
-                                >
-                                  {shouldRenderActionIcon(action) ? (
-                                    <ActionIconWrap>{renderIcon(action.icon, 13)}</ActionIconWrap>
-                                  ) : null}
-                                  {action.label}
-                                </ActionPill>
-                              ))}
-                            </ActionButtons>
-                          </ActionRowFrame>
-                        ))}
-                      </ActionDock>
-                    </LiveActivityFrame>
-                  </LockScreenActivityWrap>
-                </LockScreenCrop>
-              </LockScreenCropFrame>
-            </Card>
-          );
-        })}
+        {activityCards.map((card, index) => (
+          <Card
+            key={card.key}
+            $visible={visible}
+            $index={index}
+            $top={card.top}
+            $left={card.left}
+            $rotate={card.rotate}
+          >
+            <LockScreenCropFrame>
+              <LockScreenCrop $kind={card.key}>
+                <LockScreenNotch />
+                <LockScreenTime>9:41</LockScreenTime>
+                <LockScreenDate>{content.lockScreenDate}</LockScreenDate>
+                <LockScreenActivityWrap>
+                  <GoldenImage src={card.src} alt={card.alt} loading="lazy" decoding="async" />
+                </LockScreenActivityWrap>
+              </LockScreenCrop>
+            </LockScreenCropFrame>
+          </Card>
+        ))}
       </Pile>
     </Section>
   );

@@ -13,6 +13,8 @@
 
 import React, { useState, useCallback, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { BorderBeam } from '@pack/web-effects/border-beam';
+import { ThinkingOrb } from '@pack/web-effects/thinking-orbs';
 import { X, Clock, Rocket, Lightbulb, Plane } from 'lucide-react';
 import { useConversionTracking } from '../hooks/useConversionTracking';
 import { useConversionIntentScoring } from '../hooks/useConversionIntentScoring';
@@ -62,11 +64,24 @@ const Modal = styled.div`
   position: relative;
   border: 1px solid rgba(243, 210, 122, 0.35);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(243, 210, 122, 0.12);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    max-width: none;
+  }
+`;
+
+// Carries the entrance animation and mobile inset so the processing beam hugs
+// the card edge instead of framing the card's outer margin. (A plain holder —
+// styled(BorderBeam) would shadow the beam's own 'theme' prop with the
+// styled-components theme object.)
+const ModalBeamHolder = styled.div`
+  width: 100%;
+  max-width: 500px;
   animation: ${slideInFromTop} 0.4s ease-out;
-  
+
   @media (max-width: 768px) {
     margin: 1rem;
-    padding: 1.5rem;
     max-width: none;
   }
 `;
@@ -154,6 +169,10 @@ const Input = styled.input`
 `;
 
 const SubmitButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   background: linear-gradient(135deg, #ffd86f 0%, #f3d27a 38%, #f0c62d 74%, #f6a14f 100%);
   color: #1c1405;
   border: none;
@@ -297,6 +316,14 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
 
   return (
     <Overlay onClick={onClose}>
+      <ModalBeamHolder>
+      <BorderBeam
+        size="pulse-inner"
+        colorVariant="sunset"
+        theme="dark"
+        active={isSubmitting}
+        borderRadius={16}
+      >
       <Modal onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>
           <X size={20} />
@@ -328,11 +355,20 @@ const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
             required
           />
           <SubmitButton type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Joining...' : 'Get Early Access'}
+            {isSubmitting ? (
+              <>
+                <ThinkingOrb state="solving" size={20} theme="light" aria-hidden="true" />
+                Joining...
+              </>
+            ) : (
+              'Get Early Access'
+            )}
           </SubmitButton>
           {submitError && <FormError role="alert">{submitError}</FormError>}
         </Form>
       </Modal>
+      </BorderBeam>
+      </ModalBeamHolder>
     </Overlay>
   );
 };

@@ -24,6 +24,7 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
 const repoRootDir = path.join(rootDir, '..');
 const packSchemasDir = path.join(repoRootDir, 'PackServer', 'packages', 'schemas', 'src');
+const packWebEffectsDir = path.join(repoRootDir, 'PackServer', 'packages', 'web-effects', 'vendor');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
 const localNodeModules = path.join(rootDir, 'node_modules');
 const resolveModuleDir = (moduleName: string): string => {
@@ -693,6 +694,12 @@ export default defineConfig(({ mode, ssrBuild }) => {
   const resolveAliases: Record<string, string> = {
     '@': normalizePath(srcDir),
     '@pack/schemas': normalizePath(packSchemasDir),
+    '@pack/web-effects/border-beam': normalizePath(
+      path.join(packWebEffectsDir, 'border-beam', 'dist', 'index.es.js'),
+    ),
+    '@pack/web-effects/thinking-orbs': normalizePath(
+      path.join(packWebEffectsDir, 'thinking-orbs', 'dist', 'index.es.js'),
+    ),
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
     'react/jsx-dev-runtime': normalizePath(reactJsxDevRuntimeEntry),

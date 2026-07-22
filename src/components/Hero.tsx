@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars -- Hero retains staged app-screen fragments used for capture iteration and visual experiments. */
 import React, { ReactNode, Suspense, startTransition, useState } from "react";
 import styled, { keyframes } from "styled-components";
+import { BorderBeam } from "@pack/web-effects/border-beam";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -1409,6 +1410,30 @@ const PlanPhone = styled(AppSurface)<{
       $mobileMinHeight ?? $tabletMinHeight ?? $minHeight ?? "48rem"};
   }
 `;
+
+// App parallel of BorderBeamRing: an absolute overlay riding the phone bezel's
+// rim, active only while the depicted chapter shows Pack working (Search).
+const PhoneBeamOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+`;
+
+const PhoneWorkingBeam: React.FC<{ active: boolean }> = ({ active }) => (
+  <PhoneBeamOverlay aria-hidden="true">
+    <BorderBeam
+      size="md"
+      colorVariant="sunset"
+      theme="dark"
+      active={active}
+      borderRadius={34}
+      style={{ width: "100%", height: "100%" }}
+    >
+      <div style={{ width: "100%", height: "100%" }} />
+    </BorderBeam>
+  </PhoneBeamOverlay>
+);
 
 const PlanPhoneInner = styled.div`
   display: grid;
@@ -4897,6 +4922,7 @@ const PlanShowcasePhone: React.FC<{
           </PlanFlowScroll>
         </PlanPhoneInner>
       </ReviewPhoneSwitch>
+      <PhoneWorkingBeam active={isSearchScreen} />
     </PlanPhone>
   );
 };

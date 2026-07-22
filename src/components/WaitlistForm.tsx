@@ -56,22 +56,12 @@ import { apiEndpoints } from "../config/appConfig";
 import { useI18n } from "../i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "../legal/legalUiCopy";
 import { useTracking } from "./TrackingProvider";
+import { BorderBeam } from "@pack/web-effects/border-beam";
+import { ThinkingOrb } from "@pack/web-effects/thinking-orbs";
 
 type IconProps = React.SVGProps<SVGSVGElement> & {
   readonly size?: number;
 };
-
-const LoaderSpinnerIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" {...props}>
-    <path
-      d="M21 12a9 9 0 1 1-6.219-8.56"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 const CheckIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" {...props}>
@@ -145,31 +135,12 @@ const getEncryptedWaitlistStatus = (): {
 
 // Add global styles for animations
 const GlobalStyle = createGlobalStyle`
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-  }
-`;
-
-// Styled spinning loader component
-const SpinningLoader = styled(LoaderSpinnerIcon)`
-  animation: spin 1.2s linear infinite;
-  margin-right: 10px;
-  
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
   }
 `;
 
@@ -329,19 +300,25 @@ interface WaitlistFormProps {
   showTitle?: boolean;
 }
 
-const FormContainer = styled.section<{ $variant: WaitlistFormVariant }>`
+const FormContainer = styled.section<{
+  $variant: WaitlistFormVariant;
+  $beamed?: boolean;
+  $beamActive?: boolean;
+}>`
   display: flex;
   flex-direction: column;
   align-items: ${({ $variant }) => ($variant === "embedded" ? "stretch" : "center")};
-  width: ${({ $variant }) =>
-    $variant === "embedded" ? "100%" : "min(100%, 640px)"};
+  width: ${({ $variant, $beamed }) =>
+    $beamed || $variant === "embedded" ? "100%" : "min(100%, 640px)"};
   max-width: ${({ $variant }) => ($variant === "embedded" ? "none" : "640px")};
-  margin: ${({ $variant, theme }) =>
-    $variant === 'hero'
-      ? `${theme.spacing[1]} auto ${theme.spacing[3]}`
-      : $variant === 'embedded'
-        ? '0 auto'
-        : `${theme.spacing[5]} auto`};
+  margin: ${({ $variant, $beamed, theme }) =>
+    $beamed
+      ? '0'
+      : $variant === 'hero'
+        ? `${theme.spacing[1]} auto ${theme.spacing[3]}`
+        : $variant === 'embedded'
+          ? '0 auto'
+          : `${theme.spacing[5]} auto`};
   padding: ${({ $variant, theme }) =>
     $variant === 'hero'
       ? `${theme.spacing[3]} ${theme.spacing[4]} ${theme.spacing[4]}`
@@ -382,8 +359,9 @@ const FormContainer = styled.section<{ $variant: WaitlistFormVariant }>`
     background: ${({ theme }) => theme.colors.gradients.primaryAccent};
     background-size: 200% 200%;
     animation: gradientShift 4s ease infinite;
-    opacity: ${({ $variant }) =>
-      $variant === 'hero' ? 0.6 : $variant === 'embedded' ? 0 : 1};
+    opacity: ${({ $variant, $beamActive }) =>
+      $beamActive ? 0 : $variant === 'hero' ? 0.6 : $variant === 'embedded' ? 0 : 1};
+    transition: opacity var(--transition-default);
   }
 
   @keyframes gradientShift {
@@ -436,14 +414,6 @@ const PlatformBadge = styled.span`
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
-
-  &::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #f3d27a;
-  }
 `;
 
 const InputGroup = styled.div`
@@ -800,6 +770,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
   const [emailError, setEmailError] = useState("");
   const [captchaError, setCaptchaError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedMarketingEmailConsent, setSubmittedMarketingEmailConsent] =
     useState(false);
@@ -1134,11 +1105,38 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
     }
   };
 
+  // App parallel: the beam is a state indicator, not decoration. It rides the
+  // card rim while the form is "listening" (email focused) or the signup
+  // request is in flight, mirroring the app's composer BorderBeamRing.
+  const beamActive =
+    isHeroVariant && !reduceAnimations && (isEmailFocused || isLoading);
+  const heroBeamFrame = (card: React.ReactNode) =>
+    isHeroVariant ? (
+      <BorderBeam
+        size="md"
+        colorVariant="sunset"
+        theme="dark"
+        active={beamActive}
+        borderRadius={20}
+        style={{
+          width: "min(100%, 640px)",
+          margin: `${theme.spacing[1]} auto ${theme.spacing[3]}`,
+        }}
+      >
+        {card}
+      </BorderBeam>
+    ) : (
+      card
+    );
+
   return (
     <>
       <GlobalStyle />
+      {heroBeamFrame(
       <FormContainer
         $variant={variant}
+        $beamed={isHeroVariant}
+        $beamActive={beamActive}
         id={isHeroVariant ? "waitlist" : undefined}
       >
         {!isSubmitted ? (
@@ -1172,7 +1170,16 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
             </FormTitle>
           ) : null}
           {isHeroVariant ? (
-            <PlatformBadge>{t("waitlist.platformBadge")}</PlatformBadge>
+            <PlatformBadge>
+              <ThinkingOrb
+                state="solving"
+                size={20}
+                theme="dark"
+                paused={reduceAnimations}
+                aria-hidden="true"
+              />
+              {t("waitlist.platformBadge")}
+            </PlatformBadge>
           ) : null}
           <Form $variant={variant} onSubmit={handleSubmit}>
               <InputGroup>
@@ -1186,10 +1193,14 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
                   required
                   onFocus={(e) => {
                     e.target.placeholder = "";
+                    setIsEmailFocused(true);
                     void primeRecaptcha().catch(() => undefined);
                     trackInitialFormIntent();
                   }}
-                  onBlur={(e) => (e.target.placeholder = t("waitlist.emailPlaceholder"))}
+                  onBlur={(e) => {
+                    e.target.placeholder = t("waitlist.emailPlaceholder");
+                    setIsEmailFocused(false);
+                  }}
                 />
                 {emailError && (
                   <ErrorMessage>
@@ -1225,7 +1236,13 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
               <SubmitButton type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <>
-                    <SpinningLoader size={20} />
+                    <ThinkingOrb
+                      state="solving"
+                      size={20}
+                      theme="light"
+                      aria-hidden="true"
+                      style={{ marginRight: "10px" }}
+                    />
                     {t("waitlist.processing")}
                   </>
                 ) : (
@@ -1301,6 +1318,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
           </SuccessMessage>
         )}
       </FormContainer>
+      )}
     </>
   );
 };

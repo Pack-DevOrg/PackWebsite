@@ -1,5 +1,6 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
+import { ThinkingOrb } from "@pack/web-effects/thinking-orbs";
 import { useI18n } from "@/i18n/I18nProvider";
 import AccentWord from "./AccentWord";
 import SectionEyebrow from "./SectionEyebrow";
@@ -243,7 +244,13 @@ const BookingTimelineHighlightComponent: React.FC = () => {
         {localizedContent.steps.map((step) => (
           <Step key={step.number}>
             <SignalRow>
-              <SignalDot />
+              {step.number === "02" ? (
+                // The compose step depicts Pack actively working — it gets the
+                // thinking orb; the flanking steps keep the live signal dot.
+                <ThinkingOrb state="solving" size={20} theme="dark" aria-hidden="true" />
+              ) : (
+                <SignalDot />
+              )}
               <SignalLabel>{step.status}</SignalLabel>
             </SignalRow>
             <Number>{step.number}</Number>

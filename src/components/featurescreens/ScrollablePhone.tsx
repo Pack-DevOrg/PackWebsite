@@ -7,11 +7,11 @@ import styled from "styled-components";
  * capture pipeline) — inside a phone shell whose content actually scrolls.
  * Desktop scrolls with the wheel or a drag; mobile scrolls natively. The
  * captures are content-band only (fixed app chrome is cropped so seams can
- * stitch); the fixed header is the app's REAL header, cropped from the same
- * screenshots (rows 0-320), so shell and content are continuous pixels.
+ * stitch); the fixed header is that SCREEN'S own real header, cropped from
+ * the same screenshot at exactly the row the capture starts, so shell and
+ * content are continuous pixels. Full-bleed single-screen captures carry
+ * their chrome inside the capture and pass no header.
  */
-const APP_HEADER_SRC = "/images/feature-captures/app-header.webp";
-const APP_HEADER_ASPECT = 1320 / 320;
 const Frame = styled.div`
   width: 100%;
   aspect-ratio: 1206 / 2622;
@@ -27,11 +27,11 @@ const Frame = styled.div`
     0 24px 70px rgba(0, 0, 0, 0.55);
 `;
 
-const HeaderImage = styled.img`
+const HeaderImage = styled.img<{ $aspectRatio: number }>`
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: ${APP_HEADER_ASPECT};
+  aspect-ratio: ${({ $aspectRatio }) => $aspectRatio};
   flex-shrink: 0;
   user-select: none;
   pointer-events: none;
@@ -80,8 +80,9 @@ type ScrollablePhoneProps = {
   readonly height: number;
   readonly alt: string;
   readonly eager?: boolean;
-  /** Single-screen capture with its own real chrome — skip the header strip. */
-  readonly fullBleed?: boolean;
+  /** This screen's own fixed header strip; omit for full-bleed captures. */
+  readonly headerSrc?: string;
+  readonly headerHeight?: number;
 };
 
 export default function ScrollablePhone({
@@ -90,7 +91,8 @@ export default function ScrollablePhone({
   height,
   alt,
   eager,
-  fullBleed,
+  headerSrc,
+  headerHeight,
 }: ScrollablePhoneProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const drag = useRef<{ pointerId: number; lastY: number } | null>(null);
@@ -117,16 +119,17 @@ export default function ScrollablePhone({
 
   return (
     <Frame>
-      {!fullBleed && (
+      {headerSrc && headerHeight ? (
         <HeaderImage
-          src={APP_HEADER_SRC}
+          src={headerSrc}
+          $aspectRatio={width / headerHeight}
           alt=""
           aria-hidden="true"
           draggable={false}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
         />
-      )}
+      ) : null}
       <ScrollViewport
         ref={viewportRef}
         onPointerDown={onPointerDown}

@@ -308,7 +308,8 @@ export default function FeatureShowcase({ panels }: FeatureShowcaseProps) {
                     height={capture.height}
                     alt={capture.alt}
                     eager={offset === 0}
-                    fullBleed={capture.fullBleed}
+                    headerSrc={capture.headerSrc}
+                    headerHeight={capture.headerHeight}
                   />
                 ) : (
                   <FeaturePhone

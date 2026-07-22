@@ -11,6 +11,8 @@ export interface SeoGuideFaq {
 
 export interface SeoGuideDefinition {
   readonly slug: string;
+  /** One-word tab label on the guides' shared tab band (journey verb). */
+  readonly navLabel: string;
   readonly eyebrow: string;
   readonly title: string;
   readonly description: string;
@@ -30,6 +32,7 @@ export interface SeoGuideDefinition {
 export const seoGuideDefinitions = [
   {
     slug: "travel-context-engine",
+    navLabel: "Connect",
     eyebrow: "Travel Context Guide",
     title: "Context-aware travel assistant for trips that use your real travel data",
     description:
@@ -130,6 +133,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "event-trip-planning",
+    navLabel: "Plan",
     eyebrow: "Event Trip Planning Guide",
     title: "Event travel planner for meetings, calendars, conferences, and public events",
     description:
@@ -229,6 +233,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "travel-day-intelligence",
+    navLabel: "Act",
     eyebrow: "Travel Day Guide",
     title: "Travel day assistant for airport waits, weather, drive time, and live trip context",
     description:
@@ -330,6 +335,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "ai-travel-planning",
+    navLabel: "AI Planning",
     eyebrow: "AI Travel Planning Guide",
     title: "Best AI travel planner for trips that start from real context",
     description:
@@ -438,6 +444,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "trip-organization",
+    navLabel: "Organize",
     eyebrow: "Trip Organization Guide",
     title: "Trip organizer app for emails, confirmations, and automatic itineraries",
     description:
@@ -537,6 +544,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "booking-context",
+    navLabel: "Book",
     eyebrow: "Booking Context Guide",
     title: "Points and miles trip planner for loyalty-aware booking context",
     description:
@@ -647,6 +655,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "group-trip-planning",
+    navLabel: "Coordinate",
     eyebrow: "Group Trip Planning Guide",
     title: "Group trip planner for shared itineraries, linked plans, and costs",
     description:
@@ -746,6 +755,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "travel-stats-and-maps",
+    navLabel: "Remember",
     eyebrow: "Travel Stats Guide",
     title: "Travel stats app for maps, repeat routes, and personal travel history",
     description:
@@ -846,6 +856,7 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "reliable-ai-travel-planning",
+    navLabel: "Trust",
     eyebrow: "Reliable AI Travel Guide",
     title: "Reliable AI travel planning that uses fewer guesses",
     description:
@@ -1007,3 +1018,19 @@ export function isSeoGuideSlug(slug: string | undefined): slug is SeoGuideSlug {
     slug && slug in seoGuideDefinitionMap && !disabledSeoGuideSlugs.has(slug),
   );
 }
+
+/**
+ * Live guides in reading order — the traveler's journey (plan → connect →
+ * organize → book → coordinate → remember → act → trust). Drives the guides'
+ * shared tab band and any surface that lists the guides.
+ */
+export const orderedSeoGuideSlugs: readonly SeoGuideSlug[] = ([
+  "event-trip-planning",
+  "travel-context-engine",
+  "trip-organization",
+  "booking-context",
+  "group-trip-planning",
+  "travel-stats-and-maps",
+  "travel-day-intelligence",
+  "reliable-ai-travel-planning",
+] as const satisfies readonly SeoGuideSlug[]).filter(isSeoGuideSlug);

@@ -102,6 +102,15 @@ export const FEATURE_SCREENS: readonly FeatureScreen[] = [
   },
 ];
 
+/**
+ * Every capability page in journey order — the screens' order on the features
+ * band, then each screen's own tag order. Drives the capability pages' shared
+ * tab band so its chevrons walk the same journey as the features deck.
+ */
+export const journeyOrderedCapabilitySlugs: readonly CapabilityPageSlug[] = [
+  ...new Set(FEATURE_SCREENS.flatMap((screen) => screen.capabilitySlugs)),
+];
+
 /** First screen that demonstrates the capability — drives its page's clip. */
 export const capabilityScreenMap: Partial<Record<CapabilityPageSlug, FeatureScreen>> =
   Object.fromEntries(

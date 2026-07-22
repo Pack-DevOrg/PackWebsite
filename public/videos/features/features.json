@@ -1,12 +1,12 @@
 {
-  "recordedAt": "2026-07-22T09:25:34.795Z",
+  "recordedAt": "2026-07-22T18:39:39.327Z",
   "features": [
     {
       "id": "plan",
       "title": "Plan a group trip",
       "blurb": "Tag your people, answer one question, get a full outline.",
       "file": "feature-plan.mp4",
-      "duration": 38.621917,
+      "duration": 39.3,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-plan-poster.jpg"
@@ -16,7 +16,7 @@
       "title": "Search real prices",
       "blurb": "Compare flights, stays, and cars for the whole party.",
       "file": "feature-search.mp4",
-      "duration": 29.266667,
+      "duration": 22.966667,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-search-poster.jpg"
@@ -26,7 +26,7 @@
       "title": "Book it in one place",
       "blurb": "Passengers, bags, seats, and the full price breakdown.",
       "file": "feature-book.mp4",
-      "duration": 18.9,
+      "duration": 23.7,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-book-poster.jpg"
@@ -36,7 +36,7 @@
       "title": "Travel day, live",
       "blurb": "The day dashboard and the Lock Screen Live Activity.",
       "file": "feature-day-of.mp4",
-      "duration": 15.633333,
+      "duration": 15.866667,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-day-of-poster.jpg"
@@ -46,7 +46,7 @@
       "title": "Every trip, kept",
       "blurb": "Upcoming and past trips with the details that matter.",
       "file": "feature-trips.mp4",
-      "duration": 22.166667,
+      "duration": 21.933333,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-trips-poster.jpg"
@@ -56,7 +56,7 @@
       "title": "Your travel, measured",
       "blurb": "Maps, streaks, and the trophy room.",
       "file": "feature-stats.mp4",
-      "duration": 13.45,
+      "duration": 13.4,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-stats-poster.jpg"
@@ -66,7 +66,7 @@
       "title": "The people you travel with",
       "blurb": "Friends, requests, and one-tap travel crews.",
       "file": "feature-packs.mp4",
-      "duration": 16.05,
+      "duration": 16.3,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-packs-poster.jpg"
@@ -76,7 +76,7 @@
       "title": "Set once, used everywhere",
       "blurb": "Flight, hotel, car, and timing preferences.",
       "file": "feature-preferences.mp4",
-      "duration": 20.366667,
+      "duration": 19.966667,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-preferences-poster.jpg"
@@ -86,7 +86,7 @@
       "title": "Already working",
       "blurb": "Live trips and the queue, before you ask.",
       "file": "feature-home.mp4",
-      "duration": 5.633333,
+      "duration": 9.466667,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-home-poster.jpg"
@@ -96,7 +96,7 @@
       "title": "Ready in a minute",
       "blurb": "Sign in, connect what you like, done.",
       "file": "feature-onboarding.mp4",
-      "duration": 31.2,
+      "duration": 35.0,
       "stale": false,
       "changedFiles": [],
       "poster": "feature-onboarding-poster.jpg"

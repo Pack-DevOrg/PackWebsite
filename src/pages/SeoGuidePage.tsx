@@ -1,13 +1,30 @@
 import React from "react";
 import styled from "styled-components";
-import { ArrowRight, Search } from "lucide-react";
+import type { ReactNode } from "react";
+import {
+  ArrowRight,
+  Brain,
+  Calendar,
+  CreditCard,
+  Layers,
+  LayoutGrid,
+  Map as MapIcon,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Users,
+  Zap,
+} from "lucide-react";
 import PrefetchLink from "@/components/PrefetchLink";
+import CarouselTabBand from "@/components/CarouselTabBand";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 import {
   isSeoGuideSlug,
+  orderedSeoGuideSlugs,
   seoGuideDefinitionMap,
   type SeoGuideDefinition,
   type SeoGuideFaq,
+  type SeoGuideSlug,
 } from "@/content/seoGuides";
 
 const Page = styled.main`
@@ -19,6 +36,25 @@ const Page = styled.main`
     padding: var(--space-5) var(--space-4) var(--space-7);
   }
 `;
+
+/* The features family's shared header, guides edition: each guide is a
+   sibling tab in reading order, chevrons step through them, and the leading
+   Overview tab returns to the features showcase. */
+const BandWrap = styled.div`
+  margin-bottom: var(--space-4);
+`;
+
+const GUIDE_ICONS: Record<SeoGuideSlug, ReactNode> = {
+  "event-trip-planning": <Calendar />,
+  "travel-context-engine": <Brain />,
+  "trip-organization": <Layers />,
+  "booking-context": <CreditCard />,
+  "group-trip-planning": <Users />,
+  "travel-stats-and-maps": <MapIcon />,
+  "travel-day-intelligence": <Zap />,
+  "reliable-ai-travel-planning": <ShieldCheck />,
+  "ai-travel-planning": <Sparkles />,
+};
 
 const Header = styled.header`
   display: grid;
@@ -480,22 +516,38 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
         path={path}
         schema={[createGuideSchema(guide), createFaqSchema(visibleFaqs)]}
       />
+      <BandWrap>
+        <CarouselTabBand
+          ariaLabel="Pack travel guides"
+          activeId={guide.slug}
+          items={[
+            {
+              id: "features-overview",
+              label: "Overview",
+              icon: <LayoutGrid />,
+              href: "/features",
+            },
+            ...orderedSeoGuideSlugs.map((guideSlug) => ({
+              id: guideSlug,
+              label: seoGuideDefinitionMap[guideSlug].navLabel,
+              icon: GUIDE_ICONS[guideSlug],
+              href: `/guides/${guideSlug}`,
+            })),
+          ]}
+        />
+      </BandWrap>
       <Header>
         <Eyebrow>{guide.eyebrow}</Eyebrow>
         <Title>{guide.title}</Title>
         <Intro>{shortIntro}</Intro>
-        <TopActions aria-label="Related Pack features">
-          {primaryFeatureLink ? (
+        {primaryFeatureLink ? (
+          <TopActions aria-label="Related Pack features">
             <RelatedLink to={primaryFeatureLink.href}>
               Open {primaryFeatureLink.label}
               <ArrowRight aria-hidden="true" />
             </RelatedLink>
-          ) : null}
-          <RelatedLink to="/features">
-            See all features
-            <ArrowRight aria-hidden="true" />
-          </RelatedLink>
-        </TopActions>
+          </TopActions>
+        ) : null}
       </Header>
 
       <SystemMap>

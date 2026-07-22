@@ -1,30 +1,16 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  PlaneTakeoff,
-  Calendar,
-  Smartphone,
-  Shield,
-  Clock,
-  Brain,
-  Map as MapIcon,
-  BadgeCheck,
-  RefreshCw,
-  Link2,
-  UserRound,
-  Share2,
-  Receipt,
-} from "lucide-react";
 import WaitlistForm from "../components/WaitlistForm";
 import FeatureShowcase from "../components/FeatureShowcase";
 import PrefetchLink from "../components/PrefetchLink";
+import { capabilityIcons } from "../components/capabilityIcons";
 import { FEATURE_SCREENS } from "@/content/featureScreens";
+import { orderedSeoGuideSlugs, seoGuideDefinitionMap } from "@/content/seoGuides";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo from "@/seo/pageSeo";
 import {
   capabilityPageDefinitionMap,
   capabilityPageDefinitions,
-  type CapabilityPageSlug,
 } from "@/content/capabilityPages";
 
 const FeaturesContainer = styled.section`
@@ -118,22 +104,12 @@ const GuideLink = styled(PrefetchLink)`
 
 const Features: React.FC = () => {
   const { locale, pathFor } = useI18n();
-  const capabilityIcons: Record<CapabilityPageSlug, React.ReactNode> = {
-    "travel-history": <Brain />,
-    "travel-stats": <MapIcon />,
-    "loyalty-details": <BadgeCheck />,
-    "trip-planning-from-events": <Calendar />,
-    "trip-updates": <RefreshCw />,
-    "travel-booking": <PlaneTakeoff />,
-    "upcoming-trip-details": <Clock />,
-    "airport-security-wait-times": <Shield />,
-    "trip-calendar-sync": <Calendar />,
-    "connected-accounts": <Link2 />,
-    "traveler-profiles": <UserRound />,
-    "trip-sharing": <Share2 />,
-    "live-trip-views": <Smartphone />,
-    "trip-expenses": <Receipt />,
-  };
+  // English guide links come straight from the guides' own order + navLabels;
+  // Spanish keeps its hand-localized titles below.
+  const guideLinks = orderedSeoGuideSlugs.map((slug) => ({
+    title: seoGuideDefinitionMap[slug].navLabel,
+    href: `/guides/${slug}`,
+  }));
   const localizedContent =
     locale === "es"
       ? {
@@ -210,16 +186,7 @@ const Features: React.FC = () => {
           ctaBody:
             "Join the waitlist to get early access to a more organized, more personalized way to travel.",
           systemsTitle: "Go deeper in the guides",
-          systems: [
-            { title: "Plan", href: "/guides/event-trip-planning" },
-            { title: "Connect", href: "/guides/travel-context-engine" },
-            { title: "Organize", href: "/guides/trip-organization" },
-            { title: "Book", href: "/guides/booking-context" },
-            { title: "Coordinate", href: "/guides/group-trip-planning" },
-            { title: "Remember", href: "/guides/travel-stats-and-maps" },
-            { title: "Act", href: "/guides/travel-day-intelligence" },
-            { title: "Trust", href: "/guides/reliable-ai-travel-planning" },
-          ],
+          systems: guideLinks,
           schemaName: "Pack - AI Travel Assistant",
           schemaDescription:
             "Intelligent AI travel assistant that plans trips, helps you complete flights and hotels through secure in-app checkout in Pack, and creates personalized itineraries through natural conversation.",

@@ -1,17 +1,21 @@
 import React from "react";
 import styled from "styled-components";
-import { CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight, LayoutGrid } from "lucide-react";
 import WaitlistForm from "@/components/WaitlistForm";
 import PrefetchLink from "@/components/PrefetchLink";
 import FeaturePhone, { useFeatureMediaAvailable } from "@/components/FeaturePhone";
+import CarouselTabBand from "@/components/CarouselTabBand";
+import { capabilityIcons } from "@/components/capabilityIcons";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
 import {
-  capabilityPageDefinitions,
   capabilityPageDefinitionMap,
   type CapabilityPageSlug,
 } from "@/content/capabilityPages";
-import { capabilityScreenMap } from "@/content/featureScreens";
+import {
+  capabilityScreenMap,
+  journeyOrderedCapabilitySlugs,
+} from "@/content/featureScreens";
 
 const PageContainer = styled.section`
   max-width: 1120px;
@@ -21,6 +25,13 @@ const PageContainer = styled.section`
   @media (min-width: 768px) {
     padding: var(--space-5) var(--space-4);
   }
+`;
+
+/* The features family's shared header: same band as the /features showcase,
+   here in link mode — every capability is a sibling tab, chevrons walk the
+   journey order, and the leading Overview tab returns to the showcase. */
+const BandWrap = styled.div`
+  margin-bottom: var(--space-4);
 `;
 
 const PageGrid = styled.div<{ $withPhone: boolean }>`
@@ -154,16 +165,6 @@ const NarrativeBody = styled.p`
   line-height: 1.7;
 `;
 
-const CapabilitySection = styled.div`
-  display: grid;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-  padding: var(--space-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius);
-`;
-
 const SectionGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
@@ -286,48 +287,6 @@ const Answer = styled.p`
   line-height: 1.7;
 `;
 
-const CapabilityChipList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  justify-content: center;
-  max-width: 58rem;
-  margin: 0 auto;
-`;
-
-const CapabilityChip = styled(PrefetchLink)<{ $active?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem 0.95rem;
-  min-width: 10.5rem;
-  border-radius: 999px;
-  border: 1px solid
-    ${({ $active }) =>
-      $active ? "rgba(249, 47, 96, 0.34)" : "rgba(255, 255, 255, 0.08)"};
-  background: ${({ $active }) =>
-    $active ? "rgba(249, 47, 96, 0.12)" : "rgba(255, 255, 255, 0.03)"};
-  color: ${({ $active }) =>
-    $active ? "var(--color-text-primary)" : "var(--color-text-secondary)"};
-  text-decoration: none;
-  font-size: var(--font-size-small);
-  line-height: 1.2;
-  text-align: center;
-
-  &:hover {
-    border-color: rgba(249, 47, 96, 0.3);
-    color: var(--color-text-primary);
-  }
-
-  @media (max-width: 640px) {
-    min-width: calc(50% - var(--space-2));
-  }
-
-  @media (max-width: 420px) {
-    min-width: 100%;
-  }
-`;
-
 const CtaSection = styled.div`
   text-align: center;
   padding: var(--space-5);
@@ -386,6 +345,29 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
         path={canonicalPath}
         schema={[capabilitySchema]}
       />
+      <BandWrap>
+        <CarouselTabBand
+          ariaLabel="Pack features"
+          activeId={slug}
+          items={[
+            {
+              id: "features-overview",
+              label: "Overview",
+              icon: <LayoutGrid />,
+              href: pathFor("/features"),
+            },
+            ...journeyOrderedCapabilitySlugs.map((capabilitySlug) => {
+              const definition = capabilityPageDefinitionMap[capabilitySlug];
+              return {
+                id: capabilitySlug,
+                label: definition.chipLabel ?? definition.navLabel,
+                icon: capabilityIcons[capabilitySlug],
+                href: pathFor(`/${capabilitySlug}`),
+              };
+            }),
+          ]}
+        />
+      </BandWrap>
       <PageGrid $withPhone={withPhone}>
         {withPhone && screen ? (
           <PhoneRail>
@@ -483,21 +465,6 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
           </FaqItem>
         ))}
       </FaqSection>
-
-      <CapabilitySection>
-        <FaqTitle>Explore more Pack features</FaqTitle>
-        <CapabilityChipList>
-          {capabilityPageDefinitions.map((definition) => (
-            <CapabilityChip
-              key={definition.slug}
-              to={pathFor(`/${definition.slug}`)}
-              $active={definition.slug === slug}
-            >
-              {definition.chipLabel ?? definition.navLabel}
-            </CapabilityChip>
-          ))}
-        </CapabilityChipList>
-      </CapabilitySection>
 
       <CtaSection>
         <CtaTitle>See how Pack would handle this for your next trip</CtaTitle>

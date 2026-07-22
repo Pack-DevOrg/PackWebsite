@@ -3,7 +3,6 @@ import styled from "styled-components";
 import {
   PlaneTakeoff,
   Calendar,
-  Globe,
   Smartphone,
   Shield,
   Clock,
@@ -17,6 +16,7 @@ import {
   Receipt,
 } from "lucide-react";
 import WaitlistForm from "../components/WaitlistForm";
+import FeatureShowcase from "../components/FeatureShowcase";
 import PrefetchLink from "../components/PrefetchLink";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo from "@/seo/pageSeo";
@@ -71,64 +71,9 @@ const Subtitle = styled.p`
   text-align: center;
 `;
 
-const HeroFeature = styled.div`
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--border-radius);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: var(--space-5);
-  margin-bottom: var(--space-5);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--color-accent),
-      transparent
-    );
-    opacity: 0.7;
-  }
-`;
 
-const HeroIcon = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: rgba(249, 47, 96, 0.1);
-  border-radius: 50%;
-  margin-bottom: var(--space-3);
-  color: var(--color-accent);
 
-  svg {
-    width: 40px;
-    height: 40px;
-    filter: drop-shadow(0 0 12px rgba(249, 47, 96, 0.5));
-  }
-`;
-
-const HeroTitle = styled.h2`
-  font-size: var(--font-size-xl);
-  margin-bottom: var(--space-2);
-  color: var(--color-text-primary);
-`;
-
-const HeroDescription = styled.p`
-  font-size: var(--font-size-medium);
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-  max-width: 500px;
-  margin: 0 auto;
-`;
 
 const FeaturesGrid = styled.div`
   display: grid;
@@ -257,7 +202,8 @@ const FeatureIcon = styled.div`
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: rgba(249, 47, 96, 0.1);
+  background: rgba(243, 210, 122, 0.12);
+  border: 1px solid rgba(243, 210, 122, 0.2);
   border-radius: 50%;
   color: var(--color-accent);
   flex-shrink: 0;
@@ -311,9 +257,9 @@ const ComparisonCard = styled.div<{ $isRoute?: boolean }>`
   border-radius: var(--border-radius);
   border: 1px solid
     ${(props) =>
-      props.$isRoute ? "rgba(249, 47, 96, 0.3)" : "rgba(255, 255, 255, 0.1)"};
+      props.$isRoute ? "rgba(243, 210, 122, 0.35)" : "rgba(255, 255, 255, 0.1)"};
   background: ${(props) =>
-    props.$isRoute ? "rgba(249, 47, 96, 0.05)" : "rgba(255, 255, 255, 0.02)"};
+    props.$isRoute ? "rgba(243, 210, 122, 0.06)" : "rgba(255, 255, 255, 0.02)"};
 `;
 
 const ComparisonCardTitle = styled.h3`
@@ -642,15 +588,7 @@ const Features: React.FC = () => {
         </Subtitle>
       </PageHeader>
 
-      <HeroFeature>
-        <HeroIcon>
-          <Globe />
-        </HeroIcon>
-        <HeroTitle>{localizedContent.heroTitle}</HeroTitle>
-        <HeroDescription>
-          {localizedContent.heroDescription}
-        </HeroDescription>
-      </HeroFeature>
+      <FeatureShowcase />
 
       <SystemsSection>
         <ComparisonTitle>{localizedContent.systemsTitle}</ComparisonTitle>
@@ -715,9 +653,9 @@ const Features: React.FC = () => {
         style={{
           textAlign: "center",
           padding: "var(--space-5)",
-          background: "rgba(249, 47, 96, 0.1)",
+          background: "rgba(243, 210, 122, 0.08)",
           borderRadius: "var(--border-radius)",
-          border: "1px solid rgba(249, 47, 96, 0.2)",
+          border: "1px solid rgba(243, 210, 122, 0.2)",
         }}
       >
         <h3

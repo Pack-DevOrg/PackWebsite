@@ -8,8 +8,37 @@ import styled from "styled-components";
  * pause/resume. Clips + posters come from the demo pipeline:
  *   PackApp: node scripts/produce-demo-clips.mjs --export \
  *     ../PackWebsite/public/videos/features
+ *
+ * All editing lives at the video side (the pipeline bakes cuts, framerate,
+ * and renditions into the files); this component only PICKS a file. Two
+ * renditions ship per clip: the 750px master and a 540px `-small` for
+ * mobile-width layouts and slow connections. Data Saver gets the poster and
+ * downloads nothing until the visitor taps.
  */
 export const FEATURE_MEDIA_BASE = "/videos/features";
+
+const SMALL_LAYOUT_QUERY = "(max-width: 979px)";
+
+type NetworkInformationLike = {
+  readonly saveData?: boolean;
+  readonly effectiveType?: string;
+};
+
+/**
+ * Decided once per mount, before any media loads. Swapping src mid-play
+ * resets the element, so this deliberately does not react to resizes.
+ */
+function pickDelivery(): {rendition: "" | "-small"; autoplay: boolean} {
+  if (typeof window === "undefined") return {rendition: "", autoplay: true};
+  const connection = (navigator as Navigator & {connection?: NetworkInformationLike})
+    .connection;
+  if (connection?.saveData) return {rendition: "-small", autoplay: false};
+  const slow = connection?.effectiveType
+    ? ["slow-2g", "2g", "3g"].includes(connection.effectiveType)
+    : false;
+  const smallLayout = window.matchMedia?.(SMALL_LAYOUT_QUERY).matches ?? false;
+  return {rendition: slow || smallLayout ? "-small" : "", autoplay: true};
+}
 
 /** HEAD-gate on the export manifest so SEO never depends on media assets. */
 export function useFeatureMediaAvailable(): boolean {
@@ -99,6 +128,7 @@ export default function FeaturePhone({
 }: FeaturePhoneProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
+  const [delivery] = useState(pickDelivery);
   const drag = useRef<{
     startX: number;
     startTime: number;
@@ -109,19 +139,19 @@ export default function FeaturePhone({
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (active) {
+    if (active && delivery.autoplay) {
       video.currentTime = 0;
       video.play().catch(() => {});
     } else {
       video.pause();
     }
     if (progressRef.current) progressRef.current.style.width = "0%";
-  }, [active, withVideo]);
+  }, [active, delivery.autoplay, withVideo]);
 
   // Browsers pause offscreen autoplay video; resume when the visitor
   // returns to the tab so the tour never sits frozen.
   useEffect(() => {
-    if (!active) return;
+    if (!active || !delivery.autoplay) return;
     const onVisible = () => {
       if (document.visibilityState !== "visible") return;
       videoRef.current?.play().catch(() => {});
@@ -191,12 +221,12 @@ export default function FeaturePhone({
       {withVideo && (
         <video
           ref={videoRef}
-          src={`${FEATURE_MEDIA_BASE}/feature-${screenId}.mp4`}
+          src={`${FEATURE_MEDIA_BASE}/feature-${screenId}${delivery.rendition}.mp4`}
           poster={`${FEATURE_MEDIA_BASE}/feature-${screenId}-poster.jpg`}
           muted
           playsInline
           loop={loop}
-          preload={preload}
+          preload={delivery.autoplay ? preload : "none"}
           onTimeUpdate={active ? onTimeUpdate : undefined}
           onEnded={active ? onEnded : undefined}
         />

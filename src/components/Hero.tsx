@@ -198,7 +198,7 @@ const CopyScrim = styled.div`
   bottom: 0;
   width: min(56%, 48rem);
   background:
-    linear-gradient(90deg, rgba(8, 7, 6, 0.985) 0%, rgba(8, 7, 6, 0.955) 56%, rgba(8, 7, 6, 0.76) 76%, rgba(8, 7, 6, 0.24) 100%);
+    linear-gradient(90deg, rgba(8, 7, 6, 0.74) 0%, rgba(8, 7, 6, 0.58) 56%, rgba(8, 7, 6, 0.36) 76%, rgba(8, 7, 6, 0.1) 100%);
   filter: blur(22px);
   transform: translateX(-2%);
   pointer-events: none;
@@ -320,9 +320,10 @@ const MarqueeItem = styled.span`
   align-items: center;
   padding: 0.66rem 0.98rem;
   border-radius: 999px;
-  border: 1px solid rgba(243, 210, 122, 0.18);
-  background: rgba(243, 210, 122, 0.09);
-  color: rgba(255, 244, 214, 0.94);
+  border: 1px solid rgba(243, 210, 122, 0.22);
+  background: rgba(10, 8, 6, 0.72);
+  backdrop-filter: blur(6px);
+  color: rgba(255, 244, 214, 0.96);
   font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;

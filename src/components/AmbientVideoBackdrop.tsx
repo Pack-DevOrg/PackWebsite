@@ -14,17 +14,21 @@ const Video = styled.video`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.42;
-  filter: saturate(0.82) brightness(0.82);
+  /* Bias the cover crop toward the lower band — the subject sits low in the
+     hero-ambient footage; the sky band is expendable. */
+  object-position: 50% 72%;
+  opacity: 0.88;
+  filter: saturate(1) brightness(0.92);
 `;
 
-/* Melts the footage into the page bg so copy stays the hero. */
+/* Light legibility wash — the footage carries the emotion; only the frame
+   edges melt into the page bg. */
 const Scrim = styled.div`
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(8, 7, 6, 0.92) 0%, rgba(8, 7, 6, 0.55) 48%, rgba(8, 7, 6, 0.28) 100%),
-    linear-gradient(180deg, rgba(8, 7, 6, 0.25) 0%, transparent 30%, rgba(8, 7, 6, 0.85) 100%);
+    linear-gradient(90deg, rgba(8, 7, 6, 0.56) 0%, rgba(8, 7, 6, 0.28) 42%, rgba(8, 7, 6, 0.1) 100%),
+    linear-gradient(180deg, rgba(8, 7, 6, 0.2) 0%, transparent 26%, rgba(8, 7, 6, 0.72) 100%);
 `;
 
 interface AmbientVideoBackdropProps {

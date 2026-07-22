@@ -36,7 +36,10 @@ function pickDelivery(): {rendition: "" | "-small"; autoplay: boolean} {
   const slow = connection?.effectiveType
     ? ["slow-2g", "2g", "3g"].includes(connection.effectiveType)
     : false;
-  const smallLayout = window.matchMedia?.(SMALL_LAYOUT_QUERY).matches ?? false;
+  // A suspended/background document can report a zero-size viewport; treat
+  // width as unknown there and keep the master rather than guessing small.
+  const smallLayout =
+    window.innerWidth > 0 && (window.matchMedia?.(SMALL_LAYOUT_QUERY).matches ?? false);
   return {rendition: slow || smallLayout ? "-small" : "", autoplay: true};
 }
 

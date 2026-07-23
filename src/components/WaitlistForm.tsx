@@ -326,9 +326,13 @@ const FormContainer = styled.section<{
         ? `${theme.spacing[1]} 0 0`
       : `${theme.spacing[4]} ${theme.spacing[4]} ${theme.spacing[5]}`};
   border-radius: var(--border-radius);
+  background-image: ${({ $variant }) =>
+    $variant === 'hero'
+      ? 'linear-gradient(180deg, rgba(10, 10, 13, 0.84) 0%, rgba(8, 8, 10, 0.93) 55%, rgba(6, 6, 8, 0.96) 100%)'
+      : 'none'};
   background-color: ${({ $variant, theme }) =>
     $variant === 'hero'
-      ? 'rgba(8, 8, 10, 0.94)'
+      ? 'transparent'
       : $variant === 'embedded'
         ? 'transparent'
         : theme.colors.background.card};

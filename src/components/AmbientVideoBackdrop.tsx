@@ -73,8 +73,8 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
   // Version the URLs whenever the asset is replaced: the file name never
   // changes, so browser media caches and CloudFront would otherwise keep
   // serving the previous video indefinitely.
-  src = "/videos/hero-ambient.mp4?v=20260723b",
-  poster = "/videos/hero-ambient-poster.webp?v=20260723b",
+  src = "/videos/hero-ambient.mp4?v=20260723c",
+  poster = "/videos/hero-ambient-poster.webp?v=20260723c",
 }) => {
   const [isAvailable, setIsAvailable] = useState(false);
   const [allowsMotion, setAllowsMotion] = useState(true);

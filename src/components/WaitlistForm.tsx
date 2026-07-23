@@ -350,7 +350,10 @@ const FormContainer = styled.section<{
       : `1px solid ${theme.colors.border.medium}`};
   position: relative;
   overflow: ${({ $variant }) => ($variant === 'embedded' ? 'visible' : 'hidden')};
-  backdrop-filter: ${({ $variant }) => ($variant === 'hero' ? 'blur(16px)' : 'none')};
+  /* No backdrop-filter: blurring the moving hero video behind the card
+     re-rasters every frame and stutters; the near-opaque gradient makes the
+     blur invisible anyway. */
+  backdrop-filter: none;
   ${fadeSequence};
 
   &::before {

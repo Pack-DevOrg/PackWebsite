@@ -4055,6 +4055,36 @@ type JourneyPreviewMotion = {
   progress: number;
   screen: JourneyShowcaseKey;
 };
+
+/* Continuous scroll progress flows through this store straight to the DOM —
+   NOT through React state. Routing it through setState re-rendered the whole
+   Hero tree on every scroll frame, which is what made fast scrolling janky.
+   React state still handles the discrete chapter switches. */
+const journeyPreviewMotionStore = (() => {
+  let state: JourneyPreviewMotion | null = null;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => state,
+    set(next: JourneyPreviewMotion) {
+      state = next;
+      listeners.forEach((listener) => listener());
+    },
+    subscribe(listener: () => void) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
+})();
+
+/* Journey chapter key → the phone content key that chapter displays. */
+const JOURNEY_SCREEN_TO_CONTENT_KEY: Record<JourneyShowcaseKey, string> = {
+  plan: "outline",
+  search: "search",
+  booking: "booking",
+  stats: "footprint",
+};
 const JOURNEY_PHONE_STANDARD_HEIGHT = "clamp(39rem, 82svh, 47rem)";
 const JOURNEY_PHONE_TABLET_HEIGHT = "clamp(38rem, 78svh, 43rem)";
 const JOURNEY_PHONE_MOBILE_HEIGHT = "clamp(37rem, 76svh, 42rem)";
@@ -4278,87 +4308,99 @@ const useMeasuredTravelDistance = (fallbackDistance: string, enabled = true) => 
 
 const usePreviewScrollSync = (
   scrollContainerRef: React.RefObject<HTMLDivElement | null>,
-  scrollProgress: number,
   enabled: boolean,
   contentKey?: string
 ) => {
   const animationFrameRef = React.useRef<number | null>(null);
   const targetScrollTopRef = React.useRef(0);
-  const lastContentKeyRef = React.useRef(contentKey);
 
   useIsomorphicLayoutEffect(() => {
     if (!enabled) {
       return;
     }
 
-    const scrollContainer = scrollContainerRef.current;
-
-    if (!scrollContainer) {
-      return;
-    }
-
     // One shared travel distance regardless of how tall an individual screen's
     // content is: the full scroll height of the shortest capture. The browser
-    // clamps any screen with less real scroll room.
-    targetScrollTopRef.current = Math.max(
-      0,
-      Math.round(scrollProgress * getStandardizedJourneyTravelPx(scrollContainer))
-    );
+    // clamps any screen with less real scroll room. Returns false when the
+    // store's live chapter isn't the one this container displays — leave the
+    // position alone and let the content swap realign.
+    const readTarget = (): boolean => {
+      const node = scrollContainerRef.current;
+      const motion = journeyPreviewMotionStore.get();
+      if (!node || !motion || JOURNEY_SCREEN_TO_CONTENT_KEY[motion.screen] !== contentKey) {
+        return false;
+      }
+      targetScrollTopRef.current = Math.max(
+        0,
+        Math.round(motion.progress * getStandardizedJourneyTravelPx(node))
+      );
+      return true;
+    };
+
+    const stopLoop = () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
+
+    const applyTarget = (snap: boolean) => {
+      const node = scrollContainerRef.current;
+      if (!node) {
+        return;
+      }
+      if (
+        snap ||
+        typeof window === "undefined" ||
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      ) {
+        stopLoop();
+        node.scrollTop = targetScrollTopRef.current;
+        return;
+      }
+      if (animationFrameRef.current !== null) {
+        return; // the running loop picks up the new target
+      }
+      // Lerp toward the target so discrete page-scroll ticks render as a
+      // continuous glide instead of stepped jumps.
+      const step = () => {
+        const liveNode = scrollContainerRef.current;
+        if (!liveNode) {
+          animationFrameRef.current = null;
+          return;
+        }
+        const delta = targetScrollTopRef.current - liveNode.scrollTop;
+        if (Math.abs(delta) < 0.6) {
+          liveNode.scrollTop = targetScrollTopRef.current;
+          animationFrameRef.current = null;
+          return;
+        }
+        liveNode.scrollTop = liveNode.scrollTop + delta * 0.16;
+        animationFrameRef.current = window.requestAnimationFrame(step);
+      };
+      animationFrameRef.current = window.requestAnimationFrame(step);
+    };
 
     // On a chapter/content swap the container still sits at the previous
     // chapter's scroll position — lerping from there reads as the phone
-    // scrolling backwards for a moment. Snap instead; lerp only within a
-    // chapter.
-    const isContentSwap = lastContentKeyRef.current !== contentKey;
-    lastContentKeyRef.current = contentKey;
-
-    if (
-      isContentSwap ||
-      typeof window === "undefined" ||
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-    ) {
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
-      scrollContainer.scrollTop = targetScrollTopRef.current;
-      return;
+    // scrolling backwards for a moment. Snap straight to the target.
+    if (readTarget()) {
+      applyTarget(true);
     }
 
-    if (animationFrameRef.current !== null) {
-      return; // the running loop picks up the new target
-    }
-
-    // Lerp toward the target so discrete page-scroll ticks render as a
-    // continuous glide instead of stepped jumps.
-    const step = () => {
-      const node = scrollContainerRef.current;
-      if (!node) {
-        animationFrameRef.current = null;
-        return;
+    // Continuous progress arrives via the store subscription (direct DOM
+    // writes), not via props — scrolling must not re-render the Hero tree.
+    const unsubscribe = journeyPreviewMotionStore.subscribe(() => {
+      if (readTarget()) {
+        applyTarget(false);
       }
-      const delta = targetScrollTopRef.current - node.scrollTop;
-      if (Math.abs(delta) < 0.6) {
-        node.scrollTop = targetScrollTopRef.current;
-        animationFrameRef.current = null;
-        return;
-      }
-      node.scrollTop = node.scrollTop + delta * 0.16;
-      animationFrameRef.current = window.requestAnimationFrame(step);
-    };
-    animationFrameRef.current = window.requestAnimationFrame(step);
-  }, [enabled, scrollContainerRef, scrollProgress, contentKey]);
+    });
 
-  useMountEffect(() => {
     return () => {
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-        // Null the handle so a remount (e.g. StrictMode's double-invoke)
-        // doesn't mistake the cancelled frame for a live loop forever.
-        animationFrameRef.current = null;
-      }
+      unsubscribe();
+      stopLoop();
     };
-  });
+  }, [enabled, scrollContainerRef, contentKey]);
 };
 
 const useInitialScrollTop = (
@@ -4773,6 +4815,7 @@ const PlanShowcasePhone: React.FC<{
   journeyFullHeight?: boolean;
   scrollProgress?: number;
   scrollablePreview?: boolean;
+  liveScrollSync?: boolean;
   initialScrollTop?: number;
   assetVariant?: "default" | "mobile";
   outboundIndex: number;
@@ -4794,6 +4837,7 @@ const PlanShowcasePhone: React.FC<{
   journeyFullHeight = false,
   scrollProgress = 0,
   scrollablePreview = false,
+  liveScrollSync = false,
   initialScrollTop,
   assetVariant = "default",
   outboundIndex,
@@ -4833,8 +4877,7 @@ const PlanShowcasePhone: React.FC<{
 
   usePreviewScrollSync(
     planScrollRef,
-    scrollProgress,
-    scrollablePreview,
+    scrollablePreview && liveScrollSync,
     screenKey
   );
   useInitialScrollTop(planScrollRef, initialScrollTop, scrollablePreview);
@@ -4883,6 +4926,7 @@ const ReviewShowcasePhone: React.FC<{
   journeyFullHeight?: boolean;
   scrollProgress?: number;
   scrollablePreview?: boolean;
+  liveScrollSync?: boolean;
   initialScrollTop?: number;
   assetVariant?: "default" | "mobile";
 }> = ({
@@ -4891,6 +4935,7 @@ const ReviewShowcasePhone: React.FC<{
   journeyFullHeight = false,
   scrollProgress = 0,
   scrollablePreview = false,
+  liveScrollSync = false,
   initialScrollTop,
   assetVariant = "default",
 }) => {
@@ -4907,8 +4952,7 @@ const ReviewShowcasePhone: React.FC<{
   } = useMeasuredTravelDistance(fallbackTravelDistance, scrollablePreview);
   usePreviewScrollSync(
     reviewScrollRef,
-    scrollProgress,
-    scrollablePreview,
+    scrollablePreview && liveScrollSync,
     screenKey
   );
   useInitialScrollTop(reviewScrollRef, initialScrollTop, scrollablePreview);
@@ -4954,6 +4998,7 @@ const JourneyShowcasePhone: React.FC<{
   screenKey: JourneyShowcaseKey;
   scrollProgress?: number;
   scrollablePreview?: boolean;
+  liveScrollSync?: boolean;
   initialScrollTop?: number;
   assetVariant?: "default" | "mobile";
   outboundIndex: number;
@@ -4973,6 +5018,7 @@ const JourneyShowcasePhone: React.FC<{
   screenKey,
   scrollProgress = 0,
   scrollablePreview = false,
+  liveScrollSync = false,
   initialScrollTop,
   assetVariant = "default",
   ...props
@@ -4985,6 +5031,7 @@ const JourneyShowcasePhone: React.FC<{
         journeyFullHeight
         scrollProgress={scrollProgress}
         scrollablePreview={scrollablePreview}
+        liveScrollSync={liveScrollSync}
         initialScrollTop={initialScrollTop}
         assetVariant={assetVariant}
         {...props}
@@ -5000,6 +5047,7 @@ const JourneyShowcasePhone: React.FC<{
         journeyFullHeight
         scrollProgress={scrollProgress}
         scrollablePreview={scrollablePreview}
+        liveScrollSync={liveScrollSync}
         initialScrollTop={initialScrollTop}
         assetVariant={assetVariant}
         {...props}
@@ -5015,6 +5063,7 @@ const JourneyShowcasePhone: React.FC<{
         journeyFullHeight
         scrollProgress={scrollProgress}
         scrollablePreview={scrollablePreview}
+        liveScrollSync={liveScrollSync}
         initialScrollTop={initialScrollTop}
         assetVariant={assetVariant}
       />
@@ -5028,6 +5077,7 @@ const JourneyShowcasePhone: React.FC<{
       journeyFullHeight
       scrollProgress={scrollProgress}
       scrollablePreview={scrollablePreview}
+      liveScrollSync={liveScrollSync}
       initialScrollTop={initialScrollTop}
       assetVariant={assetVariant}
       {...props}
@@ -5037,7 +5087,6 @@ const JourneyShowcasePhone: React.FC<{
 
 const JourneyShowcasePhoneStack: React.FC<{
   activeScreen: JourneyShowcaseKey;
-  previewProgress: number;
   outboundIndex: number;
   hotelIndex: number;
   returnIndex: number;
@@ -5051,15 +5100,16 @@ const JourneyShowcasePhoneStack: React.FC<{
   selectedHotel: PlanHotelOption;
   selectedReturnFlight: PlanFlightOption;
   totalTripPrice: string;
-}> = ({ activeScreen, previewProgress, ...props }) => (
+}> = ({ activeScreen, ...props }) => (
   <JourneyPhoneCrossfadeStage>
     {/* Keep one active phone instance mounted so chapter changes only swap content,
-        not the shell. Only the active screen receives motion progress, which keeps
-        the preview on one animation path instead of coordinating multiple screens. */}
+        not the shell. Continuous motion progress reaches the phone through
+        journeyPreviewMotionStore (liveScrollSync), not through props — scroll
+        frames must not re-render this tree. */}
     <JourneyShowcasePhone
       screenKey={activeScreen}
-      scrollProgress={previewProgress}
       scrollablePreview
+      liveScrollSync
       {...props}
     />
   </JourneyPhoneCrossfadeStage>
@@ -5067,7 +5117,7 @@ const JourneyShowcasePhoneStack: React.FC<{
 
 const renderJourneyShowcasePhone = (
   screenKey: JourneyShowcaseKey,
-  props: Omit<React.ComponentProps<typeof JourneyShowcasePhoneStack>, "activeScreen" | "previewProgress">
+  props: Omit<React.ComponentProps<typeof JourneyShowcasePhoneStack>, "activeScreen">
 ) => (
   <JourneyShowcasePhone
     screenKey={screenKey}
@@ -5120,10 +5170,6 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
   const [activeJourneyScreen, setActiveJourneyScreen] = useState<JourneyShowcaseKey>(
     journeyShowcaseItems[0].key
   );
-  const [journeyPreviewMotion, setJourneyPreviewMotion] = useState<JourneyPreviewMotion>({
-    screen: journeyShowcaseItems[0].key,
-    progress: 0,
-  });
   const desktopJourneyNarrativeRefs = React.useRef<Array<HTMLElement | null>>([]);
   const mobileJourneyNarrativeRefs = React.useRef<Array<HTMLElement | null>>([]);
   const journeyProgrammaticTargetRef = React.useRef<JourneyShowcaseKey | null>(null);
@@ -5285,20 +5331,30 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
             )
           : 0;
 
-        setJourneyPreviewMotion((current) => {
-          if (current.screen === nextKey && Math.abs(current.progress - nextProgress) < 0.001) {
-            return current;
-          }
-
-          return {
-            screen: nextKey,
-            progress: nextProgress,
-          };
-        });
+        // Direct store write — deliberately NOT React state. Continuous
+        // progress at scroll rate must not re-render the Hero tree.
+        const currentMotion = journeyPreviewMotionStore.get();
+        if (
+          !currentMotion ||
+          currentMotion.screen !== nextKey ||
+          Math.abs(currentMotion.progress - nextProgress) >= 0.001
+        ) {
+          journeyPreviewMotionStore.set({ screen: nextKey, progress: nextProgress });
+        }
       }
     };
 
-    const handleScroll = () => {
+    const handleScroll = (event?: Event) => {
+      // The capture listener also hears the journey phones' own inner-content
+      // scrolls (including the ones our preview lerp emits every frame) —
+      // ignore them so page scrolling is the only chapter-sync trigger.
+      const target = event?.target;
+      if (
+        target instanceof Element &&
+        target.closest("[data-hero-scroll]") !== null
+      ) {
+        return;
+      }
       cancelAnimationFrame(frameId);
       frameId = window.requestAnimationFrame(syncActiveJourneyScreen);
     };
@@ -5361,8 +5417,6 @@ const Hero: React.FC<HeroProps> = ({ journeyOnly = false, waitlistSlot = null })
 
   const journeyPhoneStackProps = {
     activeScreen: activeJourneyScreen,
-    previewProgress:
-      journeyPreviewMotion.screen === activeJourneyScreen ? journeyPreviewMotion.progress : 0,
     outboundIndex,
     hotelIndex,
     returnIndex,

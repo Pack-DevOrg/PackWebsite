@@ -605,6 +605,9 @@ function buildTechnicalFindings({ pages, sitemapUrls, prerenderRoutes, robotsTex
 }
 
 const RENDERED_TITLE_MAX_LENGTH = 65;
+// AI answer engines show a strong recency bias: roughly half of cited pages
+// were updated within ~13 weeks (Ahrefs 17M-citation study, 2025-07).
+const ARTICLE_REFRESH_DAYS = 90;
 const RENDERED_DESCRIPTION_MAX_LENGTH = 165;
 const RENDERED_DESCRIPTION_MIN_LENGTH = 60;
 // Root-level auxiliary shells (PWA offline fallback, legacy share shim, CCPA
@@ -645,6 +648,7 @@ export async function buildRenderedHtmlFindings(rootDir) {
   const duplicateTitles = [];
   const missingBreadcrumbs = [];
   const staleArticles = [];
+  const agingArticles = [];
   const invalidJsonLd = [];
   const unexpectedIndexable = [];
   const titleOwners = new Map();
@@ -699,8 +703,16 @@ export async function buildRenderedHtmlFindings(rootDir) {
     if (route !== "/" && !jsonLdText.includes("BreadcrumbList")) {
       missingBreadcrumbs.push(route);
     }
-    if (jsonLdText.includes('"Article"') && !jsonLdText.includes("dateModified")) {
-      staleArticles.push(route);
+    if (jsonLdText.includes('"Article"')) {
+      const modified = (jsonLdText.match(/"dateModified":"(\d{4}-\d{2}-\d{2})"/) ?? [])[1];
+      if (!modified) {
+        staleArticles.push(route);
+      } else {
+        const ageDays = Math.floor((Date.now() - Date.parse(modified)) / 86400000);
+        if (ageDays > ARTICLE_REFRESH_DAYS) {
+          agingArticles.push(`${route} (${ageDays}d)`);
+        }
+      }
     }
   }
 
@@ -767,6 +779,15 @@ export async function buildRenderedHtmlFindings(rootDir) {
       title: "Article structured data is missing dateModified",
       action: "Set datePublished and dateModified on the guide definition.",
       paths: staleArticles
+    });
+  }
+  if (agingArticles.length > 0) {
+    findings.push({
+      severity: "medium",
+      title: `Guide articles have not been refreshed in over ${ARTICLE_REFRESH_DAYS} days`,
+      action:
+        "Refresh the guide content with genuinely new material and update dateModified; AI engines favor recently updated pages.",
+      paths: agingArticles
     });
   }
   return findings;

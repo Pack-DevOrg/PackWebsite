@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import WaitlistForm from "../components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
-import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
+import PageSeo from "@/seo/pageSeo";
 
 const HowItWorksContainer = styled.section`
   max-width: 1200px;
@@ -293,11 +293,6 @@ const howItWorksContent = {
     pageTitle: "How Pack Works",
     pageSubtitle:
       "Pack turns conversation and travel context into a trip you can review, approve, and book with confidence.",
-    schemaName: "How to Plan and Book Travel with Pack",
-    schemaDescription:
-      "Learn how Pack helps you rebuild travel history, plan trips proactively, update itineraries from real-world inputs, and stay ahead of travel-day details.",
-    schemaSupply: ["Internet connection", "Travel preferences and budget"],
-    schemaTool: "Pack Chat Interface",
     processSteps: [
       { icon: <MessageSquareText />, title: "Chat", description: "Tell Pack what you need, in plain language" },
       { icon: <Brain />, title: "Learn", description: "Pack understands your preferences and patterns, and continues to improve the more you use it" },
@@ -407,11 +402,6 @@ const howItWorksContent = {
     pageTitle: "Cómo funciona Pack",
     pageSubtitle:
       "Pack convierte conversación y contexto de viaje en un trayecto que puedes revisar, aprobar y reservar con confianza.",
-    schemaName: "Cómo planear y reservar un viaje con Pack",
-    schemaDescription:
-      "Descubre cómo Pack te ayuda a reconstruir historial de viajes, planear trayectos de forma proactiva, actualizar itinerarios desde entradas reales y adelantarte a los detalles del día de viaje.",
-    schemaSupply: ["Conexión a internet", "Preferencias de viaje y presupuesto"],
-    schemaTool: "Interfaz de chat de Pack",
     processSteps: [
       { icon: <MessageSquareText />, title: "Habla", description: "Dile a Pack lo que necesitas, en lenguaje natural" },
       { icon: <Brain />, title: "Aprende", description: "Pack entiende tus preferencias y patrones, y sigue mejorando cuanto más lo usas" },
@@ -524,37 +514,6 @@ const HowItWorks: React.FC = () => {
   const localizedContent = howItWorksContent[locale];
   const steps = localizedContent.steps;
   const processSteps = localizedContent.processSteps;
-  const localizedHowItWorksPath = locale === "en" ? "/how-it-works" : `/${locale}/how-it-works`;
-  const howItWorksSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: localizedContent.schemaName,
-    description: localizedContent.schemaDescription,
-    image: buildAbsoluteUrl("/images/og-image.png"),
-    totalTime: "PT5M",
-    estimatedCost: {
-      "@type": "MonetaryAmount",
-      currency: "USD",
-      value: "0",
-    },
-    supply: localizedContent.schemaSupply.map((item) => ({
-      "@type": "HowToSupply",
-      name: item,
-    })),
-    tool: [
-      {
-        "@type": "HowToTool",
-        name: localizedContent.schemaTool,
-      },
-    ],
-    step: steps.map((step, index) => ({
-      "@type": "HowToStep",
-      position: index + 1,
-      name: step.title,
-      text: step.description,
-      url: buildAbsoluteUrl(`${localizedHowItWorksPath}#step-${index + 1}`),
-    })),
-  };
 
   return (
     <HowItWorksContainer>
@@ -562,7 +521,6 @@ const HowItWorks: React.FC = () => {
         title="How Pack Works | AI travel planning from prompt to booking"
         description="See how Pack turns travel prompts, confirmations, calendars, and preferences into organized trips you can review, update, and book."
         path="/how-it-works"
-        schema={[howItWorksSchema]}
       />
       <PageHeader>
         <Title>{localizedContent.pageTitle}</Title>

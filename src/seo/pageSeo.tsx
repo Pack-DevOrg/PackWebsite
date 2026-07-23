@@ -101,7 +101,8 @@ export function createOrganizationSchema(): Record<string, unknown> {
     email: "support@trypackai.com",
     sameAs: [
       "https://www.crunchbase.com/organization/pack-56e8",
-      "https://www.wikidata.org/wiki/Q139504185",
+      // Wikidata Q139504185 removed 2026-07-23: the item 404s (deleted or never
+      // created). Re-add the real Q-id only after the entity exists.
       "https://github.com/Pack-DevOrg",
       "https://x.com/trypackai",
       "https://www.linkedin.com/company/106734468/",

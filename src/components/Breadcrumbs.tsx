@@ -22,6 +22,10 @@ import PrefetchLink from './PrefetchLink';
 import { useI18n } from '@/i18n/I18nProvider';
 import { stripLocaleFromPath } from '@/i18n/config';
 import { capabilityPageDefinitions } from '@/content/capabilityPages';
+import {
+  orderedSeoGuideSlugs,
+  seoGuideDefinitionMap,
+} from '@/content/seoGuides';
 import { buildAbsoluteUrl } from '@/seo/pageSeo';
 
 /**
@@ -126,6 +130,9 @@ const BreadcrumbsInstance: React.FC<BreadcrumbsProps> = ({ className }) => {
     '/features': t('breadcrumb.features'),
     '/faq': t('breadcrumb.faq'),
     '/how-it-works': t('breadcrumb.howItWorks'),
+    '/about': t('nav.about'),
+    '/support': t('nav.support'),
+    '/tsa': 'TSA Wait Times',
     '/terms': t('breadcrumb.terms'),
     '/privacy': t('breadcrumb.privacy'),
     '/privacy-request': t('breadcrumb.privacyRequest'),
@@ -133,6 +140,12 @@ const BreadcrumbsInstance: React.FC<BreadcrumbsProps> = ({ className }) => {
     '/accessibility': t('breadcrumb.accessibility'),
     ...Object.fromEntries(
       capabilityPageDefinitions.map((page) => [`/${page.slug}`, page.navLabel]),
+    ),
+    ...Object.fromEntries(
+      orderedSeoGuideSlugs.map((slug) => [
+        `/guides/${slug}`,
+        seoGuideDefinitionMap[slug].eyebrow,
+      ]),
     ),
   };
 

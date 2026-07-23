@@ -17,7 +17,11 @@ import {
 } from "lucide-react";
 import PrefetchLink from "@/components/PrefetchLink";
 import CarouselTabBand from "@/components/CarouselTabBand";
-import PageSeo, { buildAbsoluteUrl } from "@/seo/pageSeo";
+import PageSeo, {
+  buildAbsoluteUrl,
+  DEFAULT_SHARE_IMAGE_URL,
+  ORGANIZATION_ID,
+} from "@/seo/pageSeo";
 import {
   isSeoGuideSlug,
   orderedSeoGuideSlugs,
@@ -477,14 +481,14 @@ function createGuideSchema(guide: SeoGuideDefinition): Record<string, unknown> {
     headline: guide.title,
     description: guide.description,
     url: buildAbsoluteUrl(`/guides/${guide.slug}`),
+    image: DEFAULT_SHARE_IMAGE_URL,
+    datePublished: guide.datePublished,
+    dateModified: guide.dateModified,
     author: {
-      "@type": "Organization",
-      name: "Pack",
+      "@id": ORGANIZATION_ID,
     },
     publisher: {
-      "@type": "Organization",
-      name: "Pack",
-      url: "https://www.trypackai.com",
+      "@id": ORGANIZATION_ID,
     },
     mainEntityOfPage: buildAbsoluteUrl(`/guides/${guide.slug}`),
     keywords: guide.primaryKeywords.join(", "),
@@ -511,8 +515,8 @@ const SeoGuidePage: React.FC<{ readonly slug?: string }> = ({ slug }) => {
   return (
     <Page>
       <PageSeo
-        title={`${guide.title} | Pack`}
-        description={guide.description}
+        title={`${guide.seoTitle ?? guide.title} | Pack`}
+        description={guide.seoDescription ?? guide.description}
         path={path}
         schema={[createGuideSchema(guide), createFaqSchema(visibleFaqs)]}
       />

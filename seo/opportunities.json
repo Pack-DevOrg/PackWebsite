@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-10T07:47:31.367Z",
+  "generatedAt": "2026-07-23T07:34:13.493Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -28,7 +28,7 @@
     }
   ],
   "inventory": {
-    "scannedPages": 186,
+    "scannedPages": 201,
     "sitemapUrls": 32,
     "prerenderRoutes": 43
   },
@@ -56,34 +56,6 @@
         {
           "path": "/how-it-works",
           "title": "How Pack Works",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
-    },
-    {
-      "keyword": "AI itinerary planner",
-      "clusterId": "ai-travel-planning",
-      "clusterLabel": "AI travel planning",
-      "intent": "commercial",
-      "priority": 10,
-      "gapScore": 110,
-      "currentBestCoverage": 0.55,
-      "recommendedPage": "/",
-      "strongestExistingPages": [
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/booking-context",
-          "title": "Points And Miles Trip Planner For Booking Context",
-          "score": 0.55
-        },
-        {
-          "path": "/group-trip-planning",
-          "title": "Group Trip Planner For Shared Itineraries And Costs",
           "score": 0.55
         }
       ],
@@ -174,6 +146,146 @@
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
     },
     {
+      "keyword": "AI travel planner without hallucinations",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 102,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.55
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
+        },
+        {
+          "path": "/source/src/pages/Labs.tsx",
+          "title": "Labs.tsx",
+          "score": 0.3666666666666667
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "AI travel assistant that checks facts",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 102,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.55
+        },
+        {
+          "path": "/source/src/components/AITrainingOptimization.tsx",
+          "title": "AITrainingOptimization.tsx",
+          "score": 0.55
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "token efficient AI travel planner",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 102,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        },
+        {
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.3666666666666667
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "energy efficient AI travel assistant",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 102,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        },
+        {
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.3666666666666667
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "AI travel planning energy use",
+      "clusterId": "reliable-ai-travel-planning",
+      "clusterLabel": "Reliable and responsible AI travel planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 102,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/connected-accounts",
+      "strongestExistingPages": [
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
       "keyword": "travel email parser",
       "clusterId": "trip-organization",
       "clusterLabel": "Trip organization",
@@ -217,13 +329,13 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.55
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.3666666666666667
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.3666666666666667
         }
       ],
@@ -336,6 +448,34 @@
         {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
+    },
+    {
+      "keyword": "AI itinerary planner",
+      "clusterId": "ai-travel-planning",
+      "clusterLabel": "AI travel planning",
+      "intent": "commercial",
+      "priority": 10,
+      "gapScore": 97,
+      "currentBestCoverage": 0.85,
+      "recommendedPage": "/",
+      "strongestExistingPages": [
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/booking-context",
+          "title": "Points And Miles Trip Planner For Booking Context",
           "score": 0.55
         }
       ],
@@ -464,11 +604,6 @@
       "recommendedPage": "/airport-security-wait-times",
       "strongestExistingPages": [
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.55
-        },
-        {
           "path": "/source/src/pages/FAQ.tsx",
           "title": "FAQ.tsx",
           "score": 0.55
@@ -477,6 +612,11 @@
           "path": "/source/src/pages/TermsOfService.tsx",
           "title": "TermsOfService.tsx",
           "score": 0.55
+        },
+        {
+          "path": "/capability-pages",
+          "title": "Pack Capability Pages",
+          "score": 0.41250000000000003
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -553,13 +693,13 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.55
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.41250000000000003
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.41250000000000003
         }
       ],
@@ -622,6 +762,34 @@
       "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
     },
     {
+      "keyword": "plan travel from calendar event",
+      "clusterId": "event-trip-planning",
+      "clusterLabel": "Event and calendar-based trip planning",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 92,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/trip-planning-from-events",
+      "strongestExistingPages": [
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "score": 0.55
+        },
+        {
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.55
+        },
+        {
+          "path": "/trip-planning-from-events",
+          "title": "Trip Planning From Events",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
+    },
+    {
       "keyword": "book flights from itinerary",
       "clusterId": "booking-context",
       "clusterLabel": "Booking with context",
@@ -644,6 +812,34 @@
         {
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Expand the preferred page with a focused section, FAQ, and internal links."
+    },
+    {
+      "keyword": "travel booking with calendar context",
+      "clusterId": "booking-context",
+      "clusterLabel": "Booking with context",
+      "intent": "commercial",
+      "priority": 8,
+      "gapScore": 92,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/travel-booking",
+      "strongestExistingPages": [
+        {
+          "path": "/privacy",
+          "title": "Privacy Policy",
+          "score": 0.55
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/connected-accounts",
+          "title": "Connected Accounts",
           "score": 0.55
         }
       ],
@@ -693,13 +889,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/policies-and-trust",
-          "title": "Pack Policies And Trust",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
+          "path": "/policies-and-trust",
+          "title": "Pack Policies And Trust",
           "score": 0.55
         }
       ],
@@ -729,34 +925,6 @@
           "path": "/source/src/content/seoGuides.ts",
           "title": "seoGuides.ts",
           "score": 0.8500000000000001
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "AI travel planner without hallucinations",
-      "clusterId": "reliable-ai-travel-planning",
-      "clusterLabel": "Reliable and responsible AI travel planning",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 89,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/connected-accounts",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
-          "path": "/reliable-ai-travel-planning",
-          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/pages/Labs.tsx",
-          "title": "Labs.tsx",
-          "score": 0.3666666666666667
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -805,126 +973,14 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/product-overview",
           "title": "Pack Product Overview",
           "score": 0.275
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "AI travel assistant that checks facts",
-      "clusterId": "reliable-ai-travel-planning",
-      "clusterLabel": "Reliable and responsible AI travel planning",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 89,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/connected-accounts",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
         },
         {
-          "path": "/reliable-ai-travel-planning",
-          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
-          "score": 0.55
-        },
-        {
-          "path": "/source/src/components/AITrainingOptimization.tsx",
-          "title": "AITrainingOptimization.tsx",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "token efficient AI travel planner",
-      "clusterId": "reliable-ai-travel-planning",
-      "clusterLabel": "Reliable and responsible AI travel planning",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 89,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/connected-accounts",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "energy efficient AI travel assistant",
-      "clusterId": "reliable-ai-travel-planning",
-      "clusterLabel": "Reliable and responsible AI travel planning",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 89,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/connected-accounts",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/llms.txt",
-          "title": "Pack",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "AI travel planning energy use",
-      "clusterId": "reliable-ai-travel-planning",
-      "clusterLabel": "Reliable and responsible AI travel planning",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 89,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/connected-accounts",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/reliable-ai-travel-planning",
-          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
-          "score": 0.55
+          "path": "/terms",
+          "title": "TermsOfService.md",
+          "score": 0.275
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -978,9 +1034,9 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1001,13 +1057,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         }
       ],
@@ -1029,13 +1085,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         }
       ],
@@ -1062,9 +1118,9 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
+          "path": "/source/src/content/capabilityPages.ts",
+          "title": "capabilityPages.ts",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1085,13 +1141,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/travel-day-intelligence",
+          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
           "score": 0.55
         }
       ],
@@ -1113,13 +1169,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/event-trip-planning",
+          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
           "score": 0.55
         }
       ],
@@ -1141,13 +1197,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/travel-context-engine",
+          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
           "score": 0.55
         }
       ],
@@ -1258,9 +1314,9 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.55
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.3666666666666667
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -1314,8 +1370,36 @@
           "score": 0.55
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
+          "path": "/source/src/pages/ConversationPage.tsx",
+          "title": "ConversationPage.tsx",
+          "score": 0.55
+        }
+      ],
+      "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
+    },
+    {
+      "keyword": "flight alerts airport wait times",
+      "clusterId": "travel-day-operations",
+      "clusterLabel": "Travel-day operations",
+      "intent": "commercial",
+      "priority": 6,
+      "gapScore": 86,
+      "currentBestCoverage": 0.55,
+      "recommendedPage": "/trip-updates",
+      "strongestExistingPages": [
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/travel-day-intelligence",
+          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
+          "score": 0.55
+        },
+        {
+          "path": "/upcoming-trip-details",
+          "title": "Upcoming Trip Details",
           "score": 0.55
         }
       ],
@@ -1421,13 +1505,13 @@
           "score": 1
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.3666666666666667
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.3666666666666667
         }
       ],
@@ -1454,9 +1538,9 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1505,13 +1589,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/product-overview",
           "title": "Pack Product Overview",
+          "score": 0.55
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -1533,13 +1617,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/event-trip-planning",
-          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -1589,13 +1673,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/privacy",
-          "title": "Privacy Policy",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/airport-security-wait-times",
-          "title": "Airport Security Wait Times",
+          "path": "/privacy",
+          "title": "Privacy Policy",
           "score": 0.55
         }
       ],
@@ -1681,62 +1765,6 @@
           "path": "/source/src/content/seoGuides.ts",
           "title": "seoGuides.ts",
           "score": 0.8500000000000001
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "plan travel from calendar event",
-      "clusterId": "event-trip-planning",
-      "clusterLabel": "Event and calendar-based trip planning",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 79,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/trip-planning-from-events",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
-          "path": "/event-trip-planning",
-          "title": "Event Travel Planner For Meetings, Calendars, Conferences, And Public Events",
-          "score": 0.55
-        },
-        {
-          "path": "/reliable-ai-travel-planning",
-          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
-          "score": 0.55
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "travel booking with calendar context",
-      "clusterId": "booking-context",
-      "clusterLabel": "Booking with context",
-      "intent": "commercial",
-      "priority": 8,
-      "gapScore": 79,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/travel-booking",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
-          "path": "/privacy",
-          "title": "Privacy Policy",
-          "score": 0.55
-        },
-        {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -1953,13 +1981,13 @@
           "score": 1
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/capabilities",
           "title": "Pack Capability Pages",
+          "score": 0.55
+        },
+        {
+          "path": "/reliable-ai-travel-planning",
+          "title": "Reliable AI Travel Planning That Uses Fewer Guesses",
           "score": 0.55
         }
       ],
@@ -2037,13 +2065,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
+          "score": 0.55
+        },
+        {
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
           "score": 0.55
         }
       ],
@@ -2065,14 +2093,14 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/source/src/components/app/TravelStatsOverview.tsx",
           "title": "TravelStatsOverview.tsx",
           "score": 0.3666666666666667
+        },
+        {
+          "path": "/privacy",
+          "title": "Privacy Policy",
+          "score": 0.18333333333333335
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -2093,13 +2121,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/llms.txt",
           "title": "Pack",
+          "score": 0.3666666666666667
+        },
+        {
+          "path": "/traveler-profiles",
+          "title": "Traveler Profiles",
           "score": 0.3666666666666667
         }
       ],
@@ -2121,42 +2149,14 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/tsa-airport-pages",
           "title": "Pack TSA Airport Pages",
           "score": 0.3666666666666667
-        }
-      ],
-      "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
-    },
-    {
-      "keyword": "flight alerts airport wait times",
-      "clusterId": "travel-day-operations",
-      "clusterLabel": "Travel-day operations",
-      "intent": "commercial",
-      "priority": 6,
-      "gapScore": 73,
-      "currentBestCoverage": 0.85,
-      "recommendedPage": "/trip-updates",
-      "strongestExistingPages": [
-        {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
-        },
-        {
-          "path": "/travel-day-intelligence",
-          "title": "Travel Day Assistant For Airport Waits, Weather, Drive Time, And Live Trip Context",
-          "score": 0.55
+          "path": "/source/src/content/capabilityPages.ts",
+          "title": "capabilityPages.ts",
+          "score": 0.3666666666666667
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -2177,13 +2177,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/airport-security-wait-times",
           "title": "Airport Security Wait Times",
+          "score": 0.55
+        },
+        {
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -2401,13 +2401,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/travel-context-engine",
-          "title": "Context-Aware Travel Assistant For Trips That Use Real Travel Data",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -2429,13 +2429,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/capabilities",
-          "title": "Pack Capability Pages",
-          "score": 0.55
+          "path": "/source/src/content/seoGuides.ts",
+          "title": "seoGuides.ts",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/features",
-          "title": "Pack Features",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -2518,9 +2518,9 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -2541,14 +2541,14 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
-        },
-        {
           "path": "/features",
           "title": "Pack Features",
           "score": 0.575
+        },
+        {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -2602,9 +2602,9 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
+          "score": 0.55
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -2625,12 +2625,12 @@
           "score": 1
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
-          "score": 0.8500000000000001
+          "path": "/capability-pages",
+          "title": "Pack Capability Pages",
+          "score": 0.55
         },
         {
-          "path": "/capability-pages",
+          "path": "/capabilities",
           "title": "Pack Capability Pages",
           "score": 0.55
         }
@@ -2648,19 +2648,19 @@
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
+      "question": "Which airports publish live security line data?",
+      "clusterId": "airport-security",
+      "clusterLabel": "Airport security intelligence",
+      "answerTarget": "/airport-security-wait-times",
+      "currentBestCoverage": 0.39,
+      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
+    },
+    {
       "question": "What app shares a live trip plan with family or coworkers?",
       "clusterId": "travel-day-operations",
       "clusterLabel": "Travel-day operations",
       "answerTarget": "/guides/travel-day-intelligence",
       "currentBestCoverage": 0.44,
-      "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
-    },
-    {
-      "question": "Which airports publish live security line data?",
-      "clusterId": "airport-security",
-      "clusterLabel": "Airport security intelligence",
-      "answerTarget": "/airport-security-wait-times",
-      "currentBestCoverage": 0.47,
       "recommendedFormat": "Short direct answer, visible evidence, FAQ schema only when the answer is visible on the page."
     },
     {
@@ -2962,6 +2962,27 @@
       ]
     },
     {
+      "clusterId": "reliable-ai-travel-planning",
+      "title": "Reliable and responsible AI travel planning: AI travel planner without hallucinations",
+      "recommendedSlug": "/guides/reliable-ai-travel-planning",
+      "format": "benchmark",
+      "score": 102,
+      "brief": [
+        "Lead with the user problem behind \"AI travel planner without hallucinations\".",
+        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
+        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
+        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
+      ],
+      "internalLinks": [
+        "/guides/reliable-ai-travel-planning",
+        "/guides/travel-context-engine",
+        "/guides/ai-travel-planning",
+        "/connected-accounts",
+        "/travel-history",
+        "/upcoming-trip-details"
+      ]
+    },
+    {
       "clusterId": "trip-organization",
       "title": "Trip organization: travel email parser",
       "recommendedSlug": "/guides/trip-organization",
@@ -3053,27 +3074,6 @@
         "/traveler-profiles",
         "/loyalty-details",
         "/travel-booking"
-      ]
-    },
-    {
-      "clusterId": "reliable-ai-travel-planning",
-      "title": "Reliable and responsible AI travel planning: reliable AI travel planner",
-      "recommendedSlug": "/guides/reliable-ai-travel-planning",
-      "format": "benchmark",
-      "score": 89,
-      "brief": [
-        "Lead with the user problem behind \"reliable AI travel planner\".",
-        "Use Pack product evidence: visible workflows, screenshots, benchmark data, or public utility pages.",
-        "Include a comparison section covering when Pack differs from TripIt vs Google Travel vs Kayak Trips vs Wanderlog.",
-        "Add 3 to 5 visible question answers that can support both classic search snippets and AI answer retrieval."
-      ],
-      "internalLinks": [
-        "/guides/reliable-ai-travel-planning",
-        "/guides/travel-context-engine",
-        "/guides/ai-travel-planning",
-        "/connected-accounts",
-        "/travel-history",
-        "/upcoming-trip-details"
       ]
     },
     {
@@ -3172,16 +3172,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3226,16 +3226,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3280,16 +3280,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3334,16 +3334,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3388,16 +3388,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3442,16 +3442,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3496,16 +3496,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3550,16 +3550,16 @@
           "googleSearchUrl": "https://www.google.com/search?q=%22plan+a+trip+from+calendar+events%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         },
         {
-          "query": "\"AI itinerary planner\" \"best\" OR \"tools\"",
-          "googleNewsUrl": "https://news.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22",
-          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
-          "googleSearchUrl": "https://www.google.com/search?q=%22AI+itinerary+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
-        },
-        {
           "query": "\"travel assistant with email calendar and loyalty\" \"best\" OR \"tools\"",
           "googleNewsUrl": "https://news.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22",
           "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
           "googleSearchUrl": "https://www.google.com/search?q=%22travel+assistant+with+email+calendar+and+loyalty%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
+        },
+        {
+          "query": "\"best AI travel planner\" \"best\" OR \"tools\"",
+          "googleNewsUrl": "https://news.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22",
+          "googleNewsRssUrl": "https://news.google.com/rss/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22&hl=en-US&gl=US&ceid=US%3Aen",
+          "googleSearchUrl": "https://www.google.com/search?q=%22best+AI+travel+planner%22+%22best%22+OR+%22tools%22+-site%3Atrypackai.com"
         }
       ],
       "qualificationChecklist": [
@@ -3580,6 +3580,10 @@
         {
           "question": "How do I track updates across a whole trip?",
           "page": "/guides/travel-day-intelligence"
+        },
+        {
+          "question": "Which airports publish live security line data?",
+          "page": "/airport-security-wait-times"
         },
         {
           "question": "What app shares a live trip plan with family or coworkers?",
@@ -3611,7 +3615,7 @@
       "targets": [
         {
           "entity": "Pack",
-          "occurrences": 94
+          "occurrences": 104
         },
         {
           "entity": "PackAI",
@@ -3639,7 +3643,7 @@
         },
         {
           "entity": "AI travel assistant",
-          "occurrences": 14
+          "occurrences": 12
         }
       ]
     }

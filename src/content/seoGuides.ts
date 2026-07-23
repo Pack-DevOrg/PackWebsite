@@ -11,6 +11,14 @@ export interface SeoGuideFaq {
 
 export interface SeoGuideDefinition {
   readonly slug: string;
+  /** ISO date the guide first went live (Article datePublished). */
+  readonly datePublished: string;
+  /** ISO date of the last substantive content update (Article dateModified). */
+  readonly dateModified: string;
+  /** SERP title override; " | Pack" is appended, so keep it at or under 55 characters. */
+  readonly seoTitle?: string;
+  /** SERP description override; keep it at or under 160 characters. */
+  readonly seoDescription?: string;
   /** One-word tab label on the guides' shared tab band (journey verb). */
   readonly navLabel: string;
   readonly eyebrow: string;
@@ -32,6 +40,10 @@ export interface SeoGuideDefinition {
 export const seoGuideDefinitions = [
   {
     slug: "travel-context-engine",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
+    seoTitle: "Context-aware travel assistant app",
+    seoDescription: "A Pack guide to context-aware travel assistance across email, calendar, traveler profiles, loyalty, travel history, and travel-day signals.",
     navLabel: "Connect",
     eyebrow: "Travel Context Guide",
     title: "Context-aware travel assistant for trips that use your real travel data",
@@ -133,6 +145,9 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "event-trip-planning",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
+    seoTitle: "Event travel planner for meetings and conferences",
     navLabel: "Plan",
     eyebrow: "Event Trip Planning Guide",
     title: "Event travel planner for meetings, calendars, conferences, and public events",
@@ -233,6 +248,10 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "travel-day-intelligence",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
+    seoTitle: "Travel day assistant for airport waits and weather",
+    seoDescription: "A Pack guide to travel-day readiness across trip details, airport security waits, flight alerts, weather, drive time, and live trip views.",
     navLabel: "Act",
     eyebrow: "Travel Day Guide",
     title: "Travel day assistant for airport waits, weather, drive time, and live trip context",
@@ -335,6 +354,8 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "ai-travel-planning",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
     navLabel: "AI Planning",
     eyebrow: "AI Travel Planning Guide",
     title: "Best AI travel planner for trips that start from real context",
@@ -444,6 +465,9 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "trip-organization",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
+    seoTitle: "Trip organizer app for emails and confirmations",
     navLabel: "Organize",
     eyebrow: "Trip Organization Guide",
     title: "Trip organizer app for emails, confirmations, and automatic itineraries",
@@ -544,6 +568,10 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "booking-context",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
+    seoTitle: "Points and miles trip planner with booking context",
+    seoDescription: "A Pack guide to points-and-miles trip planning, award travel, AI flight and hotel booking assistance, loyalty-aware comparisons, and traveler preferences.",
     navLabel: "Book",
     eyebrow: "Booking Context Guide",
     title: "Points and miles trip planner for loyalty-aware booking context",
@@ -655,6 +683,10 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "group-trip-planning",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
+    seoTitle: "Group trip planner for shared itineraries and costs",
+    seoDescription: "A Pack guide to group trip planning, shared itineraries, collaborative planning, linked trips, family travel, and shared travel expenses.",
     navLabel: "Coordinate",
     eyebrow: "Group Trip Planning Guide",
     title: "Group trip planner for shared itineraries, linked plans, and costs",
@@ -755,6 +787,9 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "travel-stats-and-maps",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
+    seoTitle: "Travel stats app for maps and travel history",
     navLabel: "Remember",
     eyebrow: "Travel Stats Guide",
     title: "Travel stats app for maps, repeat routes, and personal travel history",
@@ -856,6 +891,8 @@ export const seoGuideDefinitions = [
   },
   {
     slug: "reliable-ai-travel-planning",
+    datePublished: "2026-05-12",
+    dateModified: "2026-07-22",
     navLabel: "Trust",
     eyebrow: "Reliable AI Travel Guide",
     title: "Reliable AI travel planning that uses fewer guesses",

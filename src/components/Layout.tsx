@@ -5,6 +5,7 @@ import GlobalStyles from "../styles/GlobalStyles";
 import { useI18n } from "../i18n/I18nProvider";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import Header from "./Header";
+import Breadcrumbs from "./Breadcrumbs";
 
 const StyledLayout = styled.div`
   display: flex;
@@ -257,7 +258,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           id="main-content"
           tabIndex={-1}
         >
-          <div className="container">{children}</div>
+          <div className="container">
+            <Breadcrumbs />
+            {children}
+          </div>
         </MainContent>
       </StyledLayout>
     </>

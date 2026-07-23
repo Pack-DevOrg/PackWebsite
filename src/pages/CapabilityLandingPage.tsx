@@ -346,8 +346,8 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
   return (
     <PageContainer>
       <PageSeo
-        title={`${page.pageTitle} | Pack`}
-        description={page.pageSubtitle}
+        title={`${page.seoTitle ?? page.pageTitle} | Pack`}
+        description={page.seoDescription ?? page.pageSubtitle}
         path={canonicalPath}
         schema={videoSchema ? [capabilitySchema, videoSchema] : [capabilitySchema]}
       />

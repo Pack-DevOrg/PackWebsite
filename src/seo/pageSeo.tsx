@@ -4,13 +4,13 @@ import { Helmet } from "react-helmet-async";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export const SITE_ORIGIN = "https://www.trypackai.com";
-const DEFAULT_SHARE_IMAGE_URL = `${SITE_ORIGIN}/images/og-image.jpg`;
+export const DEFAULT_SHARE_IMAGE_URL = `${SITE_ORIGIN}/images/og-image.jpg`;
 // One share composition serves both cards: the hero's ambient sunset scene
 // with the Fraunces gold wordmark (regenerate from hero-ambient-poster.webp).
 const DEFAULT_TWITTER_IMAGE_URL = DEFAULT_SHARE_IMAGE_URL;
 const DEFAULT_ROBOTS =
   "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
-const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
+export const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
 const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
 const NOAH_MITSUHASHI_ID = `${SITE_ORIGIN}/#noah-mitsuhashi`;
 const MATTHEW_GLEIN_ID = `${SITE_ORIGIN}/#matthew-glein`;

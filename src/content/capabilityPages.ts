@@ -11,6 +11,10 @@ export interface CapabilityPageDefinition {
   readonly featureDescription: string;
   readonly pageTitle: string;
   readonly pageSubtitle: string;
+  /** SERP title override; " | Pack" is appended, so keep it at or under 55 characters. */
+  readonly seoTitle?: string;
+  /** SERP description override; keep it at or under 160 characters. */
+  readonly seoDescription?: string;
   readonly intro: string;
   readonly problemStatement: string;
   readonly solutionStatement: string;
@@ -34,6 +38,7 @@ export interface CapabilityPageDefinition {
 export const capabilityPageDefinitions = [
   {
     slug: "travel-history",
+    seoTitle: "Travel history and automatic itinerary records",
     navLabel: "Travel History",
     chipLabel: "History",
     featureTitle: "Extracts and displays past travel history",
@@ -150,6 +155,7 @@ export const capabilityPageDefinitions = [
   },
   {
     slug: "loyalty-details",
+    seoDescription: "Pack organizes loyalty numbers, frequent flyer context, hotel programs, rental car memberships, and points-related travel details in one place.",
     navLabel: "Loyalty Details",
     chipLabel: "Loyalty",
     featureTitle: "Extracts loyalty numbers and program details",
@@ -208,6 +214,7 @@ export const capabilityPageDefinitions = [
   },
   {
     slug: "trip-planning-from-events",
+    seoTitle: "Trip planning from events, meetings, and prompts",
     navLabel: "Trip Planning From Events",
     chipLabel: "Planning",
     featureTitle: "Plans trips proactively from events and prompts",
@@ -430,6 +437,7 @@ export const capabilityPageDefinitions = [
   },
   {
     slug: "airport-security-wait-times",
+    seoTitle: "Airport security wait times in your trip workflow",
     navLabel: "Airport Security Wait Times",
     chipLabel: "Airport Waits",
     featureTitle: "Shows airport security wait times in app and web",
@@ -658,6 +666,7 @@ export const capabilityPageDefinitions = [
   },
   {
     slug: "trip-sharing",
+    seoDescription: "Pack supports sharing, invitations, linked trips, group trip planning, family travel, and collaboration so the itinerary stays aligned.",
     navLabel: "Trip Sharing",
     chipLabel: "Sharing",
     featureTitle: "Supports trip sharing and group travel workflows",

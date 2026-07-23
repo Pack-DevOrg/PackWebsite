@@ -228,8 +228,7 @@ const RouteScrollReset: React.FC = () => {
  * @integration
  * - `GlobalStyles`: Applies global CSS resets and base styles.
  * - `Header`: Renders the main navigation header at the top of the page.
- * - `Breadcrumbs`: Renders navigation breadcrumbs (if applicable to the current route). Wrapped in
- *   a global `.container` to align with site-wide centering.
+ * - `Breadcrumbs`: Emits BreadcrumbList JSON-LD for the current route. Renders no visible markup.
  * - `MainContent`: Provides fade-in animation; its inner content is wrapped with a global
  *   `.container` to unify horizontal padding and max-width.
  *

@@ -19,14 +19,22 @@ const Video = styled.video`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Bias the cover crop toward the lower band — the subject sits low in the
-     hero-ambient footage; the sky band is expendable. */
-  object-position: 50% 72%;
-  opacity: 0.78;
-  /* The soft-focus look (blur, crushed shadows, living grain) is BAKED into
-     the mp4 by the encode pipeline. Do not add CSS filter/mix-blend layers on
-     this element — any per-frame filter or blend breaks the browser's
-     hardware video path and stutters at 60fps. */
+  /* Framed toward the bottom-left of the plate (owner-tuned): the table band
+     and hammock lead, sky cedes. The scale is a plain compositor transform —
+     safe for the hardware path, unlike filters. */
+  object-position: 30% 100%;
+  transform: scale(1.15);
+  transform-origin: 30% 100%;
+  opacity: 0.92;
+
+  /* Mobile: the portrait crop of the 16:9 plate shows a narrow band — aim it
+     at the sunset over the water instead of the bottom-left table, no zoom. */
+  @media (max-width: 739px) {
+    object-position: 62% 55%;
+    transform: none;
+  }
+  /* No CSS filter/mix-blend layers on this element — any per-frame filter or
+     blend breaks the browser's hardware video path and stutters. */
 `;
 
 /* Frost veil — a faint milky warm-white haze over the blurred footage, so the
@@ -37,7 +45,7 @@ const Frost = styled.div`
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255, 248, 236, 0.07) 0%, rgba(255, 248, 236, 0.035) 45%, rgba(255, 248, 236, 0.015) 100%);
+    linear-gradient(180deg, rgba(255, 248, 236, 0.025) 0%, rgba(255, 248, 236, 0.012) 45%, transparent 100%);
 `;
 
 /* Light legibility wash — the footage carries the emotion; only the frame
@@ -48,7 +56,7 @@ const Scrim = styled.div`
   background:
     radial-gradient(120% 95% at 50% 42%, transparent 52%, rgba(8, 7, 6, 0.6) 100%),
     linear-gradient(90deg, rgba(8, 7, 6, 0.64) 0%, rgba(8, 7, 6, 0.36) 42%, rgba(8, 7, 6, 0.16) 100%),
-    linear-gradient(180deg, rgba(8, 7, 6, 0.2) 0%, transparent 26%, rgba(8, 7, 6, 0.34) 64%, rgba(8, 7, 6, 0.9) 100%);
+    linear-gradient(180deg, rgba(8, 7, 6, 0.2) 0%, transparent 26%, transparent 74%, rgba(8, 7, 6, 0.52) 100%);
 `;
 
 interface AmbientVideoBackdropProps {
@@ -65,8 +73,8 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
   // Version the URLs whenever the asset is replaced: the file name never
   // changes, so browser media caches and CloudFront would otherwise keep
   // serving the previous video indefinitely.
-  src = "/videos/hero-ambient.mp4?v=20260723a",
-  poster = "/videos/hero-ambient-poster.webp?v=20260723a",
+  src = "/videos/hero-ambient.mp4?v=20260723b",
+  poster = "/videos/hero-ambient-poster.webp?v=20260723b",
 }) => {
   const [isAvailable, setIsAvailable] = useState(false);
   const [allowsMotion, setAllowsMotion] = useState(true);

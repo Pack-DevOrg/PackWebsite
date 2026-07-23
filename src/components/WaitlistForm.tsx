@@ -328,7 +328,7 @@ const FormContainer = styled.section<{
   border-radius: var(--border-radius);
   background-color: ${({ $variant, theme }) =>
     $variant === 'hero'
-      ? 'rgba(12, 12, 15, 0.85)'
+      ? 'rgba(8, 8, 10, 0.94)'
       : $variant === 'embedded'
         ? 'transparent'
         : theme.colors.background.card};

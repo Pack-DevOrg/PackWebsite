@@ -270,7 +270,7 @@ const Features: React.FC = () => {
   return (
     <FeaturesContainer>
       <PageSeo
-        title="Pack Features | AI trip planning, booking, and travel organization"
+        title="Pack Features | AI trip planning and booking"
         description="Explore Pack features for AI trip planning, booking, connected travel data, collaboration, and travel-day coordination."
         path="/features"
         schema={[featuresSchema, ...createAllFeatureVideoSchemas("/features")]}

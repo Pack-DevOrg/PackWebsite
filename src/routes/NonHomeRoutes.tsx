@@ -19,6 +19,23 @@ import TermsOfService from "@/pages/TermsOfService";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { lazyImportWithRetry } from "@/utils/lazyImportWithRetry";
 import { capabilityPageDefinitions } from "@/content/capabilityPages";
+import { Helmet } from "react-helmet-async";
+import { buildAbsoluteUrl } from "@/seo/pageSeo";
+
+/** Client-side redirect that still prerenders a titled, noindex head. */
+const SeoRedirect: React.FC<{ readonly to: string; readonly title: string }> = ({
+  to,
+  title,
+}) => (
+  <>
+    <Helmet>
+      <title>{title}</title>
+      <meta name="robots" content="noindex, nofollow" />
+      <link rel="canonical" href={buildAbsoluteUrl(to)} />
+    </Helmet>
+    <Navigate to={to} replace />
+  </>
+);
 
 const FAQ = React.lazy(() => import("../pages/FAQ"));
 const Features = React.lazy(() => import("../pages/Features"));
@@ -393,7 +410,10 @@ const NonHomeRoutes: React.FC = () => {
           path="/do-not-sell"
           element={
             <LocalizedRouteGuard>
-              <Navigate to={pathFor("/privacy-request/opt-out")} replace />
+              <SeoRedirect
+                to={pathFor("/privacy-request/opt-out")}
+                title="Do Not Sell or Share My Personal Information | Pack"
+              />
             </LocalizedRouteGuard>
           }
         />
@@ -828,6 +848,11 @@ const NonHomeRoutes: React.FC = () => {
         <Route
           path="/app"
           element={
+            <>
+              <Helmet>
+                <title>Pack App</title>
+                <meta name="robots" content="noindex, nofollow" />
+              </Helmet>
               <Suspense fallback={<LocalizedLoadingPage />}>
                 {typeof window !== "undefined" &&
               !isAppOriginHost(window.location.hostname) ? (
@@ -835,7 +860,8 @@ const NonHomeRoutes: React.FC = () => {
               ) : (
                 <ProtectedAppShell />
               )}
-            </Suspense>
+              </Suspense>
+            </>
           }
         >
           <Route index element={<ConversationPage />} />
@@ -861,7 +887,10 @@ const NonHomeRoutes: React.FC = () => {
           <Route
             path="do-not-sell"
             element={
-              <Navigate to={pathFor("/privacy-request/opt-out")} replace />
+              <SeoRedirect
+                to={pathFor("/privacy-request/opt-out")}
+                title="Do Not Sell or Share My Personal Information | Pack"
+              />
             }
           />
           <Route

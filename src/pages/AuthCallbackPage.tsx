@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
+import { Helmet } from "react-helmet-async";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { appConfig } from "@/config/appConfig";
@@ -516,5 +517,13 @@ export const AuthCallbackPage: React.FC = () => {
   const location = useLocation();
   const callbackKey = location.search || "__empty__";
 
-  return <AuthCallbackPageInstance key={callbackKey} search={location.search} />;
+  return (
+    <>
+      <Helmet>
+        <title>Signing you in | Pack</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <AuthCallbackPageInstance key={callbackKey} search={location.search} />
+    </>
+  );
 };

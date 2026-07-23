@@ -6,6 +6,7 @@ import test from "node:test";
 
 import {
   analyzeSeoOpportunities,
+  buildRenderedHtmlFindings,
   hasBlockingFindings,
   renderMarkdownReport
 } from "./seo-opportunity-engine.mjs";
@@ -152,4 +153,59 @@ test("renders competitor gap analysis markdown", () => {
   assert.match(markdown, /Competitor SEO Gap Analysis/);
   assert.match(markdown, /Highest Keyword Gaps/);
   assert.match(markdown, /Example planner/);
+});
+
+test("lints rendered dist HTML for head, breadcrumb, and article-date regressions", async () => {
+  const rootDir = createFixtureSite();
+  mkdirSync(join(rootDir, "dist/guides/sample"), { recursive: true });
+  mkdirSync(join(rootDir, "dist/do-not-sell"), { recursive: true });
+  const head = (title, description) =>
+    `<title>${title}</title>` +
+    `<meta data-rh="true" name="description" content="${description}"/>` +
+    `<link data-rh="true" rel="canonical" href="https://www.trypackai.com/x"/>`;
+  const okDescription =
+    "A sufficiently long meta description that lands inside the allowed range for the check.";
+  writeFileSync(
+    join(rootDir, "dist/index.html"),
+    `<html><head>${head("Pack", okDescription)}</head><body></body></html>`
+  );
+  writeFileSync(
+    join(rootDir, "dist/guides/sample/index.html"),
+    "<html><head>" +
+      head(
+        "A rendered guide title that is far too long for search results and truncates badly",
+        okDescription
+      ) +
+      '<script type="application/ld+json">{"@type":"Article","headline":"x"}</script>' +
+      "</head><body></body></html>"
+  );
+  writeFileSync(
+    join(rootDir, "dist/do-not-sell/index.html"),
+    "<html><head><title>Redirect</title></head><body></body></html>"
+  );
+
+  const findings = await buildRenderedHtmlFindings(rootDir);
+  const titles = findings.map((finding) => finding.title);
+
+  assert.ok(titles.some((title) => title.includes("exceed 65 characters")));
+  assert.ok(titles.some((title) => title.includes("missing BreadcrumbList")));
+  assert.ok(titles.some((title) => title.includes("missing dateModified")));
+  assert.ok(
+    titles.some((title) => title.includes("noindex rendered without a noindex robots meta"))
+  );
+  assert.ok(
+    findings.some(
+      (finding) =>
+        finding.severity === "critical" &&
+        finding.title.includes("missing title, description, or canonical")
+    )
+  );
+});
+
+test("skips rendered HTML checks with an info finding when dist is absent", async () => {
+  const rootDir = createFixtureSite();
+  const findings = await buildRenderedHtmlFindings(rootDir);
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].severity, "info");
 });

@@ -604,6 +604,174 @@ function buildTechnicalFindings({ pages, sitemapUrls, prerenderRoutes, robotsTex
   return findings;
 }
 
+const RENDERED_TITLE_MAX_LENGTH = 65;
+const RENDERED_DESCRIPTION_MAX_LENGTH = 165;
+const RENDERED_DESCRIPTION_MIN_LENGTH = 60;
+// Root-level auxiliary shells (PWA offline fallback, legacy share shim, CCPA
+// form) are not canonical routes, so they skip the indexable-page checks.
+const AUXILIARY_RENDERED_FILES = new Set(["404.html", "offline.html", "ccpa-request.html"]);
+
+function extractRenderedHead(html) {
+  const title = (html.match(/<title[^>]*>([^<]*)<\/title>/) ?? [])[1] ?? "";
+  const description =
+    (html.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"/) ?? [])[1] ?? "";
+  const canonical =
+    (html.match(/<link[^>]*rel="canonical"[^>]*href="([^"]*)"/) ?? [])[1] ?? "";
+  const robots = (html.match(/<meta[^>]*name="robots"[^>]*content="([^"]*)"/) ?? [])[1] ?? "";
+  const jsonLdBlocks = [
+    ...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)
+  ].map((match) => match[1]);
+  return { title, description, canonical, robots, jsonLdBlocks };
+}
+
+export async function buildRenderedHtmlFindings(rootDir) {
+  const distDir = join(rootDir, "dist");
+  if (!existsSync(distDir)) {
+    return [
+      {
+        severity: "info",
+        title: "dist/ is not present, so rendered HTML checks were skipped",
+        action: "Run npm run build before seo:check to lint prerendered HTML output."
+      }
+    ];
+  }
+
+  const htmlFiles = (await walkFiles(distDir, new Set([".html"]))).filter(
+    (filePath) => !relative(distDir, filePath).startsWith("assets")
+  );
+  const missingHead = [];
+  const longTitles = [];
+  const badDescriptions = [];
+  const duplicateTitles = [];
+  const missingBreadcrumbs = [];
+  const staleArticles = [];
+  const invalidJsonLd = [];
+  const unexpectedIndexable = [];
+  const titleOwners = new Map();
+
+  for (const filePath of htmlFiles) {
+    const relPath = relative(distDir, filePath);
+    const route =
+      "/" +
+      relPath
+        .replace(/index\.html$/, "")
+        .replace(/\.html$/, "")
+        .replace(/\/$/, "");
+    const html = readFileSync(filePath, "utf8");
+    const head = extractRenderedHead(html);
+    const noindex = head.robots.includes("noindex");
+
+    for (const block of head.jsonLdBlocks) {
+      try {
+        JSON.parse(block);
+      } catch {
+        invalidJsonLd.push(route);
+      }
+    }
+
+    if (!noindex && INTENTIONALLY_NOINDEX_ROUTES.has(route)) {
+      unexpectedIndexable.push(route);
+    }
+
+    if (noindex || AUXILIARY_RENDERED_FILES.has(relPath)) {
+      continue;
+    }
+
+    if (!head.title || !head.description || !head.canonical) {
+      missingHead.push(route);
+      continue;
+    }
+    if (head.title.length > RENDERED_TITLE_MAX_LENGTH) {
+      longTitles.push(`${route} (${head.title.length})`);
+    }
+    if (
+      head.description.length > RENDERED_DESCRIPTION_MAX_LENGTH ||
+      head.description.length < RENDERED_DESCRIPTION_MIN_LENGTH
+    ) {
+      badDescriptions.push(`${route} (${head.description.length})`);
+    }
+    if (titleOwners.has(head.title)) {
+      duplicateTitles.push(`${route} = ${titleOwners.get(head.title)}`);
+    }
+    titleOwners.set(head.title, route);
+
+    const jsonLdText = head.jsonLdBlocks.join(" ");
+    if (route !== "/" && !jsonLdText.includes("BreadcrumbList")) {
+      missingBreadcrumbs.push(route);
+    }
+    if (jsonLdText.includes('"Article"') && !jsonLdText.includes("dateModified")) {
+      staleArticles.push(route);
+    }
+  }
+
+  const findings = [];
+  if (invalidJsonLd.length > 0) {
+    findings.push({
+      severity: "critical",
+      title: "Rendered pages contain invalid JSON-LD",
+      action: "Fix the structured data so it parses as JSON.",
+      paths: invalidJsonLd
+    });
+  }
+  if (missingHead.length > 0) {
+    findings.push({
+      severity: "critical",
+      title: "Indexable rendered pages are missing title, description, or canonical",
+      action: "Add PageSeo (or a noindex robots meta) to these routes.",
+      paths: missingHead
+    });
+  }
+  if (unexpectedIndexable.length > 0) {
+    findings.push({
+      severity: "high",
+      title: "Routes expected to be noindex rendered without a noindex robots meta",
+      action: "Add a noindex robots meta or remove the route from INTENTIONALLY_NOINDEX_ROUTES.",
+      paths: unexpectedIndexable
+    });
+  }
+  if (duplicateTitles.length > 0) {
+    findings.push({
+      severity: "high",
+      title: "Indexable rendered pages share duplicate titles",
+      action: "Give each indexable page a unique title.",
+      paths: duplicateTitles
+    });
+  }
+  if (longTitles.length > 0) {
+    findings.push({
+      severity: "medium",
+      title: `Rendered titles exceed ${RENDERED_TITLE_MAX_LENGTH} characters and will truncate in SERPs`,
+      action: "Shorten the title or add a seoTitle override.",
+      paths: longTitles
+    });
+  }
+  if (badDescriptions.length > 0) {
+    findings.push({
+      severity: "medium",
+      title: `Rendered meta descriptions fall outside ${RENDERED_DESCRIPTION_MIN_LENGTH}-${RENDERED_DESCRIPTION_MAX_LENGTH} characters`,
+      action: "Rewrite the description or add a seoDescription override.",
+      paths: badDescriptions
+    });
+  }
+  if (missingBreadcrumbs.length > 0) {
+    findings.push({
+      severity: "medium",
+      title: "Indexable rendered pages are missing BreadcrumbList structured data",
+      action: "Ensure the Breadcrumbs route map covers these routes.",
+      paths: missingBreadcrumbs
+    });
+  }
+  if (staleArticles.length > 0) {
+    findings.push({
+      severity: "medium",
+      title: "Article structured data is missing dateModified",
+      action: "Set datePublished and dateModified on the guide definition.",
+      paths: staleArticles
+    });
+  }
+  return findings;
+}
+
 async function buildPageInventory(rootDir) {
   const publicDir = join(rootDir, "public");
   const srcDir = join(rootDir, "src");
@@ -671,13 +839,16 @@ export async function analyzeSeoOpportunities(options = {}) {
     pages,
     questionOpportunities
   );
-  const technicalFindings = buildTechnicalFindings({
-    pages,
-    sitemapUrls,
-    prerenderRoutes,
-    robotsText,
-    llmsText
-  });
+  const technicalFindings = [
+    ...buildTechnicalFindings({
+      pages,
+      sitemapUrls,
+      prerenderRoutes,
+      robotsText,
+      llmsText
+    }),
+    ...(await buildRenderedHtmlFindings(rootDir))
+  ];
 
   return {
     generatedAt: new Date().toISOString(),

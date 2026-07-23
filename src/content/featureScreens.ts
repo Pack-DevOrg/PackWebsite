@@ -17,6 +17,14 @@ export interface FeatureScreen {
 
 export const FEATURE_SCREENS: readonly FeatureScreen[] = [
   {
+    id: "home",
+    label: "Home",
+    caption: "The surface that's already working",
+    blurb:
+      "Forwarded confirmations, calendar events, live updates — Pack is organizing your travel before you even open the app.",
+    capabilitySlugs: ["trip-updates", "connected-accounts"],
+  },
+  {
     id: "plan",
     label: "Plan",
     caption: "One message becomes a full trip",
@@ -53,6 +61,14 @@ export const FEATURE_SCREENS: readonly FeatureScreen[] = [
     ],
   },
   {
+    id: "preferences",
+    label: "Prefs",
+    caption: "Set once, used everywhere",
+    blurb:
+      "Aisle or window, king bed, compact car — say it once. Every search, plan, and booking after that already knows.",
+    capabilitySlugs: ["traveler-profiles"],
+  },
+  {
     id: "trips",
     label: "Trips",
     caption: "Every trip, past and future",
@@ -75,22 +91,6 @@ export const FEATURE_SCREENS: readonly FeatureScreen[] = [
     blurb:
       "Travel is better with the same people. Packs remembers your crews so the next group trip starts from one tap, not a group chat.",
     capabilitySlugs: ["trip-sharing"],
-  },
-  {
-    id: "preferences",
-    label: "Prefs",
-    caption: "Set once, used everywhere",
-    blurb:
-      "Aisle or window, king bed, compact car — say it once. Every search, plan, and booking after that already knows.",
-    capabilitySlugs: ["traveler-profiles"],
-  },
-  {
-    id: "home",
-    label: "Home",
-    caption: "The surface that's already working",
-    blurb:
-      "Forwarded confirmations, calendar events, live updates — Pack is organizing your travel before you even open the app.",
-    capabilitySlugs: ["trip-updates", "connected-accounts"],
   },
 ];
 

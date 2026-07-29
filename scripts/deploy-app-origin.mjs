@@ -192,6 +192,22 @@ run("aws", [
   "--metadata-directive",
   "REPLACE",
 ]);
+// Apple requires the AASA served as application/json; the sync stamps the
+// extensionless file binary/octet-stream, which Apple's CDN only tolerates
+// by grace. Re-stamp just this file (other .well-known docs have their own
+// intended types).
+run("aws", [
+  "s3",
+  "cp",
+  `${distDir}/.well-known/apple-app-site-association`,
+  `${appBucket}/.well-known/apple-app-site-association`,
+  "--content-type",
+  "application/json",
+  "--cache-control",
+  "public, max-age=3600",
+  "--metadata-directive",
+  "REPLACE",
+]);
 run("aws", [
   "cloudfront",
   "create-invalidation",

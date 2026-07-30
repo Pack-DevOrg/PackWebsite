@@ -9,6 +9,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
+// Type-only import: the runtime schemas in @pack/schemas pull the server-side
+// locality catalog into the bundle, so the page keeps a lenient local reader
+// and reuses the contract at the type level only (see drift guard below).
+import type { SharedTravelData as SharedTravelDataContract } from '@pack/schemas/shared-travel';
 import { CalendarRange, Car, Download, Plane, ShieldCheck, Sparkles, Ticket, ExternalLink } from 'lucide-react';
 import { executeRecaptchaAction, loadRecaptchaScript } from '../utils/recaptcha';
 import { appConfig } from '../config/appConfig';
@@ -19,7 +23,13 @@ import type { SupportedLocale } from '../i18n/config';
 // Environment variables with fallbacks
 const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL || 'https://www.trypackai.com';
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
-const SHARED_PLAN_API_BASE = import.meta.env.VITE_API_URL || appConfig.apiBaseUrl;
+// appConfig.apiBaseUrl is the single API origin source (VITE_API_URL was
+// defined nowhere and always fell through).
+const SHARED_PLAN_API_BASE = appConfig.apiBaseUrl;
+
+// A blocked/stalled reCAPTCHA script must not keep the trip invisible: after
+// this window the page fetches without a token and lets the API decide.
+const RECAPTCHA_SETTLE_TIMEOUT_MS = 8000;
 
 // App Store links - iOS and Android
 // These deep link back to the shared plan when user opens app from store
@@ -51,6 +61,17 @@ const SharedTravelHotelChunkSchema = z.object({
   checkOut: DateOnlyStringSchema.optional(),
   name: z.string().optional(),
   nights: z.number().int().positive().optional(),
+});
+
+const SharedTravelActivityChunkSchema = z.object({
+  id: z.string(),
+  type: z.literal('activity'),
+  title: z.string(),
+  location: z.string().optional(),
+  date: DateOnlyStringSchema,
+  time: z.string().optional(),
+  endDate: DateOnlyStringSchema.optional(),
+  category: z.string().optional(),
 });
 
 const SharedTravelFlightOutlineChunkSchema = z.object({
@@ -122,6 +143,7 @@ const SharedTravelOutlineChunkSchema = z.union([
 const SharedTravelChunkSchema = z.union([
   SharedTravelFlightChunkSchema,
   SharedTravelHotelChunkSchema,
+  SharedTravelActivityChunkSchema,
   SharedTravelFlightOutlineChunkSchema,
   SharedTravelHotelOutlineChunkSchema,
   SharedTravelCarRentalPickupOutlineChunkSchema,
@@ -129,28 +151,35 @@ const SharedTravelChunkSchema = z.union([
   SharedTravelActivityOutlineChunkSchema,
 ]);
 
+// Reader schema, deliberately lenient: this page renders whatever it can and
+// must never blank the whole trip over a field it does not display strictly.
+// Shape drift against the backend contract is caught at compile time by the
+// assignability guard below (see @pack/schemas shared-travel).
 const SharedTravelDataSchema = z.object({
-  version: z.literal('1.0'),
+  version: z.string(),
   title: z.string(),
   description: z.string().optional(),
-  chunks: z.array(SharedTravelChunkSchema),
+  chunks: z.array(SharedTravelChunkSchema).default([]),
   outlineChunks: z.array(SharedTravelOutlineChunkSchema).default([]),
-  createdAt: z.string().datetime(),
+  createdAt: z.string(),
   sharedBy: z.string().optional(),
-  thumbnailUrl: z.string().url().optional(),
-  heroImageUrl: z.string().url().optional(),
-  heroImageNightUrl: z.string().url().optional(),
+  thumbnailUrl: z.string().optional(),
+  heroImageUrl: z.string().optional(),
+  heroImageNightUrl: z.string().optional(),
   destinationTimeZone: z.string().optional(),
-});
-
-const SharedTravelResponseSchema = z.object({
-  success: z.boolean(),
-  data: SharedTravelDataSchema.optional(),
-  error: z.string().optional(),
 });
 
 type SharedTravelPlan = z.infer<typeof SharedTravelDataSchema>;
 type SharedTravelChunk = z.infer<typeof SharedTravelChunkSchema>;
+
+// Compile-time drift guard against the backend contract (the trip primitives
+// in @pack/schemas): every payload the server can emit must be readable by
+// this page's lenient reader. A backend field rename/retype or a new chunk
+// type breaks this assignability check instead of blanking the live page.
+type _ServerShareContractIsReadable =
+  SharedTravelDataContract extends SharedTravelPlan ? true : never;
+const _serverShareContractIsReadable: _ServerShareContractIsReadable = true;
+void _serverShareContractIsReadable;
 type SharedTravelOutlineChunk = z.infer<typeof SharedTravelOutlineChunkSchema>;
 type SharedTravelHotelChunk = z.infer<typeof SharedTravelHotelChunkSchema>;
 type SharedTravelHotelOutlineChunk = z.infer<typeof SharedTravelHotelOutlineChunkSchema>;
@@ -247,6 +276,7 @@ const describeChunk = (
         meta: content.carReturnLabel,
         detail: chunk.returnLocation || chunk.returnCity,
       };
+    case 'activity':
     case 'activityOutline':
       return {
         kind: 'event',
@@ -478,16 +508,29 @@ export const SharedTravelPlan: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
+  // The plan fetch waits for reCAPTCHA to SETTLE (ready or unavailable) so the
+  // first request already carries a token — a token-less first fetch is
+  // rejected by the API and flashed an error before the tokened retry.
+  const [recaptchaState, setRecaptchaState] = useState<
+    'loading' | 'ready' | 'unavailable'
+  >(RECAPTCHA_SITE_KEY ? 'loading' : 'unavailable');
   const localizedContent = SHARED_TRAVEL_CONTENT[locale];
 
   useMountEffect(() => {
-    if (RECAPTCHA_SITE_KEY) {
-      void loadRecaptchaScript(RECAPTCHA_SITE_KEY).then(() => setRecaptchaReady(true)).catch(() => {
-        // We still allow loading without recaptcha, but prefer to block bots where possible
-        setRecaptchaReady(false);
-      });
+    if (!RECAPTCHA_SITE_KEY) {
+      return;
     }
+    const settleTimeout = window.setTimeout(
+      () => setRecaptchaState((state) => (state === 'loading' ? 'unavailable' : state)),
+      RECAPTCHA_SETTLE_TIMEOUT_MS,
+    );
+    void loadRecaptchaScript(RECAPTCHA_SITE_KEY)
+      .then(() => setRecaptchaState('ready'))
+      .catch(() => {
+        // We still allow loading without recaptcha, but prefer to block bots where possible
+        setRecaptchaState('unavailable');
+      })
+      .finally(() => window.clearTimeout(settleTimeout));
   });
 
   const hasShareId = Boolean(shareId);
@@ -539,7 +582,9 @@ export const SharedTravelPlan: React.FC = () => {
     `${WEBSITE_URL}/images/share-card.png?v=20260410a`;
   const ogImageAlt = travelPlan?.title ? `${travelPlan.title} - Pack` : 'Shared travel plan on Pack';
   const encodedShareId = hasShareId ? encodeURIComponent(shareId) : '';
-  const ogUrl = `${WEBSITE_URL}${encodedShareId ? `/share/${encodedShareId}` : '/share'}`;
+  // Canonical share URL is the query-param form: /share/<id> 404s on the
+  // static host and crawlers suppress previews on non-200 canonicals.
+  const ogUrl = `${WEBSITE_URL}${encodedShareId ? `/share?shareId=${encodedShareId}` : '/share'}`;
 
   const handleOpenInApp = useCallback(() => {
     if (!hasShareId) {
@@ -548,17 +593,11 @@ export const SharedTravelPlan: React.FC = () => {
 
     const encodedShareId = encodeURIComponent(shareId);
     const appScheme = `${APP_SCHEME_PREFIX}share/${encodedShareId}`;
-    const universalLink = `${WEBSITE_URL}/share/${encodedShareId}`;
+    // Query-param form: the CloudFront viewer-request maps /share/<id> to a
+    // missing /share/<id>/index.html (404); only /share?shareId= serves 200.
+    const universalLink = `${WEBSITE_URL}/share?shareId=${encodedShareId}`;
 
     window.location.href = appScheme;
-
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = appScheme;
-    document.body.appendChild(iframe);
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 900);
 
     setTimeout(() => {
       window.location.href = universalLink;
@@ -626,9 +665,9 @@ export const SharedTravelPlan: React.FC = () => {
   return (
     <>
       <SharedTravelPlanLoader
-        key={`${shareId}:${recaptchaReady ? 'recaptcha' : 'no-recaptcha'}`}
+        key={`${shareId}:${recaptchaState}`}
         localizedContent={localizedContent}
-        recaptchaReady={recaptchaReady}
+        recaptchaState={recaptchaState}
         setActionFeedback={setActionFeedback}
         setError={setError}
         setLoading={setLoading}
@@ -918,7 +957,7 @@ export const SharedTravelPlan: React.FC = () => {
 
 const SharedTravelPlanLoader: React.FC<{
   readonly localizedContent: SharedTravelContent;
-  readonly recaptchaReady: boolean;
+  readonly recaptchaState: 'loading' | 'ready' | 'unavailable';
   readonly setActionFeedback: React.Dispatch<React.SetStateAction<string | null>>;
   readonly setError: React.Dispatch<React.SetStateAction<string | null>>;
   readonly setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -926,7 +965,7 @@ const SharedTravelPlanLoader: React.FC<{
   readonly shareId: string;
 }> = ({
   localizedContent,
-  recaptchaReady,
+  recaptchaState,
   setActionFeedback,
   setError,
   setLoading,
@@ -940,13 +979,19 @@ const SharedTravelPlanLoader: React.FC<{
       return;
     }
 
+    // Wait for reCAPTCHA to settle; the remount (keyed on recaptchaState)
+    // fires the fetch exactly once, with a token whenever one is possible.
+    if (recaptchaState === 'loading') {
+      return;
+    }
+
     const loadPlan = async (): Promise<void> => {
       try {
         setLoading(true);
         setError(null);
 
         const recaptchaToken = await (async (): Promise<string | null> => {
-          if (!RECAPTCHA_SITE_KEY || !recaptchaReady) {
+          if (!RECAPTCHA_SITE_KEY || recaptchaState !== 'ready') {
             return null;
           }
           try {
@@ -996,12 +1041,40 @@ const SharedTravelPlanLoader: React.FC<{
           throw new Error(rawText ? rawText.slice(0, 200) : localizedContent.unexpectedServerResponse);
         }
 
-        const parsed = SharedTravelResponseSchema.parse(parsedJson);
-        if (!parsed.success || !parsed.data) {
-          throw new Error(parsed.error || localizedContent.failedToLoadPlan);
+        // Per-chunk salvage: one unrenderable chunk must not blank the whole
+        // trip, so invalid entries are dropped before the strict data parse
+        // (mirrors the server's create-time sanitizeChunks).
+        const envelope = parsedJson as {
+          success?: unknown;
+          data?: Record<string, unknown> | null;
+          error?: unknown;
+        };
+        if (envelope.success !== true || !envelope.data) {
+          throw new Error(
+            (typeof envelope.error === 'string' && envelope.error) ||
+              localizedContent.failedToLoadPlan,
+          );
         }
+        const keepValidChunks = <S extends z.ZodTypeAny>(
+          schema: S,
+          items: unknown,
+        ): Array<z.infer<S>> =>
+          Array.isArray(items)
+            ? items.flatMap((item) => {
+                const result = schema.safeParse(item);
+                return result.success ? [result.data] : [];
+              })
+            : [];
+        const plan = SharedTravelDataSchema.parse({
+          ...envelope.data,
+          chunks: keepValidChunks(SharedTravelChunkSchema, envelope.data.chunks),
+          outlineChunks: keepValidChunks(
+            SharedTravelOutlineChunkSchema,
+            envelope.data.outlineChunks,
+          ),
+        });
 
-        setTravelPlan(parsed.data);
+        setTravelPlan(plan);
       } catch (err) {
         if (err instanceof z.ZodError) {
           setError(localizedContent.unexpectedData);

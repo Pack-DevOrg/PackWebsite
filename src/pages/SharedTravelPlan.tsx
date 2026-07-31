@@ -1,11 +1,18 @@
 /**
  * Shared Travel Plan Page
  *
- * Displays a shared travel plan from a universal link with rich social media previews.
- * Uses schema-first validation to keep shared data safe to render on web.
+ * Displays a shared travel plan from a universal link with rich social media
+ * previews. Uses schema-first validation to keep shared data safe to render
+ * on web.
+ *
+ * Visual language mirrors the app's trip view (MetaSkills/PackApp/
+ * design-language-guide.md): hero city art, one clean header, outline cards
+ * with icon-disc eyebrows, boxed hairline info bands, dot-line duration
+ * rails, and accent weekday date badges — on the website's tokens (Fraunces
+ * display serif, warm dark palette from index.css).
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
@@ -13,12 +20,31 @@ import { z } from 'zod';
 // locality catalog into the bundle, so the page keeps a lenient local reader
 // and reuses the contract at the type level only (see drift guard below).
 import type { SharedTravelData as SharedTravelDataContract } from '@pack/schemas/shared-travel';
-import { CalendarRange, Car, Download, Plane, ShieldCheck, Sparkles, Ticket, ExternalLink } from 'lucide-react';
 import { executeRecaptchaAction, loadRecaptchaScript } from '../utils/recaptcha';
 import { appConfig } from '../config/appConfig';
+import {
+  attemptOpenInApp,
+  buildAppStoreUrl,
+  buildShareUniversalLink,
+  DEFAULT_APPLE_APP_ID,
+} from '../utils/appDeepLink';
+import { buildGoogleCalendarUrl } from '../utils/calendarLinks';
 import { useMountEffect } from '../hooks/useMountEffect';
 import { useI18n } from '../i18n/I18nProvider';
 import type { SupportedLocale } from '../i18n/config';
+import {
+  AppleGlyph,
+  ArrowRightGlyph,
+  BedGlyph,
+  CarGlyph,
+  ClockGlyph,
+  GoogleGlyph,
+  MapPinGlyph,
+  MoonGlyph,
+  PlaneGlyph,
+  TicketGlyph,
+  type PackIconProps,
+} from '../components/share/packIcons';
 
 // Environment variables with fallbacks
 const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL || 'https://www.trypackai.com';
@@ -31,13 +57,8 @@ const SHARED_PLAN_API_BASE = appConfig.apiBaseUrl;
 // this window the page fetches without a token and lets the API decide.
 const RECAPTCHA_SETTLE_TIMEOUT_MS = 8000;
 
-// App Store links - iOS and Android
-// These deep link back to the shared plan when user opens app from store
-const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || ''; // e.g., '6502345678'
-const APP_STORE_URL = APPLE_APP_ID
-  ? `https://apps.apple.com/app/pack/id${APPLE_APP_ID}`
-  : 'https://apps.apple.com/search/app/pack'; // Fallback to search
-const APP_SCHEME_PREFIX = 'com.packai.app://';
+const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || DEFAULT_APPLE_APP_ID;
+const APP_STORE_URL = buildAppStoreUrl(APPLE_APP_ID);
 
 const DateOnlyStringSchema = z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
 
@@ -181,25 +202,59 @@ type _ServerShareContractIsReadable =
 const _serverShareContractIsReadable: _ServerShareContractIsReadable = true;
 void _serverShareContractIsReadable;
 type SharedTravelOutlineChunk = z.infer<typeof SharedTravelOutlineChunkSchema>;
-type SharedTravelHotelChunk = z.infer<typeof SharedTravelHotelChunkSchema>;
-type SharedTravelHotelOutlineChunk = z.infer<typeof SharedTravelHotelOutlineChunkSchema>;
-type SharedTravelFlightChunk = z.infer<typeof SharedTravelFlightChunkSchema>;
-type SharedTravelFlightOutlineChunk = z.infer<typeof SharedTravelFlightOutlineChunkSchema>;
 
 interface TimelineItem {
   startDate: string;
   chunk: SharedTravelChunk | SharedTravelOutlineChunk;
 }
 
+const dateFormatLocale = (locale: SupportedLocale): string =>
+  locale === 'es' ? 'es-ES' : 'en-US';
+
+/** Parse a YYYY-MM-DD date at UTC noon so the calendar day never shifts. */
+const parseDateOnly = (dateString: string): Date | null => {
+  const date = new Date(`${dateString}T12:00:00Z`);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+/** "Thu, Mar 12" — the app's accent-date-badge input format. */
 const formatDate = (dateString: string, locale: SupportedLocale): string => {
-  const date = new Date(dateString);
+  const date = parseDateOnly(dateString) ?? new Date(dateString);
   return Number.isNaN(date.getTime())
     ? ''
-    : date.toLocaleDateString(locale === 'es' ? 'es-ES' : 'en-US', {
+    : date.toLocaleDateString(dateFormatLocale(locale), {
         weekday: 'short',
         month: 'short',
         day: 'numeric',
+        timeZone: 'UTC',
       });
+};
+
+/** Compact trip range per the app grammar: "Mar 12 – Mar 18, 2026". */
+const formatTripRange = (
+  startDate: string,
+  endDate: string,
+  locale: SupportedLocale
+): string => {
+  const start = parseDateOnly(startDate);
+  const end = parseDateOnly(endDate);
+  if (!start) {
+    return '';
+  }
+  const fmt = (date: Date, withYear: boolean): string =>
+    date.toLocaleDateString(dateFormatLocale(locale), {
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC',
+      ...(withYear ? { year: 'numeric' } : {}),
+    });
+  if (!end || startDate === endDate) {
+    return fmt(start, true);
+  }
+  const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
+  return sameYear
+    ? `${fmt(start, false)} – ${fmt(end, true)}`
+    : `${fmt(start, true)} – ${fmt(end, true)}`;
 };
 
 /** The date each chunk sorts/renders by, across all chunk types. */
@@ -220,23 +275,39 @@ const chunkStartDate = (
   }
 };
 
+/** The INCLUSIVE end date of a chunk (check-out day, event end day). */
+const chunkEndDate = (
+  chunk: SharedTravelChunk | SharedTravelOutlineChunk
+): string | undefined => {
+  switch (chunk.type) {
+    case 'hotel':
+    case 'hotelOutline':
+      return chunk.checkOut ?? chunk.checkIn;
+    case 'activity':
+    case 'activityOutline':
+      return chunk.endDate ?? chunk.date;
+    default:
+      return chunkStartDate(chunk);
+  }
+};
+
 type ChunkKind = 'flight' | 'hotel' | 'car' | 'event';
 
 /** Human-readable title, meta line, kind and optional detail for a chunk. */
 const describeChunk = (
   chunk: SharedTravelChunk | SharedTravelOutlineChunk,
-  content: SharedTravelContent,
-  locale: SupportedLocale
+  content: SharedTravelContent
 ): { kind: ChunkKind; title: string; meta: string; detail?: string } => {
   switch (chunk.type) {
     case 'flight':
       return {
         kind: 'flight',
         title: `${chunk.origin} -> ${chunk.destination}`,
-        meta: chunk.airline || content.flightLabel,
-        detail: chunk.flightNumber
-          ? `${content.flightLabel} ${chunk.flightNumber}`
-          : undefined,
+        meta: chunk.airline
+          ? `${content.flightLabel} · ${chunk.airline}${
+              chunk.flightNumber ? ` ${chunk.flightNumber}` : ''
+            }`
+          : content.flightLabel,
       };
     case 'flightOutline':
       return {
@@ -249,18 +320,13 @@ const describeChunk = (
         kind: 'hotel',
         title: chunk.name || chunk.location,
         meta: content.stay,
-        detail: chunk.checkOut
-          ? `${content.checkOut}: ${formatDate(chunk.checkOut, locale)}`
-          : undefined,
+        detail: chunk.name ? chunk.location : undefined,
       };
     case 'hotelOutline':
       return {
         kind: 'hotel',
         title: chunk.location,
         meta: content.stay,
-        detail: chunk.checkOut
-          ? `${content.checkOut}: ${formatDate(chunk.checkOut, locale)}`
-          : undefined,
       };
     case 'carRentalPickupOutline':
       return {
@@ -287,11 +353,11 @@ const describeChunk = (
   }
 };
 
-const CHUNK_ICONS: Record<ChunkKind, typeof Plane> = {
-  flight: Plane,
-  hotel: CalendarRange,
-  car: Car,
-  event: Ticket,
+const CHUNK_GLYPHS: Record<ChunkKind, React.FC<PackIconProps>> = {
+  flight: PlaneGlyph,
+  hotel: BedGlyph,
+  car: CarGlyph,
+  event: TicketGlyph,
 };
 
 type SharedTravelContent = {
@@ -302,31 +368,30 @@ type SharedTravelContent = {
   openInAppFeedback: string;
   noDatesFeedback: string;
   calendarDownloadedFeedback: string;
-  downloadAppFeedback: string;
   loadingTitle: string;
   loadingBody: string;
   unableTitle: string;
   invalidLink: string;
   returnHome: string;
-  sharedTripBadge: string;
-  secureLink: string;
-  sharedSubtitle: string;
-  addToCalendar: string;
+  sharedByPrefix: string;
   openInPack: string;
-  downloadPack: string;
-  tripTimeline: string;
-  tripTimelineBody: string;
+  appleCalendar: string;
+  googleCalendar: string;
+  chooseGoogleEvent: string;
+  itineraryTitle: string;
   noTimeline: string;
-  noTimelineBody: string;
+  plannedWithPack: string;
   learnMore: string;
+  downloadPack: string;
   flightLabel: string;
-  plannedFlightLabel: string;
-  stayLabel: string;
-  flightOption: string;
   stay: string;
-  outlineHolds: string;
-  alreadyBooked: string;
+  bookedLabel: string;
+  checkIn: string;
   checkOut: string;
+  nightSingular: string;
+  nightPlural: string;
+  daySingular: string;
+  dayPlural: string;
   carPickupLabel: string;
   carReturnLabel: string;
   eventLabel: string;
@@ -345,33 +410,32 @@ const SHARED_TRAVEL_CONTENT: Record<SupportedLocale, SharedTravelContent> = {
     sharedTravelPlanTitle: 'Shared Travel Plan',
     ogLocale: 'en_US',
     openInAppFeedback: 'If you have Pack installed, the app will open with this trip.',
-    noDatesFeedback: 'No dated flights or stays yet. We will add calendar exports once dates are available.',
-    calendarDownloadedFeedback: 'Calendar file downloaded. Import it into your calendar to hold the dates.',
-    downloadAppFeedback: 'Download Pack will be available soon - stay tuned!',
-    loadingTitle: 'Loading shared travel plan...',
-    loadingBody: "We're pulling the trip details.",
-    unableTitle: 'Unable to Load Travel Plan',
+    noDatesFeedback: 'No dated flights or stays yet — calendar export unlocks once dates are set.',
+    calendarDownloadedFeedback: 'Calendar file downloaded. Open it to add the trip to your calendar.',
+    loadingTitle: 'Loading trip',
+    loadingBody: 'Pulling the trip details…',
+    unableTitle: 'Unable to load this trip',
     invalidLink: 'This link may have expired or is invalid.',
-    returnHome: 'Return to Pack',
-    sharedTripBadge: 'Shared Trip',
-    secureLink: 'Secure link',
-    sharedSubtitle: 'Shared from Pack',
-    addToCalendar: 'Add to calendar (.ics)',
+    returnHome: 'Go to Pack',
+    sharedByPrefix: 'Shared by',
     openInPack: 'Open in Pack',
-    downloadPack: 'Download Pack',
-    tripTimeline: 'Trip timeline',
-    tripTimelineBody: "Quick peek from the app's timeline view.",
-    noTimeline: 'No flights or stays yet. Once your trip is ready, you\'ll see it here.',
-    noTimelineBody: '',
-    learnMore: 'Learn more about Pack',
+    appleCalendar: 'Apple Calendar',
+    googleCalendar: 'Google Calendar',
+    chooseGoogleEvent: 'Pick what to add to Google Calendar',
+    itineraryTitle: 'Itinerary',
+    noTimeline: 'No flights or stays yet. Once the trip is ready, it will show here.',
+    plannedWithPack: 'Planned with Pack',
+    learnMore: 'Learn more',
+    downloadPack: 'Get the app',
     flightLabel: 'Flight',
-    plannedFlightLabel: 'Planned Flight',
-    stayLabel: 'Stay',
-    flightOption: 'Flight option',
     stay: 'Stay',
-    outlineHolds: 'Outline holds',
-    alreadyBooked: 'Already booked',
+    bookedLabel: 'Booked',
+    checkIn: 'Check-in',
     checkOut: 'Check-out',
+    nightSingular: 'night',
+    nightPlural: 'nights',
+    daySingular: 'day',
+    dayPlural: 'days',
     carPickupLabel: 'Car pickup',
     carReturnLabel: 'Car return',
     eventLabel: 'Event',
@@ -388,33 +452,32 @@ const SHARED_TRAVEL_CONTENT: Record<SupportedLocale, SharedTravelContent> = {
     sharedTravelPlanTitle: 'Plan de viaje compartido',
     ogLocale: 'es_ES',
     openInAppFeedback: 'Si tienes Pack instalado, la app se abrirá con este viaje.',
-    noDatesFeedback: 'Todavía no hay vuelos o estancias con fecha. Agregaremos exportaciones al calendario cuando haya fechas disponibles.',
-    calendarDownloadedFeedback: 'Archivo de calendario descargado. Impórtalo en tu calendario para guardar las fechas.',
-    downloadAppFeedback: 'La descarga de Pack estará disponible pronto.',
-    loadingTitle: 'Cargando plan de viaje compartido...',
-    loadingBody: 'Estamos trayendo los detalles del viaje.',
-    unableTitle: 'No se pudo cargar el plan de viaje',
+    noDatesFeedback: 'Todavía no hay vuelos o estancias con fecha; la exportación al calendario se activará cuando haya fechas.',
+    calendarDownloadedFeedback: 'Archivo de calendario descargado. Ábrelo para agregar el viaje a tu calendario.',
+    loadingTitle: 'Cargando viaje',
+    loadingBody: 'Trayendo los detalles del viaje…',
+    unableTitle: 'No se pudo cargar este viaje',
     invalidLink: 'Este enlace puede haber expirado o no ser válido.',
-    returnHome: 'Volver a Pack',
-    sharedTripBadge: 'Viaje compartido',
-    secureLink: 'Enlace seguro',
-    sharedSubtitle: 'Compartido desde Pack',
-    addToCalendar: 'Agregar al calendario (.ics)',
+    returnHome: 'Ir a Pack',
+    sharedByPrefix: 'Compartido por',
     openInPack: 'Abrir en Pack',
-    downloadPack: 'Descargar Pack',
-    tripTimeline: 'Cronología del viaje',
-    tripTimelineBody: 'Vista rápida desde la línea de tiempo de la app.',
+    appleCalendar: 'Apple Calendar',
+    googleCalendar: 'Google Calendar',
+    chooseGoogleEvent: 'Elige qué agregar a Google Calendar',
+    itineraryTitle: 'Itinerario',
     noTimeline: 'Todavía no hay vuelos ni estancias. Cuando el viaje esté listo, aparecerá aquí.',
-    noTimelineBody: '',
-    learnMore: 'Conoce más sobre Pack',
+    plannedWithPack: 'Planeado con Pack',
+    learnMore: 'Conoce más',
+    downloadPack: 'Descargar la app',
     flightLabel: 'Vuelo',
-    plannedFlightLabel: 'Vuelo planeado',
-    stayLabel: 'Estancia',
-    flightOption: 'Opción de vuelo',
     stay: 'Estancia',
-    outlineHolds: 'Elementos del esquema',
-    alreadyBooked: 'Ya reservado',
+    bookedLabel: 'Reservado',
+    checkIn: 'Entrada',
     checkOut: 'Salida',
+    nightSingular: 'noche',
+    nightPlural: 'noches',
+    daySingular: 'día',
+    dayPlural: 'días',
     carPickupLabel: 'Recogida de auto',
     carReturnLabel: 'Devolución de auto',
     eventLabel: 'Evento',
@@ -462,7 +525,7 @@ const buildIcs = (
   ];
 
   chunks.forEach((chunk, index) => {
-    const described = describeChunk(chunk, localizedContent, 'en');
+    const described = describeChunk(chunk, localizedContent);
     const summary = `${described.meta}: ${described.title}`;
 
     const startDate = chunkStartDate(chunk);
@@ -498,6 +561,100 @@ const buildIcs = (
   return { ics: lines.join('\r\n'), eventCount };
 };
 
+/**
+ * App IconDisc port: 28px tinted circle around a 14–16px glyph. The tint
+ * pair (1F fill / 33 border on the accent) is the one sanctioned colored
+ * alpha form in the design language.
+ */
+const IconDisc: React.FC<{ readonly children: React.ReactNode }> = ({ children }) => (
+  <span className="stp-icondisc">{children}</span>
+);
+
+/** App AccentDateBadge port: accent weekday + white tabular rest. */
+const AccentDateBadge: React.FC<{ readonly formattedDate: string }> = ({
+  formattedDate,
+}) => {
+  const displayDate = formattedDate.replace(/,\s*\d{4}$/, '');
+  const [weekdayPart, ...restParts] = displayDate.split(' ');
+  const weekday = weekdayPart?.replace(/,$/, '') ?? '';
+  const rest = restParts.join(' ').trim();
+
+  if (!weekday || !rest) {
+    return <span className="stp-datebadge">{displayDate}</span>;
+  }
+  return (
+    <span className="stp-datebadge">
+      <span className="stp-datebadge-weekday">{weekday}</span>
+      <span className="stp-datebadge-rest">{rest}</span>
+    </span>
+  );
+};
+
+/** Timeline card kicker: icon disc + uppercase micro-label left, date right. */
+const CardKicker: React.FC<{
+  readonly kind: ChunkKind;
+  readonly label: string;
+  readonly dateLabel: string;
+  readonly booked?: boolean;
+  readonly bookedLabel: string;
+}> = ({ kind, label, dateLabel, booked, bookedLabel }) => {
+  const Glyph = CHUNK_GLYPHS[kind];
+  return (
+    <div className="stp-kicker">
+      <span className="stp-kicker-lead">
+        <IconDisc>
+          <Glyph size={14} />
+        </IconDisc>
+        <span className="stp-kicker-label">{label}</span>
+        {booked && <span className="stp-booked">{bookedLabel}</span>}
+      </span>
+      {dateLabel && <AccentDateBadge formattedDate={dateLabel} />}
+    </div>
+  );
+};
+
+/** Flight band: endpoints flanking the app's hairline–pill–hairline rail. */
+const FlightRouteBand: React.FC<{
+  readonly origin: string;
+  readonly destination: string;
+}> = ({ origin, destination }) => (
+  <div className="stp-band stp-band-route">
+    <span className="stp-route-endpoint">{origin}</span>
+    <span className="stp-route-rail" aria-hidden>
+      <span className="stp-route-line" />
+      <span className="stp-route-pill">
+        <PlaneGlyph size={12} />
+      </span>
+      <span className="stp-route-line" />
+    </span>
+    <span className="stp-route-endpoint stp-route-endpoint-right">{destination}</span>
+  </div>
+);
+
+/** Stay band: check-in / nights-pill / check-out (app hotel-card box). */
+const StayBand: React.FC<{
+  readonly checkInLabel: string;
+  readonly checkOutLabel: string;
+  readonly checkInDate: string;
+  readonly checkOutDate?: string;
+  readonly nightsLabel: string;
+}> = ({ checkInLabel, checkOutLabel, checkInDate, checkOutDate, nightsLabel }) => (
+  <div className="stp-band stp-band-stay">
+    <span className="stp-stay-col">
+      <span className="stp-microlabel">{checkInLabel}</span>
+      <AccentDateBadge formattedDate={checkInDate} />
+    </span>
+    <span className="stp-nights-pill">
+      <MoonGlyph size={12} />
+      <span>{nightsLabel}</span>
+    </span>
+    <span className="stp-stay-col stp-stay-col-right">
+      <span className="stp-microlabel">{checkOutLabel}</span>
+      {checkOutDate ? <AccentDateBadge formattedDate={checkOutDate} /> : <span className="stp-datebadge">—</span>}
+    </span>
+  </div>
+);
+
 export const SharedTravelPlan: React.FC = () => {
   const { locale } = useI18n();
   const location = useLocation();
@@ -508,6 +665,8 @@ export const SharedTravelPlan: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+  const [googleChooserOpen, setGoogleChooserOpen] = useState(false);
+  const cancelAppOpenRef = useRef<() => void>(() => undefined);
   // The plan fetch waits for reCAPTCHA to SETTLE (ready or unavailable) so the
   // first request already carries a token — a token-less first fetch is
   // rejected by the API and flashed an error before the tokened retry.
@@ -517,8 +676,10 @@ export const SharedTravelPlan: React.FC = () => {
   const localizedContent = SHARED_TRAVEL_CONTENT[locale];
 
   useMountEffect(() => {
+    // Unmount cancels any armed open-in-app App Store fallback timer.
+    const cancelPendingAppOpen = (): void => cancelAppOpenRef.current();
     if (!RECAPTCHA_SITE_KEY) {
-      return;
+      return cancelPendingAppOpen;
     }
     const settleTimeout = window.setTimeout(
       () => setRecaptchaState((state) => (state === 'loading' ? 'unavailable' : state)),
@@ -531,6 +692,7 @@ export const SharedTravelPlan: React.FC = () => {
         setRecaptchaState('unavailable');
       })
       .finally(() => window.clearTimeout(settleTimeout));
+    return cancelPendingAppOpen;
   });
 
   const hasShareId = Boolean(shareId);
@@ -586,35 +748,57 @@ export const SharedTravelPlan: React.FC = () => {
   // static host and crawlers suppress previews on non-200 canonicals.
   const ogUrl = `${WEBSITE_URL}${encodedShareId ? `/share?shareId=${encodedShareId}` : '/share'}`;
 
-  const handleOpenInApp = useCallback(() => {
-    if (!hasShareId) {
-      return;
-    }
+  // The button href stays the page's own https universal link on the CURRENT
+  // host (this page will also serve from trips.trypackai.com), so link taps
+  // from other apps open Pack directly when installed.
+  const universalLink = hasShareId
+    ? buildShareUniversalLink(
+        typeof window !== 'undefined' ? window.location.origin : WEBSITE_URL,
+        shareId,
+      )
+    : ogUrl;
 
-    const encodedShareId = encodeURIComponent(shareId);
-    const appScheme = `${APP_SCHEME_PREFIX}share/${encodedShareId}`;
-    // Query-param form: the CloudFront viewer-request maps /share/<id> to a
-    // missing /share/<id>/index.html (404); only /share?shareId= serves 200.
-    const universalLink = `${WEBSITE_URL}/share?shareId=${encodedShareId}`;
+  const handleOpenInApp = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      if (!hasShareId) {
+        return;
+      }
+      // In-browser tap: a universal link to our own host never leaves the
+      // browser, so attempt the custom scheme with a timed App Store fallback.
+      event.preventDefault();
+      cancelAppOpenRef.current();
+      cancelAppOpenRef.current = attemptOpenInApp({
+        shareId,
+        userAgent: navigator.userAgent,
+        appleAppId: APPLE_APP_ID,
+        env: {
+          navigate: (url) => {
+            window.location.href = url;
+          },
+          isPageHidden: () => document.visibilityState === 'hidden',
+          setTimer: (handler, ms) => window.setTimeout(handler, ms),
+          clearTimer: (timerId) => window.clearTimeout(timerId),
+          onPageHide: (handler) => {
+            const onVisibility = (): void => {
+              if (document.visibilityState === 'hidden') {
+                handler();
+              }
+            };
+            document.addEventListener('visibilitychange', onVisibility);
+            window.addEventListener('pagehide', handler);
+            return () => {
+              document.removeEventListener('visibilitychange', onVisibility);
+              window.removeEventListener('pagehide', handler);
+            };
+          },
+        },
+      });
+      setActionFeedback(localizedContent.openInAppFeedback);
+    },
+    [hasShareId, localizedContent.openInAppFeedback, shareId],
+  );
 
-    window.location.href = appScheme;
-
-    setTimeout(() => {
-      window.location.href = universalLink;
-    }, 1400);
-
-    if (APPLE_APP_ID) {
-      setTimeout(() => {
-        const userAgent = navigator.userAgent.toLowerCase();
-        if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
-          window.location.href = APP_STORE_URL;
-        }
-      }, 2400);
-    }
-    setActionFeedback(localizedContent.openInAppFeedback);
-  }, [hasShareId, localizedContent.openInAppFeedback, shareId]);
-
-  const handleAddToCalendar = useCallback(() => {
+  const handleAppleCalendar = useCallback(() => {
     if (!travelPlan) {
       return;
     }
@@ -637,10 +821,6 @@ export const SharedTravelPlan: React.FC = () => {
     setActionFeedback(localizedContent.calendarDownloadedFeedback);
   }, [localizedContent, shareId, travelPlan]);
 
-  const handleDownloadApp = useCallback(() => {
-    setActionFeedback(localizedContent.downloadAppFeedback);
-  }, [localizedContent.downloadAppFeedback]);
-
   const timelineItems: TimelineItem[] = useMemo(() => {
     if (!travelPlan) {
       return [];
@@ -658,9 +838,77 @@ export const SharedTravelPlan: React.FC = () => {
     );
   }, [travelPlan]);
 
-  const sharedSubtitle = travelPlan?.sharedBy
-    ? `${travelPlan.sharedBy} ${localizedContent.fallbackSharedBy}`
-    : localizedContent.sharedSubtitle;
+  // One Google Calendar template link per dated item (Google's template URL
+  // carries exactly one event). Single event -> the button opens it directly;
+  // several -> a per-event chooser panel.
+  const googleCalendarEvents = useMemo(
+    () =>
+      timelineItems.flatMap((item) => {
+        const described = describeChunk(item.chunk, localizedContent);
+        const time =
+          item.chunk.type === 'activity' || item.chunk.type === 'activityOutline'
+            ? item.chunk.time
+            : undefined;
+        const url = buildGoogleCalendarUrl({
+          title: `${described.meta}: ${described.title}`,
+          startDate: item.startDate,
+          endDate: chunkEndDate(item.chunk),
+          startTime: time,
+          timeZone: travelPlan?.destinationTimeZone,
+          location: described.detail,
+        });
+        if (!url) {
+          return [];
+        }
+        return [
+          {
+            key: `${item.chunk.type}-${item.chunk.id}`,
+            kind: described.kind,
+            title: described.title,
+            dateLabel: formatDate(item.startDate, locale),
+            url,
+          },
+        ];
+      }),
+    [timelineItems, localizedContent, locale, travelPlan?.destinationTimeZone],
+  );
+
+  const handleGoogleCalendar = useCallback(() => {
+    if (googleCalendarEvents.length === 0) {
+      setActionFeedback(localizedContent.noDatesFeedback);
+      return;
+    }
+    if (googleCalendarEvents.length === 1) {
+      window.open(googleCalendarEvents[0].url, '_blank', 'noopener');
+      return;
+    }
+    setGoogleChooserOpen((open) => !open);
+  }, [googleCalendarEvents, localizedContent.noDatesFeedback]);
+
+  const tripRange = useMemo(() => {
+    if (timelineItems.length === 0) {
+      return null;
+    }
+    const start = timelineItems[0].startDate;
+    const end = timelineItems.reduce((latest, item) => {
+      const itemEnd = chunkEndDate(item.chunk) ?? item.startDate;
+      return itemEnd > latest ? itemEnd : latest;
+    }, start);
+    const startDate = parseDateOnly(start);
+    const endDate = parseDateOnly(end);
+    const dayCount =
+      startDate && endDate
+        ? Math.round((endDate.getTime() - startDate.getTime()) / 86_400_000) + 1
+        : null;
+    return {
+      label: formatTripRange(start, end, locale),
+      dayCount,
+    };
+  }, [timelineItems, locale]);
+
+  const chunkIsBooked = (
+    chunk: SharedTravelChunk | SharedTravelOutlineChunk
+  ): boolean => 'alreadyBooked' in chunk && chunk.alreadyBooked === true;
 
   return (
     <>
@@ -699,257 +947,273 @@ export const SharedTravelPlan: React.FC = () => {
         <meta name="twitter:image" content={ogImage} />
         <meta name="twitter:image:alt" content={ogImageAlt} />
 
-        {APPLE_APP_ID && (
-          <meta name="apple-itunes-app" content={`app-id=${APPLE_APP_ID}, app-argument=${ogUrl}`} />
-        )}
+        <meta name="apple-itunes-app" content={`app-id=${APPLE_APP_ID}, app-argument=${ogUrl}`} />
 
         <link rel="canonical" href={ogUrl} />
       </Helmet>
 
-      <div style={styles.page}>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%)',
-            pointerEvents: 'none',
-          }}
-        />
-        <div style={styles.content}>
-          {loading ? (
-            <div style={{ ...styles.card, textAlign: 'center', margin: '2rem auto', maxWidth: 520 }}>
-              <h2>{localizedContent.loadingTitle}</h2>
-              <p>{localizedContent.loadingBody}</p>
+      <style>{SHARE_PAGE_CSS}</style>
+
+      <div className="stp-page">
+        {loading ? (
+          <div className="stp-shell stp-center">
+            <div className="stp-status-card" role="status">
+              <span className="stp-loading-disc" aria-hidden />
+              <h2 className="stp-status-title">{localizedContent.loadingTitle}</h2>
+              <p className="stp-status-body">{localizedContent.loadingBody}</p>
             </div>
-          ) : error || !travelPlan ? (
-            <div style={{ ...styles.card, textAlign: 'center', margin: '2rem auto', maxWidth: 520 }}>
-              <h2>{localizedContent.unableTitle}</h2>
-              <p>{error || localizedContent.invalidLink}</p>
-              <a
-                href={WEBSITE_URL}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.35rem',
-                  marginTop: '0.75rem',
-                  padding: '0.65rem 1rem',
-                  borderRadius: 10,
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: palette.accentSecondary,
-                  textDecoration: 'none',
-                }}
-              >
+          </div>
+        ) : error || !travelPlan ? (
+          <div className="stp-shell stp-center">
+            <div className="stp-status-card">
+              <h2 className="stp-status-title">{localizedContent.unableTitle}</h2>
+              <p className="stp-status-body">{error || localizedContent.invalidLink}</p>
+              <a href={WEBSITE_URL} className="stp-btn stp-btn-ghost stp-status-home">
                 {localizedContent.returnHome}
+                <ArrowRightGlyph size={14} />
               </a>
             </div>
-          ) : (
-            <>
-              <div style={styles.card}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <span style={styles.badge}>{localizedContent.sharedTripBadge}</span>
-                  <span style={styles.pill}>
-                    <ShieldCheck size={16} />
-                    <span>{localizedContent.secureLink}</span>
+          </div>
+        ) : (
+          <div className="stp-shell">
+            {/* ONE clean header: hero city art, title, dates, sharer — once. */}
+            <header className="stp-head">
+              {heroImage && (
+                <div className="stp-hero">
+                  <img
+                    src={heroImage}
+                    alt=""
+                    className="stp-hero-img"
+                    loading="eager"
+                    decoding="async"
+                  />
+                  <div className="stp-hero-fade" aria-hidden />
+                </div>
+              )}
+              <h1 className="stp-title">{travelPlan.title}</h1>
+              <div className="stp-head-meta">
+                {tripRange?.label && (
+                  <span className="stp-head-dates">
+                    {tripRange.label}
+                    {tripRange.dayCount && tripRange.dayCount > 1 && (
+                      <span className="stp-head-daycount">
+                        {' · '}
+                        {tripRange.dayCount}{' '}
+                        {tripRange.dayCount === 1
+                          ? localizedContent.daySingular
+                          : localizedContent.dayPlural}
+                      </span>
+                    )}
                   </span>
-                </div>
-                <h1
-                  style={{
-                    margin: '0.35rem 0 0.3rem 0',
-                    fontSize: 'clamp(1.5rem, 4vw, 2.2rem)',
-                    letterSpacing: '-0.02em',
-                    color: palette.text,
-                  }}
-                >
-                  {travelPlan.title}
-                </h1>
-                <p style={{ margin: 0, fontSize: '1.05rem', color: palette.textMuted }}>{sharedSubtitle}</p>
-                <p style={{ margin: '0.75rem 0 1.5rem 0', color: palette.text, lineHeight: 1.7, maxWidth: 720 }}>
-                  {rawDescription}
-                </p>
-
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                    gap: '0.75rem',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  <button
-                    onClick={handleAddToCalendar}
-                    style={{
-                      ...styles.buttonBase,
-                      background: `linear-gradient(90deg, ${palette.accent}, #ffdd67)`,
-                      color: '#0e0d0c',
-                      boxShadow: '0 10px 30px rgba(240, 198, 45, 0.25)',
-                    }}
-                  >
-                    <CalendarRange size={18} />
-                    {localizedContent.addToCalendar}
-                  </button>
-                  <button
-                    onClick={handleOpenInApp}
-                    style={{
-                      ...styles.buttonBase,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      color: palette.text,
-                      border: `1px solid ${palette.border}`,
-                    }}
-                  >
-                    <Sparkles size={18} />
-                    {localizedContent.openInPack}
-                  </button>
-                  <button
-                    onClick={handleDownloadApp}
-                    style={{
-                      ...styles.buttonBase,
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      color: palette.textMuted,
-                      border: `1px dashed ${palette.border}`,
-                    }}
-                  >
-                    <Download size={18} />
-                    {localizedContent.downloadPack}
-                  </button>
-                </div>
-                {actionFeedback && (
-                  <div style={{ marginTop: '0.5rem', color: palette.textMuted, fontSize: '0.9rem' }}>
-                    {actionFeedback}
-                  </div>
+                )}
+                {travelPlan.sharedBy && (
+                  <span className="stp-head-sharedby">
+                    {localizedContent.sharedByPrefix} {travelPlan.sharedBy}
+                  </span>
                 )}
               </div>
+            </header>
 
-              <section style={styles.timelineSection}>
-                <header style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginBottom: '1rem' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.35rem', color: palette.text }}>{localizedContent.tripTimeline}</h3>
-                  <span style={{ color: palette.textMuted, fontSize: '0.9rem' }}>
-                    {localizedContent.tripTimelineBody}
-                  </span>
-                </header>
-
-                {timelineItems.length === 0 ? (
-                  <div
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      border: `1px dashed ${palette.border}`,
-                      borderRadius: 12,
-                      padding: '1rem',
-                      color: palette.textMuted,
-                      textAlign: 'center' as const,
-                    }}
-                  >
-                    <p>{localizedContent.noTimeline}</p>
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {timelineItems.map((item) => {
-                      const key = `${item.chunk.type}-${item.chunk.id}`;
-                      const described = describeChunk(
-                        item.chunk,
-                        localizedContent,
-                        locale
-                      );
-                      const { title, meta, detail } = described;
-                      const ChunkIcon = CHUNK_ICONS[described.kind];
-                      const dateLabel = formatDate(item.startDate, locale);
-
-                      return (
-                        <div key={key} style={styles.timelineItemRow}>
-                          <div
-                            style={{
-                              width: 12,
-                              height: 12,
-                              marginTop: '0.55rem',
-                              borderRadius: '50%',
-                              background: palette.accent,
-                              boxShadow: '0 0 0 6px rgba(240, 198, 45, 0.15)',
-                              position: 'relative',
-                            }}
-                          >
-                            <div
-                              style={{
-                                position: 'absolute',
-                                left: '50%',
-                                top: 14,
-                                bottom: -14,
-                                transform: 'translateX(-50%)',
-                                width: 1,
-                                background: palette.border,
-                              }}
-                            />
-                          </div>
-                          <div
-                            style={{
-                              background: 'rgba(255, 255, 255, 0.04)',
-                              border: `1px solid ${palette.border}`,
-                              borderRadius: 14,
-                              padding: '0.85rem 1rem',
-                              boxShadow: '0 10px 22px rgba(0, 0, 0, 0.25)',
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                color: palette.textMuted,
-                                fontSize: '0.9rem',
-                              }}
-                            >
-                              <ChunkIcon size={18} />
-                              <span>{meta}</span>
-                              {dateLabel && <strong style={{ color: palette.text }}>{dateLabel}</strong>}
-                            </div>
-                            <div
-                              style={{
-                                margin: '0.35rem 0',
-                                fontSize: '1.05rem',
-                                fontWeight: 700,
-                                color: palette.text,
-                              }}
-                            >
-                              {title}
-                            </div>
-                            {detail && (
-                              <div style={{ color: palette.textMuted, fontSize: '0.9rem' }}>
-                                {detail}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <a
-                  href={WEBSITE_URL}
-                  style={{
-                    marginTop: '1.25rem',
-                    display: 'inline-flex',
-                    gap: '0.4rem',
-                    alignItems: 'center',
-                    color: palette.accentSecondary,
-                    textDecoration: 'none',
-                    fontWeight: 700,
-                  }}
+            <div className="stp-actions">
+              <a
+                href={universalLink}
+                onClick={handleOpenInApp}
+                className="stp-btn stp-btn-primary"
+              >
+                {localizedContent.openInPack}
+                <ArrowRightGlyph size={15} />
+              </a>
+              <div className="stp-actions-row">
+                <button
+                  type="button"
+                  onClick={handleAppleCalendar}
+                  className="stp-btn stp-btn-ghost"
                 >
+                  <AppleGlyph size={15} />
+                  {localizedContent.appleCalendar}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGoogleCalendar}
+                  className="stp-btn stp-btn-ghost"
+                  aria-expanded={googleChooserOpen}
+                >
+                  <GoogleGlyph size={14} />
+                  {localizedContent.googleCalendar}
+                </button>
+              </div>
+              {googleChooserOpen && googleCalendarEvents.length > 1 && (
+                <div className="stp-gcal-panel">
+                  <span className="stp-microlabel stp-gcal-label">
+                    {localizedContent.chooseGoogleEvent}
+                  </span>
+                  {googleCalendarEvents.map((event) => {
+                    const Glyph = CHUNK_GLYPHS[event.kind];
+                    return (
+                      <a
+                        key={event.key}
+                        href={event.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="stp-gcal-row"
+                      >
+                        <span className="stp-gcal-row-lead">
+                          <Glyph size={14} />
+                          <span className="stp-gcal-row-title">{event.title}</span>
+                        </span>
+                        <span className="stp-gcal-row-date">
+                          {event.dateLabel}
+                          <ArrowRightGlyph size={12} />
+                        </span>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+              <div aria-live="polite" className="stp-feedback">
+                {actionFeedback}
+              </div>
+            </div>
+
+            <section className="stp-timeline">
+              <header className="stp-section-head">
+                <IconDisc>
+                  <MapPinGlyph size={14} />
+                </IconDisc>
+                <h2 className="stp-section-title">{localizedContent.itineraryTitle}</h2>
+              </header>
+
+              {timelineItems.length === 0 ? (
+                <div className="stp-empty">{localizedContent.noTimeline}</div>
+              ) : (
+                <div className="stp-cards">
+                  {timelineItems.map((item) => {
+                    const described = describeChunk(item.chunk, localizedContent);
+                    const dateLabel = formatDate(item.startDate, locale);
+                    const key = `${item.chunk.type}-${item.chunk.id}`;
+                    const chunk = item.chunk;
+
+                    if (chunk.type === 'flight' || chunk.type === 'flightOutline') {
+                      return (
+                        <article key={key} className="stp-card">
+                          <CardKicker
+                            kind="flight"
+                            label={described.meta}
+                            dateLabel={dateLabel}
+                            booked={chunkIsBooked(chunk)}
+                            bookedLabel={localizedContent.bookedLabel}
+                          />
+                          <FlightRouteBand
+                            origin={chunk.origin}
+                            destination={chunk.destination}
+                          />
+                        </article>
+                      );
+                    }
+
+                    if (chunk.type === 'hotel' || chunk.type === 'hotelOutline') {
+                      const nights =
+                        chunk.type === 'hotelOutline'
+                          ? chunk.nights
+                          : chunk.nights ??
+                            (chunk.checkOut && parseDateOnly(chunk.checkOut) && parseDateOnly(chunk.checkIn)
+                              ? Math.max(
+                                  1,
+                                  Math.round(
+                                    ((parseDateOnly(chunk.checkOut) as Date).getTime() -
+                                      (parseDateOnly(chunk.checkIn) as Date).getTime()) /
+                                      86_400_000,
+                                  ),
+                                )
+                              : 1);
+                      return (
+                        <article key={key} className="stp-card">
+                          <CardKicker
+                            kind="hotel"
+                            label={described.meta}
+                            dateLabel=""
+                            booked={chunkIsBooked(chunk)}
+                            bookedLabel={localizedContent.bookedLabel}
+                          />
+                          <h3 className="stp-card-title">{described.title}</h3>
+                          {described.detail && (
+                            <p className="stp-card-detail">
+                              <MapPinGlyph size={12} />
+                              {described.detail}
+                            </p>
+                          )}
+                          <StayBand
+                            checkInLabel={localizedContent.checkIn}
+                            checkOutLabel={localizedContent.checkOut}
+                            checkInDate={formatDate(chunk.checkIn, locale)}
+                            checkOutDate={
+                              chunk.checkOut ? formatDate(chunk.checkOut, locale) : undefined
+                            }
+                            nightsLabel={`${nights} ${
+                              nights === 1
+                                ? localizedContent.nightSingular
+                                : localizedContent.nightPlural
+                            }`}
+                          />
+                        </article>
+                      );
+                    }
+
+                    const time =
+                      chunk.type === 'activity' || chunk.type === 'activityOutline'
+                        ? chunk.time
+                        : undefined;
+                    return (
+                      <article key={key} className="stp-card">
+                        <CardKicker
+                          kind={described.kind}
+                          label={described.meta}
+                          dateLabel={dateLabel}
+                          booked={chunkIsBooked(chunk)}
+                          bookedLabel={localizedContent.bookedLabel}
+                        />
+                        <h3 className="stp-card-title">{described.title}</h3>
+                        {(described.detail || time) && (
+                          <p className="stp-card-detail">
+                            {time && (
+                              <span className="stp-card-time">
+                                <ClockGlyph size={12} />
+                                {time}
+                              </span>
+                            )}
+                            {described.detail && (
+                              <span className="stp-card-place">
+                                <MapPinGlyph size={12} />
+                                {described.detail}
+                              </span>
+                            )}
+                          </p>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            <footer className="stp-foot">
+              <span className="stp-foot-brand">{localizedContent.plannedWithPack}</span>
+              <span className="stp-foot-links">
+                <a href={WEBSITE_URL} className="stp-foot-link">
                   {localizedContent.learnMore}
-                  <ExternalLink size={16} />
                 </a>
-              </section>
-            </>
-          )}
-        </div>
+                <a
+                  href={APP_STORE_URL}
+                  className="stp-foot-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {localizedContent.downloadPack}
+                </a>
+              </span>
+            </footer>
+          </div>
+        )}
       </div>
     </>
   );
@@ -1092,91 +1356,442 @@ const SharedTravelPlanLoader: React.FC<{
   return null;
 };
 
-const palette = {
-  bg: '#0e0d0c',
-  panel: 'rgba(255,255,255,0.03)',
-  border: 'rgba(255,255,255,0.12)',
-  text: '#f5f5f5',
-  textMuted: '#c2c2c2',
-  accent: '#f0c62d',
-  accentSecondary: '#e72340',
-};
+/**
+ * Page-scoped styles on the website's tokens (index.css custom properties)
+ * with the app's hierarchy: hairline borders, boxed info bands, tinted icon
+ * discs, accent weekday dates. Mobile-first — most opens are 390px iMessage
+ * taps — with a single 680px column on desktop.
+ */
+const SHARE_PAGE_CSS = `
+.stp-page {
+  --stp-text: var(--color-text-primary, #f7f0e3);
+  --stp-text-secondary: var(--color-text-secondary, rgba(247, 240, 227, 0.72));
+  --stp-text-tertiary: rgba(247, 240, 227, 0.5);
+  --stp-accent: var(--color-accent, #f3d27a);
+  --stp-bg: var(--color-bg-primary, #0f0d0b);
+  --stp-card: rgba(247, 240, 227, 0.04);
+  --stp-band: rgba(9, 8, 6, 0.5);
+  --stp-hairline: rgba(247, 240, 227, 0.1);
+  --stp-hairline-strong: rgba(247, 240, 227, 0.18);
+  --stp-pill: rgba(247, 240, 227, 0.07);
+  min-height: 100vh;
+  background: var(--stp-bg);
+  color: var(--stp-text);
+}
+.stp-shell {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 1.5rem) 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.stp-center {
+  min-height: 70vh;
+  justify-content: center;
+}
 
-const styles = {
-  page: {
-    minHeight: '100vh',
-    background: `
-      radial-gradient(120% 140% at 20% 20%, rgba(240, 198, 45, 0.06), transparent),
-      radial-gradient(120% 140% at 80% 0%, rgba(231, 35, 64, 0.08), transparent),
-      ${palette.bg}
-    `,
-    color: palette.text,
-    position: 'relative' as const,
-    padding: 'clamp(1.25rem, 4vw, 2rem)',
-  },
-  content: {
-    position: 'relative' as const,
-    zIndex: 1,
-    maxWidth: 960,
-    margin: '0 auto',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 'clamp(1rem, 3vw, 1.5rem)',
-  },
-  card: {
-    background: palette.panel,
-    border: `1px solid ${palette.border}`,
-    borderRadius: 18,
-    padding: 'clamp(1.25rem, 4vw, 1.75rem)',
-    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.35)',
-  },
-  badge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '0.45rem 0.75rem',
-    borderRadius: 999,
-    background: `linear-gradient(90deg, ${palette.accent}, ${palette.accentSecondary})`,
-    color: '#0e0d0c',
-    fontWeight: 700,
-    fontSize: '0.85rem',
-    letterSpacing: '0.02em',
-  },
-  pill: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.4rem',
-    padding: '0.4rem 0.65rem',
-    borderRadius: 12,
-    background: 'rgba(16, 185, 129, 0.08)',
-    color: palette.textMuted,
-    border: '1px solid rgba(16, 185, 129, 0.25)',
-    fontSize: '0.85rem',
-  },
-  buttonBase: {
-    border: 'none',
-    outline: 'none',
-    cursor: 'pointer',
-    borderRadius: 12,
-    padding: '0.85rem 1rem',
-    fontWeight: 700,
-    fontSize: '1rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.5rem',
-    transition: 'transform 120ms ease, box-shadow 120ms ease, background 120ms ease',
-  },
-  timelineSection: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: `1px solid ${palette.border}`,
-    borderRadius: 18,
-    padding: 'clamp(1rem, 3vw, 1.25rem)',
-    boxShadow: '0 15px 45px rgba(0, 0, 0, 0.28)',
-  },
-  timelineItemRow: {
-    display: 'grid',
-    gridTemplateColumns: '28px 1fr',
-    gap: '0.5rem',
-    alignItems: 'flex-start',
-  },
-};
+/* Header */
+.stp-hero {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  max-height: 300px;
+  border: 1px solid var(--stp-hairline);
+  margin-bottom: 1.1rem;
+}
+.stp-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.stp-hero-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(15, 13, 11, 0.65) 100%);
+  pointer-events: none;
+}
+.stp-title {
+  margin: 0;
+  font-family: var(--font-display-serif, Georgia, serif);
+  font-weight: 580;
+  font-size: clamp(1.7rem, 6vw, 2.35rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+}
+.stp-head-meta {
+  margin-top: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.85rem;
+  row-gap: 0.2rem;
+}
+.stp-head-dates {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--stp-accent);
+  font-variant-numeric: tabular-nums;
+}
+.stp-head-daycount {
+  color: var(--stp-text-secondary);
+  font-weight: 500;
+}
+.stp-head-sharedby {
+  font-size: 0.82rem;
+  color: var(--stp-text-tertiary);
+}
+
+/* Actions */
+.stp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.stp-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.stp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 14px;
+  padding: 0.85rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 120ms ease, background 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 400px) {
+  .stp-actions-row .stp-btn { font-size: 0.86rem; gap: 0.35rem; }
+}
+.stp-btn-primary {
+  background: var(--stp-accent);
+  color: #171205;
+  border: 1px solid var(--stp-accent);
+}
+.stp-btn-primary:hover { filter: brightness(1.06); }
+.stp-btn-ghost {
+  background: var(--stp-card);
+  color: var(--stp-text);
+  border: 1px solid var(--stp-hairline);
+}
+.stp-btn-ghost:hover { background: rgba(247, 240, 227, 0.08); }
+.stp-feedback {
+  min-height: 1rem;
+  font-size: 0.82rem;
+  color: var(--stp-text-tertiary);
+}
+
+/* Google Calendar per-event chooser */
+.stp-gcal-panel {
+  border: 1px solid var(--stp-hairline);
+  border-radius: 14px;
+  background: var(--stp-card);
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.stp-gcal-label { padding: 0 0.3rem 0.4rem; }
+.stp-gcal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.45rem;
+  border-radius: 10px;
+  color: var(--stp-text);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.stp-gcal-row:hover { background: rgba(247, 240, 227, 0.06); }
+.stp-gcal-row + .stp-gcal-row { border-top: 1px solid var(--stp-hairline); border-radius: 0 0 10px 10px; }
+.stp-gcal-row-lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  color: var(--stp-text);
+}
+.stp-gcal-row-lead svg { color: var(--stp-accent); flex-shrink: 0; }
+.stp-gcal-row-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.stp-gcal-row-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--stp-text-secondary);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+
+/* Timeline section */
+.stp-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+.stp-section-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+.stp-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.stp-card {
+  border: 1px solid var(--stp-hairline);
+  border-radius: 16px;
+  background: var(--stp-card);
+  padding: 0.85rem 0.95rem;
+}
+.stp-card-title {
+  margin: 0.55rem 0 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.stp-card-detail {
+  margin: 0.3rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  font-size: 0.83rem;
+  color: var(--stp-text-secondary);
+}
+.stp-card-detail svg { color: var(--stp-text-tertiary); }
+.stp-card-time, .stp-card-place {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.stp-card > .stp-band { margin-top: 0.65rem; }
+
+/* Kicker: icon disc + uppercase micro-label + accent date */
+.stp-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.stp-kicker-lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.stp-kicker-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--stp-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stp-icondisc {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(243, 210, 122, 0.12);
+  border: 1px solid rgba(243, 210, 122, 0.2);
+  color: var(--stp-accent);
+}
+.stp-booked {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-success, #10b981);
+  background: rgba(16, 185, 129, 0.12);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Accent weekday date badge */
+.stp-datebadge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.stp-datebadge-weekday {
+  color: var(--stp-accent);
+  font-weight: 700;
+}
+.stp-datebadge-rest {
+  color: var(--stp-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Boxed hairline info bands (app plan-card signature) */
+.stp-band {
+  border: 1px solid var(--stp-hairline);
+  border-radius: 12px;
+  background: var(--stp-band);
+  padding: 0.7rem 0.8rem;
+}
+.stp-band-route {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.stp-route-endpoint {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stp-route-endpoint-right { text-align: right; }
+.stp-route-rail {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.4rem;
+  min-width: 70px;
+}
+.stp-route-line {
+  flex: 1;
+  height: 1px;
+  background: var(--stp-hairline-strong);
+}
+.stp-route-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  background: var(--stp-pill);
+  color: var(--stp-accent);
+}
+.stp-band-stay {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.stp-stay-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.stp-stay-col-right { align-items: flex-end; text-align: right; }
+.stp-microlabel {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--stp-text-secondary);
+}
+.stp-nights-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--stp-pill);
+  color: var(--stp-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.stp-nights-pill svg { color: var(--stp-accent); }
+
+/* Empty / status / footer */
+.stp-empty {
+  border: 1px dashed var(--stp-hairline-strong);
+  border-radius: 14px;
+  padding: 1.1rem;
+  text-align: center;
+  color: var(--stp-text-secondary);
+  font-size: 0.9rem;
+}
+.stp-status-card {
+  border: 1px solid var(--stp-hairline);
+  border-radius: 18px;
+  background: var(--stp-card);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  max-width: 460px;
+  margin: 0 auto;
+  width: 100%;
+}
+.stp-status-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display-serif, Georgia, serif);
+  font-weight: 560;
+  font-size: 1.35rem;
+}
+.stp-status-body {
+  margin: 0;
+  color: var(--stp-text-secondary);
+  font-size: 0.92rem;
+}
+.stp-status-home {
+  margin-top: 1.1rem;
+}
+.stp-loading-disc {
+  display: block;
+  width: 34px;
+  height: 34px;
+  margin: 0 auto 0.9rem;
+  border-radius: 50%;
+  border: 2px solid rgba(243, 210, 122, 0.25);
+  border-top-color: var(--stp-accent);
+  animation: stp-spin 0.9s linear infinite;
+}
+@keyframes stp-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .stp-loading-disc { animation: none; }
+}
+.stp-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--stp-hairline);
+  padding-top: 1rem;
+  font-size: 0.82rem;
+  color: var(--stp-text-tertiary);
+}
+.stp-foot-links { display: inline-flex; gap: 1rem; }
+.stp-foot-link {
+  color: var(--stp-text-secondary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.stp-foot-link:hover { color: var(--stp-text); }
+`;

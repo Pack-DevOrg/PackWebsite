@@ -128,7 +128,10 @@ test.describe("Backend API contracts for website flows", () => {
         ],
         { encoding: "utf8" },
       );
-      unsubscribeToken = JSON.parse(raw)?.Item?.unsubscribeToken?.S;
+      // Empty stdout = no row (get-item prints nothing when the key is absent).
+      unsubscribeToken = raw.trim()
+        ? JSON.parse(raw)?.Item?.unsubscribeToken?.S
+        : undefined;
     } catch (error) {
       console.warn(
         `[api-contract] cleanup skipped (no AWS access to ${DEV_WAITLIST_TABLE}): ${String(error).slice(0, 200)}`,

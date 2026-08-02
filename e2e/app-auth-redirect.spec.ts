@@ -1,4 +1,4 @@
-import { expect, test } from "playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("App auth wiring", () => {
   test("unauthenticated /app route redirects to Cognito authorize with real config", async ({

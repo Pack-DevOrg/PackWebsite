@@ -1,4 +1,4 @@
-import { expect, test } from "playwright/test";
+import { expect, test } from "@playwright/test";
 import { dismissConsentBannerIfVisible } from "./helpers";
 
 test.describe("Shared and unsubscribe flows", () => {

@@ -1,4 +1,4 @@
-import { expect, test } from "playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   assertNoHorizontalOverflow,
   dismissConsentBannerIfVisible,
@@ -6,7 +6,7 @@ import {
 } from "./helpers";
 
 const grantTrackingConsent = async (
-  page: import("playwright/test").Page
+  page: import("@playwright/test").Page
 ): Promise<void> => {
   await page.waitForLoadState("domcontentloaded");
 
@@ -41,7 +41,7 @@ const grantTrackingConsent = async (
 };
 
 const denyTrackingConsent = async (
-  page: import("playwright/test").Page
+  page: import("@playwright/test").Page
 ): Promise<void> => {
   await page.waitForLoadState("domcontentloaded");
 
@@ -79,7 +79,7 @@ type WaitlistPayload = {
 };
 
 const mockWaitlistSubscribe = async (
-  page: import("playwright/test").Page
+  page: import("@playwright/test").Page
 ): Promise<{ getPayload: () => WaitlistPayload | null }> => {
   let payload: WaitlistPayload | null = null;
 

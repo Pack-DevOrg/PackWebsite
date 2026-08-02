@@ -1,4 +1,4 @@
-import { expect, test } from "playwright/test";
+import { expect, test } from "@playwright/test";
 import { assertNoHorizontalOverflow, dismissConsentBannerIfVisible } from "./helpers";
 
 test.describe("Responsive visibility", () => {

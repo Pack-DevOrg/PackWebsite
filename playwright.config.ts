@@ -5,6 +5,9 @@ const shouldUseLocalWebServer = !process.env.E2E_BASE_URL;
 
 export default defineConfig({
   testDir: "./e2e",
+  // The backend contract lane talks to a REAL stage; it only runs through the
+  // opt-in `npm run test:e2e:contract` script (E2E_INCLUDE_CONTRACT=1).
+  testIgnore: process.env.E2E_INCLUDE_CONTRACT ? [] : ["**/api-contract.spec.ts"],
   timeout: 60_000,
   expect: {
     timeout: 15_000,

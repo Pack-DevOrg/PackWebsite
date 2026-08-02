@@ -36,6 +36,7 @@
     "test:e2e": "npm run test:e2e:guard && playwright test -c playwright.config.ts",
     "test:e2e:headed": "npm run test:e2e:guard && playwright test -c playwright.config.ts --headed",
     "test:e2e:live": "npm run test:e2e:guard && E2E_BASE_URL=https://www.trypackai.com playwright test -c playwright.config.ts",
+    "test:e2e:contract": "npm run test:e2e:guard && E2E_INCLUDE_CONTRACT=1 playwright test -c playwright.config.ts e2e/api-contract.spec.ts",
     "test": "jest",
     "test:seo": "node --test scripts/seo/seo-opportunity-engine.test.mjs",
     "test:e2e:guard": "node scripts/check-e2e-subscribe-safety.mjs"

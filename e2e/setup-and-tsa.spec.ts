@@ -1,4 +1,4 @@
-import { expect, test } from "playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   assertNoHorizontalOverflow,
   dismissConsentBannerIfVisible,
@@ -12,7 +12,7 @@ type WaitlistPayload = {
 };
 
 const mockWaitlistSubscribe = async (
-  page: import("playwright/test").Page,
+  page: import("@playwright/test").Page,
 ): Promise<{ getPayload: () => WaitlistPayload | null }> => {
   let payload: WaitlistPayload | null = null;
 

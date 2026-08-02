@@ -1,4 +1,4 @@
-import { expect, Page } from "playwright/test";
+import { expect, Page } from "@playwright/test";
 
 const withStablePage = async <T>(
   page: Page,

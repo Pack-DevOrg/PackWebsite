@@ -9,7 +9,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 
-import { expect, request as playwrightRequest, test } from "playwright/test";
+import { expect, request as playwrightRequest, test } from "@playwright/test";
 
 const apiBaseUrl = process.env.E2E_API_BASE_URL ?? "https://api.trypackai.com/dev";
 const websiteOrigin = process.env.E2E_WEBSITE_ORIGIN ?? "https://www.trypackai.com";

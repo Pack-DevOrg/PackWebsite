@@ -12,7 +12,11 @@ import { createHash } from "node:crypto";
 import { expect, request as playwrightRequest, test } from "@playwright/test";
 
 const apiBaseUrl = process.env.E2E_API_BASE_URL ?? "https://api.trypackai.com/dev";
-const websiteOrigin = process.env.E2E_WEBSITE_ORIGIN ?? "https://www.trypackai.com";
+// Each stage's CORS allowlist reflects its site: prod echoes www.trypackai.com,
+// dev echoes the local dev site origin.
+const websiteOrigin =
+  process.env.E2E_WEBSITE_ORIGIN ??
+  (apiBaseUrl.includes("/prod") ? "https://www.trypackai.com" : "http://localhost:5173");
 
 // Sanctioned E2E test mailbox (see repo AGENTS.md / CLAUDE.md).
 const TEST_MAILBOX = "test@trypackai.com";

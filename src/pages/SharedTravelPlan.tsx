@@ -1272,9 +1272,13 @@ const SharedTravelPlanLoader: React.FC<{
           url.searchParams.set('recaptchaToken', recaptchaToken);
         }
 
-        const response = await fetch(url.toString(), {
-          headers: recaptchaToken ? { 'X-Recaptcha-Token': recaptchaToken } : undefined,
-        });
+        // The token travels ONLY as a query param. A custom X-Recaptcha-Token
+        // header turns this GET into a preflighted request, and the API
+        // Gateway OPTIONS mock answers with a single static allow-origin —
+        // the browser on trips.trypackai.com then blocks the fetch before it
+        // ever reaches the lambda (the 2026-08-05 "Unable to load this trip"
+        // incident). Keep this a simple request: no custom headers.
+        const response = await fetch(url.toString());
 
         const contentType = response.headers.get('content-type') ?? '';
         const rawText = await response.text();

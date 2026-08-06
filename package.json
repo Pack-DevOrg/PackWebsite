@@ -8,10 +8,10 @@
     "node": ">=22.11.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && vite build --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
-    "build:app-origin": "VITE_APP_BASE_URL=https://www.trypackai.com VITE_COGNITO_REDIRECT_URI=https://www.trypackai.com/auth/callback VITE_POST_LOGOUT_REDIRECT_URI=https://www.trypackai.com VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER=api.trypackai.com vite build && VITE_APP_BASE_URL=https://www.trypackai.com VITE_COGNITO_REDIRECT_URI=https://www.trypackai.com/auth/callback VITE_POST_LOGOUT_REDIRECT_URI=https://www.trypackai.com VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER=api.trypackai.com vite build --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
-    "build:legacy-pages": "vite build && vite build --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "dev": "vite --configLoader runner",
+    "build": "vite build --configLoader runner && vite build --configLoader runner --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "build:app-origin": "VITE_APP_BASE_URL=https://www.trypackai.com VITE_COGNITO_REDIRECT_URI=https://www.trypackai.com/auth/callback VITE_POST_LOGOUT_REDIRECT_URI=https://www.trypackai.com VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER=api.trypackai.com vite build --configLoader runner && VITE_APP_BASE_URL=https://www.trypackai.com VITE_COGNITO_REDIRECT_URI=https://www.trypackai.com/auth/callback VITE_POST_LOGOUT_REDIRECT_URI=https://www.trypackai.com VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER=api.trypackai.com vite build --configLoader runner --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "build:legacy-pages": "vite build --configLoader runner && vite build --configLoader runner --ssr src/ssg.tsx --outDir dist-ssr && node scripts/prerender.mjs",
     "legal:check": "node scripts/check-legal-lock.mjs",
     "legal:check-staged": "node scripts/check-legal-lock.mjs --staged",
     "legal:refresh-lock": "node scripts/refresh-legal-lock.mjs",
@@ -20,7 +20,7 @@
     "check:no-server-only-imports": "node ./scripts/check-no-server-only-imports.mjs",
     "lint:strict": "PACK_LINT_STRICT=1 npm run lint",
     "typecheck": "tsc --noEmit",
-    "preview": "vite preview",
+    "preview": "vite preview --configLoader runner",
     "seo:analyze": "node scripts/seo/analyze-seo-opportunities.mjs",
     "seo:check": "node scripts/seo/analyze-seo-opportunities.mjs --fail-on-critical",
     "seo:competitors": "node scripts/seo/analyze-competitor-seo.mjs",

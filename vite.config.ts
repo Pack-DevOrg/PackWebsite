@@ -906,8 +906,12 @@ export default defineConfig(({ mode, ssrBuild }) => {
           plugins: babelPlugins,
         },
       }),
-      imagetools(),
+      // Cache dirs live in the worktree, not node_modules: the shared
+      // nm-store dependency tree is immutable (chflags uchg), so any plugin
+      // writing under node_modules fails with EPERM.
+      imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
     ],
+    cacheDir: '.vite-cache',
     // Use absolute root so assets resolve correctly for deep links (e.g., /share/*)
     base: '/',
     css: {

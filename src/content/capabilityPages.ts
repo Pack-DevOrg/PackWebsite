@@ -93,7 +93,7 @@ export const capabilityPageDefinitions = [
           "Yes. Pack is designed to reconstruct flights, hotels, rental cars, dates, locations, and related confirmation details into a readable travel record instead of leaving each booking buried in a separate email or provider portal.",
       },
     ],
-    related: ["travel-stats", "loyalty-details", "trip-planning-from-events"],
+    related: ["travel-stats", "travel-map", "loyalty-details"],
   },
   {
     slug: "travel-stats",
@@ -151,7 +151,73 @@ export const capabilityPageDefinitions = [
           "Yes. Pack is designed to turn travel history into maps, timelines, repeat routes, airport patterns, destination history, and other personal travel stats instead of only showing one itinerary at a time.",
       },
     ],
-    related: ["travel-history", "trip-expenses", "live-trip-views"],
+    related: ["travel-map", "travel-history", "trip-expenses"],
+  },
+  {
+    slug: "travel-map",
+    seoTitle: "Visited countries map and automatic travel tracker",
+    seoDescription:
+      "Pack turns trips from your inbox into a visited countries and states map plus travel trophies — like a scratch-off world map that fills itself in.",
+    navLabel: "Travel Map",
+    chipLabel: "Map",
+    featureTitle: "Fills in your visited-countries map and travel trophies",
+    featureDescription:
+      "Pack can turn travel records into a visited countries and states map, travel trophies for continents and themed collections, and a been-there record that grows on its own.",
+    pageTitle: "A visited countries map that fills itself in",
+    pageSubtitle:
+      "Pack is designed to build your states and countries visited map from the trips already in your email and travel records — no scratching, no manual logging — and turn the places you have been into travel trophies.",
+    intro:
+      "A scratch-off world map is great until you have to remember to scratch it. Pack is built to keep the same been-there satisfaction without the upkeep: your trips become an automatic travel tracker, your map of visited countries and states fills in from travel you already took, and the standout places become trophies you can actually show off.",
+    problemStatement:
+      "As travelers, we loved the idea of a visited-countries map, but every version of it depended on us: scratch the foil, tick the checkbox, keep the spreadsheet current. The record drifted out of date the moment life got busy, and years of real travel ended up invisible.",
+    solutionStatement:
+      "Pack solves that by building the map from the travel record itself. Trips reconstructed from confirmation emails and travel context fill in countries, states, and cities automatically, and the same record powers travel trophies for continents, landmarks, and themed collections — so the map stays honest without any logging.",
+    signalsTitle: "What your travel map can show",
+    signals: [
+      "Countries, US states, and cities filled in from trips Pack has organized — the digital version of a scratch-off map that scratches itself",
+      "Travel trophies for continents and themed collections, from world landmarks to famous food spots, earned from where you have actually been",
+      "A been-there record that keeps growing as new confirmations and trips arrive",
+    ],
+    helpTitle: "How Pack can help",
+    helpPoints: [
+      "Replace manual travel trackers, spreadsheets, and scratch maps with a record that updates itself",
+      "See countries and states visited at a glance, backed by the real trips behind each one",
+      "Turn milestones — a new continent, a famous landmark, a repeat city — into trophies worth sharing",
+    ],
+    outputTitle: "What you get from it",
+    outputPoints: [
+      "A visited countries and states map that stays current without logging",
+      "Travel trophies and collections that make your travel history worth showing off",
+      "A truthful answer to how many countries have I been to, with the trips to prove it",
+    ],
+    faqs: [
+      {
+        question: "Can Pack show a map of the countries I have visited?",
+        answer:
+          "Yes. Pack is designed to build a visited-countries map from your organized travel records, so the map reflects trips you actually took instead of boxes you remembered to tick.",
+      },
+      {
+        question: "Is this like a scratch-off world map?",
+        answer:
+          "It is the same idea without the upkeep. A scratch-off map only knows what you scratch. Pack fills the map in from the travel already in your email and trip records, so nothing gets missed.",
+      },
+      {
+        question: "Do I have to log trips by hand like other travel tracker apps?",
+        answer:
+          "No. Pack is built as an automatic travel tracker: trips reconstructed from confirmation emails and connected travel context fill in the map and trophies on their own.",
+      },
+      {
+        question: "Does the map cover US states as well as countries?",
+        answer:
+          "Yes. The been-there record is designed to cover states and countries visited, plus the cities and places behind them, so the map answers more than a country count.",
+      },
+      {
+        question: "What are travel trophies?",
+        answer:
+          "Trophies turn travel milestones into collectibles: continents completed, world landmarks reached, themed collections like famous markets or stations. They come from the same travel record as the map, so every trophy is backed by a real trip.",
+      },
+    ],
+    related: ["travel-stats", "travel-history", "trip-sharing"],
   },
   {
     slug: "loyalty-details",

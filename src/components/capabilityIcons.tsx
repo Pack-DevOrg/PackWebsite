@@ -12,6 +12,7 @@ import {
   Share2,
   Shield,
   Smartphone,
+  Trophy,
   UserRound,
 } from "lucide-react";
 import type { CapabilityPageSlug } from "@/content/capabilityPages";
@@ -24,6 +25,7 @@ import type { CapabilityPageSlug } from "@/content/capabilityPages";
 export const capabilityIcons: Record<CapabilityPageSlug, ReactNode> = {
   "travel-history": <Brain />,
   "travel-stats": <MapIcon />,
+  "travel-map": <Trophy />,
   "loyalty-details": <BadgeCheck />,
   "trip-planning-from-events": <Calendar />,
   "trip-updates": <RefreshCw />,

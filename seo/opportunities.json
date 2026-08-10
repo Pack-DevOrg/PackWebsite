@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-23T09:05:17.834Z",
+  "generatedAt": "2026-08-10T07:50:06.250Z",
   "siteOrigin": "https://www.trypackai.com",
   "officialGuidance": [
     {
@@ -28,9 +28,9 @@
     }
   ],
   "inventory": {
-    "scannedPages": 201,
-    "sitemapUrls": 32,
-    "prerenderRoutes": 43
+    "scannedPages": 207,
+    "sitemapUrls": 33,
+    "prerenderRoutes": 44
   },
   "keywordOpportunities": [
     {
@@ -576,6 +576,11 @@
       "recommendedPage": "/airport-security-wait-times",
       "strongestExistingPages": [
         {
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.55
+        },
+        {
           "path": "/source/src/content/capabilityPages.ts",
           "title": "capabilityPages.ts",
           "score": 0.55
@@ -584,11 +589,6 @@
           "path": "/source/src/content/seoGuides.ts",
           "title": "seoGuides.ts",
           "score": 0.55
-        },
-        {
-          "path": "/privacy",
-          "title": "Privacy Policy",
-          "score": 0.41250000000000003
         }
       ],
       "nextAction": "Create or substantially rewrite a focused page before pursuing outreach."
@@ -1841,13 +1841,13 @@
           "score": 0.55
         },
         {
-          "path": "/traveler-profiles",
-          "title": "Traveler Profiles",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/traveler-profiles",
+          "title": "Traveler Profiles",
           "score": 0.55
         }
       ],
@@ -2065,13 +2065,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         },
         {
-          "path": "/source/src/content/seoGuides.ts",
-          "title": "seoGuides.ts",
+          "path": "/source/src/content/capabilityPages.ts",
+          "title": "capabilityPages.ts",
           "score": 0.55
         }
       ],
@@ -2093,14 +2093,14 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/source/src/components/app/TravelStatsOverview.tsx",
-          "title": "TravelStatsOverview.tsx",
-          "score": 0.3666666666666667
+          "path": "/llms.txt",
+          "title": "Pack",
+          "score": 0.8500000000000001
         },
         {
-          "path": "/privacy",
-          "title": "Privacy Policy",
-          "score": 0.18333333333333335
+          "path": "/travel-map",
+          "title": "Travel Map",
+          "score": 0.8500000000000001
         }
       ],
       "nextAction": "Refresh title, internal links, and FAQ coverage on the existing page."
@@ -2123,7 +2123,7 @@
         {
           "path": "/llms.txt",
           "title": "Pack",
-          "score": 0.3666666666666667
+          "score": 0.55
         },
         {
           "path": "/traveler-profiles",
@@ -2149,13 +2149,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/tsa-airport-pages",
-          "title": "Pack TSA Airport Pages",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.3666666666666667
         },
         {
-          "path": "/source/src/content/capabilityPages.ts",
-          "title": "capabilityPages.ts",
+          "path": "/tsa-airport-pages",
+          "title": "Pack TSA Airport Pages",
           "score": 0.3666666666666667
         }
       ],
@@ -2485,13 +2485,13 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         },
         {
-          "path": "/travel-stats",
-          "title": "Travel Stats",
+          "path": "/llms.txt",
+          "title": "Pack",
           "score": 0.55
         }
       ],
@@ -2518,8 +2518,8 @@
           "score": 0.8500000000000001
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -2546,8 +2546,8 @@
           "score": 0.575
         },
         {
-          "path": "/llms.txt",
-          "title": "Pack",
+          "path": "/capabilities",
+          "title": "Pack Capability Pages",
           "score": 0.55
         }
       ],
@@ -3615,11 +3615,11 @@
       "targets": [
         {
           "entity": "Pack",
-          "occurrences": 105
+          "occurrences": 107
         },
         {
           "entity": "PackAI",
-          "occurrences": 51
+          "occurrences": 53
         },
         {
           "entity": "Pack AI",
@@ -3627,7 +3627,7 @@
         },
         {
           "entity": "TryPack",
-          "occurrences": 51
+          "occurrences": 52
         },
         {
           "entity": "Try Pack",
@@ -3635,7 +3635,7 @@
         },
         {
           "entity": "TryPackAI",
-          "occurrences": 50
+          "occurrences": 51
         },
         {
           "entity": "Try Pack AI",

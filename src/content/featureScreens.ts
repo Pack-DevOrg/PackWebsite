@@ -82,7 +82,7 @@ export const FEATURE_SCREENS: readonly FeatureScreen[] = [
     caption: "Your travel, measured",
     blurb:
       "Miles, countries, airports, streaks — your travel history turned into maps, numbers, and trophies worth showing off.",
-    capabilitySlugs: ["travel-stats"],
+    capabilitySlugs: ["travel-stats", "travel-map"],
   },
   {
     id: "packs",

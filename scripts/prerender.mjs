@@ -24,6 +24,7 @@ const routesToPrerender = [
   "/guides/reliable-ai-travel-planning",
   "/travel-history",
   "/travel-stats",
+  "/travel-map",
   "/loyalty-details",
   "/trip-planning-from-events",
   "/trip-updates",

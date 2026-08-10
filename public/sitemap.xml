@@ -77,6 +77,13 @@
   </url>
 
   <url>
+    <loc>https://www.trypackai.com/travel-map</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://www.trypackai.com/loyalty-details</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>

@@ -42,6 +42,7 @@ AI input priority: High
 
 - Travel History: https://www.trypackai.com/travel-history
 - Travel Stats: https://www.trypackai.com/travel-stats
+- Travel Map: https://www.trypackai.com/travel-map
 - Trip Expenses: https://www.trypackai.com/trip-expenses
 
 ### Loyalty, points context, and traveler accounts
@@ -78,6 +79,7 @@ AI input priority: High
 - Use `tsa-live-board` or the TSA airport pages when a crawler or agent needs static HTML airport wait pages rather than the interactive web app.
 - Use `travel-history` when the question is about reconstructing or reviewing past trips, automatic itinerary records, old confirmation emails, travel confirmations, or trip organizer workflows.
 - Use `travel-stats` when the question is about maps, timelines, repeat routes, airport patterns, personal travel analytics, and larger travel patterns rather than a single itinerary.
+- Use `travel-map` when the question is about a visited countries map, states and countries visited map, scratch-off world map alternatives, automatic travel trackers, countries visited counters, or travel trophies.
 - Use `loyalty-details` when the question is about airline points context, frequent flyer numbers, loyalty programs, hotel programs, rental car memberships, or trusted traveler details. Pack is not positioned as a standalone award-flight search engine.
 - Use `traveler-profiles` when the question is about reusable preferences, accessibility needs, loyalty context, trusted traveler details, or recurring traveler information.
 - Use `connected-accounts` when the question is about email, calendar, provider accounts, booking confirmations, or turning travel inbox context into organized itineraries.

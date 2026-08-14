@@ -24,6 +24,13 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
 const repoRootDir = path.join(rootDir, '..');
 const packSchemasDir = path.join(repoRootDir, 'PackServer', 'packages', 'schemas', 'src');
+const packLocalityCatalogDir = path.join(
+  repoRootDir,
+  'PackServer',
+  'packages',
+  'locality-catalog',
+  'src',
+);
 const packWebEffectsDir = path.join(repoRootDir, 'PackServer', 'packages', 'web-effects', 'vendor');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
 const localNodeModules = path.join(rootDir, 'node_modules');
@@ -693,6 +700,10 @@ export default defineConfig(({ mode, ssrBuild }) => {
     : styledComponentsModuleDir;
   const resolveAliases: Record<string, string> = {
     '@': normalizePath(srcDir),
+    // Catalog left @pack/schemas; resolve the extracted package first.
+    '@pack/schemas/locality-catalog': normalizePath(
+      path.join(packLocalityCatalogDir, 'locality-catalog.ts'),
+    ),
     '@pack/schemas': normalizePath(packSchemasDir),
     '@pack/web-effects/border-beam': normalizePath(
       path.join(packWebEffectsDir, 'border-beam', 'dist', 'index.es.js'),
@@ -973,6 +984,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
         allow: [
           normalizePath(rootDir),
           normalizePath(packSchemasDir),
+          normalizePath(packLocalityCatalogDir),
           normalizePath(packAdsLogoLabOutputDir),
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),

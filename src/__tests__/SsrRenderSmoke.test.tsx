@@ -15,6 +15,7 @@ import Features from "../pages/Features";
 import FAQ from "../pages/FAQ";
 import HowItWorks from "../pages/HowItWorks";
 import TravelContextBenchmark from "../pages/TravelContextBenchmark";
+import AmbientVideoBackdrop from "../components/AmbientVideoBackdrop";
 
 const renderShell = (ui: React.ReactNode, initialEntries: string[]) => (
   <MemoryRouter initialEntries={initialEntries}>
@@ -119,5 +120,13 @@ describe("SSR-like render smoke", () => {
         )
       )
     ).not.toThrow();
+  });
+});
+
+describe("hero ambient still", () => {
+  it("SSR-paints the waitlist hero poster", () => {
+    const html = renderToString(<AmbientVideoBackdrop />);
+    expect(html).toContain("hero-ambient-poster.webp");
+    expect(html).not.toContain("<video");
   });
 });

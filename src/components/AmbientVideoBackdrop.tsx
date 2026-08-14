@@ -13,9 +13,27 @@ const Backdrop = styled.div`
   border-radius: inherit;
   overflow: hidden;
   pointer-events: none;
+  background-color: #0a0806;
+`;
+
+/* Always-on still. Same crop as the video so reduced-motion / SSR / a missed
+   probe still show the waitlist hero plate instead of a dark empty frame. */
+const Poster = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 30% 100%;
+
+  @media (max-width: 739px) {
+    object-position: 62% 55%;
+  }
 `;
 
 const Video = styled.video`
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -65,9 +83,10 @@ interface AmbientVideoBackdropProps {
 }
 
 /**
- * Zero-footprint ambient background video. Renders nothing until the asset
- * exists at `src` (HEAD probe — the SPA fallback returns index.html with a
- * 200, so the content-type must actually be video/*). Honors reduced motion.
+ * Ambient hero backdrop. The still (`poster`) always paints so the waitlist
+ * hero is never a dark empty frame (SSR, reduced motion, or a failed video
+ * probe). The looping video mounts only when the asset is video/* and motion
+ * is allowed.
  */
 const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
   // Version the URLs whenever the asset is replaced: the file name never
@@ -157,7 +176,7 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
         }
       })
       .catch(() => {
-        /* asset absent — render nothing */
+        /* asset absent — keep the still */
       });
 
     return () => {
@@ -166,24 +185,25 @@ const AmbientVideoBackdrop: React.FC<AmbientVideoBackdropProps> = ({
     };
   }, [src]);
 
-  if (!isAvailable || !allowsMotion) {
-    return null;
-  }
+  const showVideo = isAvailable && allowsMotion;
 
   return (
     <Backdrop aria-hidden="true">
-      <Video
-        ref={attachVideo}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        poster={poster}
-        onPause={ensurePlaying}
-      >
-        <source src={src} type="video/mp4" />
-      </Video>
+      <Poster src={poster} alt="" />
+      {showVideo ? (
+        <Video
+          ref={attachVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={poster}
+          onPause={ensurePlaying}
+        >
+          <source src={src} type="video/mp4" />
+        </Video>
+      ) : null}
       <Frost />
       <Scrim />
     </Backdrop>

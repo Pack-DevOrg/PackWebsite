@@ -200,7 +200,7 @@ const CopyScrim = styled.div`
   bottom: 0;
   width: min(56%, 48rem);
   background:
-    linear-gradient(90deg, rgba(8, 7, 6, 0.86) 0%, rgba(8, 7, 6, 0.7) 56%, rgba(8, 7, 6, 0.46) 76%, rgba(8, 7, 6, 0.16) 100%);
+    linear-gradient(90deg, rgba(8, 7, 6, 0.42) 0%, rgba(8, 7, 6, 0.28) 56%, rgba(8, 7, 6, 0.12) 76%, transparent 100%);
   filter: blur(22px);
   transform: translateX(-2%);
   pointer-events: none;
@@ -211,7 +211,7 @@ const CopyScrim = styled.div`
     height: 58%;
     bottom: auto;
     background:
-      linear-gradient(180deg, rgba(8, 7, 6, 0.98) 0%, rgba(8, 7, 6, 0.92) 70%, rgba(8, 7, 6, 0.18) 100%);
+      linear-gradient(180deg, rgba(8, 7, 6, 0.42) 0%, rgba(8, 7, 6, 0.28) 70%, rgba(8, 7, 6, 0.08) 100%);
     filter: blur(0);
     transform: none;
   }

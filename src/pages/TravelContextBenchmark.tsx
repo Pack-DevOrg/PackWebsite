@@ -1,8 +1,11 @@
 import styled from "styled-components";
 import {
+  benchmarkDatasetJsonLdDescription,
   benchmarkMetricExplanations,
   benchmarkOverview,
+  benchmarkStatusBarNote,
   hard100Cases,
+  hard100CorpusSizeLabel,
   hardestTenShootoutRows,
   latestVerifiedPackRun,
   methodologyNotes,
@@ -830,8 +833,7 @@ const TravelContextBenchmark = () => (
         {
           "@type": "Dataset",
           name: "Pack DeeperBench",
-          description:
-            "Synthetic benchmark for evidence-grounded travel planning over household context, calendar constraints, public events, and deterministic travel inventory. Pack's latest hard-100 run passed 93 of 100 cases; selected hard-case baselines are not the official full-corpus score.",
+          description: benchmarkDatasetJsonLdDescription,
           url: buildAbsoluteUrl("/pack-deeperbench"),
           license: "https://www.apache.org/licenses/LICENSE-2.0",
           creator: {
@@ -852,11 +854,11 @@ const TravelContextBenchmark = () => (
       </Intro>
       <StatusBar>
         <strong>{benchmarkOverview.status}.</strong>
-        The reported run covers all 100 hard-corpus cases.
+        {benchmarkStatusBarNote}
       </StatusBar>
       <MetricGrid>
         <Metric>
-          <dt>Hard-100 Pack run</dt>
+          <dt>{hard100CorpusSizeLabel}</dt>
           <dd>{latestVerifiedPackRun.hard100Composite}</dd>
         </Metric>
         <Metric>
@@ -887,7 +889,7 @@ const TravelContextBenchmark = () => (
         </ResultHeader>
         <ResultGrid>
           <ResultItem>
-            <span>Final pass count</span>
+            <span>{hard100CorpusSizeLabel}</span>
             <strong>{latestVerifiedPackRun.hard100Composite}</strong>
           </ResultItem>
           <ResultItem>

@@ -9,8 +9,8 @@ import {
 
 export const benchmarkOverview = {
   name: "Pack DeeperBench",
-  version: "pack-deeperbench-v0",
-  status: "Pack hard-100 full run verified June 16, 2026",
+  version: "pack-deeperbench-2.0",
+  status: "Pack DeeperBench 2.0 public 4×25 / 100-case corpus",
   corpus: {
     household: "Synthetic household",
     people: 4,
@@ -31,15 +31,15 @@ export const benchmarkOverview = {
 };
 
 export const latestVerifiedPackRun = {
-  label: "Pack hard-100 run",
+  label: "Pack DeeperBench 2.0 corpus",
   summary:
-    "The run includes all 100 hard-corpus cases. Final pass count was 93/100.",
-  hard100Composite: "93/100",
-  hard100TotalCost: "$4.74",
-  averageHard100Cost: "$0.0474",
-  hard100Runtime: "4m08s wall clock",
-  averageHard100Runtime: "19.2s processing/case",
-  llmCalls: "389 LLM calls",
+    "Public corpus is DeeperBench 2.0 (4×25 / 100 cases). No verified 2.0 full-run pass count is published in-repo.",
+  hard100Composite: "100 cases · 4×25",
+  hard100TotalCost: "not yet verified",
+  averageHard100Cost: "not yet verified",
+  hard100Runtime: "not yet verified",
+  averageHard100Runtime: "not yet verified",
+  llmCalls: "not yet verified",
   travelerOutcome: "Book, decline, mark impossible, or ask a clarifying question",
   hiddenContext: "Dates, travelers, obligations, credits, and preferences recovered from private context",
   evidenceGrounding: "Answers must cite the right supporting records and avoid misleading lookalikes",
@@ -47,12 +47,20 @@ export const latestVerifiedPackRun = {
   safeAbstention: "No-travel, impossible, and ambiguous requests must not be forced into bookings",
 };
 
+export const hard100CorpusSizeLabel = "Hard-100 corpus size";
+
+export const benchmarkDatasetJsonLdDescription =
+  "Synthetic benchmark for evidence-grounded travel planning over household context, calendar constraints, public events, and deterministic travel inventory. Public corpus is DeeperBench 2.0 (100 cases · 4×25). No verified 2.0 full-run pass count is published.";
+
+export const benchmarkStatusBarNote =
+  "Live metric is corpus size (100 cases · 4×25), not a published run score. No verified 2.0 full-run pass count is published.";
+
 export const benchmarkMetricExplanations = [
   {
-    label: "Final pass count",
+    label: hard100CorpusSizeLabel,
     value: latestVerifiedPackRun.hard100Composite,
     body:
-      "Number of cases where the final answer matched the expected outcome under the rubric.",
+      "Published DeeperBench 2.0 corpus size: 100 unique cases across four tracks of 25. This is case count, not a verified pass count.",
   },
   {
     label: "Runtime",
@@ -408,404 +416,404 @@ export const hardestTenShootoutRows = [
 
 export const hard100Cases = [
   {
-    "number": "001",
-    "title": "@family Japan for about a week."
+    "number": "db2-t1-001",
+    "title": "Indy 500 next year."
   },
   {
-    "number": "002",
-    "title": "@bel Paris fashion week."
+    "number": "db2-t1-002",
+    "title": "Tokyo May 10-17."
   },
   {
-    "number": "003",
-    "title": "@adam to Tokyo, use the airline credit if we still can."
+    "number": "db2-t1-003",
+    "title": "flghts to chicago sept 18-21 pls"
   },
   {
-    "number": "004",
-    "title": "@chase to Denver for that show."
+    "number": "db2-t1-004",
+    "title": "ok so, thinking portland for a long weekend in august, thursday through sunday-ish, just me and bel, nothing fancy"
   },
   {
-    "number": "005",
-    "title": "@danny Orlando theme park weekend."
+    "number": "db2-t1-005",
+    "title": "anniversary is oct 9 - somewhere warm? 3 or 4 nights around then"
   },
   {
-    "number": "006",
-    "title": "James wedding near Tahoe."
+    "number": "db2-t1-006",
+    "title": "one way to denver friday."
   },
   {
-    "number": "007",
-    "title": "Avery and Jamie wedding, then Tulum."
+    "number": "db2-t1-007",
+    "title": "need to be in boston the morning of june 14, fly me in the night before, back same day after lunch"
   },
   {
-    "number": "008",
-    "title": "Riley's bachelor weekend for @adam."
+    "number": "db2-t1-008",
+    "title": "vegas w the boys jul 16-18 lfg"
   },
   {
-    "number": "009",
-    "title": "US Open weekend for @adam."
+    "number": "db2-t1-009",
+    "title": "we want hawaii in feb - actually wait, march. first week of march, 5 nights, maui."
   },
   {
-    "number": "010",
-    "title": "@adam Betaworks trip."
+    "number": "db2-t1-010",
+    "title": "@family thanksgiving in new york, wednesday to sunday."
   },
   {
-    "number": "011",
-    "title": "Rome for @family."
+    "number": "db2-t1-011",
+    "title": "san deigo memorial day weeknd, 2 ppl"
   },
   {
-    "number": "012",
-    "title": "@bel London trip."
+    "number": "db2-t1-012",
+    "title": "week in paris with bel in early december, we'll do the markets thing"
   },
   {
-    "number": "013",
-    "title": "Book the offsite travel."
+    "number": "db2-t1-013",
+    "title": "SF then LA, 2 nights each, end of april."
   },
   {
-    "number": "014",
-    "title": "Broncos in Denver, then Vail ski nights for @chase."
+    "number": "db2-t1-014",
+    "title": "@chase up to seattle for the long weekend with me."
   },
   {
-    "number": "015",
-    "title": "@danny museum weekend."
+    "number": "db2-t1-015",
+    "title": "cabo... may? 4 nights. adults only"
   },
   {
-    "number": "016",
-    "title": "Miami for @adam and @bel, with @bel staying longer."
+    "number": "db2-t1-016",
+    "title": "so the group chat finally picked a weekend for bel's girls trip - nashville, first weekend of october, she's in, don't worry about the others, just get her there friday back sunday"
   },
   {
-    "number": "017",
-    "title": "@family spring break in Japan."
+    "number": "db2-t1-017",
+    "title": "rome dec 27 to jan 2, all of us"
   },
   {
-    "number": "018",
-    "title": "Japan trip with the reservations we have."
+    "number": "db2-t1-018",
+    "title": "just a hotel near LGA tuesday night."
   },
   {
-    "number": "019",
-    "title": "Forwarded hotel for the upcoming trip."
+    "number": "db2-t1-019",
+    "title": "orlanod w danny mar 6-8"
   },
   {
-    "number": "020",
-    "title": "Fix the changed flight time."
+    "number": "db2-t1-020",
+    "title": "sfo monday to thursday next week."
   },
   {
-    "number": "021",
-    "title": "Japan again, but avoid that bad connection from last time."
+    "number": "db2-t1-021",
+    "title": "somewhere sunny under $600 flights, mid-march, me and the boys"
   },
   {
-    "number": "022",
-    "title": "Use expiring points or credits for the next trip."
+    "number": "db2-t1-022",
+    "title": "ski before the season ends?? maybe presidents day week"
   },
   {
-    "number": "023",
-    "title": "@bel's Paris event weekend."
+    "number": "db2-t1-023",
+    "title": "drive up to whistler friday to monday, need a hotel and that's it"
   },
   {
-    "number": "024",
-    "title": "@adam flight using Alaska or Delta if it makes sense."
+    "number": "db2-t1-024",
+    "title": "@bel nyc thurs-sun for the gallery thing"
   },
   {
-    "number": "025",
-    "title": "@chase gets a window seat if possible."
+    "number": "db2-t1-025",
+    "title": "long story but my college roommate is turning 40 and everyone's meeting in austin, i think the 21st? of august? anyway i just need to be there that saturday night, back sunday or monday, whatever's cheap"
   },
   {
-    "number": "026",
-    "title": "@danny gets a window seat if possible."
+    "number": "db2-t2-001",
+    "title": "@adam denver first week of september, use any credits we've got."
   },
   {
-    "number": "027",
-    "title": "@adam and @bel Japan."
+    "number": "db2-t2-002",
+    "title": "@adam back to that portland hotel i liked, weekend after next."
   },
   {
-    "number": "028",
-    "title": "@family Japan with the friend if that works."
+    "number": "db2-t2-003",
+    "title": "@adam anchorage with a plus-one in november, there's a companion deal on my account somewhere."
   },
   {
-    "number": "029",
-    "title": "@adam and @bel Japan during their shared time off."
+    "number": "db2-t2-004",
+    "title": "@adam quick hop to boise tuesday, you know what i fly."
   },
   {
-    "number": "030",
-    "title": "@bel's conference travel."
+    "number": "db2-t2-005",
+    "title": "@bel chicago for the print expo, usual setup."
   },
   {
-    "number": "031",
-    "title": "Airbnb for the upcoming trip."
+    "number": "db2-t2-006",
+    "title": "@bel sfo client week again, same rhythm as always."
   },
   {
-    "number": "032",
-    "title": "Airline follow-up for the next trip."
+    "number": "db2-t2-007",
+    "title": "@bel to newark next month, she'll want to use those upgrade points."
   },
   {
-    "number": "033",
-    "title": "Use that fare sale if it helps."
+    "number": "db2-t2-008",
+    "title": "@bel LA shoot the last week of january, hotel needs a real desk."
   },
   {
-    "number": "034",
-    "title": "Conference travel after the city changed."
+    "number": "db2-t2-009",
+    "title": "@chase ski weekend in january, one of the mountains on his pass."
   },
   {
-    "number": "035",
-    "title": "Finish the hotel for the trip."
+    "number": "db2-t2-010",
+    "title": "@chase to the show he's got tickets for next month, nov 13-14."
   },
   {
-    "number": "036",
-    "title": "Finish the flights for the trip."
+    "number": "db2-t2-011",
+    "title": "@chase and a friend to the big air thing in aspen, he knows the weekend."
   },
   {
-    "number": "037",
-    "title": "Fix the return flight after the event."
+    "number": "db2-t2-012",
+    "title": "@chase downtown for the sneaker pickup saturday."
   },
   {
-    "number": "038",
-    "title": "Move the return flight if there is a better option."
+    "number": "db2-t2-013",
+    "title": "@danny universal before his pass runs out, sometime this summer."
   },
   {
-    "number": "039",
-    "title": "@adam NYC meeting trip."
+    "number": "db2-t2-014",
+    "title": "@danny space camp week, whichever week we signed him up for."
   },
   {
-    "number": "040",
-    "title": "One way after the conference."
+    "number": "db2-t2-015",
+    "title": "@danny down to savannah for a may weekend to see his cousins, book the seats properly."
   },
   {
-    "number": "041",
-    "title": "@bel and @adam to Paris around NYFW."
+    "number": "db2-t2-016",
+    "title": "@adam LA pitch day, morning down and evening back."
   },
   {
-    "number": "042",
-    "title": "Milan design week with @chase and @danny."
+    "number": "db2-t2-017",
+    "title": "@bel is doing the miami race thing - just her, go ahead and set it up."
   },
   {
-    "number": "043",
-    "title": "NYC marathon weekend for @family."
+    "number": "db2-t2-018",
+    "title": "@chase the essay workshop weekend in boulder."
   },
   {
-    "number": "044",
-    "title": "Tokyo cherry blossoms."
+    "number": "db2-t2-019",
+    "title": "@adam the global entry interview up in blaine, get me there."
   },
   {
-    "number": "045",
-    "title": "@bel London theatre weekend."
+    "number": "db2-t2-020",
+    "title": "@bel the client dinners next week - anything to book?"
   },
   {
-    "number": "046",
-    "title": "@bel to Austin GP."
+    "number": "db2-t2-021",
+    "title": "@danny the jamboree weekend, do we need anything?"
   },
   {
-    "number": "047",
-    "title": "Miami F1 trip."
+    "number": "db2-t2-022",
+    "title": "@chase out to see danny over his spring break."
   },
   {
-    "number": "048",
-    "title": "Beach wedding, then investor breakfast."
+    "number": "db2-t2-023",
+    "title": "@adam boat show day with my brother."
   },
   {
-    "number": "049",
-    "title": "Riley's bachelor weekend in Nashville."
+    "number": "db2-t2-024",
+    "title": "@bel the press check in philly, she wants it refundable as usual."
   },
   {
-    "number": "050",
-    "title": "San Diego for all four of us."
+    "number": "db2-t2-025",
+    "title": "@adam take bel to maui on the companion deal before it lapses."
   },
   {
-    "number": "051",
-    "title": "@adam and @bel Maui."
+    "number": "db2-t3-001",
+    "title": "@bel paris fashion week."
   },
   {
-    "number": "052",
-    "title": "Barcelona Apr 4-7 for all four of us."
+    "number": "db2-t3-002",
+    "title": "@adam to tokyo, use the airline credit if we still can."
   },
   {
-    "number": "053",
-    "title": "Grandparents meet us in Orlando."
+    "number": "db2-t3-003",
+    "title": "@danny orlando theme park weekend."
   },
   {
-    "number": "054",
-    "title": "Boston appointment travel."
+    "number": "db2-t3-004",
+    "title": "barcelona apr 4-7 for all four of us."
   },
   {
-    "number": "055",
-    "title": "@adam to Lisbon after the conference."
+    "number": "db2-t3-005",
+    "title": "lisbon four nights."
   },
   {
-    "number": "056",
-    "title": "Customer summit travel."
+    "number": "db2-t3-006",
+    "title": "@adam midtown week around the copperline and foxbridge meetings."
   },
   {
-    "number": "057",
-    "title": "Seattle Apr 10-14."
+    "number": "db2-t3-007",
+    "title": "@adam nyc meeting trip."
   },
   {
-    "number": "058",
-    "title": "@adam Midtown and Roam week."
+    "number": "db2-t3-008",
+    "title": "grab the kyoto hotel from my email for the japan trip."
   },
   {
-    "number": "059",
-    "title": "NYC dinners next week."
+    "number": "db2-t3-009",
+    "title": "vegas again like last time."
   },
   {
-    "number": "060",
-    "title": "Ceremony near the Tahoe chapel."
+    "number": "db2-t3-010",
+    "title": "@chase a nuggets home game when they actually play."
   },
   {
-    "number": "061",
-    "title": "Event trip after the city moved."
+    "number": "db2-t3-011",
+    "title": "miami f1 trip."
   },
   {
-    "number": "062",
-    "title": "@bel to Pitti."
+    "number": "db2-t3-012",
+    "title": "met gala, then knicks, for @adam."
   },
   {
-    "number": "063",
-    "title": "Sundance, then a quiet cabin."
+    "number": "db2-t3-013",
+    "title": "use whatever credits are expiring on a weekend somewhere fun."
   },
   {
-    "number": "064",
-    "title": "Watches and Wonders, then Annecy one night."
+    "number": "db2-t3-014",
+    "title": "@bel austin GP."
   },
   {
-    "number": "065",
-    "title": "Osheaga, then somewhere calmer nearby."
+    "number": "db2-t3-015",
+    "title": "family beach week end of july."
   },
   {
-    "number": "066",
-    "title": "ACL, then somewhere cold and quiet."
+    "number": "db2-t3-016",
+    "title": "tokyo cherry blossoms with the kids."
   },
   {
-    "number": "067",
-    "title": "Met Gala, then Knicks."
+    "number": "db2-t3-017",
+    "title": "rebook us something like that tokyo suite we lost, same area."
   },
   {
-    "number": "068",
-    "title": "Primavera, then Menorca."
+    "number": "db2-t3-018",
+    "title": "@adam salt lake early september, cheapest sane option."
   },
   {
-    "number": "069",
-    "title": "Tokyo Marathon, then Kyoto."
+    "number": "db2-t3-019",
+    "title": "get bel to the sample sale her friend keeps talking about."
   },
   {
-    "number": "070",
-    "title": "Gion Matsuri, then Nara."
+    "number": "db2-t3-020",
+    "title": "@chase the park city qualifier if it doesn't hit finals."
   },
   {
-    "number": "071",
-    "title": "Nashville CMA for @bel."
+    "number": "db2-t3-021",
+    "title": "danny's regionals in charlotte, whichever weekend the bracket says."
   },
   {
-    "number": "072",
-    "title": "Santa Fe Indian Market with @family."
+    "number": "db2-t3-022",
+    "title": "@adam the retro game expo in portland - skip it if it collides with the gala."
   },
   {
-    "number": "073",
-    "title": "@adam Zurich Street Parade."
+    "number": "db2-t3-023",
+    "title": "one way to paris for bel right after the show wraps."
   },
   {
-    "number": "074",
-    "title": "Lake Como during Milan derby."
+    "number": "db2-t3-024",
+    "title": "@family reno july fourth."
   },
   {
-    "number": "075",
-    "title": "@adam and @bel Charleston weekend."
+    "number": "db2-t3-025",
+    "title": "book around bel's denver conference on her calendar."
   },
   {
-    "number": "076",
-    "title": "Memorial Day beach in San Diego."
+    "number": "db2-t4-001",
+    "title": "everyone to grandma ruth's birthday dinner."
   },
   {
-    "number": "077",
-    "title": "@bel Palm Springs long weekend."
+    "number": "db2-t4-002",
+    "title": "@adam and @danny should head to santa fe early to help set up for grandma's thing."
   },
   {
-    "number": "078",
-    "title": "@family long weekend to Vancouver or San Francisco."
+    "number": "db2-t4-003",
+    "title": "after grandma's party bel stays out a couple days for the estate stuff - sort everyone's travel."
   },
   {
-    "number": "079",
-    "title": "Hamilton in NYC this summer."
+    "number": "db2-t4-004",
+    "title": "figure out the anniversary weekend for us."
   },
   {
-    "number": "080",
-    "title": "Louis the Child in Chicago, then three quiet days nearby."
+    "number": "db2-t4-005",
+    "title": "could the anniversary thing stretch into a longer week off together?"
   },
   {
-    "number": "081",
-    "title": "Vegas two nights, maybe Warriors too."
+    "number": "db2-t4-006",
+    "title": "@family japan for about a week."
   },
   {
-    "number": "082",
-    "title": "Salt Lake weekend with snow and hot springs."
+    "number": "db2-t4-007",
+    "title": "bel and the kids head to tokyo the second break starts, adam catches up when work lets him."
   },
   {
-    "number": "083",
-    "title": "Extend Boston through Tuesday."
+    "number": "db2-t4-008",
+    "title": "same japan week as the break, and get us rooms like the suite setup we lost."
   },
   {
-    "number": "084",
-    "title": "NYC around Roam and Tanooki."
+    "number": "db2-t4-009",
+    "title": "sort out travel for the june wedding."
   },
   {
-    "number": "085",
-    "title": "Reno July Fourth."
+    "number": "db2-t4-010",
+    "title": "the kids stay with grandma over the wedding weekend - get danny out to her and back around it."
   },
   {
-    "number": "086",
-    "title": "Cancun wedding flight only."
+    "number": "db2-t4-011",
+    "title": "set up the college trip for me and chase."
   },
   {
-    "number": "087",
-    "title": "Cancun wedding hotel only."
+    "number": "db2-t4-012",
+    "title": "chase stays for the tuesday interview, I need to be home sunday night - rework the college trip."
   },
   {
-    "number": "088",
-    "title": "Cancun wedding flight and hotel for @adam and @bel."
+    "number": "db2-t4-013",
+    "title": "holidays at rob's - get all four of us there."
   },
   {
-    "number": "089",
-    "title": "After the wedding, somewhere cold for four nights."
+    "number": "db2-t4-014",
+    "title": "rob's for the holidays but bel has to be back before her year-end close."
   },
   {
-    "number": "090",
-    "title": "After the Cancun wedding, quiet scenic two nights."
+    "number": "db2-t4-015",
+    "title": "should the rest of us tag along to bel's milan thing?"
   },
   {
-    "number": "091",
-    "title": "Lisbon four nights."
+    "number": "db2-t4-016",
+    "title": "@adam flies out to join bel after her milan workshop wraps."
   },
   {
-    "number": "092",
-    "title": "One way to Paris."
+    "number": "db2-t4-017",
+    "title": "catch the crew in lisbon while they're over there."
   },
   {
-    "number": "093",
-    "title": "Chicago weekend trip after work Friday."
+    "number": "db2-t4-018",
+    "title": "thanksgiving at bel's parents in tucson - just make november work for everyone."
   },
   {
-    "number": "094",
-    "title": "After Midtown meetings, see if Knicks works."
+    "number": "db2-t4-019",
+    "title": "grandma's dinner and tucson thanksgiving are close together - could bel just stay out west in between?"
   },
   {
-    "number": "095",
-    "title": "Porto during Primavera Pro."
+    "number": "db2-t4-020",
+    "title": "book the phoenix flights - danny's seats done right, and use bel's united credit if it fits."
   },
   {
-    "number": "096",
-    "title": "Taipei Lantern Festival."
+    "number": "db2-t4-021",
+    "title": "quiet couples weekend in wine country in october."
   },
   {
-    "number": "097",
-    "title": "Vienna opera, then somewhere rainy and bookish nearby."
+    "number": "db2-t4-022",
+    "title": "get chase from the semifinal straight to grandma's dinner - he shouldn't miss either."
   },
   {
-    "number": "098",
-    "title": "Rosalia in Montreal, then Quebec City."
+    "number": "db2-t4-023",
+    "title": "galveston beach long weekend for the four of us over labor day."
   },
   {
-    "number": "099",
-    "title": "Orlando family trip."
+    "number": "db2-t4-024",
+    "title": "thanksgiving-ish ski opener at that cabin everyone loved?"
   },
   {
-    "number": "100",
-    "title": "Tokyo food week with @family."
+    "number": "db2-t4-025",
+    "title": "for bel's 40th get us somewhere she's been wanting to go, around her actual birthday, without wrecking anything else that month."
   }
 ] as const;
 

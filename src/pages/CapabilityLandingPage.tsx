@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { CheckCircle, ArrowRight, LayoutGrid } from "lucide-react";
 import WaitlistForm from "@/components/WaitlistForm";
+import BookNowCta, { isBookNowCapability } from "@/components/BookNowCta";
 import PrefetchLink from "@/components/PrefetchLink";
 import FeaturePhone, { useFeatureMediaAvailable } from "@/components/FeaturePhone";
 import CarouselTabBand from "@/components/CarouselTabBand";
@@ -473,12 +474,25 @@ const CapabilityLandingPage: React.FC<CapabilityLandingPageProps> = ({ slug }) =
       </FaqSection>
 
       <CtaSection>
-        <CtaTitle>See how Pack would handle this for your next trip</CtaTitle>
-        <CtaBody>
-          Join the waitlist for early access to a travel system that keeps planning,
-          travel context, and travel-day utility connected.
-        </CtaBody>
-        <WaitlistForm />
+        {isBookNowCapability(slug) ? (
+          <>
+            <CtaTitle>Book this trip with Pack</CtaTitle>
+            <CtaBody>
+              Open Pack to search and book flights, hotels, and rental cars that stay
+              attached to the trip.
+            </CtaBody>
+            <BookNowCta />
+          </>
+        ) : (
+          <>
+            <CtaTitle>See how Pack would handle this for your next trip</CtaTitle>
+            <CtaBody>
+              Join the waitlist for early access to a travel system that keeps planning,
+              travel context, and travel-day utility connected.
+            </CtaBody>
+            <WaitlistForm />
+          </>
+        )}
       </CtaSection>
         </ContentColumn>
       </PageGrid>

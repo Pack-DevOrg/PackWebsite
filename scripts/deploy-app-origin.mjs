@@ -208,6 +208,21 @@ run("aws", [
   "--metadata-directive",
   "REPLACE",
 ]);
+// Contact-card PNG is fetched by Linq / vCard PHOTO URI. Stamp image/png
+// and a day of cache so the SPA HTML restamp cannot leave this path as
+// text/html, and so we can iterate the mark without immutable year cache.
+run("aws", [
+  "s3",
+  "cp",
+  `${distDir}/contact-card.png`,
+  `${appBucket}/contact-card.png`,
+  "--content-type",
+  "image/png",
+  "--cache-control",
+  "public, max-age=86400",
+  "--metadata-directive",
+  "REPLACE",
+]);
 run("aws", [
   "cloudfront",
   "create-invalidation",

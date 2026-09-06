@@ -24,6 +24,11 @@
 /*.png
   Cache-Control: public, max-age=31536000, immutable
 
+/contact-card.png
+  Content-Type: image/png
+  Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=86400
+
 /*.svg
   Cache-Control: public, max-age=31536000, immutable
 

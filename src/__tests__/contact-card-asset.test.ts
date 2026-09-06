@@ -4,7 +4,7 @@ import {join} from 'path';
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const CONTACT_CARD_SHA256 =
-  '6e0e319df6fbd69629bd2574e796c8462e2e0d5b158e29b62df8210f16797c3d';
+  '39c2f44914c8799927464e9377a62e5251a4b4bf1d01c4aeb2d798b7e4a70fdc';
 
 function ihdrSize(png: Buffer): {width: number; height: number} {
   if (png.length < 24) {
@@ -16,6 +16,7 @@ function ihdrSize(png: Buffer): {width: number; height: number} {
 describe('contact-card asset', () => {
   const contactCard = join(process.cwd(), 'public/contact-card.png');
   const appleTouch = join(process.cwd(), 'public/apple-touch-icon.png');
+  const logo = join(process.cwd(), 'public/logo.png');
 
   it('exists at public/contact-card.png', () => {
     expect(existsSync(contactCard)).toBe(true);
@@ -37,7 +38,13 @@ describe('contact-card asset', () => {
     expect(Buffer.from(card).equals(Buffer.from(apple))).toBe(false);
   });
 
-  it('pins SHA256 of the padded Linq mark', () => {
+  it('is a copy of public/logo.png', () => {
+    const card = readFileSync(contactCard);
+    const mark = readFileSync(logo);
+    expect(Buffer.from(card).equals(Buffer.from(mark))).toBe(true);
+  });
+
+  it('pins SHA256 of the Pack logo mark', () => {
     const digest = createHash('sha256').update(readFileSync(contactCard)).digest('hex');
     expect(digest).toBe(CONTACT_CARD_SHA256);
   });

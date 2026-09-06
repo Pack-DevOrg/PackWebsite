@@ -72,7 +72,15 @@ function handler(event) {
   headers['x-permitted-cross-domain-policies'] = { value: 'none' };
   headers['x-download-options'] = { value: 'noopen' };
   headers['cross-origin-opener-policy'] = { value: 'same-origin' };
-  headers['cross-origin-resource-policy'] = { value: 'same-origin' };
+  // Linq / iMessage fetch this URI off-origin. Global CORP same-origin
+  // fail-closes those clients even when S3 serves a real PNG.
+  if (route === '/contact-card.png') {
+    headers['content-type'] = { value: 'image/png' };
+    headers['cache-control'] = { value: 'public, max-age=86400' };
+    headers['cross-origin-resource-policy'] = { value: 'cross-origin' };
+  } else {
+    headers['cross-origin-resource-policy'] = { value: 'same-origin' };
+  }
   headers['origin-agent-cluster'] = { value: '?1' };
   headers['referrer-policy'] = { value: 'strict-origin-when-cross-origin' };
   headers['permissions-policy'] = {

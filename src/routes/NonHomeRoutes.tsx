@@ -11,7 +11,11 @@ import styled from "styled-components";
 import { AuthProvider } from "@/auth/AuthContext";
 import Layout from "@/components/Layout";
 import PrefetchLink from "@/components/PrefetchLink";
-import { appConfig, shouldExposeTsaForCurrentHost } from "@/config/appConfig";
+import {
+  appConfig,
+  isLocalhostHostname,
+  shouldExposeTsaForCurrentHost,
+} from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
 import { isSupportedLocale, localizePath } from "@/i18n/config";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
@@ -101,6 +105,11 @@ const EnhancedTripsPage = lazyImportWithRetry(async () => {
   const module = await import("../pages/EnhancedTripsPage");
   return { default: module.EnhancedTripsPage };
 }, "enhanced-trips-page");
+
+const AppSettingsPage = lazyImportWithRetry(async () => {
+  const module = await import("../pages/AppSettingsPage");
+  return { default: module.default };
+}, "app-settings-page");
 
 const labsEnabled = __DEV__;
 const LabsPage = labsEnabled
@@ -336,6 +345,9 @@ const AppOriginRedirect: React.FC = () => {
 };
 
 const isAppOriginHost = (hostname: string): boolean => {
+  if (isLocalhostHostname(hostname)) {
+    return true;
+  }
   try {
     return new URL(appConfig.appBaseUrl).hostname === hostname;
   } catch {
@@ -875,6 +887,7 @@ const NonHomeRoutes: React.FC = () => {
         >
           <Route index element={<ConversationPage />} />
           <Route path="trips" element={<EnhancedTripsPage />} />
+          <Route path="settings" element={<AppSettingsPage />} />
         </Route>
         <Route path="/:locale" element={<LocalizedOutlet />}>
           <Route
@@ -1182,6 +1195,7 @@ const NonHomeRoutes: React.FC = () => {
           >
             <Route index element={<ConversationPage />} />
             <Route path="trips" element={<EnhancedTripsPage />} />
+            <Route path="settings" element={<AppSettingsPage />} />
           </Route>
           <Route
             path="*"

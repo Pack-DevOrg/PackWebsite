@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import { Calendar, LogOut, Mail } from "lucide-react";
+import { useApiClient } from "@/api/useApiClient";
+import {
+  listFriends,
+  respondToFriendRequest,
+  type Friend,
+  type FriendRespondAction,
+} from "@/api/social";
 import { useAuth } from "@/auth/AuthContext";
 import { VerifyPhoneCta } from "@/components/VerifyPhoneCta";
 
@@ -164,17 +171,10 @@ const SignedOutCopy = styled.p`
   color: var(--color-text-secondary);
 `;
 
-const defaultDisconnectedBecauseUncontrolled = (): boolean => false;
-
-const resolveConnectedState = (
-  controlled: boolean | undefined,
-  internal: boolean,
-): boolean => {
-  if (controlled === undefined) {
-    return internal;
-  }
-  return controlled;
-};
+const MAIL_CONNECTED_COPY = "Connected for booking confirmations.";
+const MAIL_DISCONNECTED_COPY = "Not connected.";
+const CALENDAR_CONNECTED_COPY = "Connected for trip alerts.";
+const CALENDAR_DISCONNECTED_COPY = "Not connected.";
 
 const emailOnSessionOrMissing = (email: string | undefined): string => {
   if (email === undefined) {
@@ -183,17 +183,42 @@ const emailOnSessionOrMissing = (email: string | undefined): string => {
   return email;
 };
 
-const useConnectedState = (
-  controlled: boolean | undefined,
-): [boolean, (next: boolean) => void] => {
-  const [internal, setInternal] = useState(() =>
-    controlled === undefined
-      ? defaultDisconnectedBecauseUncontrolled()
-      : controlled,
-  );
-  const connected = resolveConnectedState(controlled, internal);
-  return [connected, setInternal];
+const connectedFlagFromServerProp = (flag: boolean | undefined): boolean => {
+  if (flag === true) {
+    return true;
+  }
+  return false;
 };
+
+const emptyFriendsBecauseNoServerListYet = (): Friend[] => [];
+
+const liveAccessTokenOrMissing = (
+  token: string | null,
+): string | null => {
+  if (token === null) {
+    return null;
+  }
+  if (token.length === 0) {
+    return null;
+  }
+  return token;
+};
+
+const friendLabelBecauseDisplayNameOptional = (friend: Friend): string => {
+  if (friend.displayName !== undefined && friend.displayName.length > 0) {
+    return friend.displayName;
+  }
+  return friend.friendSub;
+};
+
+const pendingReceivedFriends = (friends: Friend[]): Friend[] =>
+  friends.filter(
+    (friend) =>
+      friend.status === "pending" && friend.requestDirection === "received",
+  );
+
+const activeListedFriends = (friends: Friend[]): Friend[] =>
+  friends.filter((friend) => friend.status === "active");
 
 export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
   mailConnected,
@@ -203,38 +228,82 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
   onConnectCalendar,
   onDisconnectCalendar,
 }) => {
-  const { user, status, logout } = useAuth();
-  const [mailIsConnected, setMailIsConnected] = useConnectedState(mailConnected);
-  const [calendarIsConnected, setCalendarIsConnected] =
-    useConnectedState(calendarConnected);
+  const { user, status, logout, getAccessToken } = useAuth();
+  const apiClient = useApiClient();
+  const [friends, setFriends] = useState(emptyFriendsBecauseNoServerListYet);
   const isAuthenticated = status === "authenticated";
+  const mailIsConnected = connectedFlagFromServerProp(mailConnected);
+  const calendarIsConnected = connectedFlagFromServerProp(calendarConnected);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setFriends(emptyFriendsBecauseNoServerListYet());
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      const token = liveAccessTokenOrMissing(await getAccessToken());
+      if (cancelled) {
+        return;
+      }
+      if (token === null) {
+        return;
+      }
+      try {
+        const listed = await listFriends(apiClient, { accessToken: token });
+        if (cancelled) {
+          return;
+        }
+        setFriends(listed);
+      } catch {
+        if (cancelled) {
+          return;
+        }
+        setFriends(emptyFriendsBecauseNoServerListYet());
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiClient, getAccessToken, isAuthenticated]);
 
   const connectMail = () => {
     onConnectMail?.();
-    if (mailConnected === undefined) {
-      setMailIsConnected(true);
-    }
   };
 
   const disconnectMail = () => {
     onDisconnectMail?.();
-    if (mailConnected === undefined) {
-      setMailIsConnected(false);
-    }
   };
 
   const connectCalendar = () => {
     onConnectCalendar?.();
-    if (calendarConnected === undefined) {
-      setCalendarIsConnected(true);
-    }
   };
 
   const disconnectCalendar = () => {
     onDisconnectCalendar?.();
-    if (calendarConnected === undefined) {
-      setCalendarIsConnected(false);
-    }
+  };
+
+  const respondToPending = (
+    friendSub: string,
+    action: FriendRespondAction,
+  ) => {
+    void (async () => {
+      const token = liveAccessTokenOrMissing(await getAccessToken());
+      if (token === null) {
+        return;
+      }
+      const session = { accessToken: token };
+      try {
+        await respondToFriendRequest(apiClient, session, friendSub, action);
+        const listed = await listFriends(apiClient, session);
+        setFriends(listed);
+      } catch {
+        return;
+      }
+    })();
   };
 
   return (
@@ -266,8 +335,8 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
                   <strong>Google mail</strong>
                   <span>
                     {mailIsConnected
-                      ? "Connected for booking confirmations."
-                      : "Not connected."}
+                      ? MAIL_CONNECTED_COPY
+                      : MAIL_DISCONNECTED_COPY}
                   </span>
                 </AccountCopy>
                 <ActionRow>
@@ -287,8 +356,8 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
                   <strong>Google calendar</strong>
                   <span>
                     {calendarIsConnected
-                      ? "Connected for trip alerts."
-                      : "Not connected."}
+                      ? CALENDAR_CONNECTED_COPY
+                      : CALENDAR_DISCONNECTED_COPY}
                   </span>
                 </AccountCopy>
                 <ActionRow>
@@ -307,6 +376,56 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
                   ) : null}
                 </ActionRow>
               </AccountRow>
+            </Card>
+
+            <Card aria-labelledby="friends-heading">
+              <PanelHeading id="friends-heading">Friends</PanelHeading>
+              {pendingReceivedFriends(friends).map((friend) => {
+                const label = friendLabelBecauseDisplayNameOptional(friend);
+                return (
+                  <AccountRow key={`pending-${friend.friendSub}`}>
+                    <AccountCopy>
+                      <strong>{label}</strong>
+                      <span>Pending friend request.</span>
+                    </AccountCopy>
+                    <ActionRow>
+                      <PrimaryButton
+                        type="button"
+                        onClick={() => {
+                          respondToPending(friend.friendSub, "accept");
+                        }}
+                      >
+                        Accept
+                      </PrimaryButton>
+                      <PrimaryButton
+                        type="button"
+                        $ghost
+                        onClick={() => {
+                          respondToPending(friend.friendSub, "decline");
+                        }}
+                      >
+                        Decline
+                      </PrimaryButton>
+                    </ActionRow>
+                  </AccountRow>
+                );
+              })}
+              {activeListedFriends(friends).map((friend) => {
+                const label = friendLabelBecauseDisplayNameOptional(friend);
+                return (
+                  <AccountRow key={`active-${friend.friendSub}`}>
+                    <AccountCopy>
+                      <strong>{label}</strong>
+                      <span>Active friend.</span>
+                    </AccountCopy>
+                  </AccountRow>
+                );
+              })}
+              {friends.length === 0 ? (
+                <AccountCopy>
+                  <span>No friends yet.</span>
+                </AccountCopy>
+              ) : null}
             </Card>
 
             <Card aria-labelledby="account-settings-heading">

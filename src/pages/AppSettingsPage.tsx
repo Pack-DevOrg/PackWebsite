@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import { Calendar, LogOut, Mail } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
+import { VerifyPhoneCta } from "@/components/VerifyPhoneCta";
 
 export type AppSettingsAccountAction = () => void;
 
@@ -320,6 +321,7 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
                 <LogOut aria-hidden="true" />
                 Sign out
               </PrimaryButton>
+              <VerifyPhoneCta />
             </Card>
           </Layout>
         ) : (
@@ -329,6 +331,7 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
               Connected accounts and profile details stay hidden until you are
               signed in.
             </SignedOutCopy>
+            <VerifyPhoneCta />
           </SignedOutCard>
         )}
       </Page>

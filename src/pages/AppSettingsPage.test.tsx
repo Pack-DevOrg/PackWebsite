@@ -27,6 +27,8 @@ describe("AppSettingsPage", () => {
       },
       login: loginMock,
       logout: logoutMock,
+      getAccessToken: async () => "synth-access-token",
+      tokens: { tokenType: "Bearer" },
     });
   });
 
@@ -54,6 +56,7 @@ describe("AppSettingsPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("tests@trypackai.com")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Text Pack" })).toBeInTheDocument();
     expect(loginMock).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole("button", { name: "Connect mail" }));
@@ -74,6 +77,8 @@ describe("AppSettingsPage", () => {
       },
       login: loginMock,
       logout: logoutMock,
+      getAccessToken: async () => null,
+      tokens: null,
     });
 
     renderPage();
@@ -88,6 +93,7 @@ describe("AppSettingsPage", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
     expect(screen.getByText("No account on this session")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Text Pack" })).toBeInTheDocument();
     expect(loginMock).not.toHaveBeenCalled();
   });
 });

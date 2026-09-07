@@ -6,6 +6,7 @@ export interface ApiRequestOptions<Body = unknown> {
   readonly body?: Body;
   readonly headers?: Record<string, string>;
   readonly signal?: AbortSignal;
+  readonly credentials?: RequestCredentials;
 }
 
 export class ApiRequestError extends Error {
@@ -122,9 +123,60 @@ export const requestPublicApi = async <Response, Body = unknown>(
         ? JSON.stringify(options.body)
         : undefined,
     signal: options.signal,
+    credentials: options.credentials,
   });
 
   return (await parseApiResponse(response)) as Response;
+};
+
+export type PhoneVerificationMint = {
+  readonly code: string;
+  readonly smsHref: string;
+  readonly expiresAt: number;
+};
+
+const PHONE_VERIFICATION_START_PATH =
+  "/user/information/phone-verification/start";
+
+export const mintPhoneVerificationStart = async (
+  client?: ApiClient,
+): Promise<PhoneVerificationMint> => {
+  const body = { platform: "web" as const };
+  const payload = client
+    ? await client.request<unknown, typeof body>({
+        path: PHONE_VERIFICATION_START_PATH,
+        method: "POST",
+        body,
+      })
+    : await requestPublicApi<unknown, typeof body>({
+        path: PHONE_VERIFICATION_START_PATH,
+        method: "POST",
+        body,
+        credentials: "include",
+      });
+
+  const record =
+    payload !== null && typeof payload === "object"
+      ? (payload as Record<string, unknown>)
+      : {};
+  const nested =
+    record.data !== null && typeof record.data === "object"
+      ? (record.data as Record<string, unknown>)
+      : record;
+  const code = nested.code;
+  const smsHref = nested.smsHref;
+  const expiresAt = nested.expiresAt;
+  if (
+    typeof code !== "string" ||
+    typeof smsHref !== "string" ||
+    typeof expiresAt !== "number"
+  ) {
+    throw new ApiRequestError(
+      500,
+      "Unexpected phone verification mint response.",
+    );
+  }
+  return { code, smsHref, expiresAt };
 };
 
 export const createApiClient = (

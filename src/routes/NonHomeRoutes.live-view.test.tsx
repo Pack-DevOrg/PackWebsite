@@ -25,7 +25,9 @@ describe("NonHomeRoutes live-view", () => {
     renderAt("/live-view");
 
     expect(
-      await screen.findByRole("heading", { name: "live view unavailable" }),
+      await screen.findByRole("heading", {
+        name: "Pack needs your help — this link expired",
+      }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Page not found" }),
@@ -36,7 +38,9 @@ describe("NonHomeRoutes live-view", () => {
     renderAt("/live-view?liveViewUrl=not-a-url");
 
     expect(
-      await screen.findByRole("heading", { name: "live view unavailable" }),
+      await screen.findByRole("heading", {
+        name: "Pack needs your help — this link expired",
+      }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Page not found" }),

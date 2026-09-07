@@ -10,11 +10,15 @@ const NOW_MS = 1_714_000_000_000;
 const VALID_LIVE_VIEW_URL = "https://live.pack.test/view";
 const MERCHANT_HOST = "shop.example.test";
 const JOB_ID = "job-synthetic-1";
+const EXPIRED_HEADING = "Pack needs your help — this link expired";
+
+const originalFetch = global.fetch;
+let fetchMock: jest.Mock;
 
 function renderPage(search: string) {
   return render(
     <HelmetProvider>
-      <MemoryRouter initialEntries={[`/live-view-connect${search}`]}>
+      <MemoryRouter initialEntries={[`/live-view${search}`]}>
         <I18nProvider>
           <ThemeProvider>
             <LiveViewConnectPage />
@@ -25,52 +29,43 @@ function renderPage(search: string) {
   );
 }
 
-function handoffSearch(overrides: {
+function okFetchBody(overrides: {
   liveViewUrl?: string;
   merchantHost?: string;
   jobId?: string;
-  expiresAtMs?: string;
-}): string {
-  const params = new URLSearchParams();
-  if (Object.prototype.hasOwnProperty.call(overrides, "liveViewUrl")) {
-    params.set("liveViewUrl", overrides.liveViewUrl as string);
-  }
-  if (Object.prototype.hasOwnProperty.call(overrides, "merchantHost")) {
-    params.set("merchantHost", overrides.merchantHost as string);
-  }
-  if (Object.prototype.hasOwnProperty.call(overrides, "jobId")) {
-    params.set("jobId", overrides.jobId as string);
-  }
-  if (Object.prototype.hasOwnProperty.call(overrides, "expiresAtMs")) {
-    params.set("expiresAtMs", overrides.expiresAtMs as string);
-  }
-  const encoded = params.toString();
-  if (encoded.length === 0) {
-    return "";
-  }
-  return `?${encoded}`;
+  expiresAtMs?: number;
+} = {}) {
+  return {
+    liveViewUrl: VALID_LIVE_VIEW_URL,
+    merchantHost: MERCHANT_HOST,
+    jobId: JOB_ID,
+    expiresAtMs: NOW_MS + 60_000,
+    ...overrides,
+  };
 }
 
 describe("LiveViewConnectPage", () => {
   beforeEach(() => {
     jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
+    fetchMock = jest.fn();
+    global.fetch = fetchMock;
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    global.fetch = originalFetch;
   });
 
-  it("embeds an iframe for a valid https cross-host unexpired handoff", () => {
-    renderPage(
-      handoffSearch({
-        liveViewUrl: VALID_LIVE_VIEW_URL,
-        merchantHost: MERCHANT_HOST,
-        jobId: JOB_ID,
-        expiresAtMs: String(NOW_MS + 60_000),
-      }),
-    );
+  it("embeds an iframe after a token GET returns a valid https cross-host unexpired handoff", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(okFetchBody()),
+    });
 
-    const iframe = screen.getByTitle("Merchant checkout live view");
+    renderPage("?token=tok-ok");
+
+    const iframe = await screen.findByTitle("Merchant checkout live view");
     expect(iframe.tagName).toBe("IFRAME");
     expect(iframe).toHaveAttribute("src", VALID_LIVE_VIEW_URL);
     expect(iframe).toHaveAttribute(
@@ -78,68 +73,106 @@ describe("LiveViewConnectPage", () => {
       "allow-scripts allow-same-origin allow-forms",
     );
     expect(
-      screen.queryByRole("heading", { name: "live view unavailable" }),
+      screen.queryByRole("heading", { name: EXPIRED_HEADING }),
     ).not.toBeInTheDocument();
+
+    expect(fetchMock).toHaveBeenCalled();
+    const calledUrl = String(fetchMock.mock.calls[0][0]);
+    expect(calledUrl).toContain("token=tok-ok");
+    expect(calledUrl).not.toContain("liveViewUrl=");
   });
 
-  it("renders no iframe when liveViewUrl hostname equals merchantHost", () => {
-    renderPage(
-      handoffSearch({
-        liveViewUrl: "https://shop.example.test/checkout",
-        merchantHost: "shop.example.test",
-        jobId: JOB_ID,
-        expiresAtMs: String(NOW_MS + 60_000),
-      }),
-    );
+  it("renders the expired heading and does not fetch when the token query is missing", async () => {
+    renderPage("");
 
-    expect(document.querySelector("iframe")).toBeNull();
     expect(
-      screen.getByRole("heading", { name: "live view unavailable" }),
+      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
     ).toBeInTheDocument();
-    expect(screen.queryByText(JOB_ID)).not.toBeInTheDocument();
-  });
-
-  it("renders no iframe when liveViewUrl is http", () => {
-    renderPage(
-      handoffSearch({
-        liveViewUrl: "http://live.pack.test/view",
-        merchantHost: MERCHANT_HOST,
-        jobId: JOB_ID,
-        expiresAtMs: String(NOW_MS + 60_000),
-      }),
-    );
-
     expect(document.querySelector("iframe")).toBeNull();
-    expect(
-      screen.getByRole("heading", { name: "live view unavailable" }),
-    ).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("renders no iframe when expiresAtMs is at or before the mocked now", () => {
+  it("renders the expired heading and no iframe when the token GET is 404", async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 404,
+    });
+
+    renderPage("?token=tok-missing");
+
+    expect(
+      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
+    ).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
+  });
+
+  it("renders no iframe when the server body expiresAtMs is at the mocked now", async () => {
     expect(Date.now()).toBe(NOW_MS);
 
-    renderPage(
-      handoffSearch({
-        liveViewUrl: VALID_LIVE_VIEW_URL,
-        merchantHost: MERCHANT_HOST,
-        jobId: JOB_ID,
-        expiresAtMs: String(NOW_MS),
-      }),
-    );
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(okFetchBody({ expiresAtMs: NOW_MS })),
+    });
 
-    expect(document.querySelector("iframe")).toBeNull();
+    renderPage("?token=tok-expired");
+
     expect(
-      screen.getByRole("heading", { name: "live view unavailable" }),
+      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
     ).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
   });
 
-  it("renders the fallback heading and no iframe when params are missing, without throwing", () => {
-    expect(() => renderPage("")).not.toThrow();
+  it("ignores liveViewUrl query params: expired heading, no iframe, no fetch", async () => {
+    renderPage(
+      `?liveViewUrl=${encodeURIComponent(VALID_LIVE_VIEW_URL)}&merchantHost=${encodeURIComponent(MERCHANT_HOST)}&jobId=${encodeURIComponent(JOB_ID)}&expiresAtMs=${NOW_MS + 60_000}`,
+    );
 
-    expect(document.querySelector("iframe")).toBeNull();
     expect(
-      screen.getByRole("heading", { name: "live view unavailable" }),
+      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
     ).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(document.querySelector(`iframe[src="${VALID_LIVE_VIEW_URL}"]`)).toBeNull();
+  });
+
+  it("renders no iframe when the server liveViewUrl hostname equals merchantHost", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () =>
+        Promise.resolve(
+          okFetchBody({
+            liveViewUrl: "https://shop.example.test/checkout",
+            merchantHost: "shop.example.test",
+          }),
+        ),
+    });
+
+    renderPage("?token=tok-same-host");
+
+    expect(
+      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
+    ).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
     expect(screen.queryByText(JOB_ID)).not.toBeInTheDocument();
+  });
+
+  it("renders no iframe when the server liveViewUrl is http", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () =>
+        Promise.resolve(
+          okFetchBody({ liveViewUrl: "http://live.pack.test/view" }),
+        ),
+    });
+
+    renderPage("?token=tok-http");
+
+    expect(
+      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
+    ).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
   });
 });

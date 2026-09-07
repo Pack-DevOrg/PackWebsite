@@ -1,8 +1,5 @@
 /**
- * App deep-link helpers for share/invite landing pages and account
- * navigation into the native app. Account URLs are navigation-only: they
- * never carry a token, session id, email, or query secret. Auth is the
- * native session on the other side (RFC 8252: OAuth stays in the browser).
+ * App deep-link helpers for share/invite landing pages.
  *
  * The "Open in Pack" affordance keeps the page's own https universal link as
  * its href (iOS opens the app directly when it is installed and the link is

@@ -1,5 +1,8 @@
 /**
- * App deep-link helpers for share/invite landing pages.
+ * App deep-link helpers for share/invite landing pages and account
+ * navigation into the native app. Account URLs are navigation-only: they
+ * never carry a token, session id, email, or query secret. Auth is the
+ * native session on the other side (RFC 8252: OAuth stays in the browser).
  *
  * The "Open in Pack" affordance keeps the page's own https universal link as
  * its href (iOS opens the app directly when it is installed and the link is
@@ -31,6 +34,56 @@ export const buildShareUniversalLink = (
 
 export const buildShareAppSchemeUrl = (shareId: string): string =>
   `${APP_SCHEME_PREFIX}share/${encodeURIComponent(shareId)}`;
+
+export const ACCOUNT_APP_SECTIONS = ["settings", "friends", "connected"] as const;
+
+export type AccountAppSection = (typeof ACCOUNT_APP_SECTIONS)[number];
+
+const ACCOUNT_UNIVERSAL_PATH: Record<AccountAppSection, string> = {
+  settings: "/app/settings",
+  friends: "/app/friends",
+  connected: "/app/connected",
+};
+
+const accountSectionOrThrow = (section: string): AccountAppSection => {
+  if (section === "settings") {
+    return "settings";
+  }
+  if (section === "friends") {
+    return "friends";
+  }
+  if (section === "connected") {
+    return "connected";
+  }
+  throw new Error("unknown account section");
+};
+
+/**
+ * Account links are navigation only. Drop query, fragment, path, and userinfo
+ * so a caller cannot thread token, session, email, or OAuth secrets through
+ * the origin they pass us (including a current-page Google/Apple callback).
+ * Native auth is the app session.
+ */
+const originWithoutQueryOrFragmentBecauseAccountLinksAreNavigationOnly = (
+  origin: string
+): string => new URL(origin).origin;
+
+/**
+ * Navigation-only custom scheme into native account UI. Never carries a
+ * token, session id, email, or query secret — auth is the native session.
+ */
+export const buildAccountAppSchemeUrl = (section: AccountAppSection): string => {
+  const allowed = accountSectionOrThrow(section);
+  return `${APP_SCHEME_PREFIX}account/${allowed}`;
+};
+
+export const buildAccountUniversalLink = (
+  origin: string,
+  section: AccountAppSection
+): string => {
+  const allowed = accountSectionOrThrow(section);
+  return `${originWithoutQueryOrFragmentBecauseAccountLinksAreNavigationOnly(origin)}${ACCOUNT_UNIVERSAL_PATH[allowed]}`;
+};
 
 export const isAppleMobileUserAgent = (userAgent: string): boolean =>
   /iphone|ipad|ipod/i.test(userAgent);

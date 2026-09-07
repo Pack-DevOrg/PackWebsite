@@ -1,0 +1,68 @@
+rules:
+  - id: pack-liveviewurl-in-query
+    message: Do not put liveViewUrl or a debugger URL into a query string.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      pack: security
+      category: live-view
+    pattern-either:
+      - pattern: '$P.set("liveViewUrl", $V)'
+      - pattern: "$P.set('liveViewUrl', $V)"
+      - pattern: '$P.set("debuggerUrl", $V)'
+      - pattern: "$P.set('debuggerUrl', $V)"
+      - pattern: '$P.append("liveViewUrl", $V)'
+      - pattern: "$P.append('liveViewUrl', $V)"
+      - pattern: '$P.append("debuggerUrl", $V)'
+      - pattern: "$P.append('debuggerUrl', $V)"
+      - pattern: 'new URLSearchParams({..., liveViewUrl: $V, ...})'
+      - pattern: 'new URLSearchParams({..., debuggerUrl: $V, ...})'
+      - pattern: 'new URLSearchParams({..., liveViewUrl, ...})'
+      - pattern: 'new URLSearchParams({..., debuggerUrl, ...})'
+      - pattern: '`$BASE?liveViewUrl=${$V}`'
+      - pattern: '`$BASE&liveViewUrl=${$V}`'
+      - pattern: '`$BASE?debuggerUrl=${$V}`'
+      - pattern: '`$BASE&debuggerUrl=${$V}`'
+      - pattern: '`...?liveViewUrl=${$V}`'
+      - pattern: '`...&liveViewUrl=${$V}`'
+      - pattern: '`...?debuggerUrl=${$V}`'
+      - pattern: '`...&debuggerUrl=${$V}`'
+      - pattern-regex: '[?&](?:liveViewUrl|debuggerUrl)='
+      - pattern: '$BASE + "?liveViewUrl=" + $V'
+      - pattern: '$BASE + "&liveViewUrl=" + $V'
+      - pattern: '$BASE + "?debuggerUrl=" + $V'
+      - pattern: '$BASE + "&debuggerUrl=" + $V'
+      - pattern: '"?liveViewUrl=" + $V'
+      - pattern: '"&liveViewUrl=" + $V'
+      - pattern: '"?debuggerUrl=" + $V'
+      - pattern: '"&debuggerUrl=" + $V'
+
+  - id: pack-iframe-merchant-host
+    message: Do not set iframe src to a merchant host.
+    severity: ERROR
+    languages: [javascript, typescript]
+    metadata:
+      pack: security
+      category: live-view
+    pattern-either:
+      - patterns:
+          - pattern-either:
+              - pattern: '<iframe src={$SRC} />'
+              - pattern: '<iframe src={$SRC}></iframe>'
+              - pattern: '<iframe ... src={$SRC} ... />'
+              - pattern: '<iframe ... src={$SRC} ...></iframe>'
+          - metavariable-regex:
+              metavariable: $SRC
+              regex: (?i).*(merchantHost|merchantUrl|merchantOrigin|merchantSrc|merchantCheckout).*
+      - patterns:
+          - pattern-either:
+              - pattern: '<$FRAME src={$SRC} />'
+              - pattern: '<$FRAME src={$SRC}></$FRAME>'
+              - pattern: '<$FRAME ... src={$SRC} ... />'
+              - pattern: '<$FRAME ... src={$SRC} ...></$FRAME>'
+          - metavariable-regex:
+              metavariable: $FRAME
+              regex: (?i).*(iframe|Frame)$
+          - metavariable-regex:
+              metavariable: $SRC
+              regex: (?i).*(merchantHost|merchantUrl|merchantOrigin|merchantSrc|merchantCheckout).*

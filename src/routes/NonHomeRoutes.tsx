@@ -112,6 +112,19 @@ const AppSettingsPage = lazyImportWithRetry(async () => {
   return { default: module.default };
 }, "app-settings-page");
 
+const FriendsPage = lazyImportWithRetry(async () => {
+  const module = await import("../pages/FriendsPage");
+  return { default: module.FriendsPage };
+}, "friends-page");
+
+const TravelStatsPage = lazyImportWithRetry(async () => {
+  const module = await import("../components/app/TravelStatsOverview");
+  function TravelStatsRoute() {
+    return <module.TravelStatsOverview trips={[]} />;
+  }
+  return { default: TravelStatsRoute };
+}, "travel-stats-page");
+
 const labsEnabled = __DEV__;
 const LabsPage = labsEnabled
   ? React.lazy(() => import("../pages/Labs"))
@@ -896,6 +909,8 @@ const NonHomeRoutes: React.FC = () => {
         >
           <Route index element={<ConversationPage />} />
           <Route path="trips" element={<EnhancedTripsPage />} />
+          <Route path="friends" element={<FriendsPage />} />
+          <Route path="stats" element={<TravelStatsPage />} />
           <Route path="settings" element={<AppSettingsPage />} />
         </Route>
         <Route path="/:locale" element={<LocalizedOutlet />}>
@@ -1205,6 +1220,8 @@ const NonHomeRoutes: React.FC = () => {
           >
             <Route index element={<ConversationPage />} />
             <Route path="trips" element={<EnhancedTripsPage />} />
+            <Route path="friends" element={<FriendsPage />} />
+            <Route path="stats" element={<TravelStatsPage />} />
             <Route path="settings" element={<AppSettingsPage />} />
           </Route>
           <Route

@@ -1,277 +1,243 @@
-import { Suspense, useCallback, useRef, useState } from "react";
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import React, {Suspense, useState} from "react";
+import {Outlet, NavLink, useLocation} from "react-router-dom";
 import styled from "styled-components";
-import { LogOut, Sparkles } from "lucide-react";
-import { useAuth } from "@/auth/AuthContext";
+import {BarChart3, Home, LogOut, Map, Settings, Users} from "lucide-react";
+import {useAuth} from "@/auth/AuthContext";
+import type {AuthenticatedUser} from "@/auth/types";
 import logoImage from "@/assets/logo.png";
-import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
+import {useIsomorphicLayoutEffect} from "@/hooks/useIsomorphicLayoutEffect";
+import {Button, Card, MicroLabel, PageHeader} from "@/components/ui/Chrome";
+
+const RAIL_MIN_WIDTH_PX = 1100;
+const RAIL_MEDIA_QUERY = `(min-width: ${RAIL_MIN_WIDTH_PX}px)`;
 
 const NAV_ITEMS = [
-  { id: "home", label: "Home", to: "/app", end: true },
-  { id: "trips", label: "Trips", to: "/app/trips" },
+  {id: "home", label: "Home", to: "/app", end: true, Icon: Home},
+  {id: "trips", label: "Trips", to: "/app/trips", end: false, Icon: Map},
+  {id: "friends", label: "Friends", to: "/app/friends", end: false, Icon: Users},
+  {id: "stats", label: "Stats", to: "/app/stats", end: false, Icon: BarChart3},
+  {
+    id: "settings",
+    label: "Settings",
+    to: "/app/settings",
+    end: false,
+    Icon: Settings,
+  },
 ] as const;
 
 type NavItemId = (typeof NAV_ITEMS)[number]["id"];
+type NavLayout = "rail" | "tabs";
 
-const Shell = styled.div`
+function readRailMatchBecauseViewport(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  if (typeof window.matchMedia === "function") {
+    return window.matchMedia(RAIL_MEDIA_QUERY).matches;
+  }
+  return window.innerWidth >= RAIL_MIN_WIDTH_PX;
+}
+
+function useRailLayout(): boolean {
+  const [isRail, setIsRail] = useState(readRailMatchBecauseViewport);
+
+  useIsomorphicLayoutEffect(() => {
+    const sync = () => {
+      setIsRail(readRailMatchBecauseViewport());
+    };
+    sync();
+
+    const media =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia(RAIL_MEDIA_QUERY)
+        : null;
+
+    if (media !== null) {
+      if (typeof media.addEventListener === "function") {
+        media.addEventListener("change", sync);
+      } else if (typeof media.addListener === "function") {
+        media.addListener(sync);
+      }
+    }
+    window.addEventListener("resize", sync);
+
+    return () => {
+      if (media !== null) {
+        if (typeof media.removeEventListener === "function") {
+          media.removeEventListener("change", sync);
+        } else if (typeof media.removeListener === "function") {
+          media.removeListener(sync);
+        }
+      }
+      window.removeEventListener("resize", sync);
+    };
+  }, []);
+
+  return isRail;
+}
+
+function activeNavIdBecausePath(pathname: string): NavItemId {
+  if (pathname === "/app" || pathname === "/app/") {
+    return "home";
+  }
+  if (pathname.startsWith("/app/trips")) {
+    return "trips";
+  }
+  if (pathname.startsWith("/app/friends")) {
+    return "friends";
+  }
+  if (pathname.startsWith("/app/stats")) {
+    return "stats";
+  }
+  if (pathname.startsWith("/app/settings")) {
+    return "settings";
+  }
+  return "home";
+}
+
+function initialsBecauseUser(user: AuthenticatedUser | null): string {
+  if (user !== null && user.name !== undefined && user.name.trim().length > 0) {
+    const letters = user.name
+      .split(" ")
+      .filter((part) => part.length > 0)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2);
+    if (letters.length > 0) {
+      return letters;
+    }
+  }
+  if (
+    user !== null &&
+    user.email !== undefined &&
+    user.email.length >= 2
+  ) {
+    return user.email.slice(0, 2);
+  }
+  return "PK";
+}
+
+const Shell = styled.div<{ $rail: boolean }>`
   min-height: 100vh;
-  background: var(--page-gradient);
+  background: var(--color-bg-primary);
   color: var(--color-text-primary);
   display: flex;
-  flex-direction: column;
-  position: relative;
-
-  &::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255, 248, 236, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 248, 236, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(8, 7, 6, 0.14) 0%, rgba(8, 7, 6, 0.02) 34%, rgba(243, 210, 122, 0.015) 70%, rgba(243, 210, 122, 0.045) 100%);
-    background-size: 32px 32px, 32px 32px, auto;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.34), transparent 82%);
-    opacity: 0.55;
-    pointer-events: none;
-    z-index: 0;
-  }
+  flex-direction: ${({$rail}) => ($rail ? "row" : "column")};
 `;
 
-const Header = styled.header`
+const Rail = styled.aside`
+  width: 17rem;
+  flex-shrink: 0;
+  align-self: stretch;
+  padding: var(--space-3);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+`;
+
+const RailCard = styled(Card)`
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: calc(100vh - var(--space-4));
+  padding: var(--space-3);
+`;
+
+const RailNavWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+`;
+
+const BrandMark = styled.img`
+  width: 1.15rem;
+  height: 1.15rem;
+  object-fit: contain;
+`;
+
+const SignOutRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+`;
+
+const Initials = styled.span`
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+`;
+
+const MobileTop = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(1240px, calc(100% - 2rem));
-  margin: 1.05rem auto 0;
-  padding: 0.95rem 1.1rem;
-  gap: 1.5rem;
-  position: sticky;
-  top: 0.9rem;
-  z-index: 10;
-  background: rgba(16, 13, 10, 0.72);
-  backdrop-filter: blur(18px);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  box-shadow: var(--shadow-soft);
-
-  @media (max-width: 960px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-    width: calc(100% - 1rem);
-    margin-top: 0.5rem;
-    top: 0.5rem;
-    padding: 0.85rem 0.9rem;
-    border-radius: 28px;
-  }
-`;
-
-const HeaderLead = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-
-  @media (max-width: 640px) {
-    gap: 0.75rem;
-    justify-content: space-between;
-  }
-`;
-
-const Brand = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-
-  img {
-    width: 2.5rem;
-    height: 2.5rem;
-    object-fit: contain;
-  }
-
-  div {
-    display: grid;
-    gap: 0.1rem;
-  }
-
-  strong {
-    font-size: clamp(1rem, 1.4vw, 1.1rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-
-  span {
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
-  }
-`;
-
-const Nav = styled.nav`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-
-  @media (max-width: 960px) {
-    width: 100%;
-  }
-`;
-
-const NavTabs = styled.div`
-  position: relative;
-  display: inline-flex;
-  gap: 0.5rem;
-  padding: 0.38rem;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-
-  @media (max-width: 960px) {
-    width: 100%;
-  }
 `;
 
-const NavTabButton = styled(NavLink)<{ readonly $active: boolean }>`
+const Nav = styled.nav<{ $layout: NavLayout }>`
+  display: flex;
+  flex-direction: ${({$layout}) => ($layout === "rail" ? "column" : "row")};
+  align-items: stretch;
+  gap: var(--space-1);
+  width: 100%;
+`;
+
+const NavItem = styled(NavLink)<{$active: boolean; $layout: NavLayout}>`
   position: relative;
-  flex: 1;
+  flex: ${({$layout}) => ($layout === "tabs" ? "1" : "0 0 auto")};
   display: inline-flex;
+  flex-direction: ${({$layout}) => ($layout === "tabs" ? "column" : "row")};
   align-items: center;
-  justify-content: center;
-  padding: 0.78rem 1.25rem;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  color: ${({ $active }) =>
-    $active ? "#120d08" : "var(--color-text-secondary)"};
-  font-weight: ${({ $active }) => ($active ? 700 : 600)};
-  font-size: 0.84rem;
-  letter-spacing: 0.08em;
+  justify-content: ${({$layout}) =>
+    $layout === "tabs" ? "center" : "flex-start"};
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-l);
+  border: 1px solid
+    ${({$active}) => ($active ? "var(--color-accent)" : "transparent")};
+  background: ${({$active}) =>
+    $active ? "var(--color-accent)" : "transparent"};
+  color: ${({$active}) =>
+    $active ? "var(--color-text-on-accent)" : "var(--color-text-secondary)"};
+  font-weight: 700;
+  font-size: var(--font-size-small);
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease;
-  z-index: 1;
 
   &:hover {
-    background: ${({ $active }) =>
-      $active ? "transparent" : "rgba(255, 248, 236, 0.06)"};
+    background: ${({$active}) =>
+      $active ? "var(--color-accent)" : "var(--color-background-subtle)"};
   }
 
   &:focus-visible {
-    outline: 2px solid rgba(240, 198, 45, 0.4);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
 `;
 
-const NavTabHighlight = styled.span`
-  position: absolute;
-  top: 0;
-  left: 0;
+const TabBar = styled.div`
+  position: sticky;
   bottom: 0;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #f3d27a 0%, #ebbe58 100%);
-  box-shadow: 0 12px 28px rgba(243, 210, 122, 0.16);
-  pointer-events: none;
-  z-index: 0;
-  width: 0;
-  transform: translateX(0);
-  transition: transform 160ms ease-out, width 160ms ease-out;
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-`;
-
-const UserMenu = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.28rem;
-  border-radius: 999px;
+  z-index: 2;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-
-  @media (max-width: 960px) {
-    width: 100%;
-    justify-content: flex-end;
-    padding: 0;
-    background: transparent;
-    border: none;
-  }
-`;
-
-const Avatar = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-accent-soft);
-  border: 1px solid var(--color-border-medium);
-  color: var(--color-text-primary);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-
-  @media (max-width: 520px) {
-    display: none;
-  }
-`;
-
-const LogoutButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.68rem 1.1rem;
-  border-radius: 999px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-weight: 600;
-  transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-    background: var(--color-surface-strong);
-  }
-
-  @media (max-width: 520px) {
-    width: 100%;
-    justify-content: center;
-  }
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-2);
 `;
 
 const Main = styled.main`
   width: 100%;
-  max-width: 1240px;
-  margin: 0 auto;
   flex: 1;
-  padding: clamp(1.35rem, 3vw, 2.75rem) clamp(1rem, 3vw, 1.5rem) clamp(2rem, 4vw, 3rem);
+  min-width: 0;
+  padding: var(--space-4);
   position: relative;
-  z-index: 1;
-
-  @media (max-width: 960px) {
-    padding: 1rem 0.75rem 1.5rem;
-  }
-`;
-
-const BetaBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.74rem;
-  font-weight: 600;
-  padding: 0.46rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(243, 210, 122, 0.1);
-  color: var(--color-accent);
-  border: 1px solid var(--color-border);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 `;
 
 const RouteLoadingState = styled.div`
@@ -279,126 +245,97 @@ const RouteLoadingState = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme?.colors?.neutral?.gray200 ?? "#d5d6dc"};
-  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
 `;
 
+function AppNav({
+  layout,
+  activeId,
+}: {
+  readonly layout: NavLayout;
+  readonly activeId: NavItemId;
+}) {
+  return (
+    <Nav aria-label="App" data-nav-layout={layout} $layout={layout}>
+      {NAV_ITEMS.map((item) => {
+        const isActive = activeId === item.id;
+        return (
+          <NavItem
+            key={item.id}
+            to={item.to}
+            end={item.end}
+            $active={isActive}
+            $layout={layout}
+          >
+            <item.Icon size={18} aria-hidden="true" />
+            {item.label}
+          </NavItem>
+        );
+      })}
+    </Nav>
+  );
+}
+
+function SignOutControl({onSignOut}: {readonly onSignOut: () => void}) {
+  return (
+    <Button type="button" variant="ghost" onClick={onSignOut}>
+      <LogOut size={16} aria-hidden="true" />
+      Sign out
+    </Button>
+  );
+}
+
 export const AppShell: React.FC = () => {
-  const { user, logout } = useAuth();
+  const {user, logout} = useAuth();
   const location = useLocation();
-  const [highlightPosition, setHighlightPosition] = useState<
-    | {
-        width: number;
-        left: number;
-      }
-    | null
-  >(null);
-  const tabsRef = useRef<HTMLDivElement | null>(null);
-  const tabRefs = useRef<Record<NavItemId, HTMLAnchorElement | null>>({
-    home: null,
-    trips: null,
-  });
+  const isRail = useRailLayout();
+  const activeId = activeNavIdBecausePath(location.pathname);
+  const initials = initialsBecauseUser(user);
+  const layout: NavLayout = isRail ? "rail" : "tabs";
 
-  const activeTab: NavItemId = location.pathname.startsWith("/app/trips")
-    ? "trips"
-    : "home";
-
-  const updateHighlightPosition = useCallback(() => {
-    const container = tabsRef.current;
-    const activeElement = tabRefs.current[activeTab];
-
-    if (!container || !activeElement) {
-      setHighlightPosition(null);
-      return;
-    }
-
-    const containerRect = container.getBoundingClientRect();
-    const activeRect = activeElement.getBoundingClientRect();
-
-    setHighlightPosition({
-      width: activeRect.width,
-      left: activeRect.left - containerRect.left,
-    });
-  }, [activeTab]);
-
-  useIsomorphicLayoutEffect(() => {
-    updateHighlightPosition();
-  }, [updateHighlightPosition]);
-
-  useIsomorphicLayoutEffect(() => {
-    window.addEventListener("resize", updateHighlightPosition);
-    return () => window.removeEventListener("resize", updateHighlightPosition);
-  }, [updateHighlightPosition]);
-
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .filter(Boolean)
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 2)
-    : user?.email?.slice(0, 2) ?? "DA";
+  const onSignOut = () => {
+    void logout();
+  };
 
   return (
-    <Shell>
-      <Header>
-        <HeaderLead>
-          <Brand>
-            <img src={logoImage} alt="Pack" />
-            <div>
-              <strong>Pack</strong>
-              <span>Travel planner</span>
-            </div>
-          </Brand>
-          <BetaBadge>
-            <Sparkles size={16} /> Web beta
-          </BetaBadge>
-        </HeaderLead>
-
-        <Nav>
-          <NavTabs ref={tabsRef}>
-            {highlightPosition ? (
-              <NavTabHighlight
-                role="presentation"
-                style={{
-                  width: `${highlightPosition.width}px`,
-                  transform: `translateX(${highlightPosition.left}px)`,
-                }}
-              />
-            ) : null}
-            {NAV_ITEMS.map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <NavTabButton
-                  key={tab.id}
-                  to={tab.to}
-                  end={tab.end}
-                  $active={isActive}
-                  ref={(node) => {
-                    tabRefs.current[tab.id] = node;
-                  }}
-                >
-                  {tab.label}
-                </NavTabButton>
-              );
-            })}
-          </NavTabs>
-        </Nav>
-
-        <UserMenu>
-          <Avatar aria-hidden="true">{initials}</Avatar>
-          <LogoutButton onClick={() => logout()}>
-            <LogOut size={17} />
-            Sign out
-          </LogoutButton>
-        </UserMenu>
-      </Header>
+    <Shell $rail={isRail}>
+      {isRail ? (
+        <Rail>
+          <RailCard>
+            <PageHeader title="Pack" subtitle="Travel planner">
+              <BrandMark src={logoImage} alt="" />
+            </PageHeader>
+            <RailNavWrap>
+              <MicroLabel>Menu</MicroLabel>
+              <AppNav layout={layout} activeId={activeId} />
+            </RailNavWrap>
+            <SignOutRow>
+              <Initials>{initials}</Initials>
+              <SignOutControl onSignOut={onSignOut} />
+            </SignOutRow>
+          </RailCard>
+        </Rail>
+      ) : (
+        <MobileTop>
+          <PageHeader title="Pack" subtitle="Travel planner">
+            <BrandMark src={logoImage} alt="" />
+          </PageHeader>
+          <SignOutControl onSignOut={onSignOut} />
+        </MobileTop>
+      )}
 
       <Main>
         <Suspense fallback={<RouteLoadingState>Loading…</RouteLoadingState>}>
           <Outlet />
         </Suspense>
       </Main>
+
+      {isRail ? null : (
+        <TabBar>
+          <AppNav layout={layout} activeId={activeId} />
+        </TabBar>
+      )}
     </Shell>
   );
 };

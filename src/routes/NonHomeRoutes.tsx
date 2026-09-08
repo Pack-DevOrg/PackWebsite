@@ -62,6 +62,7 @@ const SeoGuidePage = React.lazy(() => import("../pages/SeoGuidePage"));
 const NotFoundPage = React.lazy(() => import("../pages/NotFoundPage"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const LiveViewConnectPage = React.lazy(() => import("../pages/LiveViewConnectPage"));
+const OnboardPage = React.lazy(() => import("../pages/OnboardPage"));
 const EmailForwardingSetupPage = React.lazy(
   () => import("../pages/EmailForwardingSetup")
 );
@@ -503,6 +504,14 @@ const NonHomeRoutes: React.FC = () => {
           element={
             <Suspense fallback={null}>
               <LiveViewConnectPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/onboard"
+          element={
+            <Suspense fallback={null}>
+              <OnboardPage />
             </Suspense>
           }
         />
@@ -977,6 +986,7 @@ const NonHomeRoutes: React.FC = () => {
           />
           <Route path="unsubscribe" element={<Suspense fallback={null}><UnsubscribePage /></Suspense>} />
           <Route path="live-view" element={<Suspense fallback={null}><LiveViewConnectPage /></Suspense>} />
+          <Route path="onboard" element={<Suspense fallback={null}><OnboardPage /></Suspense>} />
           <Route
             path="privacy-request"
             element={

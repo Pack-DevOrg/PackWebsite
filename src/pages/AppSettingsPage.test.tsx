@@ -1,4 +1,6 @@
 import React from "react";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
@@ -225,9 +227,56 @@ describe("AppSettingsPage", () => {
     expect(
       await screen.findByText("Connected for booking confirmations."),
     ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Connect mail" }));
+    expect(
+      screen.queryByRole("button", { name: "Connect mail" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Disconnect mail" }));
     expect(
       screen.getByText("Connected for booking confirmations."),
     ).toBeInTheDocument();
+  });
+
+  it("AppSettingsPage source has no backdrop-filter and no raw hex colors", () => {
+    const source = readFileSync(
+      path.join(__dirname, "AppSettingsPage.tsx"),
+      "utf8",
+    );
+
+    expect(source).not.toMatch(/backdrop-filter/);
+    expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}/);
+  });
+
+  it("renders Connected, Not connected, and Needs attention on connected-services rows", async () => {
+    renderPage({
+      mailConnected: true,
+      calendarNeedsAttention: true,
+    });
+
+    expect(await screen.findByText("Connected")).toBeInTheDocument();
+    expect(screen.getByText("Needs attention")).toBeInTheDocument();
+    expect(screen.getByText("Not connected")).toBeInTheDocument();
+  });
+
+  it("does not fire disconnect until the ghost Cancel and destructive Confirm pair resolves", async () => {
+    const onDisconnectMail = jest.fn();
+    renderPage({ mailConnected: true, onDisconnectMail });
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Disconnect mail" }),
+    );
+    expect(onDisconnectMail).not.toHaveBeenCalled();
+
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(onDisconnectMail).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole("button", { name: "Confirm" }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Disconnect mail" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(onDisconnectMail).toHaveBeenCalledTimes(1);
   });
 });

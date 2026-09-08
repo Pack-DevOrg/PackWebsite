@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import { Calendar, LogOut, Mail } from "lucide-react";
@@ -11,6 +11,12 @@ import {
 } from "@/api/social";
 import { useAuth } from "@/auth/AuthContext";
 import { VerifyPhoneCta } from "@/components/VerifyPhoneCta";
+import {
+  attemptOpenInApp,
+  buildAccountAppSchemeUrl,
+  buildAccountUniversalLink,
+  DEFAULT_APPLE_APP_ID,
+} from "@/utils/appDeepLink";
 
 export type AppSettingsAccountAction = () => void;
 
@@ -162,6 +168,51 @@ const PrimaryButton = styled.button<{ $ghost?: boolean }>`
   }
 `;
 
+const OpenInPackLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: ${({ theme }) => theme.colors.gradients.primaryButton};
+  color: ${({ theme }) => theme.colors.background.primary};
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.12s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 32px rgba(243, 210, 122, 0.22);
+  }
+`;
+
+const browserOpenInAppEnv = {
+  navigate: (url: string) => {
+    window.location.href = url;
+  },
+  isPageHidden: () => document.visibilityState === "hidden",
+  setTimer: (handler: () => void, ms: number) => window.setTimeout(handler, ms),
+  clearTimer: (timerId: number) => window.clearTimeout(timerId),
+  onPageHide: (handler: () => void) => {
+    const onVisibility = (): void => {
+      if (document.visibilityState === "hidden") {
+        handler();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", handler);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", handler);
+    };
+  },
+};
+
 const SignedOutCard = styled(Card)`
   max-width: 42rem;
 `;
@@ -234,6 +285,31 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
   const isAuthenticated = status === "authenticated";
   const mailIsConnected = connectedFlagFromServerProp(mailConnected);
   const calendarIsConnected = connectedFlagFromServerProp(calendarConnected);
+  const cancelAppOpenRef = useRef<() => void>(() => undefined);
+  const accountUniversalLink = buildAccountUniversalLink(
+    window.location.origin,
+    "settings",
+  );
+
+  useEffect(() => {
+    return () => {
+      cancelAppOpenRef.current();
+    };
+  }, []);
+
+  const handleOpenInApp = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      cancelAppOpenRef.current();
+      cancelAppOpenRef.current = attemptOpenInApp({
+        schemeUrl: buildAccountAppSchemeUrl("settings"),
+        userAgent: navigator.userAgent,
+        appleAppId: DEFAULT_APPLE_APP_ID,
+        env: browserOpenInAppEnv,
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -322,6 +398,14 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
                 : "Sign in from the app landing to manage connected accounts."}
             </p>
           </TitleGroup>
+          {isAuthenticated ? (
+            <OpenInPackLink
+              href={accountUniversalLink}
+              onClick={handleOpenInApp}
+            >
+              Open in Pack
+            </OpenInPackLink>
+          ) : null}
         </Header>
 
         {isAuthenticated ? (

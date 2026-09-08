@@ -110,6 +110,18 @@ describe("AppSettingsPage", () => {
     await waitFor(() => {
       expect(apiRequestMock).toHaveBeenCalled();
     });
+
+    const openInPack = screen.getByRole("link", { name: /open in pack/i });
+    expect(openInPack).toBeInTheDocument();
+    const href = openInPack.getAttribute("href");
+    expect(typeof href).toBe("string");
+    if (typeof href !== "string") {
+      throw new Error("Open in Pack href missing");
+    }
+    expect(href).toContain("/app/settings");
+    expect(href).not.toMatch(/token|code|email|sub/i);
+    expect(href).not.toContain("tests@trypackai.com");
+    expect(href).not.toContain("user-1");
   });
 
   it("renders no account data while unauthenticated and never calls login", () => {
@@ -139,6 +151,12 @@ describe("AppSettingsPage", () => {
     expect(screen.queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
     expect(screen.getByText("No account on this session")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Text Pack" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /open in pack/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /open in pack/i }),
+    ).not.toBeInTheDocument();
     expect(loginMock).not.toHaveBeenCalled();
   });
 

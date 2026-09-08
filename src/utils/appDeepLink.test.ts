@@ -6,10 +6,13 @@
 import {
   APP_OPEN_FALLBACK_DELAY_MS,
   attemptOpenInApp,
+  buildAccountAppSchemeUrl,
+  buildAccountUniversalLink,
   buildAppStoreUrl,
   buildShareAppSchemeUrl,
   buildShareUniversalLink,
   isAppleMobileUserAgent,
+  type AccountAppSection,
   type OpenInAppEnvironment,
 } from './appDeepLink';
 
@@ -80,6 +83,43 @@ describe('appDeepLink builders', () => {
     expect(isAppleMobileUserAgent(IOS_UA)).toBe(true);
     expect(isAppleMobileUserAgent(ANDROID_UA)).toBe(false);
   });
+
+  it('builds a navigation-only account scheme with no query', () => {
+    expect(buildAccountAppSchemeUrl('settings')).toMatch(
+      /^com\.packai\.app:\/\/account\/settings$/
+    );
+    expect(buildAccountAppSchemeUrl('friends')).toBe(
+      'com.packai.app://account/friends'
+    );
+    expect(buildAccountAppSchemeUrl('connected')).toBe(
+      'com.packai.app://account/connected'
+    );
+  });
+
+  it('rejects unknown account sections instead of interpolating attacker strings', () => {
+    const adversarial = [
+      'settings?token=abc',
+      'settings?code=1',
+      'email',
+      'sub',
+      'friends?email=hidden@trypackai.com',
+    ];
+    for (const section of adversarial) {
+      expect(() =>
+        buildAccountAppSchemeUrl(section as AccountAppSection)
+      ).toThrow(/unknown account section/);
+    }
+  });
+
+  it('builds an https account universal link on the serving host with no secrets', () => {
+    const url = buildAccountUniversalLink(
+      'https://trips.trypackai.com/',
+      'settings'
+    );
+    expect(url).toBe('https://trips.trypackai.com/app/settings');
+    expect(url.startsWith('https://trips.trypackai.com/')).toBe(true);
+    expect(url).not.toMatch(/token|code|email|sub/i);
+  });
 });
 
 describe('attemptOpenInApp', () => {
@@ -141,5 +181,20 @@ describe('attemptOpenInApp', () => {
 
   it('uses the documented fallback delay', () => {
     expect(APP_OPEN_FALLBACK_DELAY_MS).toBe(1600);
+  });
+
+  it('cancels the App Store fallback on pagehide for the account scheme', () => {
+    const fake = createFakeEnv();
+    attemptOpenInApp({
+      schemeUrl: buildAccountAppSchemeUrl('settings'),
+      userAgent: IOS_UA,
+      appleAppId: APP_ID,
+      env: fake.env,
+    });
+    expect(fake.navigations[0]).toBe('com.packai.app://account/settings');
+    fake.firePageHide();
+    expect(fake.timerCleared).toBe(true);
+    fake.fireTimer();
+    expect(fake.navigations).toEqual(['com.packai.app://account/settings']);
   });
 });

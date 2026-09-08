@@ -1,5 +1,6 @@
 /**
- * App deep-link helpers for share/invite landing pages.
+ * App deep-link helpers for share/invite landing pages and account
+ * navigation into the native app. Account URLs are navigation-only.
  *
  * The "Open in Pack" affordance keeps the page's own https universal link as
  * its href (iOS opens the app directly when it is installed and the link is
@@ -32,6 +33,58 @@ export const buildShareUniversalLink = (
 export const buildShareAppSchemeUrl = (shareId: string): string =>
   `${APP_SCHEME_PREFIX}share/${encodeURIComponent(shareId)}`;
 
+export const ACCOUNT_APP_SECTIONS = ["settings", "friends", "connected"] as const;
+
+export type AccountAppSection = (typeof ACCOUNT_APP_SECTIONS)[number];
+
+const ACCOUNT_WEB_PATH_BY_SECTION: Record<AccountAppSection, string> = {
+  settings: "/app/settings",
+  friends: "/app/friends",
+  connected: "/app/connected",
+};
+
+export const isAccountAppSection = (
+  section: string
+): section is AccountAppSection =>
+  section === "settings" || section === "friends" || section === "connected";
+
+const rejectUnknownAccountSection = (section: string): AccountAppSection => {
+  if (!isAccountAppSection(section)) {
+    throw new Error("unknown account section");
+  }
+  return section;
+};
+
+/**
+ * Navigation-only custom scheme into native account UI. Never carries a
+ * token, session id, email, or query secret — auth is the native session.
+ */
+export const buildAccountAppSchemeUrl = (section: AccountAppSection): string => {
+  const allowed = rejectUnknownAccountSection(section);
+  return `${APP_SCHEME_PREFIX}account/${encodeURIComponent(allowed)}`;
+};
+
+export const buildAccountUniversalLink = (
+  origin: string,
+  section: AccountAppSection
+): string => {
+  const allowed = rejectUnknownAccountSection(section);
+  return `${origin.replace(/\/+$/, "")}${ACCOUNT_WEB_PATH_BY_SECTION[allowed]}`;
+};
+
+const resolveOpenInAppSchemeUrl = (options: {
+  readonly shareId?: string;
+  readonly schemeUrl?: string;
+}): string => {
+  if (options.schemeUrl !== undefined) {
+    return options.schemeUrl;
+  }
+  if (options.shareId !== undefined) {
+    return buildShareAppSchemeUrl(options.shareId);
+  }
+  throw new Error("attemptOpenInApp requires schemeUrl or shareId");
+};
+
 export const isAppleMobileUserAgent = (userAgent: string): boolean =>
   /iphone|ipad|ipod/i.test(userAgent);
 
@@ -61,14 +114,15 @@ export const APP_OPEN_FALLBACK_DELAY_MS = 1600;
  * Returns a cancel function (for unmount).
  */
 export const attemptOpenInApp = (options: {
-  readonly shareId: string;
+  readonly shareId?: string;
+  readonly schemeUrl?: string;
   readonly userAgent: string;
   readonly appleAppId: string;
   readonly env: OpenInAppEnvironment;
 }): (() => void) => {
-  const { shareId, userAgent, appleAppId, env } = options;
+  const { userAgent, appleAppId, env } = options;
 
-  env.navigate(buildShareAppSchemeUrl(shareId));
+  env.navigate(resolveOpenInAppSchemeUrl(options));
 
   if (!isAppleMobileUserAgent(userAgent)) {
     return () => undefined;

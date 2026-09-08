@@ -24,6 +24,7 @@ import {
 } from "@/utils/airportCatalog";
 import type { Trip } from "@/api/trips";
 import { getTripDistance } from "@/utils/tripMetrics";
+import { Card, IconDisc, MicroLabel, PageHeader } from "../ui/Chrome";
 
 type CityVisit = {
   readonly city: string;
@@ -682,285 +683,268 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
   return (
     <StatsLayout>
       <Section>
-        <SectionTitle>Hero Metrics</SectionTitle>
-        <HeroGrid>
-          <HeroCard>
-            <IconBubble $accent="#F0C62D"><Compass size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{formatLarge(stats.hero.totalMiles)}</HeroValue>
-              <HeroLabel>Miles Traveled</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#FF9800"><Moon size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{formatLarge(stats.hero.totalNights)}</HeroValue>
-              <HeroLabel>Nights Away</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#E72340"><MapPin size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{stats.hero.citiesVisited}</HeroValue>
-              <HeroLabel>Cities ({Math.round((stats.hero.citiesVisited / 100) * 100)}%)</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#4CAF50"><Flag size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{stats.hero.countriesVisited}</HeroValue>
-              <HeroLabel>Countries ({Math.round((stats.hero.countriesVisited / 195) * 100)}%)</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#2196F3"><Globe size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{stats.hero.continentsVisited.length}</HeroValue>
-              <HeroLabel>Continents ({Math.round((stats.hero.continentsVisited.length / 7) * 100)}%)</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#E72340"><Zap size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{stats.hero.streak.longest}</HeroValue>
-              <HeroLabel>Longest Month Streak{stats.hero.streak.current > 0 ? ` • Current ${stats.hero.streak.current}` : ""}</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-        </HeroGrid>
-      </Section>
-
-      <Section>
-        <SectionTitle>Travel Maps</SectionTitle>
+        <PageHeader title="Overview">
+          <Compass size={18} />
+        </PageHeader>
+        <TileGrid>
+          <Tile>
+            <IconDisc><Compass size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{formatLarge(stats.hero.totalMiles)}</StatNumber>
+              <MicroLabel>Miles Traveled</MicroLabel>
+            </Metric>
+          </Tile>
+          <Tile>
+            <IconDisc><Moon size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{formatLarge(stats.hero.totalNights)}</StatNumber>
+              <MicroLabel>Nights Away</MicroLabel>
+            </Metric>
+          </Tile>
+          <Tile>
+            <IconDisc><MapPin size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{stats.hero.citiesVisited}</StatNumber>
+              <MicroLabel>Cities ({Math.round((stats.hero.citiesVisited / 100) * 100)}%)</MicroLabel>
+            </Metric>
+          </Tile>
+          <Tile>
+            <IconDisc><Flag size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{stats.hero.countriesVisited}</StatNumber>
+              <MicroLabel>Countries ({Math.round((stats.hero.countriesVisited / 195) * 100)}%)</MicroLabel>
+            </Metric>
+          </Tile>
+          <Tile>
+            <IconDisc><Globe size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{stats.hero.continentsVisited.length}</StatNumber>
+              <MicroLabel>Continents ({Math.round((stats.hero.continentsVisited.length / 7) * 100)}%)</MicroLabel>
+            </Metric>
+          </Tile>
+        </TileGrid>
         <Suspense fallback={<MapLoadingFrame aria-hidden="true" />}>
           <LazyFlightRouteMap
             flights={trips.flatMap((trip) => trip.flights ?? [])}
             visitedCountryCodes={stats.destinations.countries.map((country) => country.countryCode)}
           />
         </Suspense>
-      </Section>
-
-      <Section>
-        <SectionTitle>Personal Records</SectionTitle>
-        <SimpleList>
+        <List>
           {stats.milestones.longestTrip ? (
-            <SimpleRow>
-              <SimpleKey><Calendar size={14} /> Longest Trip</SimpleKey>
-              <SimpleValue>{stats.milestones.longestTrip.value} nights • {stats.milestones.longestTrip.trip.title}</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><Calendar size={14} /> Longest Trip</RowKey>
+              <RowValue>{stats.milestones.longestTrip.value} nights • {stats.milestones.longestTrip.trip.title}</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.mostExpensive ? (
-            <SimpleRow>
-              <SimpleKey><Landmark size={14} /> Most Expensive</SimpleKey>
-              <SimpleValue>{stats.milestones.mostExpensive.value.toLocaleString()} {stats.milestones.mostExpensive.trip.currency ?? "USD"} • {stats.milestones.mostExpensive.trip.title}</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><Landmark size={14} /> Most Expensive</RowKey>
+              <RowValue>{stats.milestones.mostExpensive.value.toLocaleString()} {stats.milestones.mostExpensive.trip.currency ?? "USD"} • {stats.milestones.mostExpensive.trip.title}</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.furthestDistance ? (
-            <SimpleRow>
-              <SimpleKey><Compass size={14} /> Furthest Distance</SimpleKey>
-              <SimpleValue>{formatLarge(stats.milestones.furthestDistance.value)} mi • {stats.milestones.furthestDistance.trip.title}</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><Compass size={14} /> Furthest Distance</RowKey>
+              <RowValue>{formatLarge(stats.milestones.furthestDistance.value)} mi • {stats.milestones.furthestDistance.trip.title}</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.mostFlightsInTrip ? (
-            <SimpleRow>
-              <SimpleKey><Plane size={14} /> Most Flights</SimpleKey>
-              <SimpleValue>{stats.milestones.mostFlightsInTrip.value} flights • {stats.milestones.mostFlightsInTrip.trip.title}</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><Plane size={14} /> Most Flights</RowKey>
+              <RowValue>{stats.milestones.mostFlightsInTrip.value} flights • {stats.milestones.mostFlightsInTrip.trip.title}</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.mostHotelNights && stats.milestones.mostHotelNights.value > 0 ? (
-            <SimpleRow>
-              <SimpleKey><Hotel size={14} /> Most Hotel Nights</SimpleKey>
-              <SimpleValue>{stats.milestones.mostHotelNights.value} nights • {stats.milestones.mostHotelNights.trip.title}</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><Hotel size={14} /> Most Hotel Nights</RowKey>
+              <RowValue>{stats.milestones.mostHotelNights.value} nights • {stats.milestones.mostHotelNights.trip.title}</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.busiestYear ? (
-            <SimpleRow>
-              <SimpleKey><TrendingUp size={14} /> Busiest Year</SimpleKey>
-              <SimpleValue>{stats.milestones.busiestYear[0]} • {stats.milestones.busiestYear[1].trips} trips • {stats.milestones.busiestYear[1].nights} nights</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><TrendingUp size={14} /> Busiest Year</RowKey>
+              <RowValue>{stats.milestones.busiestYear[0]} • {stats.milestones.busiestYear[1].trips} trips • {stats.milestones.busiestYear[1].nights} nights</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.longestBookingLead && stats.milestones.longestBookingLead.value > 0 ? (
-            <SimpleRow>
-              <SimpleKey><Clock size={14} /> Longest Booking Lead</SimpleKey>
-              <SimpleValue>{stats.milestones.longestBookingLead.value} days ahead • {stats.milestones.longestBookingLead.trip.title}</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><Clock size={14} /> Longest Booking Lead</RowKey>
+              <RowValue>{stats.milestones.longestBookingLead.value} days ahead • {stats.milestones.longestBookingLead.trip.title}</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.favoriteAirline ? (
-            <SimpleRow>
-              <SimpleKey><Award size={14} /> Favorite Airline</SimpleKey>
-              <SimpleValue>{stats.milestones.favoriteAirline.airline} • {stats.milestones.favoriteAirline.flights} flights</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><Award size={14} /> Favorite Airline</RowKey>
+              <RowValue>{stats.milestones.favoriteAirline.airline} • {stats.milestones.favoriteAirline.flights} flights</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.favoriteAirport ? (
-            <SimpleRow>
-              <SimpleKey><MapPin size={14} /> Most Visited Airport</SimpleKey>
-              <SimpleValue>{stats.milestones.favoriteAirport.iataCode} • {stats.milestones.favoriteAirport.city}{stats.milestones.favoriteAirport.city ? ", " : ""}{stats.milestones.favoriteAirport.country} • {stats.milestones.favoriteAirport.visits} visits</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><MapPin size={14} /> Most Visited Airport</RowKey>
+              <RowValue>{stats.milestones.favoriteAirport.iataCode} • {stats.milestones.favoriteAirport.city}{stats.milestones.favoriteAirport.city ? ", " : ""}{stats.milestones.favoriteAirport.country} • {stats.milestones.favoriteAirport.visits} visits</RowValue>
+            </Row>
           ) : null}
           {stats.milestones.favoriteDestination ? (
-            <SimpleRow>
-              <SimpleKey><MapPin size={14} /> Favorite Destination</SimpleKey>
-              <SimpleValue>{stats.milestones.favoriteDestination.city}, {stats.milestones.favoriteDestination.country} • {stats.milestones.favoriteDestination.visits} visits</SimpleValue>
-            </SimpleRow>
+            <Row>
+              <RowKey><MapPin size={14} /> Favorite Destination</RowKey>
+              <RowValue>{stats.milestones.favoriteDestination.city}, {stats.milestones.favoriteDestination.country} • {stats.milestones.favoriteDestination.visits} visits</RowValue>
+            </Row>
           ) : null}
-        </SimpleList>
+        </List>
+        <List>
+          <Row>
+            <RowKey>Planning Ahead</RowKey>
+            <RowValue>Median {Math.round(stats.patterns.bookingLead.median)} days (avg {Math.round(stats.patterns.bookingLead.average)} days)</RowValue>
+          </Row>
+          {stats.patterns.bookingLead.bins.map((bin) => (
+            <Row key={bin.label}>
+              <RowKey>{bin.label}</RowKey>
+              <RowValue>{bin.count} trips • {bin.percentage.toFixed(0)}%</RowValue>
+            </Row>
+          ))}
+          <Row>
+            <RowKey>Hotel Split</RowKey>
+            <RowValue>{stats.activity.tripsWithHotels} with hotels • {stats.activity.tripsWithoutHotels} no hotels • {stats.activity.hotelPercentage.toFixed(0)}% with hotels</RowValue>
+          </Row>
+          <Row>
+            <RowKey>Weekend vs Weekday</RowKey>
+            <RowValue>{stats.patterns.weekendTrips} weekend • {stats.patterns.weekdayTrips} weekday • {stats.patterns.weekendPercentage.toFixed(0)}% weekend</RowValue>
+          </Row>
+          <Row>
+            <RowKey>Seasonal Split</RowKey>
+            <RowValue>{stats.patterns.preferredSeason.season} most common ({stats.patterns.preferredSeason.percentage.toFixed(0)}%)</RowValue>
+          </Row>
+          <Row>
+            <RowKey>Avg Cost / Day</RowKey>
+            <RowValue>{stats.patterns.avgCostPerDay > 0 ? `$${Math.round(stats.patterns.avgCostPerDay)}` : "—"}</RowValue>
+          </Row>
+        </List>
       </Section>
 
       <Section>
-        <SectionTitle>Cities Visited</SectionTitle>
-        <SimpleList>
+        <PageHeader title="Places">
+          <MapPin size={18} />
+        </PageHeader>
+        <List>
           {stats.destinations.cities
             .sort((a, b) => b.visits - a.visits)
             .slice(0, 8)
             .map((city) => (
-              <SimpleRow key={`${city.city}-${city.countryCode}`}>
-                <SimpleKey>{flag(city.countryCode)} {city.city}, {city.country}</SimpleKey>
-                <SimpleValue>{city.visits} visits • {city.totalDays} nights • {formatMonthYear(city.firstVisit)} - {formatMonthYear(city.lastVisit)}</SimpleValue>
-              </SimpleRow>
+              <Row key={`${city.city}-${city.countryCode}`}>
+                <RowKey>{flag(city.countryCode)} {city.city}, {city.country}</RowKey>
+                <RowValue>{city.visits} visits • {city.totalDays} nights • {formatMonthYear(city.firstVisit)} - {formatMonthYear(city.lastVisit)}</RowValue>
+              </Row>
             ))}
-        </SimpleList>
-      </Section>
-
-      <Section>
-        <SectionTitle>Countries Visited</SectionTitle>
-        <SimpleList>
+        </List>
+        <List>
           {stats.destinations.countries
             .sort((a, b) => b.visits - a.visits)
             .slice(0, 8)
             .map((country) => (
-              <SimpleRow key={country.countryCode}>
-                <SimpleKey>{flag(country.countryCode)} {country.country}</SimpleKey>
-                <SimpleValue>{country.visits} visits • {country.totalNights} nights • {country.cities.length} cities</SimpleValue>
-              </SimpleRow>
+              <Row key={country.countryCode}>
+                <RowKey>{flag(country.countryCode)} {country.country}</RowKey>
+                <RowValue>{country.visits} visits • {country.totalNights} nights • {country.cities.length} cities</RowValue>
+              </Row>
             ))}
-        </SimpleList>
-      </Section>
-
-      <Section>
-        <SectionTitle>Airports Visited</SectionTitle>
-        <SimpleList>
+        </List>
+        <List>
           {stats.destinations.airports
             .sort((a, b) => b.visits - a.visits)
             .slice(0, 8)
             .map((airport) => (
-              <SimpleRow key={airport.iataCode}>
-                <SimpleKey>{airport.iataCode} • {airport.name}</SimpleKey>
-                <SimpleValue>{airport.city}{airport.city ? ", " : ""}{airport.state} {airport.country} • {airport.visits} visits</SimpleValue>
-              </SimpleRow>
+              <Row key={airport.iataCode}>
+                <RowKey>{airport.iataCode} • {airport.name}</RowKey>
+                <RowValue>{airport.city}{airport.city ? ", " : ""}{airport.state} {airport.country} • {airport.visits} visits</RowValue>
+              </Row>
             ))}
-        </SimpleList>
-      </Section>
-
-      <Section>
-        <SectionTitle>Flights by Airline</SectionTitle>
-        <SimpleList>
-          {stats.activity.topAirlines.slice(0, 8).map((airline) => (
-            <SimpleRow key={airline.airline}>
-              <SimpleKey>{airline.airline}</SimpleKey>
-              <SimpleValue>{airline.flights} flights • {airline.share.toFixed(1)}% share</SimpleValue>
-            </SimpleRow>
-          ))}
-        </SimpleList>
-      </Section>
-
-      <Section>
-        <SectionTitle>Hotels Stayed</SectionTitle>
-        <SimpleList>
+        </List>
+        <List>
           {stats.destinations.hotels
             .sort((a, b) => b.visits - a.visits)
             .slice(0, 8)
             .map((hotel) => (
-              <SimpleRow key={`${hotel.name}-${hotel.city}-${hotel.country}`}>
-                <SimpleKey><Hotel size={14} /> {hotel.name}</SimpleKey>
-                <SimpleValue>{hotel.city}{hotel.city ? ", " : ""}{hotel.country} • {hotel.visits} stays • {hotel.totalNights} nights • {formatMonthYear(hotel.firstStay)} - {formatMonthYear(hotel.lastStay)}</SimpleValue>
-              </SimpleRow>
+              <Row key={`${hotel.name}-${hotel.city}-${hotel.country}`}>
+                <RowKey><Hotel size={14} /> {hotel.name}</RowKey>
+                <RowValue>{hotel.city}{hotel.city ? ", " : ""}{hotel.country} • {hotel.visits} stays • {hotel.totalNights} nights • {formatMonthYear(hotel.firstStay)} - {formatMonthYear(hotel.lastStay)}</RowValue>
+              </Row>
             ))}
-        </SimpleList>
+        </List>
       </Section>
 
       <Section>
-        <SectionTitle>Travel Activity</SectionTitle>
-        <HeroGrid>
-          <HeroCard>
-            <IconBubble $accent="#2196F3"><Clock size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{Math.round(stats.activity.timeInAirHours)}h</HeroValue>
-              <HeroLabel>Time in Air</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#F0C62D"><Calendar size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{stats.activity.averageTripDays.toFixed(1)}</HeroValue>
-              <HeroLabel>Avg Nights / Trip (Median {stats.activity.medianTripDays.toFixed(1)})</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#4CAF50"><Plane size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{stats.activity.averageFlightsPerTrip.toFixed(2)}</HeroValue>
-              <HeroLabel>Flights / Trip ({stats.activity.flightsTotal} total)</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-          <HeroCard>
-            <IconBubble $accent="#E72340"><Activity size={18} /></IconBubble>
-            <HeroMetric>
-              <HeroValue>{stats.activity.uniqueAirlines}</HeroValue>
-              <HeroLabel>Airlines Flown</HeroLabel>
-            </HeroMetric>
-          </HeroCard>
-        </HeroGrid>
-      </Section>
-
-      <Section>
-        <SectionTitle>Travel Habits</SectionTitle>
-        <SimpleList>
-          <SimpleRow>
-            <SimpleKey>Planning Ahead</SimpleKey>
-            <SimpleValue>Median {Math.round(stats.patterns.bookingLead.median)} days (avg {Math.round(stats.patterns.bookingLead.average)} days)</SimpleValue>
-          </SimpleRow>
-          {stats.patterns.bookingLead.bins.map((bin) => (
-            <SimpleRow key={bin.label}>
-              <SimpleKey>{bin.label}</SimpleKey>
-              <SimpleValue>{bin.count} trips • {bin.percentage.toFixed(0)}%</SimpleValue>
-            </SimpleRow>
+        <PageHeader title="Time in the air">
+          <Clock size={18} />
+        </PageHeader>
+        <TileGrid>
+          <Tile>
+            <IconDisc><Clock size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{Math.round(stats.activity.timeInAirHours)}h</StatNumber>
+              <MicroLabel>Hours</MicroLabel>
+            </Metric>
+          </Tile>
+          <Tile>
+            <IconDisc><Calendar size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{stats.activity.averageTripDays.toFixed(1)}</StatNumber>
+              <MicroLabel>Avg Nights / Trip (Median {stats.activity.medianTripDays.toFixed(1)})</MicroLabel>
+            </Metric>
+          </Tile>
+          <Tile>
+            <IconDisc><Plane size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{stats.activity.averageFlightsPerTrip.toFixed(2)}</StatNumber>
+              <MicroLabel>Flights / Trip ({stats.activity.flightsTotal} total)</MicroLabel>
+            </Metric>
+          </Tile>
+          <Tile>
+            <IconDisc><Activity size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{stats.activity.uniqueAirlines}</StatNumber>
+              <MicroLabel>Airlines Flown</MicroLabel>
+            </Metric>
+          </Tile>
+        </TileGrid>
+        <List>
+          {stats.activity.topAirlines.slice(0, 8).map((airline) => (
+            <Row key={airline.airline}>
+              <RowKey>{airline.airline}</RowKey>
+              <RowValue>{airline.flights} flights • {airline.share.toFixed(1)}% share</RowValue>
+            </Row>
           ))}
-          <SimpleRow>
-            <SimpleKey>Hotel Split</SimpleKey>
-            <SimpleValue>{stats.activity.tripsWithHotels} with hotels • {stats.activity.tripsWithoutHotels} no hotels • {stats.activity.hotelPercentage.toFixed(0)}% with hotels</SimpleValue>
-          </SimpleRow>
-          <SimpleRow>
-            <SimpleKey>Weekend vs Weekday</SimpleKey>
-            <SimpleValue>{stats.patterns.weekendTrips} weekend • {stats.patterns.weekdayTrips} weekday • {stats.patterns.weekendPercentage.toFixed(0)}% weekend</SimpleValue>
-          </SimpleRow>
-          <SimpleRow>
-            <SimpleKey>Seasonal Split</SimpleKey>
-            <SimpleValue>{stats.patterns.preferredSeason.season} most common ({stats.patterns.preferredSeason.percentage.toFixed(0)}%)</SimpleValue>
-          </SimpleRow>
-          <SimpleRow>
-            <SimpleKey>Avg Cost / Day</SimpleKey>
-            <SimpleValue>{stats.patterns.avgCostPerDay > 0 ? `$${Math.round(stats.patterns.avgCostPerDay)}` : "—"}</SimpleValue>
-          </SimpleRow>
-        </SimpleList>
+        </List>
       </Section>
 
       <Section>
-        <SectionTitle>Travel Badges</SectionTitle>
-        <HeroGrid>
-          {stats.badges.map((badge) => (
-            <HeroCard key={badge.id}>
-              <IconBubble $accent={badge.unlockedTierIndex >= 0 ? "#4CAF50" : "#94A3B8"}>
-                <Award size={18} />
-              </IconBubble>
-              <HeroMetric>
-                <HeroValue>{badge.current.toFixed(0)}</HeroValue>
-                <HeroLabel>{badge.title} • {badge.unlockedTierIndex >= 0 ? `Tier ${badge.unlockedTierIndex + 1}` : "Locked"}</HeroLabel>
-              </HeroMetric>
-              <BarTrack>
-                <BarFill style={{ width: `${badge.progressToNext}%` }} />
-              </BarTrack>
-            </HeroCard>
-          ))}
-        </HeroGrid>
+        <PageHeader title="Streaks/Badges">
+          <Zap size={18} />
+        </PageHeader>
+        <TileGrid>
+          <Tile>
+            <IconDisc><Zap size={18} /></IconDisc>
+            <Metric>
+              <StatNumber>{stats.hero.streak.longest}</StatNumber>
+              <MicroLabel>Longest Month Streak{stats.hero.streak.current > 0 ? ` • Current ${stats.hero.streak.current}` : ""}</MicroLabel>
+            </Metric>
+          </Tile>
+          {stats.badges.map((badge) => {
+            const unlocked = badge.unlockedTierIndex >= 0;
+            return (
+              <BadgeTile key={badge.id} $unlocked={unlocked}>
+                <IconDisc>
+                  <Award size={18} />
+                </IconDisc>
+                <Metric>
+                  <StatNumber>{badge.current.toFixed(0)}</StatNumber>
+                  <MicroLabel>{badge.title} • {unlocked ? `Tier ${badge.unlockedTierIndex + 1}` : "Locked"}</MicroLabel>
+                </Metric>
+                <BarTrack>
+                  <BarFill style={{ width: `${badge.progressToNext}%` }} />
+                </BarTrack>
+              </BadgeTile>
+            );
+          })}
+        </TileGrid>
       </Section>
     </StatsLayout>
   );
@@ -968,121 +952,98 @@ export const TravelStatsOverview: React.FC<TravelStatsOverviewProps> = ({ trips 
 
 const StatsLayout = styled.div`
   display: grid;
-  gap: 1.1rem;
+  gap: var(--space-3);
 `;
 
-const Section = styled.section`
-  background:
-    radial-gradient(circle at 0% 0%, rgba(231, 35, 64, 0.06), transparent 24%),
-    radial-gradient(circle at 100% 0%, rgba(198, 165, 88, 0.08), transparent 38%),
-    linear-gradient(135deg, rgba(14, 11, 9, 0.88), rgba(18, 14, 10, 0.84));
-  border: 1px solid rgba(243, 210, 122, 0.12);
-  border-radius: 24px;
-  padding: 1rem;
+const Section = styled(Card).attrs({ as: "section" })`
+  padding: var(--space-3);
   display: grid;
-  gap: 0.8rem;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.18);
-`;
-
-const SectionTitle = styled.h3`
-  margin: 0;
-  font-size: 1rem;
-  color: #f8fafc;
+  gap: var(--space-3);
 `;
 
 const MapLoadingFrame = styled.div`
   min-height: 360px;
-  border-radius: 18px;
-  border: 1px solid rgba(243, 210, 122, 0.12);
-  background:
-    radial-gradient(circle at 20% 20%, rgba(243, 210, 122, 0.08), transparent 26%),
-    linear-gradient(135deg, rgba(255, 248, 236, 0.04), rgba(255, 248, 236, 0.02));
+  border-radius: var(--radius-l);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-background-subtle);
 `;
 
-const HeroGrid = styled.div`
+const TileGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.7rem;
+  gap: var(--space-2);
 `;
 
-const HeroCard = styled.div`
-  background: rgba(255, 248, 236, 0.05);
-  border: 1px solid rgba(243, 210, 122, 0.12);
-  border-radius: 16px;
-  padding: 0.75rem;
+const Tile = styled.div`
+  background: var(--color-background-subtle);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-l);
+  padding: var(--space-3);
   display: grid;
-  gap: 0.4rem;
+  gap: var(--space-2);
 `;
 
-const IconBubble = styled.div<{ $accent: string }>`
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ $accent }) => $accent};
-  background: ${({ $accent }) => `${$accent}24`};
+const BadgeTile = styled(Tile)<{ $unlocked: boolean }>`
+  border-color: ${(props) =>
+    props.$unlocked ? "var(--color-success)" : "var(--color-border-medium)"};
+  background: ${(props) =>
+    props.$unlocked ? "var(--color-success-tint)" : "var(--color-background-subtle)"};
+  color: ${(props) =>
+    props.$unlocked ? "var(--color-success)" : "var(--color-border-medium)"};
 `;
 
-const HeroValue = styled.div`
-  font-size: 1.2rem;
+const StatNumber = styled.div`
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xl);
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--color-text-primary);
 `;
 
-const HeroMetric = styled.div`
+const Metric = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.35rem 0.45rem;
+  gap: var(--space-1) var(--space-2);
 `;
 
-const HeroLabel = styled.div`
-  font-size: 0.74rem;
-  color: rgba(226, 232, 240, 0.78);
-  line-height: 1.4;
-  display: inline;
-`;
-
-const SimpleList = styled.div`
+const List = styled.div`
   display: grid;
-  gap: 0.45rem;
+  gap: var(--space-2);
 `;
 
-const SimpleRow = styled.div`
+const Row = styled.div`
   display: grid;
-  gap: 0.22rem;
-  border: 1px solid rgba(243, 210, 122, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 248, 236, 0.05);
-  padding: 0.6rem 0.7rem;
+  gap: var(--space-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-l);
+  background: var(--color-background-subtle);
+  padding: var(--space-2) var(--space-3);
 `;
 
-const SimpleKey = styled.div`
+const RowKey = styled.div`
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.78rem;
-  color: #fff4d6;
+  gap: var(--space-2);
+  font-size: var(--font-size-small);
+  color: var(--color-text-primary);
   font-weight: 700;
 `;
 
-const SimpleValue = styled.div`
-  font-size: 0.74rem;
-  color: rgba(226, 232, 240, 0.78);
+const RowValue = styled.div`
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
 `;
 
 const BarTrack = styled.div`
-  margin-top: 0.3rem;
+  margin-top: var(--space-1);
   width: 100%;
-  height: 6px;
-  background: rgba(243, 210, 122, 0.14);
-  border-radius: 999px;
+  height: var(--space-1);
+  background: var(--color-success-tint);
+  border-radius: var(--radius-disc);
   overflow: hidden;
 `;
 
 const BarFill = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #f3d27a 0%, #ebbe58 100%);
+  background: var(--color-success);
 `;

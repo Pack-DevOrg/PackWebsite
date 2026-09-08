@@ -91,10 +91,14 @@ describe('appDeepLink builders', () => {
     for (const section of ACCOUNT_APP_SECTIONS) {
       const url = buildAccountAppSchemeUrl(section);
       expect(url).toMatch(/^com\.packai\.app:\/\/account\//);
+      expect(url).toMatch(
+        /^com\.packai\.app:\/\/account\/(settings|friends|connected)$/
+      );
       expect(url).toBe(`com.packai.app://account/${section}`);
       expect(url).not.toMatch(SECRET_SUBSTRING);
       expect(url.includes('?')).toBe(false);
       expect(url.includes('#')).toBe(false);
+      expect(url.includes('@')).toBe(false);
     }
   });
 
@@ -196,6 +200,15 @@ describe('appDeepLink builders', () => {
     expect(url).toBe('https://trips.trypackai.com/app/friends');
     expect(url).not.toMatch(SECRET_SUBSTRING);
     expect(url.includes('@')).toBe(false);
+  });
+
+  it('rejects a non-https origin so OAuth does not ride a custom-scheme twin', () => {
+    expect(() =>
+      buildAccountUniversalLink('http://trips.trypackai.com/', 'settings')
+    ).toThrow(/account universal link origin must be https/);
+    expect(() =>
+      buildAccountUniversalLink('com.packai.app://account/settings', 'settings')
+    ).toThrow(/account universal link origin must be https/);
   });
 });
 

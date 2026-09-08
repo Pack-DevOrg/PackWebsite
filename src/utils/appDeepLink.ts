@@ -56,14 +56,21 @@ const accountSectionOrThrow = (section: string): AccountAppSection => {
 };
 
 /**
- * Account links are navigation only. Drop query, fragment, path, and userinfo
- * so a caller cannot thread token, session, email, or OAuth secrets through
- * the origin they pass us (including a current-page Google/Apple callback).
- * Native auth is the app session.
+ * Account links are navigation only. Identity stays in the native session
+ * (or Google/Apple on the website). RFC 8252: OAuth stays in the browser.
+ * Keep https origin only — drop query, fragment, path, and userinfo so a
+ * current-page Google/Apple callback cannot thread a token, session, email,
+ * or OAuth secret into the universal twin.
  */
-const originWithoutQueryOrFragmentBecauseAccountLinksAreNavigationOnly = (
+const httpsOriginWithoutQueryOrFragmentBecauseAccountLinksAreNavigationOnly = (
   origin: string
-): string => new URL(origin).origin;
+): string => {
+  const parsed = new URL(origin);
+  if (parsed.protocol !== "https:") {
+    throw new Error("account universal link origin must be https");
+  }
+  return parsed.origin;
+};
 
 /**
  * Navigation-only custom scheme into native account UI. Never carries a
@@ -79,7 +86,7 @@ export const buildAccountUniversalLink = (
   section: AccountAppSection
 ): string => {
   const allowed = accountSectionOrThrow(section);
-  return `${originWithoutQueryOrFragmentBecauseAccountLinksAreNavigationOnly(origin)}${ACCOUNT_UNIVERSAL_PATH[allowed]}`;
+  return `${httpsOriginWithoutQueryOrFragmentBecauseAccountLinksAreNavigationOnly(origin)}${ACCOUNT_UNIVERSAL_PATH[allowed]}`;
 };
 
 export const isAppleMobileUserAgent = (userAgent: string): boolean =>

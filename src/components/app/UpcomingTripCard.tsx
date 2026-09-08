@@ -15,9 +15,13 @@ import {
 import { format, formatDistanceToNowStrict, isValid, parseISO } from "date-fns";
 import type { Trip } from "@/api/trips";
 import { getTripNamingDisplay } from "@/utils/tripNaming";
-import { computeFlightRoute, getTripDistance, sortFlightsChronologically } from "@/utils/tripMetrics";
+import {
+  computeFlightRoute,
+  getTripDistance,
+  sortFlightsChronologically,
+} from "@/utils/tripMetrics";
 import { getTripAirlineBadges } from "@/utils/tripAirlineBadges";
-import { getTripCardTheme, resolveTripThemeHashSource } from "./tripCardTheme";
+import { Card, IconDisc, MicroLabel } from "../ui/Chrome";
 
 interface UpcomingTripCardProps {
   readonly trip: Trip;
@@ -40,17 +44,168 @@ interface BottomBadge {
   readonly icon: React.ComponentType<{ size?: number }>;
 }
 
-const parseTripDate = (dateValue?: string | null): Date | null => {
-  if (!dateValue) {
+type TripFlight = NonNullable<Trip["flights"]>[number];
+type TripHotel = NonNullable<Trip["hotels"]>[number];
+
+function defaultTitleBecauseMissing(title: string | undefined): string {
+  if (title === undefined || title === "") {
+    return "Trip";
+  }
+  return title;
+}
+
+function defaultHotelsBecauseMissing(
+  hotels: Trip["hotels"] | undefined,
+): TripHotel[] {
+  if (hotels === undefined) {
+    return [];
+  }
+  return hotels;
+}
+
+function defaultFlightsBecauseMissing(
+  flights: Trip["flights"] | undefined,
+): TripFlight[] {
+  if (flights === undefined) {
+    return [];
+  }
+  return flights;
+}
+
+function defaultCountBecauseMissing(items: { length: number } | undefined): number {
+  if (items === undefined) {
+    return 0;
+  }
+  return items.length;
+}
+
+function defaultTimeBecauseMissing(value: string | undefined): string {
+  if (value === undefined || value === "") {
+    return "Time TBD";
+  }
+  return value;
+}
+
+function firstNonEmptyBecauseFallback(
+  candidates: Array<string | undefined | null>,
+  fallback: string,
+): string {
+  for (const candidate of candidates) {
+    if (candidate !== undefined && candidate !== null && candidate !== "") {
+      return candidate;
+    }
+  }
+  return fallback;
+}
+
+function defaultCabinBecauseMissing(
+  cabinType: string | undefined,
+  fareClass: string | undefined,
+): string | undefined {
+  if (cabinType !== undefined && cabinType !== "") {
+    return cabinType;
+  }
+  if (fareClass !== undefined && fareClass !== "") {
+    return fareClass;
+  }
+  return undefined;
+}
+
+function defaultGateBecauseMissing(flight: TripFlight | undefined): string | undefined {
+  if (flight === undefined) {
+    return undefined;
+  }
+  const nested = (flight as { departure?: { gate?: string } }).departure;
+  if (nested !== undefined && nested.gate !== undefined && nested.gate !== "") {
+    return nested.gate;
+  }
+  if (flight.gate !== undefined && flight.gate !== "") {
+    return flight.gate;
+  }
+  if (flight.departureGate !== undefined && flight.departureGate !== "") {
+    return flight.departureGate;
+  }
+  return undefined;
+}
+
+function defaultRouteSubtitleBecauseMissing(
+  namingSubtitle: string | undefined,
+  origin: string | undefined,
+  dest: string | undefined,
+  routeDisplay: string | null | undefined,
+): string {
+  if (namingSubtitle !== undefined && namingSubtitle !== "") {
+    return namingSubtitle;
+  }
+  if (origin !== undefined && origin !== "" && dest !== undefined && dest !== "") {
+    return `${origin} -> ${dest}`;
+  }
+  if (routeDisplay !== undefined && routeDisplay !== null && routeDisplay !== "") {
+    return routeDisplay;
+  }
+  return "Route pending";
+}
+
+function shouldShowHeaderRight(hasBadges: boolean, hasDelete: boolean): boolean {
+  if (hasBadges) {
+    return true;
+  }
+  return hasDelete;
+}
+
+function parseTripDate(dateValue?: string | null): Date | null {
+  if (dateValue === undefined || dateValue === null || dateValue === "") {
     return null;
   }
   const parsed = parseISO(`${dateValue}T00:00:00Z`);
   return isValid(parsed) ? parsed : null;
-};
+}
+
+function formatDateLabel(dateObj: Date | null): string {
+  if (dateObj === null) {
+    return "Date TBD";
+  }
+  return format(dateObj, "EEE, MMM d");
+}
+
+function formatCompactDate(dateObj: Date | null): string {
+  if (dateObj === null) {
+    return "Date TBD";
+  }
+  return format(dateObj, "MMM d");
+}
+
+function nightWordBecauseCount(count: number): string {
+  if (count === 1) {
+    return "night";
+  }
+  return "nights";
+}
+
+function dayWordBecauseCount(count: number): string {
+  if (count === 1) {
+    return "day";
+  }
+  return "days";
+}
+
+function flightWordBecauseCount(count: number): string {
+  if (count === 1) {
+    return "flight";
+  }
+  return "flights";
+}
+
+function stayWordBecauseCount(count: number): string {
+  if (count === 1) {
+    return "stay";
+  }
+  return "stays";
+}
 
 const getTimeToDepartBadge = (startDate?: string | null): BottomBadge => {
   const startDateObj = parseTripDate(startDate);
-  if (!startDateObj) {
+  if (startDateObj === null) {
     return {
       key: "countdown",
       label: "Time to depart",
@@ -66,7 +221,7 @@ const getTimeToDepartBadge = (startDate?: string | null): BottomBadge => {
 
   let displayValue = distance;
   const daysUntil = Math.ceil(
-    (startDateObj.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    (startDateObj.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   );
   if (daysUntil === 0) {
     displayValue = "Today";
@@ -88,78 +243,109 @@ export const UpcomingTripCard: React.FC<UpcomingTripCardProps> = ({
   onDelete,
   onClick,
 }) => {
-  const naming = getTripNamingDisplay(trip, { fallbackTitle: trip.title || "Trip" });
+  const naming = getTripNamingDisplay(trip, {
+    fallbackTitle: defaultTitleBecauseMissing(trip.title),
+  });
   const routeDisplay = computeFlightRoute(trip);
-  const sortedFlights = useMemo(() => sortFlightsChronologically(trip.flights), [trip.flights]);
+  const flights = defaultFlightsBecauseMissing(trip.flights);
+  const sortedFlights = useMemo(
+    () => sortFlightsChronologically(flights),
+    [flights],
+  );
   const primaryFlight = sortedFlights[0];
   const returnFlight = sortedFlights[sortedFlights.length - 1];
-  const hotels = trip.hotels ?? [];
+  const hotels = defaultHotelsBecauseMissing(trip.hotels);
   const firstHotel = hotels[0];
   const lastHotel = hotels[hotels.length - 1];
-  const hotelNights = hotels.reduce(
-    (total, hotel) => total + (typeof hotel.nights === "number" ? hotel.nights : 0),
-    0
-  );
+  const hotelNights = hotels.reduce((total, hotel) => {
+    if (typeof hotel.nights === "number") {
+      return total + hotel.nights;
+    }
+    return total;
+  }, 0);
 
-  const flightCount = trip.flights?.length ?? 0;
-  const hotelCount = trip.hotels?.length ?? 0;
+  const flightCount = defaultCountBecauseMissing(trip.flights);
+  const hotelCount = defaultCountBecauseMissing(trip.hotels);
 
   const startDateObj = parseTripDate(trip.startDate);
   const endDateObj = parseTripDate(trip.endDate);
 
-  const startLocation =
-    primaryFlight?.departureAirport ??
-    firstHotel?.city ??
-    routeDisplay?.split("→")[0]?.trim() ??
-    naming.routeTitle;
-  const endLocation =
-    returnFlight?.arrivalAirport ??
-    lastHotel?.city ??
-    routeDisplay?.split("→").slice(-1)[0]?.trim() ??
-    naming.routeTitle;
-  const hashSource = resolveTripThemeHashSource({
-    destination: typeof trip.destination === "string" ? trip.destination : undefined,
-    startLocation,
-    endLocation,
-    tripId: trip.tripId,
-  });
+  const startLocation = firstNonEmptyBecauseFallback(
+    [
+      primaryFlight?.departureAirport,
+      firstHotel?.city,
+      routeDisplay?.split("→")[0]?.trim(),
+    ],
+    naming.routeTitle,
+  );
+  const endLocation = firstNonEmptyBecauseFallback(
+    [
+      returnFlight?.arrivalAirport,
+      lastHotel?.city,
+      routeDisplay?.split("→").slice(-1)[0]?.trim(),
+    ],
+    naming.routeTitle,
+  );
   const distanceMiles = getTripDistance(trip);
-  const theme = getTripCardTheme({
-    hashSource,
-    variant: "upcoming",
-    distanceMiles,
-  });
 
-  const startTimeDisplay = primaryFlight?.departureTime ?? firstHotel?.checkInTime ?? "Time TBD";
-  const endTimeDisplay = returnFlight?.arrivalTime ?? lastHotel?.checkOutTime ?? "Time TBD";
+  const startTimeDisplay = defaultTimeBecauseMissing(
+    firstNonEmptyBecauseFallback(
+      [primaryFlight?.departureTime, firstHotel?.checkInTime],
+      "",
+    ),
+  );
+  const endTimeDisplay = defaultTimeBecauseMissing(
+    firstNonEmptyBecauseFallback(
+      [returnFlight?.arrivalTime, lastHotel?.checkOutTime],
+      "",
+    ),
+  );
 
-  const routeSubtitle =
-    naming.subtitle ??
-    (primaryFlight?.departureAirport && primaryFlight?.arrivalAirport
-      ? `${primaryFlight.departureAirport} -> ${primaryFlight.arrivalAirport}`
-      : routeDisplay ?? "Route pending");
+  const routeSubtitle = defaultRouteSubtitleBecauseMissing(
+    naming.subtitle,
+    primaryFlight?.departureAirport,
+    primaryFlight?.arrivalAirport,
+    routeDisplay,
+  );
 
   const infoChips: InfoChip[] = [];
   if (primaryFlight?.seatNumber) {
-    infoChips.push({ key: "seat", label: "Seat", value: primaryFlight.seatNumber, icon: Armchair });
+    infoChips.push({
+      key: "seat",
+      label: "Seat",
+      value: primaryFlight.seatNumber,
+      icon: Armchair,
+    });
   }
-  const cabinType = primaryFlight?.cabinType ?? primaryFlight?.fareClass;
-  if (cabinType) {
-    infoChips.push({ key: "cabin", label: "Cabin", value: cabinType, icon: Ticket });
+  const cabinType = defaultCabinBecauseMissing(
+    primaryFlight?.cabinType,
+    primaryFlight?.fareClass,
+  );
+  if (cabinType !== undefined) {
+    infoChips.push({
+      key: "cabin",
+      label: "Cabin",
+      value: cabinType,
+      icon: Ticket,
+    });
   }
-  const gate =
-    primaryFlight?.departure?.gate ?? primaryFlight?.gate ?? primaryFlight?.departureGate;
-  if (gate) {
+  const gate = defaultGateBecauseMissing(primaryFlight);
+  if (gate !== undefined) {
     infoChips.push({ key: "gate", label: "Gate", value: gate, icon: DoorOpen });
   }
   if (primaryFlight?.duration) {
-    infoChips.push({ key: "duration", label: "Duration", value: primaryFlight.duration, icon: Timer });
+    infoChips.push({
+      key: "duration",
+      label: "Duration",
+      value: primaryFlight.duration,
+      icon: Timer,
+    });
   }
   if (hotelNights > 0) {
     infoChips.push({
       key: "nights",
       label: "Hotel nights",
-      value: `${hotelNights} ${hotelNights === 1 ? "night" : "nights"}`,
+      value: `${hotelNights} ${nightWordBecauseCount(hotelNights)}`,
       icon: HotelIcon,
     });
   }
@@ -180,27 +366,37 @@ export const UpcomingTripCard: React.FC<UpcomingTripCardProps> = ({
     });
   }
 
-  const tripDurationDays =
-    startDateObj && endDateObj
-      ? Math.max(
-          0,
-          Math.round((endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24))
-        )
-      : 0;
+  let tripDurationDays = 0;
+  if (startDateObj !== null && endDateObj !== null) {
+    tripDurationDays = Math.max(
+      0,
+      Math.round(
+        (endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24),
+      ),
+    );
+  }
+
+  let durationValue = "Awaiting details";
+  if (tripDurationDays > 0) {
+    durationValue = `${tripDurationDays} ${dayWordBecauseCount(tripDurationDays)}`;
+  } else if (hotelNights > 0) {
+    durationValue = `${hotelNights} ${nightWordBecauseCount(hotelNights)}`;
+  }
+
+  let durationSubtitle: string | undefined;
+  if (hotelNights > 0) {
+    if (hotelNights === 1) {
+      durationSubtitle = "1 night in hotels";
+    } else {
+      durationSubtitle = `${hotelNights} hotel nights`;
+    }
+  }
 
   const durationBadge: BottomBadge = {
     key: "duration",
     label: "Trip duration",
-    value:
-      tripDurationDays > 0
-        ? `${tripDurationDays} ${tripDurationDays === 1 ? "day" : "days"}`
-        : hotelNights > 0
-        ? `${hotelNights} ${hotelNights === 1 ? "night" : "nights"}`
-        : "Awaiting details",
-    subtitle:
-      hotelNights > 0
-        ? `${hotelNights} ${hotelNights === 1 ? "night in hotels" : "hotel nights"}`
-        : undefined,
+    value: durationValue,
+    subtitle: durationSubtitle,
     icon: CalendarCheck,
   };
 
@@ -216,83 +412,89 @@ export const UpcomingTripCard: React.FC<UpcomingTripCardProps> = ({
   };
 
   return (
-    <Card
-      $gradientStart={theme.gradientStart}
-      $gradientEnd={theme.gradientEnd}
-      $orb={theme.orb}
-      onClick={handleCardClick}
-    >
+    <TripCard onClick={handleCardClick}>
       <CardHeader>
         <HeaderLeft>
-          <TripIconCircle $accent={theme.accent}>
+          <IconDisc>
             <Plane size={18} />
-          </TripIconCircle>
+          </IconDisc>
 
           <TripTitleBlock>
-            <TripLabel>Trip</TripLabel>
+            <MicroLabel>Trip</MicroLabel>
             <RouteTitle>{naming.routeTitle}</RouteTitle>
             <TripSubtitle>{routeSubtitle}</TripSubtitle>
+            <DateRange>
+              {formatCompactDate(startDateObj)}–{formatCompactDate(endDateObj)}
+            </DateRange>
 
             <ComponentSummary>
               {flightCount > 0 ? (
                 <ComponentTag>
-                  <Plane size={12} color={theme.accent} />
-                  <span>{flightCount} {flightCount === 1 ? "flight" : "flights"}</span>
+                  <Plane size={12} />
+                  <span>
+                    {flightCount} {flightWordBecauseCount(flightCount)}
+                  </span>
                 </ComponentTag>
               ) : null}
               {hotelCount > 0 ? (
                 <ComponentTag>
-                  <HotelIcon size={12} color={theme.accent} />
-                  <span>{hotelCount} {hotelCount === 1 ? "stay" : "stays"}</span>
+                  <HotelIcon size={12} />
+                  <span>
+                    {hotelCount} {stayWordBecauseCount(hotelCount)}
+                  </span>
                 </ComponentTag>
               ) : null}
             </ComponentSummary>
           </TripTitleBlock>
         </HeaderLeft>
 
-        {(airlineBadges.length > 0 || onDelete) && (
+        {shouldShowHeaderRight(airlineBadges.length > 0, onDelete !== undefined) ? (
           <HeaderRight>
-            {airlineBadges.length > 0 && (
+            {airlineBadges.length > 0 ? (
               <BrandBadgeRow>
                 {airlineBadges.map((badge) => (
                   <BrandBadge key={badge.key} title={badge.label} aria-label={badge.label}>
                     {badge.logoSrc ? (
-                      <BrandBadgeImage src={badge.logoSrc} alt={`${badge.label} logo`} loading="lazy" />
+                      <BrandBadgeImage
+                        src={badge.logoSrc}
+                        alt={`${badge.label} logo`}
+                        loading="lazy"
+                      />
                     ) : (
                       <BrandBadgeFallback>{badge.monogram}</BrandBadgeFallback>
                     )}
                   </BrandBadge>
                 ))}
               </BrandBadgeRow>
-            )}
-            {onDelete ? (
+            ) : null}
+            {onDelete !== undefined ? (
               <DeleteButton type="button" onClick={() => onDelete(trip.tripId)}>
                 <Trash2 size={16} />
               </DeleteButton>
             ) : null}
           </HeaderRight>
-        )}
+        ) : null}
       </CardHeader>
 
       <CardDivider />
 
       <DateRow>
         <DateColumn>
-          <DateLabel>Departing</DateLabel>
-          <DateValue>{startDateObj ? format(startDateObj, "EEE, MMM d") : "Date TBD"}</DateValue>
+          <MicroLabel>Departing</MicroLabel>
+          <DateValue>{formatDateLabel(startDateObj)}</DateValue>
           <TimeValue>{startTimeDisplay}</TimeValue>
           <DateMeta>{startLocation}</DateMeta>
         </DateColumn>
 
         <DateColumn>
-          <DateLabel>Returning</DateLabel>
-          <DateValue>{endDateObj ? format(endDateObj, "EEE, MMM d") : "Date TBD"}</DateValue>
+          <MicroLabel>Returning</MicroLabel>
+          <DateValue>{formatDateLabel(endDateObj)}</DateValue>
           <TimeValue>{endTimeDisplay}</TimeValue>
           <DateMeta>{endLocation}</DateMeta>
         </DateColumn>
       </DateRow>
 
-      {infoChips.length > 0 && (
+      {infoChips.length > 0 ? (
         <>
           <CardDivider />
           <InfoChipList>
@@ -302,129 +504,63 @@ export const UpcomingTripCard: React.FC<UpcomingTripCardProps> = ({
                   <chip.icon size={14} />
                 </InfoChipIcon>
                 <InfoChipText>
-                  <InfoChipLabel>{chip.label}</InfoChipLabel>
+                  <MicroLabel>{chip.label}</MicroLabel>
                   <InfoChipValue>{chip.value}</InfoChipValue>
                 </InfoChipText>
               </InfoChipCard>
             ))}
           </InfoChipList>
         </>
-      )}
+      ) : null}
 
       <CardDivider />
 
       <BottomBadgeRow>
         {bottomBadges.map((badge) => (
           <BottomBadgeCard key={badge.key}>
-            <BottomBadgeIcon>
+            <IconDisc>
               <badge.icon size={16} />
-            </BottomBadgeIcon>
+            </IconDisc>
             <BottomBadgeText>
-              <BottomBadgeLabel>{badge.label}</BottomBadgeLabel>
+              <MicroLabel>{badge.label}</MicroLabel>
               <BottomBadgeValue>{badge.value}</BottomBadgeValue>
-              {badge.subtitle ? <BottomBadgeSubtitle>{badge.subtitle}</BottomBadgeSubtitle> : null}
+              {badge.subtitle !== undefined ? (
+                <BottomBadgeSubtitle>{badge.subtitle}</BottomBadgeSubtitle>
+              ) : null}
             </BottomBadgeText>
           </BottomBadgeCard>
         ))}
       </BottomBadgeRow>
-    </Card>
+    </TripCard>
   );
 };
 
-const Card = styled.article<{ $gradientStart: string; $gradientEnd: string; $orb: string }>`
-  position: relative;
-  padding: 1.2rem;
-  border-radius: 24px;
-  overflow: hidden;
-  background: ${({ $gradientStart, $gradientEnd }) =>
-    `linear-gradient(135deg, ${$gradientStart} 0%, ${$gradientEnd} 100%)`};
-  border: 1px solid rgba(243, 210, 122, 0.12);
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.3);
-  color: #f8fafc;
+const TripCard = styled(Card)`
+  padding: var(--space-3);
   cursor: pointer;
   display: grid;
-  gap: 0.9rem;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: rgba(243, 210, 122, 0.18);
-    box-shadow: 0 28px 56px rgba(0, 0, 0, 0.36);
-  }
-
-  > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    border-top-left-radius: 20px;
-    border-bottom-left-radius: 20px;
-    background: ${({ $orb }) => $orb.replace(/([0-9A-Fa-f]{2})$/, "FF")};
-    opacity: 0.9;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    width: 220px;
-    height: 220px;
-    right: -60px;
-    top: -80px;
-    border-radius: 999px;
-    background: ${({ $orb }) => $orb};
-    pointer-events: none;
-    z-index: 0;
-  }
+  gap: var(--space-3);
+  color: var(--color-text-primary);
 `;
 
 const CardHeader = styled.div`
-  position: relative;
-  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  gap: 1rem;
+  gap: var(--space-3);
 `;
 
 const HeaderLeft = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: var(--space-2);
   flex: 1;
-`;
-
-const TripIconCircle = styled.div<{ $accent: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ $accent }) => $accent};
-  background: ${({ $accent }) => `${$accent}22`};
-  border: 1px solid rgba(255, 248, 236, 0.12);
 `;
 
 const TripTitleBlock = styled.div`
   display: grid;
-  gap: 0.28rem;
+  gap: var(--space-1);
   flex: 1;
-`;
-
-const TripLabel = styled.span`
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(241, 245, 249, 0.7);
 `;
 
 const RouteTitle = styled.h3`
@@ -432,31 +568,39 @@ const RouteTitle = styled.h3`
   font-size: 1.2rem;
   line-height: 1.2;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--color-text-primary);
 `;
 
 const TripSubtitle = styled.p`
   margin: 0;
-  font-size: 0.82rem;
-  color: rgba(226, 232, 240, 0.78);
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+`;
+
+const DateRange = styled.p`
+  margin: 0;
+  font-size: var(--font-size-small);
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
 `;
 
 const ComponentSummary = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 0.2rem;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
 `;
 
 const ComponentTag = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  border-radius: 999px;
-  padding: 0.25rem 0.48rem;
-  background: rgba(255, 248, 236, 0.08);
-  color: rgba(248, 250, 252, 0.95);
-  font-size: 0.72rem;
+  gap: var(--space-1);
+  border-radius: var(--radius-disc);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-background-subtle);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-small);
   font-weight: 600;
 `;
 
@@ -465,13 +609,13 @@ const HeaderRight = styled.div`
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 0.45rem;
+  gap: var(--space-1);
 `;
 
 const BrandBadgeRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-1);
 `;
 
 const BrandBadge = styled.span`
@@ -483,7 +627,6 @@ const BrandBadge = styled.span`
   overflow: hidden;
   background: transparent;
   border: none;
-  box-shadow: none;
 `;
 
 const BrandBadgeImage = styled.img`
@@ -491,74 +634,60 @@ const BrandBadgeImage = styled.img`
   height: 78%;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.18));
 `;
 
 const BrandBadgeFallback = styled.span`
-  color: rgba(248, 250, 252, 0.9);
+  color: var(--color-text-primary);
   font-weight: 700;
-  font-size: 0.78rem;
+  font-size: var(--font-size-small);
 `;
 
 const DeleteButton = styled.button`
-  border: 1px solid rgba(243, 210, 122, 0.14);
-  background: rgba(255, 248, 236, 0.06);
-  color: #f8fafc;
+  border: 1px solid var(--color-border);
+  background: var(--color-background-subtle);
+  color: var(--color-text-primary);
   width: 34px;
   height: 34px;
-  border-radius: 999px;
+  border-radius: var(--radius-disc);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
-  &:hover {
-    background: rgba(15, 23, 42, 0.7);
-  }
 `;
 
 const CardDivider = styled.div`
   height: 1px;
-  background: rgba(243, 210, 122, 0.12);
+  background: var(--color-border);
 `;
 
 const DateRow = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.95rem;
-
-  @media (max-width: 560px) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  gap: var(--space-3);
 `;
 
 const DateColumn = styled.div`
   display: grid;
-  gap: 0.18rem;
-`;
-
-const DateLabel = styled.span`
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.65);
+  gap: var(--space-1);
 `;
 
 const DateValue = styled.div`
-  font-size: 0.92rem;
+  font-size: var(--font-size-small);
   font-weight: 650;
-  color: #f8fafc;
+  color: var(--color-text-primary);
 `;
 
 const TimeValue = styled.div`
-  font-size: 0.8rem;
+  font-size: var(--font-size-small);
   font-weight: 550;
-  color: rgba(248, 250, 252, 0.92);
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
 `;
 
 const DateMeta = styled.div`
-  font-size: 0.74rem;
-  color: rgba(226, 232, 240, 0.72);
+  font-size: var(--font-size-small);
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -566,95 +695,70 @@ const DateMeta = styled.div`
 
 const InfoChipList = styled.div`
   display: grid;
-  gap: 0.45rem;
+  gap: var(--space-1);
 `;
 
 const InfoChipCard = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  border-radius: 16px;
-  padding: 0.56rem 0.7rem;
-  background: rgba(255, 248, 236, 0.06);
-  border: 1px solid rgba(243, 210, 122, 0.12);
+  gap: var(--space-2);
+  border-radius: var(--radius-l);
+  padding: var(--space-2);
+  background: var(--color-background-subtle);
+  border: 1px solid var(--color-border);
 `;
 
 const InfoChipIcon = styled.div`
   width: 24px;
   height: 24px;
-  border-radius: 999px;
-  background: rgba(255, 248, 236, 0.08);
+  border-radius: var(--radius-disc);
+  background: var(--color-background-subtle);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(226, 232, 240, 0.92);
+  color: var(--color-accent);
 `;
 
 const InfoChipText = styled.div`
   display: grid;
-  gap: 0.12rem;
-`;
-
-const InfoChipLabel = styled.div`
-  font-size: 0.64rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.65);
+  gap: var(--space-1);
 `;
 
 const InfoChipValue = styled.div`
-  font-size: 0.82rem;
+  font-size: var(--font-size-small);
   font-weight: 650;
-  color: #f8fafc;
+  color: var(--color-text-primary);
 `;
 
 const BottomBadgeRow = styled.div`
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-2);
 `;
 
 const BottomBadgeCard = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  border-radius: 16px;
-  padding: 0.68rem 0.75rem;
-  background: rgba(255, 248, 236, 0.06);
-  border: 1px solid rgba(243, 210, 122, 0.12);
-`;
-
-const BottomBadgeIcon = styled.div`
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 248, 236, 0.08);
-  color: rgba(226, 232, 240, 0.95);
+  gap: var(--space-2);
+  border-radius: var(--radius-l);
+  padding: var(--space-2);
+  background: var(--color-background-subtle);
+  border: 1px solid var(--color-border);
 `;
 
 const BottomBadgeText = styled.div`
   display: grid;
-  gap: 0.1rem;
-`;
-
-const BottomBadgeLabel = styled.div`
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(226, 232, 240, 0.65);
+  gap: var(--space-1);
 `;
 
 const BottomBadgeValue = styled.div`
-  font-size: 0.88rem;
+  font-size: var(--font-size-small);
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--color-text-primary);
 `;
 
 const BottomBadgeSubtitle = styled.div`
-  font-size: 0.72rem;
-  color: rgba(226, 232, 240, 0.7);
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
 `;

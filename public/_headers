@@ -29,6 +29,11 @@
   Cross-Origin-Resource-Policy: cross-origin
   Cache-Control: public, max-age=86400
 
+/Pack.vcf
+  Content-Type: text/vcard
+  Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=86400
+
 /*.svg
   Cache-Control: public, max-age=31536000, immutable
 

@@ -78,6 +78,10 @@ function handler(event) {
     headers['content-type'] = { value: 'image/png' };
     headers['cache-control'] = { value: 'public, max-age=86400' };
     headers['cross-origin-resource-policy'] = { value: 'cross-origin' };
+  } else if (route === '/Pack.vcf') {
+    headers['content-type'] = { value: 'text/vcard' };
+    headers['cache-control'] = { value: 'public, max-age=86400' };
+    headers['cross-origin-resource-policy'] = { value: 'cross-origin' };
   } else {
     headers['cross-origin-resource-policy'] = { value: 'same-origin' };
   }

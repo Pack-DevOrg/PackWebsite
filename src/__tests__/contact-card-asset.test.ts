@@ -4,7 +4,7 @@ import {join} from 'path';
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const CONTACT_CARD_SHA256 =
-  'e2207cfc39711c7501defe2253d9f41576d8bad1c4969fdf3398d127fa06d667';
+  'be62c324f3bc1f4c39b7f5879ecddf373ec80b0513ea715bc23777ce26bd4153';
 const PNG_COLOR_TYPE_RGB = 2;
 const OLD_TRANSPARENT_CARD_BYTES = 106832;
 

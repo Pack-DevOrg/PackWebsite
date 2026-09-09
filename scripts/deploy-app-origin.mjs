@@ -223,6 +223,19 @@ run("aws", [
   "--metadata-directive",
   "REPLACE",
 ]);
+// Sendblue vCard media_url must be a public https URL ending in .vcf.
+run("aws", [
+  "s3",
+  "cp",
+  `${distDir}/Pack.vcf`,
+  `${appBucket}/Pack.vcf`,
+  "--content-type",
+  "text/vcard",
+  "--cache-control",
+  "public, max-age=86400",
+  "--metadata-directive",
+  "REPLACE",
+]);
 run("aws", [
   "cloudfront",
   "create-invalidation",

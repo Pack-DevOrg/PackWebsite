@@ -10,6 +10,7 @@ import { NotificationsStep } from "@/components/onboard/NotificationsStep";
 import { ProgressDots } from "@/components/onboard/OnboardPrimitives";
 import { PhotosConnectStep } from "@/components/onboard/PhotosConnectStep";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
+import { DEFAULT_SHARE_IMAGE_URL } from "@/seo/pageSeo";
 
 export const ONBOARD_PATH = "/onboard";
 
@@ -115,6 +116,17 @@ function OnboardFlow() {
       <Helmet>
         <title>Onboard | Pack</title>
         <meta name="robots" content="noindex, nofollow" />
+        <meta property="og:title" content="Onboard | Pack" />
+        <meta property="og:image" content={DEFAULT_SHARE_IMAGE_URL} />
+        <meta
+          property="og:image:secure_url"
+          content={DEFAULT_SHARE_IMAGE_URL}
+        />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Pack" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={DEFAULT_SHARE_IMAGE_URL} />
       </Helmet>
       <Shell>
         <ProgressDots count={5} activeIndex={stepIndex} />

@@ -1,10 +1,11 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { ONBOARD_PATH, OnboardPage } from "./OnboardPage";
 import { I18nProvider } from "@/i18n/I18nProvider";
+import { DEFAULT_SHARE_IMAGE_URL } from "@/seo/pageSeo";
 import { ThemeProvider } from "@/styles/ThemeProvider";
 
 const loginMock = jest.fn();
@@ -151,5 +152,26 @@ describe("OnboardPage /onboard five-step app flow", () => {
       .toBeInTheDocument();
     expect(screen.getByLabelText("Phone number")).toHaveValue("+15551212");
     expectNoInternalIdentifiers(view.container);
+  });
+
+  it("sets og:image and twitter:image to the homepage gold share asset", async () => {
+    renderAt(ONBOARD_PATH);
+
+    await waitFor(() => {
+      expect(
+        document.head
+          .querySelector('meta[property="og:image"]')
+          ?.getAttribute("content"),
+      ).toBe(DEFAULT_SHARE_IMAGE_URL);
+    });
+
+    expect(DEFAULT_SHARE_IMAGE_URL.endsWith("/images/og-image.jpg")).toBe(
+      true,
+    );
+    expect(
+      document.head
+        .querySelector('meta[name="twitter:image"]')
+        ?.getAttribute("content"),
+    ).toBe(DEFAULT_SHARE_IMAGE_URL);
   });
 });

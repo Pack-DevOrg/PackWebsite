@@ -4,6 +4,7 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:4173";
 const shouldUseLocalWebServer = !process.env.E2E_BASE_URL;
 
 export default defineConfig({
+  globalSetup: "./e2e/global-setup.ts",
   testDir: "./e2e",
   // The backend contract lane talks to a REAL stage; it only runs through the
   // opt-in `npm run test:e2e:contract` script (E2E_INCLUDE_CONTRACT=1).

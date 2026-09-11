@@ -13,6 +13,7 @@
 
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useLocation } from 'react-router-dom';
 import { useTracking } from './TrackingProvider';
 
 import {getCookie} from '../utils/cookies';
@@ -20,6 +21,7 @@ import {env} from '../utils/env';
 import {CONSENT_COOKIE_KEY, CONSENT_MAX_AGE_SECONDS, CONSENT_TIMESTAMP_COOKIE_KEY} from '../constants/consent';
 import {DEFAULT_CONSENT_PREFERENCES, type ConsentPreferences} from '../tracking/consent';
 import {useMountEffect} from '../hooks/useMountEffect';
+import {stripLocaleFromPath} from '../i18n/config';
 import {useI18n} from '../i18n/I18nProvider';
 import {
   getAcceptanceNoticeLegalCopy,
@@ -368,10 +370,17 @@ const SettingDescription = styled.div`
   line-height: 1.4;
 `;
 
+function isOnboardPathBecauseBannerCoversCard(pathname: string): boolean {
+  const stripped = stripLocaleFromPath(pathname);
+  return stripped === '/onboard' || stripped.startsWith('/onboard/');
+}
+
 const ConsentBanner: React.FC = () => {
   const {locale, pathFor, t} = useI18n();
   const legalCopy = getConsentBannerLegalCopy(locale);
   const acceptanceNotice = getAcceptanceNoticeLegalCopy(locale);
+  const {pathname} = useLocation();
+  const hideFixedBannerOnOnboard = isOnboardPathBecauseBannerCoversCard(pathname);
   const {applyConsentDecision, gpcApplies} = useTracking();
   const [showBanner, setShowBanner] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -525,8 +534,13 @@ const ConsentBanner: React.FC = () => {
     return null;
   }
 
+  if (hideFixedBannerOnOnboard && !showSettings) {
+    return null;
+  }
+
   return (
     <>
+      {!hideFixedBannerOnOnboard && (
       <BannerContainer 
         isVisible={showBanner} 
         isClosing={isClosing}
@@ -567,6 +581,7 @@ const ConsentBanner: React.FC = () => {
           </ButtonGroup>
         </BannerContent>
       </BannerContainer>
+      )}
 
       <SettingsModal isOpen={showSettings}>
         <SettingsContent>

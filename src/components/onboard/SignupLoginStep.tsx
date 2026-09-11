@@ -1,13 +1,56 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 
 import {
   onboardTokens,
+  PrimaryButton,
   ProviderButton,
   SheetCard,
   StepBody,
   StepTitle,
 } from './OnboardPrimitives';
+
+export interface SignupLoginStepProps {
+  prefillPhone?: string;
+  sendCode?: (phone: string) => Promise<void>;
+}
+
+function defaultPhoneBecausePrefill(prefillPhone: string | undefined): string {
+  if (prefillPhone === undefined) {
+    return '';
+  }
+  return prefillPhone;
+}
+
+function defaultSendCodeBecauseUnset(phone: string): Promise<void> {
+  void phone;
+  return Promise.resolve();
+}
+
+function sendCodeBecauseProp(
+  sendCode: SignupLoginStepProps['sendCode'],
+): (phone: string) => Promise<void> {
+  if (sendCode === undefined) {
+    return defaultSendCodeBecauseUnset;
+  }
+  return sendCode;
+}
+
+function phoneReadyBecauseNonEmpty(phone: string): boolean {
+  return phone.trim().length > 0;
+}
+
+function emptyCodeBoxesBecauseUnset(): string[] {
+  return ['', '', '', '', '', ''];
+}
+
+function lastNumericDigitBecauseBox(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length === 0) {
+    return '';
+  }
+  return digits.charAt(digits.length - 1);
+}
 
 const Stack = styled.div`
   display: flex;
@@ -25,6 +68,53 @@ const BrandMark = styled.span`
   align-items: center;
   justify-content: center;
   margin-right: ${onboardTokens.spacing.xs}px;
+`;
+
+const FieldLabel = styled.label`
+  color: ${onboardTokens.textPrimary};
+  font-size: ${onboardTokens.fontSize.s}px;
+  font-weight: ${onboardTokens.fontWeight.semibold};
+`;
+
+const PhoneField = styled.input`
+  width: 100%;
+  box-sizing: border-box;
+  height: ${onboardTokens.buttonHeightL}px;
+  padding: 0 ${onboardTokens.spacing.s12}px;
+  border: 1px solid ${onboardTokens.borderMedium};
+  border-radius: ${onboardTokens.borderRadius.r10}px;
+  background: ${onboardTokens.darkGray3};
+  color: ${onboardTokens.textPrimary};
+  font-size: ${onboardTokens.fontSize.m}px;
+`;
+
+const CodeRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: ${onboardTokens.spacing.s}px;
+`;
+
+const CodeBox = styled.input`
+  width: 100%;
+  box-sizing: border-box;
+  height: ${onboardTokens.buttonHeightL}px;
+  text-align: center;
+  border: 1px solid ${onboardTokens.borderMedium};
+  border-radius: ${onboardTokens.borderRadius.r10}px;
+  background: ${onboardTokens.darkGray3};
+  color: ${onboardTokens.textPrimary};
+  font-size: ${onboardTokens.fontSize.xl}px;
+`;
+
+const Resend = styled.button`
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  color: ${onboardTokens.textPrimary};
+  font-size: ${onboardTokens.fontSize.s}px;
+  font-weight: ${onboardTokens.fontWeight.semibold};
+  cursor: pointer;
 `;
 
 const Policy = styled.p`
@@ -82,7 +172,41 @@ function AppleBrandIcon() {
   );
 }
 
-export function SignupLoginStep() {
+export function SignupLoginStep({
+  prefillPhone,
+  sendCode,
+}: SignupLoginStepProps) {
+  const [phone, setPhone] = useState(() =>
+    defaultPhoneBecausePrefill(prefillPhone),
+  );
+  const [codeBoxes, setCodeBoxes] = useState(emptyCodeBoxesBecauseUnset);
+  const [codeSent, setCodeSent] = useState(false);
+  const requestSend = sendCodeBecauseProp(sendCode);
+
+  const onSend = async (): Promise<void> => {
+    if (!phoneReadyBecauseNonEmpty(phone)) {
+      return;
+    }
+    try {
+      await requestSend(phone.trim());
+      setCodeSent(true);
+      setCodeBoxes(emptyCodeBoxesBecauseUnset());
+    } catch {
+      return;
+    }
+  };
+
+  const onResend = async (): Promise<void> => {
+    if (!phoneReadyBecauseNonEmpty(phone)) {
+      return;
+    }
+    try {
+      await requestSend(phone.trim());
+    } catch {
+      return;
+    }
+  };
+
   return (
     <SheetCard>
       <Stack>
@@ -102,6 +226,63 @@ export function SignupLoginStep() {
           </BrandMark>
           Continue with Apple
         </ProviderButton>
+        <FieldLabel htmlFor="signup-login-phone">Phone number</FieldLabel>
+        <PhoneField
+          id="signup-login-phone"
+          type="tel"
+          autoComplete="tel"
+          aria-label="Phone number"
+          value={phone}
+          onChange={(event) => {
+            setPhone(event.target.value);
+          }}
+        />
+        {codeSent ? null : (
+          <PrimaryButton
+            type="button"
+            disabled={!phoneReadyBecauseNonEmpty(phone)}
+            onClick={() => {
+              void onSend();
+            }}>
+            Send code
+          </PrimaryButton>
+        )}
+        {codeSent ? (
+          <>
+            <CodeRow>
+              {codeBoxes.map((digit, index) => (
+                <CodeBox
+                  key={index}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  aria-label={`Digit ${index + 1} of 6`}
+                  value={digit}
+                  onChange={(event) => {
+                    const nextDigit = lastNumericDigitBecauseBox(
+                      event.target.value,
+                    );
+                    setCodeBoxes((current) =>
+                      current.map((existing, boxIndex) => {
+                        if (boxIndex === index) {
+                          return nextDigit;
+                        }
+                        return existing;
+                      }),
+                    );
+                  }}
+                />
+              ))}
+            </CodeRow>
+            <Resend
+              type="button"
+              onClick={() => {
+                void onResend();
+              }}>
+              Resend
+            </Resend>
+          </>
+        ) : null}
         <Policy>
           By continuing you agree to our{' '}
           <PolicyLink href="/terms/">Terms of Service</PolicyLink> and{' '}

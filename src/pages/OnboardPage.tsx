@@ -7,7 +7,6 @@ import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import { NotificationsStep } from "@/components/onboard/NotificationsStep";
-import { ProgressDots } from "@/components/onboard/OnboardPrimitives";
 import { PhotosConnectStep } from "@/components/onboard/PhotosConnectStep";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { DEFAULT_SHARE_IMAGE_URL } from "@/seo/pageSeo";
@@ -129,9 +128,8 @@ function OnboardFlow() {
         <meta name="twitter:image" content={DEFAULT_SHARE_IMAGE_URL} />
       </Helmet>
       <Shell>
-        <ProgressDots count={5} activeIndex={stepIndex} />
         {step === "signup" ? (
-          <SignupLoginStep prefillPhone={prefillPhone} />
+          <SignupLoginStep />
         ) : null}
         {step === "connections" ? (
           <ConnectionsStep onContinue={goNext} onSkip={goNext} />

@@ -4,10 +4,8 @@ import { render, screen } from "@testing-library/react";
 import { SignupLoginStep } from "./SignupLoginStep";
 
 describe("SignupLoginStep", () => {
-  it("pins app signup copy, provider order, six code boxes, and prefill", () => {
-    const { container } = render(
-      <SignupLoginStep prefillPhone="+15551212" />
-    );
+  it("pins app welcome copy and provider order with brand icons, no phone login", () => {
+    const { container } = render(<SignupLoginStep />);
 
     expect(container.textContent).toContain("Welcome to Pack");
     expect(container.textContent).toContain(
@@ -25,9 +23,14 @@ describe("SignupLoginStep", () => {
     expect(googleAt).toBeGreaterThanOrEqual(0);
     expect(googleAt).toBeLessThan(appleAt);
 
-    expect(screen.getAllByLabelText(/Digit \d of 6/)).toHaveLength(6);
-    expect(screen.getByRole("button", { name: "Resend" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Phone number")).toHaveValue("+15551212");
+    expect(screen.queryByLabelText("Phone number")).toBeNull();
+    expect(screen.queryByLabelText(/Digit 1 of 6/)).toBeNull();
+    expect(screen.queryByText("Resend")).toBeNull();
+
+    const google = screen.getByRole("button", { name: "Continue with Google" });
+    const apple = screen.getByRole("button", { name: "Continue with Apple" });
+    expect(google.querySelector("svg")).not.toBeNull();
+    expect(apple.querySelector("svg")).not.toBeNull();
 
     expect(container.textContent).not.toMatch(
       /SignupLoginScreen|Screen[A-Z]|data-step/

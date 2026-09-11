@@ -111,6 +111,8 @@ describe("OnboardPage /onboard five-step app flow", () => {
     const appleAt = pageText().indexOf("Continue with Apple");
     expect(googleAt).toBeGreaterThanOrEqual(0);
     expect(googleAt).toBeLessThan(appleAt);
+    expect(screen.queryByTestId("onboard-progress-dots")).toBeNull();
+    expect(screen.queryAllByTestId("onboard-progress-dot")).toHaveLength(0);
     fireEvent.click(
       screen.getByRole("button", { name: "Continue with Google" }),
     );
@@ -145,12 +147,14 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expectNoInternalIdentifiers(view.container);
   });
 
-  it("binds sign-in-link phone onto Signup step 1", () => {
+  it("auth step has no progress dots and no phone field even with a phone query", () => {
     const view = renderAt("/onboard?phone=+15551212");
 
     expect(screen.getByRole("heading", { name: "Welcome to Pack" }))
       .toBeInTheDocument();
-    expect(screen.getByLabelText("Phone number")).toHaveValue("+15551212");
+    expect(screen.queryByLabelText("Phone number")).toBeNull();
+    expect(screen.queryByTestId("onboard-progress-dots")).toBeNull();
+    expect(screen.queryAllByTestId("onboard-progress-dot")).toHaveLength(0);
     expectNoInternalIdentifiers(view.container);
   });
 

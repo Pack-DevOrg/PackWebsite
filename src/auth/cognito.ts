@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { appConfig } from "@/config/appConfig";
+import { TokenProvider } from "@/schemas/common";
 import {
   clearPendingPkce,
   getPendingPkce,
@@ -57,11 +58,19 @@ const createCodeChallenge = async (verifier: string): Promise<string> => {
   return base64UrlEncode(new Uint8Array(digest));
 };
 
+type HostedUiIdentityProvider =
+  | typeof TokenProvider.Google
+  | typeof TokenProvider.Apple;
+
 interface LoginOptions {
   readonly redirectPath?: string;
   readonly redirectUri?: string;
   readonly useCanonicalOrigin?: boolean;
+  readonly identityProvider?: HostedUiIdentityProvider;
 }
+
+const defaultIdentityProviderBecauseGoogleHostedUi =
+  (): HostedUiIdentityProvider => TokenProvider.Google;
 
 const resolveRuntimeRedirectUri = (override?: string): string => {
   if (override && override.trim().length > 0) {
@@ -87,7 +96,12 @@ const createAuthorizeUrl = async (
   url.searchParams.set("state", state);
   url.searchParams.set("code_challenge", challenge);
   url.searchParams.set("code_challenge_method", "S256");
-  url.searchParams.set("identity_provider", "Google");
+  url.searchParams.set(
+    "identity_provider",
+    options?.identityProvider !== undefined
+      ? options.identityProvider
+      : defaultIdentityProviderBecauseGoogleHostedUi()
+  );
   url.searchParams.set("access_type", "offline");
   url.searchParams.set("idp_access_type", "offline");
 

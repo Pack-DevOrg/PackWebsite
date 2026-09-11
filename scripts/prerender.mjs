@@ -9,6 +9,7 @@ const distDir = resolve(__dirname, "../dist");
 const ssrDir = resolve(__dirname, "../dist-ssr");
 
 const routesToPrerender = [
+  "/onboard",
   "/",
   "/about",
   "/features",

@@ -2,17 +2,21 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import styled from "styled-components";
+import { useApiClient } from "@/api/useApiClient";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { VerifyPhoneCta } from "@/components/VerifyPhoneCta";
+import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
 
 export const ONBOARD_PATH = "/onboard";
 
 /**
- * Web SMS `/onboard` sequence. Auth first, then mail+calendar, then
- * browser Notification API. No PhotosConnectScreen (native PHPhotoLibrary).
+ * Web SMS `/onboard` sequence. Auth first, then verify number, then
+ * mail+calendar, then browser Notification API. No PhotosConnectScreen
+ * (native PHPhotoLibrary).
  */
 export const ONBOARDING_SEQUENCE = [
   "SignupLoginScreen",
+  "VerifyPhoneScreen",
   "ConnectedAccountsScreen",
   "NotificationsSetupScreen",
   "OnboardingCompleteScreen",
@@ -22,10 +26,14 @@ export type OnboardingScreenName = (typeof ONBOARDING_SEQUENCE)[number];
 
 const STEP_LABELS: Record<OnboardingScreenName, string> = {
   SignupLoginScreen: "Sign up / log in",
+  VerifyPhoneScreen: "Verify number",
   ConnectedAccountsScreen: "Connect accounts",
   NotificationsSetupScreen: "Browser notifications",
   OnboardingCompleteScreen: "Complete",
 };
+
+const VERIFY_PHONE_ISSUE_PATH = "/verify-phone/issue";
+const VERIFY_PHONE_CONFIRM_PATH = "/verify-phone/confirm";
 
 const FIRST_STEP: OnboardingScreenName = ONBOARDING_SEQUENCE[0];
 
@@ -45,6 +53,10 @@ function nextStepIndexBecauseSequence(index: number): number {
     return last;
   }
   return index + 1;
+}
+
+function verifyPhoneIndexBecauseSequence(): number {
+  return ONBOARDING_SEQUENCE.indexOf("VerifyPhoneScreen");
 }
 
 function browserNotificationApiOrMissing(): {
@@ -261,10 +273,50 @@ function AuthStep({
   );
 }
 
+function VerifyPhoneOnboardStep({
+  onVerified,
+  onSkip,
+}: {
+  readonly onVerified: () => void;
+  readonly onSkip: () => void;
+}) {
+  const apiClient = useApiClient();
+
+  const issueVerifyCode = async (phone: string): Promise<void> => {
+    await apiClient.request({
+      path: VERIFY_PHONE_ISSUE_PATH,
+      method: "POST",
+      body: { phone },
+    });
+  };
+
+  const confirmVerifyCode = async (code: string): Promise<void> => {
+    await apiClient.request({
+      path: VERIFY_PHONE_CONFIRM_PATH,
+      method: "POST",
+      body: { code },
+    });
+  };
+
+  return (
+    <>
+      <Eyebrow>Verify</Eyebrow>
+      <VerifyPhoneStep
+        issueVerifyCode={issueVerifyCode}
+        confirmVerifyCode={confirmVerifyCode}
+        onVerified={onVerified}
+        onSkip={onSkip}
+      />
+    </>
+  );
+}
+
 function ConnectedAccountsStep({
   onContinue,
+  onReaskVerifyPhone,
 }: {
   readonly onContinue: () => void;
+  readonly onReaskVerifyPhone: () => void;
 }) {
   return (
     <>
@@ -286,6 +338,9 @@ function ConnectedAccountsStep({
           onClick={keepConnectCalendarContractBecauseSettingsOAuthUnwired}
         >
           Connect calendar
+        </GhostButton>
+        <GhostButton type="button" onClick={onReaskVerifyPhone}>
+          Verify number
         </GhostButton>
         <PrimaryButton type="button" onClick={onContinue}>
           Continue
@@ -358,6 +413,10 @@ function OnboardFlow() {
     setStepIndex((current) => nextStepIndexBecauseSequence(current));
   };
 
+  const goToVerifyPhoneBecauseReask = () => {
+    setStepIndex(verifyPhoneIndexBecauseSequence());
+  };
+
   return (
     <Page>
       <Helmet>
@@ -384,8 +443,14 @@ function OnboardFlow() {
           {step === "SignupLoginScreen" ? (
             <AuthStep onContinueAuthenticated={goNext} />
           ) : null}
+          {step === "VerifyPhoneScreen" ? (
+            <VerifyPhoneOnboardStep onVerified={goNext} onSkip={goNext} />
+          ) : null}
           {step === "ConnectedAccountsScreen" ? (
-            <ConnectedAccountsStep onContinue={goNext} />
+            <ConnectedAccountsStep
+              onContinue={goNext}
+              onReaskVerifyPhone={goToVerifyPhoneBecauseReask}
+            />
           ) : null}
           {step === "NotificationsSetupScreen" ? (
             <NotificationsSetupStep onContinue={goNext} />

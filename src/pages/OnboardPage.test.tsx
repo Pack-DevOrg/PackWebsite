@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
@@ -14,6 +14,7 @@ import { ThemeProvider } from "@/styles/ThemeProvider";
 
 const loginMock = jest.fn();
 const useAuthMock = jest.fn();
+const apiRequestMock = jest.fn();
 
 jest.mock("@/auth/AuthContext", () => ({
   useAuth: () => useAuthMock(),
@@ -22,11 +23,41 @@ jest.mock("@/auth/AuthContext", () => ({
   ),
 }));
 
+jest.mock("@/api/useApiClient", () => ({
+  useApiClient: () => ({
+    request: (...args: unknown[]) => apiRequestMock(...args),
+  }),
+}));
+
 jest.mock("@/components/VerifyPhoneCta", () => ({
   VerifyPhoneCta: () => (
     <div data-testid="verify-phone-cta">Text Pack</div>
   ),
 }));
+
+function confirmVerifyPhonePosts(): unknown[] {
+  return apiRequestMock.mock.calls.filter((call) => {
+    const options = call[0] as { path?: string; method?: string };
+    return (
+      options.path === "/verify-phone/confirm" && options.method === "POST"
+    );
+  });
+}
+
+function mockAuthenticatedSession(): void {
+  useAuthMock.mockReturnValue({
+    status: "authenticated",
+    user: {
+      sub: "signed-in-user",
+      email: "signed-in@trypackai.com",
+      name: "Pat Pack",
+    },
+    login: loginMock,
+    logout: jest.fn(),
+    getAccessToken: async () => "synth-access-token",
+    tokens: { tokenType: "Bearer" },
+  });
+}
 
 function renderAt(path: string) {
   return render(
@@ -77,15 +108,22 @@ describe("OnboardPage /onboard auth-first", () => {
     expect(loginMock).not.toHaveBeenCalled();
   });
 
-  it("uses the four web onboarding steps and excludes PhotosConnectScreen", () => {
+  it("uses the five web onboarding steps with VerifyPhoneScreen immediately before ConnectedAccountsScreen", () => {
     renderAt(ONBOARD_PATH);
 
     expect(ONBOARDING_SEQUENCE).toEqual([
       "SignupLoginScreen",
+      "VerifyPhoneScreen",
       "ConnectedAccountsScreen",
       "NotificationsSetupScreen",
       "OnboardingCompleteScreen",
     ]);
+    const verifyIndex = ONBOARDING_SEQUENCE.indexOf("VerifyPhoneScreen");
+    const connectionsIndex = ONBOARDING_SEQUENCE.indexOf(
+      "ConnectedAccountsScreen",
+    );
+    expect(verifyIndex).toBeGreaterThanOrEqual(0);
+    expect(connectionsIndex).toBe(verifyIndex + 1);
     expect(ONBOARDING_SEQUENCE).not.toContain("PhotosConnectScreen");
     expect(ONBOARDING_SEQUENCE).not.toContain("ConnectedAccountsDemoScreen");
     const listed = screen
@@ -132,24 +170,22 @@ describe("OnboardPage /onboard auth-first", () => {
     );
   });
 
-  it("shows Connect mail and Connect calendar after auth, then browser notifications not lock-screen", () => {
-    useAuthMock.mockReturnValue({
-      status: "authenticated",
-      user: {
-        sub: "signed-in-user",
-        email: "signed-in@trypackai.com",
-        name: "Pat Pack",
-      },
-      login: loginMock,
-      logout: jest.fn(),
-      getAccessToken: async () => null,
-      tokens: null,
-    });
+  it("shows VerifyPhoneStep in the Card after auth Continue, then connections after skip", () => {
+    mockAuthenticatedSession();
 
     renderAt(ONBOARD_PATH);
 
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
 
+    const verifyCard = screen.getByTestId("onboard-step");
+    expect(verifyCard).toHaveAttribute("data-step", "VerifyPhoneScreen");
+    expect(
+      within(verifyCard).getByTestId("verify-phone-step"),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
+
+    expect(confirmVerifyPhonePosts()).toHaveLength(0);
     expect(screen.getByTestId("onboard-step")).toHaveAttribute(
       "data-step",
       "ConnectedAccountsScreen",
@@ -185,5 +221,41 @@ describe("OnboardPage /onboard auth-first", () => {
       "data-step",
       "OnboardingCompleteScreen",
     );
+  });
+
+  it("skip from VerifyPhoneScreen does not POST /verify-phone/confirm", () => {
+    mockAuthenticatedSession();
+
+    renderAt(ONBOARD_PATH);
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
+
+    expect(confirmVerifyPhonePosts()).toHaveLength(0);
+    expect(screen.getByTestId("onboard-step")).toHaveAttribute(
+      "data-step",
+      "ConnectedAccountsScreen",
+    );
+  });
+
+  it("re-asks VerifyPhoneScreen from connections without posting confirm", () => {
+    mockAuthenticatedSession();
+
+    renderAt(ONBOARD_PATH);
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
+
+    expect(screen.getByTestId("onboard-step")).toHaveAttribute(
+      "data-step",
+      "ConnectedAccountsScreen",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Verify number" }));
+
+    expect(confirmVerifyPhonePosts()).toHaveLength(0);
+    const reasked = screen.getByTestId("onboard-step");
+    expect(reasked).toHaveAttribute("data-step", "VerifyPhoneScreen");
+    expect(
+      within(reasked).getByTestId("verify-phone-step"),
+    ).toBeInTheDocument();
   });
 });

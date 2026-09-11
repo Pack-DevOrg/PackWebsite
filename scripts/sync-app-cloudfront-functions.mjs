@@ -33,8 +33,11 @@ for (const target of functions) {
       "describe-function",
       "--name",
       target.name,
+      // update-function's If-Match must be the DEVELOPMENT-stage ETag; the
+      // LIVE ETag diverges as soon as an unpublished edit exists
+      // (PreconditionFailed on 2026-09-11).
       "--stage",
-      "LIVE",
+      "DEVELOPMENT",
       "--output",
       "json",
     ]),

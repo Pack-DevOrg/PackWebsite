@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import {
   PrimaryButton,
-  ProgressDots,
   SheetCard,
   StepBody,
   StepTitle,
@@ -290,7 +289,6 @@ export function ConnectionsStep({
         <BackButton type="button" aria-label="Back" onClick={handleBack}>
           ‹
         </BackButton>
-        <ProgressDots count={5} activeIndex={2} />
         <Header>
           <StepTitle>Connections</StepTitle>
           <StepBody data-testid="connected-accounts-why-connect">

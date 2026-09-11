@@ -18,7 +18,7 @@ function attributeBlob(root: HTMLElement): string {
 }
 
 describe("ConnectionsStep", () => {
-  it("pins Connections heading, account rows, security copy, and progress", () => {
+  it("pins Connections heading, account rows, security copy, and no in-card dots", () => {
     const { container } = render(<ConnectionsStep />);
     const text = container.textContent ?? "";
 
@@ -69,13 +69,8 @@ describe("ConnectionsStep", () => {
       screen.getByTestId("connected-accounts-skip-button")
     ).toHaveTextContent("Skip for now");
 
-    const dots = screen.getAllByTestId("onboard-progress-dot");
-    expect(dots).toHaveLength(5);
-    expect(dots[0]).toHaveAttribute("data-active", "false");
-    expect(dots[1]).toHaveAttribute("data-active", "false");
-    expect(dots[2]).toHaveAttribute("data-active", "true");
-    expect(dots[3]).toHaveAttribute("data-active", "false");
-    expect(dots[4]).toHaveAttribute("data-active", "false");
+    expect(screen.queryAllByTestId("onboard-progress-dot")).toHaveLength(0);
+    expect(screen.queryByTestId("onboard-progress-dots")).not.toBeInTheDocument();
 
     expect(container.textContent).not.toMatch(INTERNAL_IDENTIFIERS);
     expect(container.innerHTML).not.toMatch(INTERNAL_IDENTIFIERS);

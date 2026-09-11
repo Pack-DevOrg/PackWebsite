@@ -1,0 +1,51 @@
+{
+  "source": ".maestro/goldens/onboarding/",
+  "derivedFrom": "website-onboarding-real-auth-parity-c1 .maestro/goldens-onboarding.yml assertVisible + step pngs",
+  "shared": [
+    {
+      "step": "signup",
+      "golden": "signup.png",
+      "title": "Welcome to Pack",
+      "cta": "Continue with Google"
+    },
+    {
+      "step": "what-pack-does",
+      "pages": [
+        {
+          "golden": "what-pack-does-1.png",
+          "title": "Past",
+          "cta": "Continue"
+        },
+        {
+          "golden": "what-pack-does-2.png",
+          "title": "Present",
+          "cta": "Continue"
+        },
+        {
+          "golden": "what-pack-does-3.png",
+          "title": "Future",
+          "cta": "Continue"
+        }
+      ]
+    },
+    {
+      "step": "connections",
+      "golden": "connections.png",
+      "title": "Connections",
+      "cta": "Skip for now"
+    },
+    {
+      "step": "welcome",
+      "golden": "welcome.png",
+      "title": "You're all set!",
+      "cta": "Let us handle the rest"
+    }
+  ],
+  "verify": {
+    "step": "verify",
+    "title": "Verify your number",
+    "ctaMobile": "Text Pack",
+    "ctaDesktop": "QR code to text Pack",
+    "note": "not a C1 golden; web goldens are per-project (mobile sms button / desktop QR)"
+  }
+}

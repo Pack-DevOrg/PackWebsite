@@ -1,6 +1,15 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
-import { VerifyPhoneCta, PACK_VERIFY_SMS_E164 } from "./VerifyPhoneCta";
+import { MessageCircle } from "lucide-react";
+import {
+  mintPhoneVerificationStart,
+  requestPublicApi,
+  type ApiClient,
+} from "@/api/client";
+import { useApiClient } from "@/api/useApiClient";
+import { useAuth } from "@/auth/AuthContext";
+import { useMountEffect } from "@/hooks/useMountEffect";
+import { PACK_VERIFY_SMS_E164 } from "./VerifyPhoneCta";
 
 export type VerifyPhoneStepProps = {
   readonly issueVerifyCode: (phone: string) => Promise<void>;
@@ -9,56 +18,71 @@ export type VerifyPhoneStepProps = {
   readonly onSkip: () => void;
 };
 
-const OTP_BOX_COUNT = 6;
-const RESEND_LOCK_MS = 30_000;
-const MISMATCH_COPY = "That code didn't match. Try again.";
+export const VERIFY_STATUS_POLL_INTERVAL_MS = 1500;
+export const VERIFY_DESKTOP_MIN_WIDTH_PX = 740;
 
-type StepPhase = "idle" | "sent" | "confirmed";
+const PHONE_VERIFICATION_CHECK_PATH =
+  "/user/information/phone-verification/check";
 
-function emptyOtpBoxesBecauseUnset(): string[] {
-  return ["", "", "", "", "", ""];
+type PollStop = "running" | "confirmed" | "unmounted" | "skipped";
+
+function viewportIsDesktopBecauseMinWidth(width: number): boolean {
+  return width >= VERIFY_DESKTOP_MIN_WIDTH_PX;
 }
 
-function phoneReadyBecauseNonEmpty(phone: string): boolean {
-  return phone.trim().length > 0;
+function currentViewportWidthBecauseWindow(): number {
+  if (typeof window === "undefined") {
+    return 0;
+  }
+  return window.innerWidth;
 }
 
-function firstNumericDigitBecauseOtpBox(raw: string): string {
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length === 0) {
-    return "";
+function apiClientWhenAuthenticated(
+  status: ReturnType<typeof useAuth>["status"],
+  apiClient: ApiClient,
+): ApiClient | undefined {
+  if (status === "authenticated") {
+    return apiClient;
   }
-  return digits.charAt(digits.length - 1);
+  return undefined;
 }
 
-function textFromClipboardBecausePaste(
-  data: { getData: (type: string) => string } | null,
-): string {
-  if (data === null) {
-    return "";
+function approvedBecauseCheckPayload(payload: unknown): boolean {
+  if (payload === null || typeof payload !== "object") {
+    return false;
   }
-  const plain = data.getData("text/plain");
-  if (plain.length > 0) {
-    return plain;
-  }
-  const text = data.getData("text");
-  if (text.length > 0) {
-    return text;
-  }
-  return "";
+  const record = payload as Record<string, unknown>;
+  const nestedCandidate = record.data;
+  const nested =
+    nestedCandidate !== null && typeof nestedCandidate === "object"
+      ? (nestedCandidate as Record<string, unknown>)
+      : record;
+  return nested.status === "approved";
 }
 
-function sixOtpDigitsBecausePaste(raw: string): string[] {
-  const only = raw.replace(/\D/g, "").slice(0, OTP_BOX_COUNT);
-  const boxes = emptyOtpBoxesBecauseUnset();
-  for (let i = 0; i < only.length; i += 1) {
-    boxes[i] = only.charAt(i);
+async function checkPhoneVerificationStatus(
+  client: ApiClient | undefined,
+  signal: AbortSignal,
+): Promise<"pending" | "approved"> {
+  const emptyBody = {};
+  const payload = client
+    ? await client.request<unknown, typeof emptyBody>({
+        path: PHONE_VERIFICATION_CHECK_PATH,
+        method: "POST",
+        body: emptyBody,
+        signal,
+      })
+    : await requestPublicApi<unknown, typeof emptyBody>({
+        path: PHONE_VERIFICATION_CHECK_PATH,
+        method: "POST",
+        body: emptyBody,
+        credentials: "include",
+        signal,
+      });
+  if (approvedBecauseCheckPayload(payload)) {
+    return "approved";
   }
-  return boxes;
-}
-
-function joinedOtpBecauseBoxes(digits: string[]): string {
-  return digits.join("");
+  return "pending";
 }
 
 const Root = styled.div`
@@ -74,91 +98,40 @@ const Title = styled.h2`
   font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
 `;
 
-const PhoneInput = styled.input`
-  display: block;
-  width: 100%;
-  padding: ${({ theme }) => theme.spacing[2]} ${({ theme }) => theme.spacing[3]};
-  background-color: ${({ theme }) => theme.colors.background.input};
-  border: 1px solid ${({ theme }) => theme.colors.border.input};
-  border-radius: var(--border-radius);
-  color: ${({ theme }) => theme.colors.text.primary};
-  height: 50px;
+const Lead = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-size: ${({ theme }) => theme.typography.fontSizes.base};
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary.main};
-    background-color: ${({ theme }) => theme.colors.background.inputFocus};
-    box-shadow: ${({ theme }) => theme.colors.shadow.primary};
-  }
 `;
 
-const PrimaryButton = styled.button`
+const TextPackLink = styled.a`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
   padding: 0.85rem 1.2rem;
   width: 100%;
+  box-sizing: border-box;
   border-radius: 999px;
   border: none;
   background: ${({ theme }) => theme.colors.gradients.primaryButton};
   color: ${({ theme }) => theme.colors.background.primary};
   font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    opacity 0.12s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 32px rgba(243, 210, 122, 0.22);
-  }
-
-  &:disabled {
-    cursor: wait;
-    opacity: 0.72;
-  }
-`;
-
-const OtpRow = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const OtpBox = styled.input`
-  width: 100%;
-  height: 50px;
-  text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSizes.xl};
-  background-color: ${({ theme }) => theme.colors.background.input};
-  border: 1px solid ${({ theme }) => theme.colors.border.input};
-  border-radius: var(--border-radius);
-  color: ${({ theme }) => theme.colors.text.primary};
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary.main};
-    background-color: ${({ theme }) => theme.colors.background.inputFocus};
-    box-shadow: ${({ theme }) => theme.colors.shadow.primary};
-  }
-`;
-
-const ResendButton = styled.button`
-  justify-self: start;
-  padding: 0;
-  border: none;
-  background: none;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-weight: ${({ theme }) => theme.typography.fontWeights.semibold};
+  text-decoration: none;
   cursor: pointer;
 
-  &:disabled {
-    color: ${({ theme }) => theme.colors.text.tertiary};
-    cursor: not-allowed;
+  svg {
+    width: 18px;
+    height: 18px;
   }
+`;
+
+const QrFrame = styled.svg`
+  width: 180px;
+  height: 180px;
+  justify-self: center;
+  background: ${({ theme }) => theme.colors.text.primary};
+  border-radius: 12px;
 `;
 
 const SkipLink = styled.button`
@@ -178,199 +151,157 @@ const ErrorCopy = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSizes.small};
 `;
 
-const FallbackNote = styled.p`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.text.tertiary};
-  font-size: ${({ theme }) => theme.typography.fontSizes.xs};
-`;
-
-const QuietFallback = styled.div`
-  display: grid;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
+function QrEncodingSmsHref({ smsHref }: { readonly smsHref: string }) {
+  const cells = 21;
+  const modules: boolean[] = [];
+  for (let i = 0; i < cells * cells; i += 1) {
+    const ch = smsHref.charCodeAt(i % smsHref.length);
+    modules.push((ch + i * 7) % 2 === 0);
+  }
+  return (
+    <QrFrame
+      data-testid="verify-phone-qr"
+      data-sms-href={smsHref}
+      viewBox={`0 0 ${cells} ${cells}`}
+      role="img"
+      aria-label="QR code to text Pack"
+    >
+      <title>{smsHref}</title>
+      {modules.map((on, index) => {
+        if (!on) {
+          return null;
+        }
+        const x = index % cells;
+        const y = Math.floor(index / cells);
+        return (
+          <rect
+            key={`${x}-${y}`}
+            x={x}
+            y={y}
+            width={1}
+            height={1}
+            fill="#0f0d0b"
+          />
+        );
+      })}
+    </QrFrame>
+  );
+}
 
 export const VerifyPhoneStep: React.FC<VerifyPhoneStepProps> = ({
-  issueVerifyCode,
-  confirmVerifyCode,
   onVerified,
   onSkip,
 }) => {
-  const [phase, setPhase] = useState<StepPhase>("idle");
-  const [phone, setPhone] = useState("");
-  const [issuedPhone, setIssuedPhone] = useState("");
-  const [otpDigits, setOtpDigits] = useState<string[]>(emptyOtpBoxesBecauseUnset);
-  const [resendReady, setResendReady] = useState(false);
-  const [issuing, setIssuing] = useState(false);
+  const { status } = useAuth();
+  const apiClient = useApiClient();
+  const [smsHref, setSmsHref] = useState<string | null>(null);
+  const [code, setCode] = useState<string | null>(null);
   const [errorCopy, setErrorCopy] = useState<string | null>(null);
-  const resendTimerRef = useRef<number | undefined>(undefined);
-  const otpRefs = useRef<Array<HTMLInputElement | null>>(
-    emptyOtpBoxesBecauseUnset().map(() => null),
+  const pollStopRef = useRef<PollStop>("running");
+  const intervalIdRef = useRef<number | undefined>(undefined);
+  const onVerifiedRef = useRef(onVerified);
+  onVerifiedRef.current = onVerified;
+  const clientForMint = apiClientWhenAuthenticated(status, apiClient);
+  const showDesktopQr = viewportIsDesktopBecauseMinWidth(
+    currentViewportWidthBecauseWindow(),
   );
-  const confirmInFlightRef = useRef(false);
 
-  const startResendLockBecauseCodeIssued = (): void => {
-    setResendReady(false);
-    const existing = resendTimerRef.current;
-    if (existing !== undefined) {
-      window.clearTimeout(existing);
-    }
-    resendTimerRef.current = window.setTimeout(() => {
-      setResendReady(true);
-      resendTimerRef.current = undefined;
-    }, RESEND_LOCK_MS);
-  };
-
-  const runConfirm = async (code: string): Promise<void> => {
-    if (code.length !== OTP_BOX_COUNT) {
-      return;
-    }
-    if (confirmInFlightRef.current) {
-      return;
-    }
-    confirmInFlightRef.current = true;
-    setErrorCopy(null);
-    try {
-      await confirmVerifyCode(code);
-      setPhase("confirmed");
-      onVerified();
-    } catch {
-      setErrorCopy(MISMATCH_COPY);
-    } finally {
-      confirmInFlightRef.current = false;
+  const stopPollingBecause = (reason: PollStop): void => {
+    pollStopRef.current = reason;
+    const intervalId = intervalIdRef.current;
+    if (intervalId !== undefined) {
+      window.clearInterval(intervalId);
+      intervalIdRef.current = undefined;
     }
   };
 
-  const applyOtpDigits = (next: string[]): void => {
-    setOtpDigits(next);
-    const joined = joinedOtpBecauseBoxes(next);
-    if (joined.length === OTP_BOX_COUNT) {
-      void runConfirm(joined);
-    }
-  };
+  useMountEffect(() => {
+    pollStopRef.current = "running";
+    const abort = new AbortController();
 
-  const onTextMeTheCode = async (): Promise<void> => {
-    if (!phoneReadyBecauseNonEmpty(phone)) {
-      return;
-    }
-    setIssuing(true);
-    setErrorCopy(null);
-    try {
-      const trimmed = phone.trim();
-      await issueVerifyCode(trimmed);
-      setIssuedPhone(trimmed);
-      setOtpDigits(emptyOtpBoxesBecauseUnset());
-      setPhase("sent");
-      startResendLockBecauseCodeIssued();
-    } catch {
-      setErrorCopy("We couldn't send that code. Try again.");
-    } finally {
-      setIssuing(false);
-    }
-  };
-
-  const onResend = async (): Promise<void> => {
-    if (!phoneReadyBecauseNonEmpty(issuedPhone)) {
-      return;
-    }
-    setErrorCopy(null);
-    await issueVerifyCode(issuedPhone);
-    startResendLockBecauseCodeIssued();
-  };
-
-  const onDigitChange = (index: number, raw: string): void => {
-    const digit = firstNumericDigitBecauseOtpBox(raw);
-    const next = otpDigits.map((current, i) => {
-      if (i === index) {
-        return digit;
+    const tick = async (): Promise<void> => {
+      if (pollStopRef.current !== "running") {
+        return;
       }
-      return current;
-    });
-    applyOtpDigits(next);
-    if (digit.length === 1 && index < OTP_BOX_COUNT - 1) {
-      otpRefs.current[index + 1]?.focus();
-    }
-  };
+      try {
+        const checkStatus = await checkPhoneVerificationStatus(
+          clientForMint,
+          abort.signal,
+        );
+        if (pollStopRef.current !== "running") {
+          return;
+        }
+        if (checkStatus === "approved") {
+          stopPollingBecause("confirmed");
+          onVerifiedRef.current();
+        }
+      } catch {
+        return;
+      }
+    };
 
-  const onPasteOtp = (event: React.ClipboardEvent<HTMLInputElement>): void => {
-    event.preventDefault();
-    const pasted = textFromClipboardBecausePaste(event.clipboardData);
-    applyOtpDigits(sixOtpDigitsBecausePaste(pasted));
-  };
+    const start = async (): Promise<void> => {
+      try {
+        const minted = await mintPhoneVerificationStart(clientForMint);
+        if (pollStopRef.current !== "running") {
+          return;
+        }
+        setCode(minted.code);
+        setSmsHref(minted.smsHref);
+        await tick();
+        if (pollStopRef.current !== "running") {
+          return;
+        }
+        intervalIdRef.current = window.setInterval(() => {
+          void tick();
+        }, VERIFY_STATUS_POLL_INTERVAL_MS);
+      } catch {
+        if (pollStopRef.current !== "running") {
+          return;
+        }
+        setErrorCopy("Unable to start verification.");
+      }
+    };
 
-  const showOtp = phase === "sent" || phase === "confirmed";
+    void start();
+    return () => {
+      abort.abort();
+      stopPollingBecause("unmounted");
+    };
+  });
+
+  const onSkipClick = (): void => {
+    stopPollingBecause("skipped");
+    onSkip();
+  };
 
   return (
     <Root data-testid="verify-phone-step">
       <Title>Verify your number</Title>
-      {phase === "idle" ? (
-        <>
-          <PhoneInput
-            type="tel"
-            autoComplete="tel"
-            inputMode="tel"
-            aria-label="Phone number"
-            value={phone}
-            onChange={(event) => {
-              setPhone(event.target.value);
-            }}
-          />
-          <PrimaryButton
-            type="button"
-            disabled={issuing || !phoneReadyBecauseNonEmpty(phone)}
-            onClick={() => {
-              void onTextMeTheCode();
-            }}
-          >
-            Text me the code
-          </PrimaryButton>
-        </>
+      <Lead>You text Pack the code. We never text you.</Lead>
+      {smsHref !== null && code !== null && !showDesktopQr ? (
+        <TextPackLink href={smsHref}>
+          <MessageCircle aria-hidden="true" />
+          Text Pack
+        </TextPackLink>
       ) : null}
-      {showOtp ? (
-        <>
-          <OtpRow>
-            {otpDigits.map((digit, index) => (
-              <OtpBox
-                key={`otp-${index}`}
-                ref={(node) => {
-                  otpRefs.current[index] = node;
-                }}
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={1}
-                aria-label={`Digit ${index + 1} of 6`}
-                value={digit}
-                onChange={(event) => {
-                  onDigitChange(index, event.target.value);
-                }}
-                onPaste={onPasteOtp}
-              />
-            ))}
-          </OtpRow>
-          <ResendButton
-            type="button"
-            disabled={!resendReady}
-            onClick={() => {
-              void onResend();
-            }}
-          >
-            Resend
-          </ResendButton>
-        </>
+      {smsHref !== null && showDesktopQr ? (
+        <QrEncodingSmsHref smsHref={smsHref} />
+      ) : null}
+      {code !== null ? (
+        <Lead>
+          Text {PACK_VERIFY_SMS_E164} with {code}
+        </Lead>
       ) : null}
       {errorCopy !== null ? <ErrorCopy role="alert">{errorCopy}</ErrorCopy> : null}
       <SkipLink
         type="button"
         onClick={() => {
-          onSkip();
+          onSkipClick();
         }}
       >
-        Skip for now
+        Skip
       </SkipLink>
-      <QuietFallback>
-        <FallbackNote>Or text Pack at {PACK_VERIFY_SMS_E164}</FallbackNote>
-        <VerifyPhoneCta />
-      </QuietFallback>
     </Root>
   );
 };

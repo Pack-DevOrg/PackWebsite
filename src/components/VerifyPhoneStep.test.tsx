@@ -1,10 +1,17 @@
 import React from "react";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ThemeProvider } from "@/styles/ThemeProvider";
-import { VerifyPhoneStep } from "./VerifyPhoneStep";
+import {
+  VERIFY_DESKTOP_MIN_WIDTH_PX,
+  VERIFY_STATUS_POLL_INTERVAL_MS,
+  VerifyPhoneStep,
+} from "./VerifyPhoneStep";
 
-const SYNTHETIC_PHONE = "+15555550100";
-const SYNTHETIC_CODE = "123456";
+const SYNTHETIC_CODE = "A1b2C3d4E5";
+const SYNTHETIC_SMS_HREF = "sms:+13054392989?body=A1b2C3d4E5";
+const START_PATH = "/user/information/phone-verification/start";
+const CHECK_PATH = "/user/information/phone-verification/check";
+const MOBILE_WIDTH_PX = 390;
 
 jest.mock("@/auth/AuthContext", () => ({
   useAuth: () => ({
@@ -15,6 +22,14 @@ jest.mock("@/auth/AuthContext", () => ({
     getAccessToken: async () => null,
     tokens: null,
   }),
+}));
+
+jest.mock("@/config/appConfig", () => ({
+  appConfig: {
+    apiBaseUrl: "https://api.example.com/dev",
+    environment: "prod",
+    apiKey: undefined,
+  },
 }));
 
 type StepMocks = {
@@ -36,44 +51,32 @@ function defaultConfirmVerifyCode(): StepMocks["confirmVerifyCode"] {
   });
 }
 
-function pickIssueVerifyCode(
-  override: StepMocks["issueVerifyCode"] | undefined,
-): StepMocks["issueVerifyCode"] {
-  if (override === undefined) {
-    return defaultIssueVerifyCode();
-  }
-  return override;
-}
+const mintPayload = {
+  code: SYNTHETIC_CODE,
+  smsHref: SYNTHETIC_SMS_HREF,
+  expiresAt: 1_714_000_600_000,
+};
 
-function pickConfirmVerifyCode(
-  override: StepMocks["confirmVerifyCode"] | undefined,
-): StepMocks["confirmVerifyCode"] {
-  if (override === undefined) {
-    return defaultConfirmVerifyCode();
-  }
-  return override;
-}
-
-function pickOnVerified(override: StepMocks["onVerified"] | undefined): StepMocks["onVerified"] {
-  if (override === undefined) {
-    return jest.fn();
-  }
-  return override;
-}
-
-function pickOnSkip(override: StepMocks["onSkip"] | undefined): StepMocks["onSkip"] {
-  if (override === undefined) {
-    return jest.fn();
-  }
-  return override;
+function setViewportWidth(width: number): void {
+  Object.defineProperty(window, "innerWidth", {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
 }
 
 function renderStep(overrides: Partial<StepMocks> = {}): StepMocks {
   const mocks: StepMocks = {
-    issueVerifyCode: pickIssueVerifyCode(overrides.issueVerifyCode),
-    confirmVerifyCode: pickConfirmVerifyCode(overrides.confirmVerifyCode),
-    onVerified: pickOnVerified(overrides.onVerified),
-    onSkip: pickOnSkip(overrides.onSkip),
+    issueVerifyCode:
+      overrides.issueVerifyCode === undefined
+        ? defaultIssueVerifyCode()
+        : overrides.issueVerifyCode,
+    confirmVerifyCode:
+      overrides.confirmVerifyCode === undefined
+        ? defaultConfirmVerifyCode()
+        : overrides.confirmVerifyCode,
+    onVerified: overrides.onVerified === undefined ? jest.fn() : overrides.onVerified,
+    onSkip: overrides.onSkip === undefined ? jest.fn() : overrides.onSkip,
   };
   render(
     <ThemeProvider>
@@ -88,112 +91,103 @@ function renderStep(overrides: Partial<StepMocks> = {}): StepMocks {
   return mocks;
 }
 
-async function sendCodeToOtp(issueVerifyCode: StepMocks["issueVerifyCode"]): Promise<void> {
-  fireEvent.change(screen.getByLabelText("Phone number"), {
-    target: { value: SYNTHETIC_PHONE },
-  });
-  await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: "Text me the code" }));
-  });
-  expect(issueVerifyCode).toHaveBeenCalledWith(SYNTHETIC_PHONE);
+function jsonResponse(body: unknown): Response {
+  return {
+    ok: true,
+    status: 200,
+    text: async () => JSON.stringify(body),
+  } as Response;
+}
+
+function fetchUrl(index: number): string {
+  const calls = (global.fetch as jest.Mock).mock.calls;
+  return String(calls[index][0]);
 }
 
 describe("VerifyPhoneStep", () => {
-  it("sets one-time-code autocomplete on OTP controls after sending", async () => {
-    const mocks = renderStep();
+  const originalInnerWidth = window.innerWidth;
+  let checkCalls: number;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    checkCalls = 0;
+    setViewportWidth(MOBILE_WIDTH_PX);
+    global.fetch = jest.fn(async (input: RequestInfo | URL): Promise<Response> => {
+      const href = String(input);
+      if (href.includes(START_PATH)) {
+        return jsonResponse(mintPayload);
+      }
+      if (href.includes(CHECK_PATH)) {
+        checkCalls += 1;
+        const status = checkCalls >= 2 ? "approved" : "pending";
+        return jsonResponse({ status });
+      }
+      throw new Error(`unexpected fetch ${href}`);
+    });
+  });
+
+  afterEach(() => {
+    setViewportWidth(originalInnerWidth);
+    jest.useRealTimers();
+  });
+
+  it("renders sms href containing the code and never Text me the code", async () => {
+    renderStep();
+    const cta = await screen.findByRole("link", { name: "Text Pack" });
+    expect(cta.getAttribute("href")).toBe(SYNTHETIC_SMS_HREF);
+    expect(cta.getAttribute("href")).toContain(SYNTHETIC_CODE);
+    expect(cta.getAttribute("href")).toMatch(/^sms:\+13054392989\?body=/);
+    expect(screen.queryByText("Text me the code")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Text me the code" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Phone number")).not.toBeInTheDocument();
     expect(document.querySelector('[autocomplete="one-time-code"]')).toBeNull();
-    await sendCodeToOtp(mocks.issueVerifyCode);
-    const otpControl = document.querySelector('[autocomplete="one-time-code"]');
-    expect(otpControl).not.toBeNull();
-    expect(otpControl?.getAttribute("autocomplete")).toBe("one-time-code");
+    expect(fetchUrl(0)).toContain(START_PATH);
   });
 
-  it("locks Resend until 30s then enables it", async () => {
+  it("shows a QR encoding the same sms link on desktop width", async () => {
+    setViewportWidth(VERIFY_DESKTOP_MIN_WIDTH_PX);
+    renderStep();
+    const qr = await screen.findByTestId("verify-phone-qr");
+    expect(qr.getAttribute("data-sms-href")).toBe(SYNTHETIC_SMS_HREF);
+    expect(qr.getAttribute("data-sms-href")).toContain(SYNTHETIC_CODE);
+    expect(screen.queryByRole("link", { name: "Text Pack" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Text me the code")).not.toBeInTheDocument();
+  });
+
+  it("polls verify-status until confirmed then fires onVerified", async () => {
     jest.useFakeTimers();
-    try {
-      const mocks = renderStep();
-      await sendCodeToOtp(mocks.issueVerifyCode);
-      const resend = screen.getByRole("button", { name: "Resend" });
-      expect(resend).toBeDisabled();
-      act(() => {
-        jest.advanceTimersByTime(29_999);
-      });
-      expect(resend).toBeDisabled();
-      act(() => {
-        jest.advanceTimersByTime(1);
-      });
-      expect(resend).toBeEnabled();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  it("fires onSkip without issuing a code", () => {
     const mocks = renderStep();
-    fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
-    expect(mocks.onSkip).toHaveBeenCalledTimes(1);
-    expect(mocks.issueVerifyCode).not.toHaveBeenCalled();
-  });
-
-  it("distributes a pasted 123456 across the six OTP boxes", async () => {
-    const mocks = renderStep();
-    await sendCodeToOtp(mocks.issueVerifyCode);
-    const boxes = screen.getAllByLabelText(/digit/i);
-    expect(boxes).toHaveLength(6);
-    await act(async () => {
-      fireEvent.paste(boxes[0], {
-        clipboardData: {
-          getData: () => SYNTHETIC_CODE,
-        },
-      });
-    });
-    expect((boxes[0] as HTMLInputElement).value).toBe("1");
-    expect((boxes[1] as HTMLInputElement).value).toBe("2");
-    expect((boxes[2] as HTMLInputElement).value).toBe("3");
-    expect((boxes[3] as HTMLInputElement).value).toBe("4");
-    expect((boxes[4] as HTMLInputElement).value).toBe("5");
-    expect((boxes[5] as HTMLInputElement).value).toBe("6");
-  });
-
-  it("shows warm short error copy without for security", async () => {
-    const mocks = renderStep({
-      confirmVerifyCode: jest.fn(async (_code: string) => {
-        throw new Error("mismatch");
-      }),
-    });
-    await sendCodeToOtp(mocks.issueVerifyCode);
-    const boxes = screen.getAllByLabelText(/digit/i);
-    await act(async () => {
-      fireEvent.paste(boxes[0], {
-        clipboardData: {
-          getData: () => SYNTHETIC_CODE,
-        },
-      });
-    });
     await waitFor(() => {
-      expect(mocks.confirmVerifyCode).toHaveBeenCalledWith(SYNTHETIC_CODE);
+      expect(checkCalls).toBe(1);
     });
-    const alert = await screen.findByRole("alert");
-    expect(alert.textContent).toMatch(/didn't match/i);
-    expect(alert.textContent?.toLowerCase()).not.toContain("for security");
-  });
-
-  it("confirms the code and fires onVerified", async () => {
-    const mocks = renderStep();
-    await sendCodeToOtp(mocks.issueVerifyCode);
-    const boxes = screen.getAllByLabelText(/digit/i);
+    expect(mocks.onVerified).not.toHaveBeenCalled();
     await act(async () => {
-      fireEvent.paste(boxes[0], {
-        clipboardData: {
-          getData: () => SYNTHETIC_CODE,
-        },
-      });
-    });
-    await waitFor(() => {
-      expect(mocks.confirmVerifyCode).toHaveBeenCalledWith(SYNTHETIC_CODE);
+      jest.advanceTimersByTime(VERIFY_STATUS_POLL_INTERVAL_MS);
     });
     await waitFor(() => {
       expect(mocks.onVerified).toHaveBeenCalledTimes(1);
     });
+    expect(checkCalls).toBe(2);
+    const checkUrl = (global.fetch as jest.Mock).mock.calls.find((call) =>
+      String(call[0]).includes(CHECK_PATH),
+    );
+    expect(checkUrl).toBeDefined();
+  });
+
+  it("Skip fires and stops polling", async () => {
+    jest.useFakeTimers();
+    const mocks = renderStep();
+    await screen.findByRole("link", { name: "Text Pack" });
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(mocks.onSkip).toHaveBeenCalledTimes(1);
+    const checksAtSkip = checkCalls;
+    await act(async () => {
+      jest.advanceTimersByTime(VERIFY_STATUS_POLL_INTERVAL_MS * 3);
+    });
+    expect(mocks.onVerified).not.toHaveBeenCalled();
+    expect(checkCalls).toBe(checksAtSkip);
+    expect(screen.queryByText("Text me the code")).not.toBeInTheDocument();
   });
 });

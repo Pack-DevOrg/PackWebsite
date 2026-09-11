@@ -100,7 +100,7 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expect(loginMock).not.toHaveBeenCalled();
   });
 
-  it("walks Signup → Connections → Photos → Notifications → Complete without internal identifiers", () => {
+  it("walks Signup → What Pack does → Verify → Connections → Complete without internal identifiers", () => {
     const view = renderAt(ONBOARD_PATH);
     const pageText = () => view.container.textContent ?? "";
 
@@ -122,26 +122,16 @@ describe("OnboardPage /onboard five-step app flow", () => {
     mockAuthenticatedSession();
     view.rerender(tree(ONBOARD_PATH));
 
+    expect(screen.getByRole("heading", { name: "Past" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(
+      screen.getByRole("heading", { name: "Verify your number" }),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
     expect(screen.getByRole("heading", { name: "Connections" }))
       .toBeInTheDocument();
     expectNoInternalIdentifiers(view.container);
-
     fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
-
-    expect(pageText()).toContain("places you've been");
-    expectNoInternalIdentifiers(view.container);
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Skip connecting Photos for now",
-      }),
-    );
-
-    expect(screen.getByRole("heading", { name: "Turn on trip alerts" }))
-      .toBeInTheDocument();
-    expectNoInternalIdentifiers(view.container);
-
-    fireEvent.click(screen.getByRole("button", { name: "Not now" }));
 
     expect(pageText()).toContain("You're all set!");
     expectNoInternalIdentifiers(view.container);

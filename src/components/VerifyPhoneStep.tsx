@@ -12,8 +12,9 @@ import { useMountEffect } from "@/hooks/useMountEffect";
 import { PACK_VERIFY_SMS_E164 } from "./VerifyPhoneCta";
 
 export type VerifyPhoneStepProps = {
-  readonly issueVerifyCode: (phone: string) => Promise<void>;
-  readonly confirmVerifyCode: (code: string) => Promise<void>;
+  /** Legacy (Pack-texts-you direction); the step mints and polls itself. */
+  readonly issueVerifyCode?: (phone: string) => Promise<void>;
+  readonly confirmVerifyCode?: (code: string) => Promise<void>;
   readonly onVerified: () => void;
   readonly onSkip: () => void;
 };

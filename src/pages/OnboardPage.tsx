@@ -1,27 +1,28 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
-import { NotificationsStep } from "@/components/onboard/NotificationsStep";
-import { PhotosConnectStep } from "@/components/onboard/PhotosConnectStep";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
+import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
+import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
 import { DEFAULT_SHARE_IMAGE_URL } from "@/seo/pageSeo";
 
 export const ONBOARD_PATH = "/onboard";
 
 /**
- * Website `/onboard` matches the app: Signup → Connections → Photos →
- * Notifications → Complete. Verify-phone is not a page in this sequence.
+ * Website `/onboard` is the app onboarding 1:1 minus device-only steps
+ * (photos, notification permission), plus phone verification after the
+ * info screen (Noah 2026-09-11): Signup → What Pack does → Verify phone
+ * (Text Pack on mobile, QR on desktop, skippable) → Connections → Complete.
  */
 export const ONBOARDING_SEQUENCE = [
   "signup",
+  "what-pack-does",
+  "verify-phone",
   "connections",
-  "photos",
-  "notifications",
   "complete",
 ] as const;
 
@@ -34,7 +35,7 @@ export function firstOnboardingStepBecauseAppParity(): OnboardingScreenName {
   return ONBOARDING_SEQUENCE[SIGNUP_INDEX];
 }
 
-function connectionsIndexBecauseAfterSignup(): number {
+function whatPackDoesIndexBecauseAfterSignup(): number {
   return SIGNUP_INDEX + 1;
 }
 
@@ -43,26 +44,6 @@ function nextStepIndexBecauseSequence(index: number): number {
     return LAST_STEP_INDEX;
   }
   return index + 1;
-}
-
-function leadingPlusBecauseQueryPlusIsSpace(value: string): string {
-  if (value.startsWith(" ")) {
-    return `+${value.slice(1)}`;
-  }
-  return value;
-}
-
-function prefillPhoneBecauseSearchParam(
-  value: string | null,
-): string | undefined {
-  if (value === null) {
-    return undefined;
-  }
-  const withPlus = leadingPlusBecauseQueryPlusIsSpace(value);
-  if (withPlus.length === 0) {
-    return undefined;
-  }
-  return withPlus;
 }
 
 function shouldAdvanceSignupBecauseAuthenticated(
@@ -93,16 +74,12 @@ const Shell = styled.section`
 
 function OnboardFlow() {
   const { status } = useAuth();
-  const [searchParams] = useSearchParams();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
-  const prefillPhone = prefillPhoneBecauseSearchParam(
-    searchParams.get("phone"),
-  );
   const step = ONBOARDING_SEQUENCE[stepIndex];
 
   useEffect(() => {
     if (shouldAdvanceSignupBecauseAuthenticated(status, stepIndex)) {
-      setStepIndex(connectionsIndexBecauseAfterSignup());
+      setStepIndex(whatPackDoesIndexBecauseAfterSignup());
     }
   }, [status, stepIndex]);
 
@@ -131,14 +108,14 @@ function OnboardFlow() {
         {step === "signup" ? (
           <SignupLoginStep />
         ) : null}
+        {step === "what-pack-does" ? (
+          <WhatPackDoesStep onNext={goNext} onSkip={goNext} />
+        ) : null}
+        {step === "verify-phone" ? (
+          <VerifyPhoneStep onVerified={goNext} onSkip={goNext} />
+        ) : null}
         {step === "connections" ? (
           <ConnectionsStep onContinue={goNext} onSkip={goNext} />
-        ) : null}
-        {step === "photos" ? (
-          <PhotosConnectStep onSkip={goNext} onContinue={goNext} />
-        ) : null}
-        {step === "notifications" ? (
-          <NotificationsStep onContinue={goNext} />
         ) : null}
         {step === "complete" ? <CompleteStep /> : null}
       </Shell>

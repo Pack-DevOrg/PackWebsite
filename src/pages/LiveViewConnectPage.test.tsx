@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
 
@@ -10,7 +10,10 @@ const NOW_MS = 1_714_000_000_000;
 const VALID_LIVE_VIEW_URL = "https://live.pack.test/view";
 const MERCHANT_HOST = "shop.example.test";
 const JOB_ID = "job-synthetic-1";
+const FRAME_SRC = "https://frames.pack.test/synthetic/3.png";
+const FRAME_ALT = "Merchant checkout live view";
 const EXPIRED_HEADING = "Pack needs your help — this link expired";
+const STALE_FRAME_BADGE = "Stale frame";
 
 const originalFetch = global.fetch;
 let fetchMock: jest.Mock;
@@ -44,6 +47,70 @@ function okFetchBody(overrides: {
   };
 }
 
+function jsonOk(body: unknown) {
+  return {
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(body),
+  };
+}
+
+function latestPointerBody(overrides: {
+  seq?: number;
+  ts?: number;
+  url?: string;
+  paused?: boolean;
+  pauseForHelp?: boolean;
+} = {}) {
+  return {
+    seq: 3,
+    ts: NOW_MS,
+    url: FRAME_SRC,
+    ...overrides,
+  };
+}
+
+function jobStatusBody() {
+  return {
+    progressItems: [
+      {
+        id: "step-synthetic-open",
+        label: "Opening merchant checkout",
+        status: "processing",
+        order: 0,
+      },
+    ],
+  };
+}
+
+function stubTokenThenLiveViewFetches(options: {
+  latest?: ReturnType<typeof latestPointerBody>;
+} = {}) {
+  fetchMock.mockImplementation((input: RequestInfo | URL) => {
+    const url = String(input);
+    if (url.includes("/live-view/") && url.includes("/latest")) {
+      return Promise.resolve(jsonOk(options.latest ?? latestPointerBody()));
+    }
+    if (url.includes(`/jobs/${JOB_ID}/status`)) {
+      return Promise.resolve(jsonOk(jobStatusBody()));
+    }
+    if (url.includes(`/live-view/${JOB_ID}/hitl`)) {
+      return Promise.resolve(jsonOk({ accepted: true }));
+    }
+    if (url.includes(`/live-view/${JOB_ID}/resume`)) {
+      return Promise.resolve(jsonOk({ accepted: true }));
+    }
+    if (url.includes("/live-view") && url.includes("token=")) {
+      return Promise.resolve(jsonOk(okFetchBody()));
+    }
+    return Promise.resolve({
+      ok: false,
+      status: 404,
+      json: () => Promise.resolve({}),
+    });
+  });
+}
+
 describe("LiveViewConnectPage", () => {
   beforeEach(() => {
     jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
@@ -56,22 +123,15 @@ describe("LiveViewConnectPage", () => {
     global.fetch = originalFetch;
   });
 
-  it("embeds an iframe after a token GET returns a valid https cross-host unexpired handoff", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve(okFetchBody()),
-    });
+  it("shows the newest frame after a token GET returns a valid https cross-host unexpired handoff", async () => {
+    stubTokenThenLiveViewFetches();
 
     renderPage("?token=tok-ok");
 
-    const iframe = await screen.findByTitle("Merchant checkout live view");
-    expect(iframe.tagName).toBe("IFRAME");
-    expect(iframe).toHaveAttribute("src", VALID_LIVE_VIEW_URL);
-    expect(iframe).toHaveAttribute(
-      "sandbox",
-      "allow-scripts allow-same-origin allow-forms",
-    );
+    const frameImage = await screen.findByAltText(FRAME_ALT);
+    expect(frameImage.tagName).toBe("IMG");
+    expect(frameImage).toHaveAttribute("src", FRAME_SRC);
+    expect(document.querySelector("iframe")).toBeNull();
     expect(
       screen.queryByRole("heading", { name: EXPIRED_HEADING }),
     ).not.toBeInTheDocument();
@@ -174,5 +234,122 @@ describe("LiveViewConnectPage", () => {
       await screen.findByRole("heading", { name: EXPIRED_HEADING }),
     ).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
+  });
+
+  describe("watch frames and take-over", () => {
+    beforeEach(() => {
+      jest.useFakeTimers({ advanceTimers: true });
+      jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it("renders the newest screencast frame after a valid token handoff, not a debugger iframe", async () => {
+      stubTokenThenLiveViewFetches();
+
+      renderPage("?token=tok-ok");
+
+      const frameImage = await screen.findByAltText(FRAME_ALT);
+      expect(frameImage.tagName).toBe("IMG");
+      expect(frameImage).toHaveAttribute("src", FRAME_SRC);
+      expect(document.querySelector("iframe")).toBeNull();
+      expect(
+        screen.queryByRole("heading", { name: EXPIRED_HEADING }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("strips OTP-flagged keystrokes from the HITL POST body in take-over", async () => {
+      stubTokenThenLiveViewFetches({
+        latest: latestPointerBody({ paused: true }),
+      });
+
+      renderPage("?token=tok-ok");
+
+      await screen.findByAltText(FRAME_ALT);
+      await screen.findByRole("button", { name: "Resume" });
+
+      const otpInput = document.createElement("input");
+      otpInput.setAttribute("autocomplete", "one-time-code");
+      otpInput.setAttribute("name", "otp");
+      otpInput.setAttribute("id", "totp");
+      document.body.appendChild(otpInput);
+      otpInput.focus();
+      fireEvent.keyDown(otpInput, { key: "4", code: "Digit4" });
+
+      await waitFor(() => {
+        const hitlPosts = fetchMock.mock.calls.filter(([requestUrl, init]) => {
+          return (
+            String(requestUrl).includes(`/live-view/${JOB_ID}/hitl`) &&
+            Boolean(init) &&
+            (init as RequestInit).method === "POST"
+          );
+        });
+        expect(hitlPosts.length).toBeGreaterThan(0);
+        const bodyText = String((hitlPosts[0][1] as RequestInit).body);
+        expect(bodyText).not.toContain("4");
+        expect(bodyText).not.toContain("Digit4");
+      });
+    });
+
+    it("Resume POSTs resume and returns the UI to watch mode", async () => {
+      let paused = true;
+      fetchMock.mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes(`/live-view/${JOB_ID}/resume`)) {
+          paused = false;
+          return Promise.resolve(jsonOk({ accepted: true }));
+        }
+        if (url.includes("/live-view/") && url.includes("/latest")) {
+          return Promise.resolve(jsonOk(latestPointerBody({ paused })));
+        }
+        if (url.includes(`/jobs/${JOB_ID}/status`)) {
+          return Promise.resolve(jsonOk(jobStatusBody()));
+        }
+        if (url.includes(`/live-view/${JOB_ID}/hitl`)) {
+          return Promise.resolve(jsonOk({ accepted: true }));
+        }
+        if (url.includes("/live-view") && url.includes("token=")) {
+          return Promise.resolve(jsonOk(okFetchBody()));
+        }
+        return Promise.resolve({
+          ok: false,
+          status: 404,
+          json: () => Promise.resolve({}),
+        });
+      });
+
+      renderPage("?token=tok-ok");
+
+      const resume = await screen.findByRole("button", { name: "Resume" });
+      fireEvent.click(resume);
+
+      await waitFor(() => {
+        const resumePosts = fetchMock.mock.calls.filter(([requestUrl, init]) => {
+          return (
+            String(requestUrl).includes(`/live-view/${JOB_ID}/resume`) &&
+            Boolean(init) &&
+            (init as RequestInit).method === "POST"
+          );
+        });
+        expect(resumePosts.length).toBeGreaterThan(0);
+        expect(
+          screen.queryByRole("button", { name: "Resume" }),
+        ).not.toBeInTheDocument();
+      });
+      expect(screen.getByAltText(FRAME_ALT)).toBeInTheDocument();
+    });
+
+    it("shows a stale-frame badge when latest.ts is more than 5s older than mocked now", async () => {
+      stubTokenThenLiveViewFetches({
+        latest: latestPointerBody({ ts: NOW_MS - 6_000 }),
+      });
+
+      renderPage("?token=tok-ok");
+
+      expect(Date.now()).toBe(NOW_MS);
+      expect(await screen.findByText(STALE_FRAME_BADGE)).toBeInTheDocument();
+    });
   });
 });

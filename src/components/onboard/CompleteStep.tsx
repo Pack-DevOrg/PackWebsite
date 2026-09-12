@@ -2,8 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 import {
+  buildAppStoreUrl,
+  DEFAULT_APPLE_APP_ID,
+} from '../../utils/appDeepLink';
+import {
   PrimaryButton,
-  ProgressDots,
   SheetCard,
   StepBody,
   StepTitle,
@@ -14,21 +17,27 @@ export interface CompleteStepProps {
   onContinue?: () => void;
 }
 
+const APPLE_APP_ID = DEFAULT_APPLE_APP_ID;
+
 const COMPLETE_HIGHLIGHTS = [
   'Smart trip planning',
   'Personalized recommendations',
   'Built with love',
 ] as const;
 
-function noopContinue(): void {
-  return;
-}
+export const completeStepLocation = {
+  assign(url: string): void {
+    window.location.assign(url);
+  },
+};
 
-function defaultOnContinueBecauseNoop(
+function defaultOnContinueBecauseAppStore(
   onContinue: CompleteStepProps['onContinue'],
 ): () => void {
   if (onContinue === undefined) {
-    return noopContinue;
+    return () => {
+      completeStepLocation.assign(buildAppStoreUrl(APPLE_APP_ID));
+    };
   }
   return onContinue;
 }
@@ -78,12 +87,11 @@ const CtaWrap = styled.div`
 export function CompleteStep({
   onContinue,
 }: CompleteStepProps): React.ReactElement {
-  const handleContinue = defaultOnContinueBecauseNoop(onContinue);
+  const handleContinue = defaultOnContinueBecauseAppStore(onContinue);
 
   return (
     <SheetCard>
       <Frame>
-        <ProgressDots count={5} activeIndex={4} />
         <Checkmark>✓</Checkmark>
         <StepTitle>You&apos;re all set!</StepTitle>
         <StepBody>Relax, we&apos;ve got you covered.</StepBody>

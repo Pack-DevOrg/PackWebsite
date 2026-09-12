@@ -1,7 +1,13 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { CompleteStep } from "./CompleteStep";
+import {
+  buildAppStoreUrl,
+  DEFAULT_APPLE_APP_ID,
+} from "../../utils/appDeepLink";
+import { CompleteStep, completeStepLocation } from "./CompleteStep";
+
+const APPLE_APP_ID = DEFAULT_APPLE_APP_ID;
 
 const INTERNAL_IDENTIFIERS =
   /OnboardingCompleteScreen|SignupLoginScreen|ConnectedAccountsScreen|PhotosConnectScreen|NotificationsSetupScreen|CompleteStep|data-step/;
@@ -58,11 +64,30 @@ describe("CompleteStep", () => {
     expect(onContinue).toHaveBeenCalledTimes(1);
   });
 
-  it("no-ops the CTA when onContinue is omitted", () => {
+  it("assigns the App Store URL when the CTA is clicked with no onContinue", () => {
+    const assign = jest
+      .spyOn(completeStepLocation, "assign")
+      .mockImplementation(() => undefined);
+
+    try {
+      render(<CompleteStep />);
+      fireEvent.click(
+        screen.getByRole("button", { name: "Let us handle the rest" })
+      );
+
+      expect(assign).toHaveBeenCalledTimes(1);
+      expect(assign).toHaveBeenCalledWith(buildAppStoreUrl(APPLE_APP_ID));
+    } finally {
+      assign.mockRestore();
+    }
+  });
+
+  it("renders no progress-dot markup", () => {
     render(<CompleteStep />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Let us handle the rest" })
-    );
+    expect(screen.queryAllByTestId("onboard-progress-dot")).toHaveLength(0);
+    expect(
+      screen.queryByTestId("onboard-progress-dots")
+    ).not.toBeInTheDocument();
   });
 });

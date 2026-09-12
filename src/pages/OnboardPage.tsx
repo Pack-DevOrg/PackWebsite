@@ -105,6 +105,11 @@ function OnboardFlow() {
         <meta name="twitter:image" content={DEFAULT_SHARE_IMAGE_URL} />
       </Helmet>
       <Shell>
+        {/* data-testid="onboard-step" is the land-smoke + deploy verifier
+            token for /onboard (scripts/land-smoke.mjs, deploy-app-origin.mjs).
+            It was dropped in the sequence rewrite and every website land
+            went red on SMOKE-FAIL route=/onboard (2026-09-12). */}
+        <div data-testid="onboard-step" data-step={step} />
         {step === "signup" ? (
           <SignupLoginStep />
         ) : null}

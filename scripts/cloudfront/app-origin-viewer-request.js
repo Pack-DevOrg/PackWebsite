@@ -102,6 +102,14 @@ var markdownRouteMap = {
   '/guides/reliable-ai-travel-planning': '/guides/reliable-ai-travel-planning.md',
 };
 
+var markdownObjectUris = {};
+for (var markdownRoute in markdownRouteMap) {
+  if (!Object.prototype.hasOwnProperty.call(markdownRouteMap, markdownRoute)) {
+    continue;
+  }
+  markdownObjectUris[markdownRouteMap[markdownRoute]] = true;
+}
+
 function handler(event) {
   var request = event.request;
   var headers = request.headers || {};
@@ -156,6 +164,26 @@ function handler(event) {
       301,
       'Moved Permanently'
     );
+  }
+
+  if (canonicalUri.length >= 3 && canonicalUri.slice(canonicalUri.length - 3) === '.md') {
+    var routeWithoutMd = canonicalUri.slice(0, -3);
+    if (markdownRouteMap[routeWithoutMd]) {
+      request.uri = markdownRouteMap[routeWithoutMd];
+      return request;
+    }
+    if (markdownObjectUris[canonicalUri]) {
+      return request;
+    }
+    return {
+      statusCode: 404,
+      statusDescription: 'Not Found',
+      headers: {
+        'content-type': { value: 'text/markdown' },
+        'cache-control': { value: 'public, max-age=60' },
+      },
+      body: 'Not Found',
+    };
   }
 
   if (acceptsMarkdown(headers) && markdownRouteMap[canonicalUri]) {

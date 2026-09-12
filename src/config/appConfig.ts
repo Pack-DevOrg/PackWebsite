@@ -121,9 +121,22 @@ const defaultOauthResourceServerIdentifier =
   (env.VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER as string | undefined)?.trim() ||
   "api.trypackai.com";
 
-// Public OAuth client IDs are not secrets. Keep a stable production fallback
-// so deploys cannot silently ship an invalid hosted-auth configuration.
-const defaultCognitoClientId = "6qjkv282db2701o9m0uroh6c9k";
+// parked: awaiting deploy of CognitoWebUserPoolClientId. Never the iOS app client.
+function parkedCognitoWebClientIdBecauseCognitoWebUserPoolClientIdNotDeployed(): string {
+  return "parked-awaiting-CognitoWebUserPoolClientId";
+}
+
+function cognitoWebClientIdFromWebEnv(): string {
+  const raw = env.VITE_COGNITO_WEB_CLIENT_ID;
+  if (typeof raw !== "string") {
+    return parkedCognitoWebClientIdBecauseCognitoWebUserPoolClientIdNotDeployed();
+  }
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) {
+    return parkedCognitoWebClientIdBecauseCognitoWebUserPoolClientIdNotDeployed();
+  }
+  return trimmed;
+}
 
 const baseScopes = [
   "openid",
@@ -178,9 +191,7 @@ const resolvedConfig = validateResolvedAppConfig({
         "https://auth.trypackai.com"
     )
   ),
-  cognitoClientId:
-    (env.VITE_COGNITO_CLIENT_ID as string | undefined) ??
-    defaultCognitoClientId,
+  cognitoClientId: cognitoWebClientIdFromWebEnv(),
   cognitoRedirectUri: ensureProtocol(
     normalizeUrl(
       (env.VITE_COGNITO_REDIRECT_URI as string | undefined) ??

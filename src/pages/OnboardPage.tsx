@@ -107,9 +107,10 @@ function OnboardFlow() {
       <Shell>
         {/* data-testid="onboard-step" is the land-smoke + deploy verifier
             token for /onboard (scripts/land-smoke.mjs, deploy-app-origin.mjs).
-            It was dropped in the sequence rewrite and every website land
-            went red on SMOKE-FAIL route=/onboard (2026-09-12). */}
-        <div data-testid="onboard-step" data-step={step} />
+            No data-step: the DOM carries no app screen identifiers (see
+            OnboardPage.test). Dropped in the sequence rewrite → every website
+            land went red on SMOKE-FAIL route=/onboard (2026-09-12). */}
+        <div data-testid="onboard-step" />
         {step === "signup" ? (
           <SignupLoginStep />
         ) : null}

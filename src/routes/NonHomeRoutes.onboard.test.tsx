@@ -43,9 +43,9 @@ describe("NonHomeRoutes /onboard", () => {
   it("renders /onboard auth-first instead of NotFoundPage", async () => {
     renderAt("/onboard");
 
-    expect(
-      await screen.findByTestId("onboard-step"),
-    ).toHaveAttribute("data-step", "SignupLoginScreen");
+    // The step token is present (land-smoke + deploy verifier key on it) but
+    // carries no app screen identifier (OnboardPage.test forbids data-step).
+    expect(await screen.findByTestId("onboard-step")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Welcome to Pack" }),
     ).toBeInTheDocument();

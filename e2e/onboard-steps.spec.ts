@@ -166,27 +166,37 @@ test.describe("Onboard authenticated G order", () => {
     await expect(
       page.getByRole("heading", { name: "Verify your number" }),
     ).toBeVisible();
-    const textPack = page.getByRole("button", { name: "Text Pack" });
-    const textMe = page.getByRole("button", { name: "Text me the code" });
-    await expect(textPack.or(textMe).first()).toBeVisible();
+    // The E2E account is already bound (verifiedPhone true): the step mints,
+    // polls, sees approved, and advances on its own — racing the link/QR
+    // render. Accept whichever lands first; assert the verify UI only while
+    // the step is still on screen.
+    const connectionsAfterVerify = page.getByRole("heading", { name: "Connections" });
+    const textPackLink = page.getByRole("link", { name: "Text Pack" });
+    const qr = page.locator(
+      'canvas, img[alt*="QR" i], [data-testid*="qr" i], svg[aria-label*="QR" i]',
+    );
     await expect(
-      page.getByRole("button", { name: "Skip for now" }),
-    ).toBeVisible();
-    if (isMobile) {
-      const sms = page.locator('a[href^="sms:"]');
-      await expect(sms.first()).toBeVisible();
-      await expect(sms.first()).toHaveAttribute(
-        "href",
-        new RegExp(`sms:.*${PACK_VERIFY_E164.replace("+", "\\+")}`),
-      );
+      connectionsAfterVerify.or(textPackLink).or(qr).first(),
+    ).toBeVisible({ timeout: 20000 });
+    if (await connectionsAfterVerify.isVisible()) {
+      await captureStep(page, projectName, "verify-auto-advanced");
     } else {
-      const qr = page.locator(
-        'canvas, img[alt*="QR" i], [data-testid*="qr" i], svg[aria-label*="QR" i]',
-      );
-      await expect(qr.first()).toBeVisible();
+      if (isMobile) {
+        await expect(textPackLink).toBeVisible();
+        const sms = page.locator('a[href^="sms:"]');
+        await expect(sms.first()).toHaveAttribute(
+          "href",
+          new RegExp(`sms:.*${PACK_VERIFY_E164.replace("+", "\\+")}`),
+        );
+      } else {
+        await expect(qr.first()).toBeVisible();
+      }
+      await expect(
+        page.getByRole("button", { name: /^Skip( for now)?$/ }),
+      ).toBeVisible();
+      await captureStep(page, projectName, "verify");
+      await assertNoInternalIdentifiers(page);
     }
-    await captureStep(page, projectName, "verify");
-    await assertNoInternalIdentifiers(page);
 
     await clickIfVisible(page, "Skip for now");
 

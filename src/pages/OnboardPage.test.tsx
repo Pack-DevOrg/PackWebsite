@@ -116,7 +116,10 @@ describe("OnboardPage /onboard five-step app flow", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Continue with Google" }),
     );
-    expect(loginMock).not.toHaveBeenCalled();
+    expect(loginMock).toHaveBeenCalledWith({
+      identityProvider: "Google",
+      redirectPath: "/onboard",
+    });
     expectNoInternalIdentifiers(view.container);
 
     mockAuthenticatedSession();

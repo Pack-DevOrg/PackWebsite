@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components -- Auth hook is intentionally exported from the auth provider module. */
+import { TokenProvider } from "@/schemas/common";
 import React, {
   createContext,
   useCallback,
@@ -38,6 +39,7 @@ interface AuthContextValue {
     redirectPath?: string;
     redirectUri?: string;
     useCanonicalOrigin?: boolean;
+    identityProvider?: typeof TokenProvider.Google | typeof TokenProvider.Apple;
   }) => Promise<void>;
   readonly completeLogin: (
     code: string,
@@ -206,6 +208,7 @@ export const AuthProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       redirectPath?: string;
       redirectUri?: string;
       useCanonicalOrigin?: boolean;
+      identityProvider?: typeof TokenProvider.Google | typeof TokenProvider.Apple;
     }) => {
       clearLogoutIntent();
       clearAuthRetryBlocked();

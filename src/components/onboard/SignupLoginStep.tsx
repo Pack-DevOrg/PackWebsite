@@ -1,4 +1,6 @@
 import React from 'react';
+import {useAuth} from '@/auth/AuthContext';
+import {TokenProvider} from '@/schemas/common';
 import styled from 'styled-components';
 
 import {
@@ -92,6 +94,10 @@ function AppleBrandIcon() {
 }
 
 export function SignupLoginStep() {
+  const {login} = useAuth();
+  const startLogin = (identityProvider: typeof TokenProvider.Google | typeof TokenProvider.Apple) => {
+    void login({identityProvider, redirectPath: '/onboard'});
+  };
   return (
     <SheetCard>
       <Stack>
@@ -99,13 +105,13 @@ export function SignupLoginStep() {
           Welcome to <Accent>Pack</Accent>
         </StepTitle>
         <StepBody>Choose your preferred sign-in method</StepBody>
-        <ProviderButton provider="google">
+        <ProviderButton provider="google" onClick={() => startLogin(TokenProvider.Google)}>
           <BrandMark>
             <GoogleBrandIcon />
           </BrandMark>
           Continue with Google
         </ProviderButton>
-        <ProviderButton provider="apple">
+        <ProviderButton provider="apple" onClick={() => startLogin(TokenProvider.Apple)}>
           <BrandMark>
             <AppleBrandIcon />
           </BrandMark>

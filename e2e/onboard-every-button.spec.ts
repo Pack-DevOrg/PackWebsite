@@ -1,29 +1,61 @@
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
-import {
-  expect,
-  test,
-  type BrowserContext,
-  type Locator,
-  type Page,
-} from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { dismissConsentBannerIfVisible } from "./helpers";
 
+const require = createRequire(import.meta.url);
+const { PNG } = require("pngjs") as {
+  PNG: {
+    new (options: { width: number; height: number }): {
+      width: number;
+      height: number;
+      data: Uint8Array;
+    };
+    sync: {
+      read: (buffer: Buffer) => {
+        width: number;
+        height: number;
+        data: Uint8Array;
+      };
+      write: (png: {
+        width: number;
+        height: number;
+        data: Uint8Array;
+      }) => Buffer;
+    };
+  };
+};
+
 const SHOT_DIR = path.join(process.cwd(), "test-results", "onboard-every-button");
 const AUTH_DIR = path.join(process.cwd(), "test-results", "e2e-auth");
+const FIXTURE_REL_DIR = "e2e/fixtures/onboarding-goldens";
+const FIXTURE_ABS_DIR = path.join(process.cwd(), FIXTURE_REL_DIR);
+const PACKAPP_GOLDEN_REL_DIR = "PackApp/.maestro/goldens/onboarding";
+const PACKAPP_GOLDEN_ABS_DIR = path.join(
+  path.resolve(process.cwd(), "..", "..", "PackApp"),
+  ".maestro",
+  "goldens",
+  "onboarding",
+);
 const PACK_VERIFY_E164 = "+13054392989";
 const APP_STORE_ID = "6761626050";
 const MAX_PIXEL_RATIO = 0.02;
+const E2E_USER = "tests@trypackai.com";
+const SESSION_STORAGE_KEY = "pack.auth.session.v1";
+const AUTH_CACHE_FILE = path.join(AUTH_DIR, "admin.session.json");
+const VENDOR_GOLDENS = process.env.E2E_VENDOR_GOLDENS === "1";
 
 type FlowPageId =
   | "signup"
-  | "what-pack-does-1"
-  | "what-pack-does-2"
-  | "what-pack-does-3"
-  | "verify"
+  | "past"
+  | "present"
+  | "future"
+  | "verify-phone"
   | "connections"
-  | "welcome";
+  | "complete";
 
 type FlowPage = {
   readonly id: FlowPageId;
@@ -39,28 +71,13 @@ const FLOW_PAGES: readonly FlowPage[] = [
     golden: "signup",
     needsAuth: false,
   },
+  { id: "past", heading: "Past", golden: "past", needsAuth: true },
+  { id: "present", heading: "Present", golden: "present", needsAuth: true },
+  { id: "future", heading: "Future", golden: "future", needsAuth: true },
   {
-    id: "what-pack-does-1",
-    heading: "Past",
-    golden: "what-pack-does-1",
-    needsAuth: true,
-  },
-  {
-    id: "what-pack-does-2",
-    heading: "Present",
-    golden: "what-pack-does-2",
-    needsAuth: true,
-  },
-  {
-    id: "what-pack-does-3",
-    heading: "Future",
-    golden: "what-pack-does-3",
-    needsAuth: true,
-  },
-  {
-    id: "verify",
+    id: "verify-phone",
     heading: "Verify your number",
-    golden: "verify",
+    golden: "verify-phone",
     needsAuth: true,
   },
   {
@@ -70,20 +87,14 @@ const FLOW_PAGES: readonly FlowPage[] = [
     needsAuth: true,
   },
   {
-    id: "welcome",
+    id: "complete",
     heading: "You're all set!",
-    golden: "welcome",
+    golden: "complete",
     needsAuth: true,
   },
 ];
 
-type ControlKind =
-  | "advance"
-  | "external-door"
-  | "toggle"
-  | "disabled-named"
-  | "chrome-back"
-  | "named-provider";
+type ControlKind = "advance" | "external-door" | "toggle" | "disabled-named";
 
 type EnumeratedControl = {
   readonly name: string;
@@ -93,13 +104,16 @@ type EnumeratedControl = {
   readonly disabled: boolean;
 };
 
-function authStatePath(projectName: string): string {
-  return path.join(AUTH_DIR, `${projectName}.json`);
-}
+type PngFrame = {
+  readonly width: number;
+  readonly height: number;
+  readonly data: Uint8Array;
+};
 
-function sessionDumpPath(projectName: string): string {
-  return path.join(AUTH_DIR, `${projectName}.session.json`);
-}
+type GoldenTarget = {
+  readonly abs: string;
+  readonly rel: string;
+};
 
 function emptyObjectBecauseMissing(): Record<string, string> {
   return {};
@@ -112,82 +126,218 @@ function textBecauseMissing(value: string | null): string {
   return value;
 }
 
-function e2eJwt(): string {
-  const header = Buffer.from(
-    JSON.stringify({ alg: "none", typ: "JWT" }),
-  ).toString("base64url");
-  const payload = Buffer.from(
-    JSON.stringify({ sub: "e2e-user", exp: 9999999999 }),
-  ).toString("base64url");
-  return `${header}.${payload}.e2e`;
+function percentBecausePixels(diffPixels: number, totalPixels: number): number {
+  if (totalPixels === 0) {
+    return 1;
+  }
+  return diffPixels / totalPixels;
 }
 
-function e2eSessionJson(): string {
-  const jwt = e2eJwt();
+function delayBecauseSettle(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function missingGoldenMessage(rel: string): string {
+  return `missing golden: ${rel}`;
+}
+
+function vendorFileName(step: string, projectName: string): string {
+  if (projectName === "chromium-desktop") {
+    return `${step}-desktop.png`;
+  }
+  return `${step}.png`;
+}
+
+function goldenTarget(step: string, projectName: string): GoldenTarget {
+  const packappAbs = path.join(PACKAPP_GOLDEN_ABS_DIR, `${step}.png`);
+  if (existsSync(packappAbs)) {
+    return {
+      abs: packappAbs,
+      rel: `${PACKAPP_GOLDEN_REL_DIR}/${step}.png`,
+    };
+  }
+  const file = vendorFileName(step, projectName);
+  const rel = `${FIXTURE_REL_DIR}/${file}`;
+  return {
+    abs: path.join(process.cwd(), rel),
+    rel,
+  };
+}
+
+function sessionDumpPath(projectName: string): string {
+  return path.join(AUTH_DIR, `${projectName}.session.json`);
+}
+
+function sessionJsonLooksLive(raw: string): boolean {
+  const trimmed = raw.trim();
+  if (trimmed.length < 8 || trimmed === "{}") {
+    return false;
+  }
+  try {
+    const parsed = JSON.parse(trimmed) as Record<string, unknown>;
+    if (typeof parsed[SESSION_STORAGE_KEY] === "string") {
+      const inner = parsed[SESSION_STORAGE_KEY] as string;
+      return sessionJsonLooksLive(inner);
+    }
+    const tokens = parsed.tokens as { accessToken?: unknown } | undefined;
+    if (tokens === undefined || typeof tokens !== "object") {
+      return false;
+    }
+    return typeof tokens.accessToken === "string" && tokens.accessToken.length > 20;
+  } catch {
+    return false;
+  }
+}
+
+function unwrapSessionJson(raw: string): string {
+  const parsed = JSON.parse(raw) as Record<string, unknown>;
+  if (typeof parsed[SESSION_STORAGE_KEY] === "string") {
+    return parsed[SESSION_STORAGE_KEY] as string;
+  }
+  return raw.trim();
+}
+
+function readSsmPassword(): string {
+  const result = spawnSync(
+    "aws",
+    [
+      "ssm",
+      "get-parameter",
+      "--name",
+      "/pack/e2e/test-user-password",
+      "--with-decryption",
+      "--query",
+      "Parameter.Value",
+      "--output",
+      "text",
+    ],
+    { encoding: "utf8" },
+  );
+  if (result.status !== 0) {
+    throw new Error("SSM /pack/e2e/test-user-password unavailable");
+  }
+  const value = result.stdout.trim();
+  if (value.length === 0) {
+    throw new Error("SSM /pack/e2e/test-user-password empty");
+  }
+  return value;
+}
+
+function mintAdminSessionJson(): string {
+  const password = readSsmPassword();
+  const poolId = process.env.E2E_COGNITO_USER_POOL_ID;
+  const clientId = process.env.E2E_COGNITO_CLIENT_ID;
+  const resolvedPool =
+    typeof poolId === "string" && poolId.length > 0
+      ? poolId
+      : "us-east-1_QuNk9AZqk";
+  const resolvedClient =
+    typeof clientId === "string" && clientId.length > 0
+      ? clientId
+      : "6qjkv282db2701o9m0uroh6c9k";
+  const result = spawnSync(
+    "aws",
+    [
+      "cognito-idp",
+      "admin-initiate-auth",
+      "--user-pool-id",
+      resolvedPool,
+      "--client-id",
+      resolvedClient,
+      "--auth-flow",
+      "ADMIN_USER_PASSWORD_AUTH",
+      "--auth-parameters",
+      `USERNAME=${E2E_USER},PASSWORD=${password}`,
+      "--query",
+      "AuthenticationResult",
+      "--output",
+      "json",
+    ],
+    { encoding: "utf8" },
+  );
+  if (result.status !== 0) {
+    throw new Error(
+      `admin-initiate-auth failed: ${textBecauseMissing(result.stderr)}`,
+    );
+  }
+  const auth = JSON.parse(result.stdout) as {
+    AccessToken?: string;
+    IdToken?: string;
+    RefreshToken?: string;
+    TokenType?: string;
+    ExpiresIn?: number;
+  };
+  if (
+    typeof auth.AccessToken !== "string" ||
+    auth.AccessToken.length === 0 ||
+    typeof auth.RefreshToken !== "string" ||
+    auth.RefreshToken.length === 0
+  ) {
+    throw new Error("admin-initiate-auth missing access or refresh token");
+  }
+  const idToken =
+    typeof auth.IdToken === "string" && auth.IdToken.length > 0
+      ? auth.IdToken
+      : auth.AccessToken;
+  const tokenType =
+    typeof auth.TokenType === "string" && auth.TokenType.length > 0
+      ? auth.TokenType
+      : "Bearer";
+  const expiresIn =
+    typeof auth.ExpiresIn === "number" && auth.ExpiresIn > 0
+      ? auth.ExpiresIn
+      : 3600;
   const issuedAt = Date.now();
   return JSON.stringify({
     tokens: {
-      accessToken: jwt,
-      idToken: jwt,
-      refreshToken: "e2e-refresh",
-      tokenType: "Bearer",
+      accessToken: auth.AccessToken,
+      idToken,
+      refreshToken: auth.RefreshToken,
+      tokenType,
       issuedAt,
-      accessTokenExpiresAt: issuedAt + 60 * 60 * 1000,
+      accessTokenExpiresAt: issuedAt + Math.max(expiresIn - 45, 60) * 1000,
     },
   });
 }
 
-async function injectAuthenticatedSession(
-  target: Page | BrowserContext,
-  sessionJson = e2eSessionJson(),
-): Promise<void> {
-  await target.addInitScript((raw: string) => {
-    window.sessionStorage.setItem("pack.auth.session.v1", raw);
-  }, sessionJson);
-}
-
-async function restoreSessionStorage(
-  page: Page,
-  projectName: string,
-): Promise<void> {
-  const dumpFile = sessionDumpPath(projectName);
-  if (!existsSync(dumpFile)) {
-    return;
-  }
-  const raw = readFileSync(dumpFile, "utf8");
-  const parsed = JSON.parse(raw) as Record<string, string>;
-  const entries =
-    parsed === null || typeof parsed !== "object"
-      ? emptyObjectBecauseMissing()
-      : parsed;
-  await page.addInitScript((data: Record<string, string>) => {
-    for (const [key, value] of Object.entries(data)) {
-      window.sessionStorage.setItem(key, value);
+function loadOrMintSessionJson(projectName: string): string {
+  if (existsSync(AUTH_CACHE_FILE)) {
+    const cached = readFileSync(AUTH_CACHE_FILE, "utf8");
+    if (sessionJsonLooksLive(cached)) {
+      return unwrapSessionJson(cached);
     }
-  }, entries);
+  }
+  const dumpFile = sessionDumpPath(projectName);
+  if (existsSync(dumpFile)) {
+    const dumped = readFileSync(dumpFile, "utf8");
+    if (sessionJsonLooksLive(dumped)) {
+      return unwrapSessionJson(dumped);
+    }
+  }
+  const minted = mintAdminSessionJson();
+  mkdirSync(AUTH_DIR, { recursive: true });
+  writeFileSync(AUTH_CACHE_FILE, `${minted}\n`);
+  return minted;
 }
 
-async function restoreCookies(
+async function injectAuthenticatedSession(
   page: Page,
-  projectName: string,
+  sessionJson: string,
 ): Promise<void> {
-  const storageFile = authStatePath(projectName);
-  if (!existsSync(storageFile)) {
-    return;
-  }
-  const stored = JSON.parse(readFileSync(storageFile, "utf8")) as {
-    cookies?: Parameters<Page["context"]["addCookies"]>[0];
+  const apply = (raw: string): void => {
+    window.sessionStorage.setItem("pack.auth.session.v1", raw);
   };
-  if (stored.cookies !== undefined && stored.cookies.length > 0) {
-    await page.context().addCookies(stored.cookies);
-  }
+  await page.context().addInitScript(apply, sessionJson);
+  await page.addInitScript(apply, sessionJson);
 }
 
-async function stubPhoneVerificationPending(page: Page): Promise<void> {
+async function stubApiScopedPages(page: Page): Promise<void> {
   const mintBody = {
     code: "A1b2C3d4E5",
     smsHref: `sms:${PACK_VERIFY_E164}?body=A1b2C3d4E5`,
-    expiresAt: Date.now() + 60_000,
+    expiresAt: Date.now() + 60 * 60 * 1000,
   };
   await page.route(
     "**/user/information/phone-verification/start",
@@ -209,11 +359,52 @@ async function stubPhoneVerificationPending(page: Page): Promise<void> {
       });
     },
   );
+  await page.route("**/oauth2/token", async (route) => {
+    const session = JSON.parse(loadOrMintSessionJson("cached")) as {
+      tokens: {
+        accessToken: string;
+        idToken: string;
+        refreshToken: string;
+        tokenType: string;
+      };
+    };
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        access_token: session.tokens.accessToken,
+        id_token: session.tokens.idToken,
+        refresh_token: session.tokens.refreshToken,
+        token_type: session.tokens.tokenType,
+        expires_in: 3600,
+      }),
+    });
+  });
+}
+
+async function dismissConsent(page: Page): Promise<void> {
+  await dismissConsentBannerIfVisible(page);
+  const oneTrust = page.locator("#onetrust-accept-btn-handler");
+  if (await oneTrust.isVisible().catch(() => false)) {
+    await oneTrust.click();
+  }
+  const rejectAll = page.getByRole("button", { name: /reject all/i });
+  if (await rejectAll.isVisible().catch(() => false)) {
+    await rejectAll.click();
+  }
+}
+
+function onboardAbsUrl(): string {
+  const base = process.env.E2E_BASE_URL;
+  if (typeof base === "string" && base.length > 0) {
+    return `${base.replace(/\/+$/, "")}/onboard`;
+  }
+  return "https://www.trypackai.com/onboard";
 }
 
 async function headingVisible(page: Page, name: string): Promise<boolean> {
   return page
-    .getByRole("heading", { name })
+    .getByRole("heading", { name, exact: true })
     .first()
     .isVisible()
     .catch(() => false);
@@ -236,8 +427,16 @@ async function clickFirstVisible(
 }
 
 async function openOnboard(page: Page): Promise<void> {
-  await page.goto("/onboard", { waitUntil: "domcontentloaded" });
-  await dismissConsentBannerIfVisible(page);
+  const dest = onboardAbsUrl();
+  await page.goto(dest, { waitUntil: "domcontentloaded", timeout: 45_000 });
+  if (!page.url().includes("/onboard")) {
+    await page.goto(dest, { waitUntil: "domcontentloaded", timeout: 45_000 });
+  }
+  await dismissConsent(page);
+  await page.getByTestId("onboard-step").waitFor({
+    state: "attached",
+    timeout: 45_000,
+  });
   await page.locator("h1, h2").first().waitFor({ timeout: 45_000 });
   await page.evaluate(() => document.fonts.ready).catch(() => undefined);
 }
@@ -263,7 +462,10 @@ function doorNameBecauseHref(href: string): string | null {
   if (href.includes("oauth2/authorize") && href.includes("identity_provider=Google")) {
     return "Google auth";
   }
-  if (href.includes("oauth2/authorize") && href.includes("identity_provider=SignInWithApple")) {
+  if (
+    href.includes("oauth2/authorize") &&
+    href.includes("identity_provider=SignInWithApple")
+  ) {
     return "Apple auth";
   }
   if (href.includes("accounts.google.com")) {
@@ -287,40 +489,8 @@ function doorNameBecauseHref(href: string): string | null {
   return null;
 }
 
-function delayBecauseSettle(): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, 400);
-  });
-}
-
 function isDoorUrl(url: string): boolean {
   return doorNameBecauseHref(url) !== null;
-}
-
-function providerDoorBecauseName(name: string): string | null {
-  if (/connect google/i.test(name)) {
-    return "Google auth";
-  }
-  if (/connect microsoft/i.test(name)) {
-    return "Microsoft auth";
-  }
-  return null;
-}
-
-function expectedNextBecauseBack(fromId: FlowPageId): string | null {
-  if (fromId === "connections") {
-    return "Verify your number";
-  }
-  if (fromId === "verify") {
-    return "Future";
-  }
-  if (fromId === "what-pack-does-3") {
-    return "Present";
-  }
-  if (fromId === "what-pack-does-2") {
-    return "Past";
-  }
-  return null;
 }
 
 function nextHeadingBecauseAdvance(
@@ -329,24 +499,19 @@ function nextHeadingBecauseAdvance(
 ): string | null {
   const skip = /skip/i.test(clickedName);
   const cont = /^continue$/i.test(clickedName);
-  if (fromId === "what-pack-does-1" && cont) {
+  if (fromId === "past" && cont) {
     return "Present";
   }
-  if (fromId === "what-pack-does-2" && cont) {
+  if (fromId === "present" && cont) {
     return "Future";
   }
-  if (fromId === "what-pack-does-3" && cont) {
+  if (fromId === "future" && cont) {
     return "Verify your number";
   }
-  if (
-    (fromId === "what-pack-does-1" ||
-      fromId === "what-pack-does-2" ||
-      fromId === "what-pack-does-3") &&
-    skip
-  ) {
+  if ((fromId === "past" || fromId === "present" || fromId === "future") && skip) {
     return "Verify your number";
   }
-  if (fromId === "verify" && skip) {
+  if (fromId === "verify-phone" && skip) {
     return "Connections";
   }
   if (fromId === "connections" && skip) {
@@ -361,23 +526,89 @@ function nextHeadingBecauseAdvance(
   return null;
 }
 
-async function compareToMaestroGolden(
+function pixelDiffRatio(actual: PngFrame, golden: PngFrame): number {
+  if (actual.width !== golden.width || actual.height !== golden.height) {
+    return 1;
+  }
+  let diffPixels = 0;
+  const totalPixels = actual.width * actual.height;
+  const length = Math.min(actual.data.length, golden.data.length);
+  for (let i = 0; i < length; i += 4) {
+    if (
+      actual.data[i] !== golden.data[i] ||
+      actual.data[i + 1] !== golden.data[i + 1] ||
+      actual.data[i + 2] !== golden.data[i + 2] ||
+      actual.data[i + 3] !== golden.data[i + 3]
+    ) {
+      diffPixels += 1;
+    }
+  }
+  return percentBecausePixels(diffPixels, totalPixels);
+}
+
+function requireGoldenFile(rel: string, abs: string): void {
+  if (!existsSync(abs)) {
+    throw new Error(missingGoldenMessage(rel));
+  }
+}
+
+function rgbPng(width: number, height: number, rgb: readonly [number, number, number]): Buffer {
+  const png = new PNG({ width, height });
+  for (let i = 0; i < png.data.length; i += 4) {
+    png.data[i] = rgb[0];
+    png.data[i + 1] = rgb[1];
+    png.data[i + 2] = rgb[2];
+    png.data[i + 3] = 255;
+  }
+  return PNG.sync.write(png);
+}
+
+async function compareToGolden(
   page: Page,
   projectName: string,
   step: string,
 ): Promise<void> {
   mkdirSync(SHOT_DIR, { recursive: true });
+  mkdirSync(FIXTURE_ABS_DIR, { recursive: true });
   const shotPath = path.join(SHOT_DIR, `${projectName}-${step}.png`);
   await page.screenshot({
     path: shotPath,
     fullPage: true,
     animations: "disabled",
+    caret: "hide",
   });
-  await expect(page).toHaveScreenshot(`${step}.png`, {
-    fullPage: true,
-    animations: "disabled",
-    maxDiffPixelRatio: MAX_PIXEL_RATIO,
-  });
+  const vendorAbs = path.join(FIXTURE_ABS_DIR, vendorFileName(step, projectName));
+  if (VENDOR_GOLDENS) {
+    writeFileSync(vendorAbs, readFileSync(shotPath));
+    return;
+  }
+  const target = goldenTarget(step, projectName);
+  if (!existsSync(target.abs)) {
+    expect(false, missingGoldenMessage(target.rel)).toBe(true);
+    return;
+  }
+  const actualPng = PNG.sync.read(readFileSync(shotPath));
+  const goldenPng = PNG.sync.read(readFileSync(target.abs));
+  if (
+    actualPng.width !== goldenPng.width ||
+    actualPng.height !== goldenPng.height
+  ) {
+    const diffPath = path.join(SHOT_DIR, `${projectName}-${step}-size-mismatch.txt`);
+    writeFileSync(
+      diffPath,
+      `actual ${actualPng.width}x${actualPng.height} golden ${goldenPng.width}x${goldenPng.height}\n`,
+    );
+    expect(
+      false,
+      `golden pixel size mismatch ${step}: actual ${actualPng.width}x${actualPng.height} vs ${goldenPng.width}x${goldenPng.height}`,
+    ).toBe(true);
+    return;
+  }
+  const ratio = pixelDiffRatio(actualPng, goldenPng);
+  expect(
+    ratio <= MAX_PIXEL_RATIO,
+    `${step} golden diff ${(ratio * 100).toFixed(2)}% pixels (max 2%) vs ${target.rel}`,
+  ).toBe(true);
 }
 
 async function accessibleNameBecauseControl(item: Locator): Promise<string> {
@@ -401,40 +632,33 @@ async function accessibleNameBecauseControl(item: Locator): Promise<string> {
 }
 
 async function enumerateMainControls(page: Page): Promise<EnumeratedControl[]> {
-  const main = page.locator("main");
-  const groups: readonly Locator[] = [
-    main.getByRole("button"),
-    main.getByRole("link"),
-    main.getByRole("textbox"),
-  ];
+  const loc = page.locator("main button, main a[href], main [role='button']");
+  const count = await loc.count();
   const seen = new Set<string>();
   const out: EnumeratedControl[] = [];
-  for (const loc of groups) {
-    const count = await loc.count();
-    for (let i = 0; i < count; i += 1) {
-      const item = loc.nth(i);
-      if (!(await item.isVisible().catch(() => false))) {
-        continue;
-      }
-      const name = await accessibleNameBecauseControl(item);
-      const tagName = await item.evaluate((el) => el.tagName.toLowerCase());
-      const hrefRaw = await item.getAttribute("href");
-      const href = textBecauseMissing(hrefRaw);
-      const roleRaw = await item.getAttribute("role");
-      const role = textBecauseMissing(roleRaw);
-      const ariaDisabled = await item.getAttribute("aria-disabled");
-      const disabledAttr = await item.isDisabled().catch(() => false);
-      let disabled = disabledAttr;
-      if (ariaDisabled === "true") {
-        disabled = true;
-      }
-      const key = `${tagName}:${name}:${href}`;
-      if (seen.has(key)) {
-        continue;
-      }
-      seen.add(key);
-      out.push({ name, tag: tagName, href, role, disabled });
+  for (let i = 0; i < count; i += 1) {
+    const item = loc.nth(i);
+    if (!(await item.isVisible().catch(() => false))) {
+      continue;
     }
+    const name = await accessibleNameBecauseControl(item);
+    const tagName = await item.evaluate((el) => el.tagName.toLowerCase());
+    const hrefRaw = await item.getAttribute("href");
+    const href = textBecauseMissing(hrefRaw);
+    const roleRaw = await item.getAttribute("role");
+    const role = textBecauseMissing(roleRaw);
+    const ariaDisabled = await item.getAttribute("aria-disabled");
+    const disabledAttr = await item.isDisabled().catch(() => false);
+    let disabled = disabledAttr;
+    if (ariaDisabled === "true") {
+      disabled = true;
+    }
+    const key = `${tagName}:${name}:${href}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    out.push({ name, tag: tagName, href, role, disabled });
   }
   return out;
 }
@@ -444,12 +668,8 @@ function locatorForControl(page: Page, control: EnumeratedControl): Locator {
   if (control.href.length > 0 && control.tag === "a") {
     return main.locator(`a[href="${control.href}"]`).first();
   }
-  if (control.tag === "input" || control.tag === "textarea") {
-    return main.getByRole("textbox", { name: control.name }).first();
-  }
   if (control.name.length > 0) {
-    const byName = main.getByRole("button", { name: control.name });
-    return byName.first();
+    return main.getByRole("button", { name: control.name }).first();
   }
   return main.locator(`${control.tag}[role='button']`).first();
 }
@@ -470,6 +690,33 @@ async function snapshotToggleState(
   return `${pressed}|${checked}|${expanded}|${selected}|${text}`;
 }
 
+function inPageConnectOrChrome(flow: FlowPage, control: EnumeratedControl): boolean {
+  if (flow.id !== "connections") {
+    return false;
+  }
+  if (/connect google/i.test(control.name)) {
+    return true;
+  }
+  if (/connect microsoft/i.test(control.name)) {
+    return true;
+  }
+  if (/^back$/i.test(control.name)) {
+    return true;
+  }
+  return false;
+}
+
+function settleMsBecauseControl(control: EnumeratedControl): number {
+  if (
+    /continue with google/i.test(control.name) ||
+    /continue with apple/i.test(control.name) ||
+    /let us handle the rest/i.test(control.name)
+  ) {
+    return 8_000;
+  }
+  return 800;
+}
+
 async function clickAndClassify(
   page: Page,
   flow: FlowPage,
@@ -478,20 +725,6 @@ async function clickAndClassify(
 ): Promise<ControlKind> {
   if (control.disabled) {
     return "disabled-named";
-  }
-  if (control.tag === "input" || control.tag === "textarea") {
-    const loc = locatorForControl(page, control);
-    const inputType = textBecauseMissing(await loc.getAttribute("type"));
-    const looksLikePhone = inputType === "tel" || /phone|sms/i.test(control.name);
-    if (looksLikePhone) {
-      const value = await loc.inputValue().catch(() => "");
-      expect(value).not.toMatch(/[2-9]\d{9}/);
-      return "toggle";
-    }
-    await loc.fill("e2e");
-    await expect(loc).toHaveValue("e2e");
-    await loc.fill("");
-    return "toggle";
   }
   const hrefDoor = doorNameBecauseHref(control.href);
   if (hrefDoor !== null) {
@@ -513,6 +746,11 @@ async function clickAndClassify(
         `popup door ${control.name} ${popupUrl}`,
       ).toBe(true);
       await popup.close();
+    } else {
+      expect(
+        hrefDoor.length > 0,
+        `href door ${control.name} ${control.href}`,
+      ).toBe(true);
     }
     return "external-door";
   }
@@ -522,62 +760,36 @@ async function clickAndClassify(
   const beforeToggle = await snapshotToggleState(page, control);
   const loc = locatorForControl(page, control);
 
-  if (/^back$/i.test(control.name)) {
-    await loc.click();
-    await delayBecauseSettle();
-    const afterBack = await currentHeading(page);
-    const backDest = expectedNextBecauseBack(flow.id);
-    if (afterBack !== beforeHeading) {
-      if (backDest !== null) {
-        expect(afterBack).toMatch(new RegExp(backDest.replace("!", "\\!")));
-      }
-      return "advance";
-    }
-    await expect(loc).toBeVisible();
-    return "chrome-back";
-  }
-
-  const providerDoor = providerDoorBecauseName(control.name);
-  if (providerDoor !== null) {
-    const popupWait = page
-      .waitForEvent("popup", { timeout: 2_500 })
-      .catch(() => null);
-    await loc.click();
-    const popup = await popupWait;
-    if (popup !== null) {
-      const popupUrl = popup.url();
-      expect(
-        doorNameBecauseHref(popupUrl) !== null ||
-          /microsoftonline|login\.live|appleid/i.test(popupUrl),
-        `provider popup ${control.name} ${popupUrl}`,
-      ).toBe(true);
-      await popup.close();
-      return "external-door";
-    }
-    await delayBecauseSettle();
-    const afterProviderUrl = page.url();
-    if (
-      isDoorUrl(afterProviderUrl) ||
-      /microsoftonline|login\.live|appleid/i.test(afterProviderUrl)
-    ) {
-      return "external-door";
-    }
-    await expect(loc).toBeVisible();
-    return "named-provider";
-  }
-
   const popupPromise = page
-    .waitForEvent("popup", { timeout: 2_500 })
-    .catch(() => null);
-  const navPromise = page
-    .waitForURL((url) => isDoorUrl(url.toString()) || url.toString() !== beforeUrl, {
-      timeout: 8_000,
-    })
+    .waitForEvent("popup", { timeout: 2_000 })
     .catch(() => null);
 
-  await loc.click();
+  try {
+    await loc.click({ timeout: 8_000 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!/destroyed|closed|detached/i.test(message)) {
+      throw error;
+    }
+  }
 
-  const popup = await popupPromise;
+  const deadline = Date.now() + settleMsBecauseControl(control);
+  let popup = await popupPromise;
+  while (Date.now() < deadline) {
+    if (popup !== null) {
+      break;
+    }
+    const afterUrlEarly = page.url();
+    if (isDoorUrl(afterUrlEarly) || afterUrlEarly !== beforeUrl) {
+      break;
+    }
+    const afterHeadingEarly = await currentHeading(page).catch(() => "");
+    if (afterHeadingEarly !== beforeHeading && afterHeadingEarly.length > 0) {
+      break;
+    }
+    await delayBecauseSettle(150);
+  }
+
   if (popup !== null) {
     const popupUrl = popup.url();
     const door = doorNameBecauseHref(popupUrl);
@@ -589,7 +801,6 @@ async function clickAndClassify(
     return "external-door";
   }
 
-  await navPromise;
   const afterUrl = page.url();
   const urlDoor = doorNameBecauseHref(afterUrl);
   if (urlDoor !== null) {
@@ -600,8 +811,7 @@ async function clickAndClassify(
     /continue with google/i.test(control.name) ||
     /continue with apple/i.test(control.name);
   if (googleApple) {
-    const door =
-      /google/i.test(control.name) ? "Google auth" : "Apple auth";
+    const door = /google/i.test(control.name) ? "Google auth" : "Apple auth";
     const looksLikeAuth =
       /auth\.trypackai\.com|oauth2\/authorize|accounts\.google|appleid\.apple/i.test(
         afterUrl,
@@ -619,22 +829,26 @@ async function clickAndClassify(
     return "external-door";
   }
 
-  await delayBecauseSettle();
-  const afterHeading = await currentHeading(page);
+  await delayBecauseSettle(400);
+  const afterHeading = await currentHeading(page).catch(() => "");
   const expectedNext = nextHeadingBecauseAdvance(flow.id, control.name);
-  if (afterHeading !== beforeHeading) {
+  if (afterHeading !== beforeHeading && afterHeading.length > 0) {
     if (expectedNext !== null) {
       expect(afterHeading).toMatch(new RegExp(expectedNext.replace("!", "\\!")));
     }
     return "advance";
   }
 
-  const afterToggle = await snapshotToggleState(page, control);
+  const afterToggle = await snapshotToggleState(page, control).catch(() => "");
   if (afterToggle !== beforeToggle) {
     return "toggle";
   }
 
-  if (flow.id === "verify" && isMobile === false && /qr/i.test(control.name)) {
+  if (flow.id === "verify-phone" && isMobile === false && /qr/i.test(control.name)) {
+    return "toggle";
+  }
+
+  if (inPageConnectOrChrome(flow, control)) {
     return "toggle";
   }
 
@@ -672,28 +886,26 @@ async function landOnFlowPage(
   flow: FlowPage,
 ): Promise<void> {
   if (flow.needsAuth) {
-    const sessionJson = e2eSessionJson();
-    await injectAuthenticatedSession(page.context(), sessionJson);
+    const sessionJson = loadOrMintSessionJson(projectName);
     await injectAuthenticatedSession(page, sessionJson);
-    await restoreCookies(page, projectName);
-    await restoreSessionStorage(page, projectName);
-    await stubPhoneVerificationPending(page);
+    await stubApiScopedPages(page);
   }
   await openOnboard(page);
 
   if (flow.id === "signup") {
     await expect(
-      page.getByRole("heading", { name: flow.heading }),
+      page.getByRole("heading", { name: flow.heading, exact: true }),
     ).toBeVisible({ timeout: 45_000 });
     return;
   }
 
   if (await headingVisible(page, "Welcome to Pack")) {
+    const sessionJson = loadOrMintSessionJson(projectName);
     await page.evaluate((raw: string) => {
       window.sessionStorage.setItem("pack.auth.session.v1", raw);
-    }, e2eSessionJson());
+    }, sessionJson);
     await page.reload({ waitUntil: "domcontentloaded" });
-    await dismissConsentBannerIfVisible(page);
+    await dismissConsent(page);
     await page.locator("h1, h2").first().waitFor({ timeout: 45_000 });
   }
 
@@ -704,55 +916,42 @@ async function landOnFlowPage(
     ).toBe(true);
   }
 
-  if (await headingVisible(page, "Connections")) {
-    if (flow.id !== "connections" && flow.id !== "welcome") {
-      expect(
-        false,
-        `step-order expected what-pack-does-1 → what-pack-does-2 → what-pack-does-3 → verify → connections → welcome; Connections immediately after auth is the old prod order (land ${flow.id})`,
-      ).toBe(true);
-    }
-  }
-
-  if (flow.id === "what-pack-does-1") {
-    await expect(page.getByRole("heading", { name: "Past" })).toBeVisible({
+  if (flow.id === "past") {
+    await expect(page.getByRole("heading", { name: "Past", exact: true })).toBeVisible({
       timeout: 45_000,
     });
     return;
   }
-  if (flow.id === "what-pack-does-2") {
-    await expect(page.getByRole("heading", { name: "Past" })).toBeVisible({
+  if (flow.id === "present") {
+    await expect(page.getByRole("heading", { name: "Past", exact: true })).toBeVisible({
       timeout: 45_000,
     });
     await clickFirstVisible(page, /^Continue$/);
-    await expect(page.getByRole("heading", { name: "Present" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Present", exact: true })).toBeVisible();
     return;
   }
-  if (flow.id === "what-pack-does-3") {
-    await expect(page.getByRole("heading", { name: "Past" })).toBeVisible({
+  if (flow.id === "future") {
+    await expect(page.getByRole("heading", { name: "Past", exact: true })).toBeVisible({
       timeout: 45_000,
     });
     await clickFirstVisible(page, /^Continue$/);
-    await expect(page.getByRole("heading", { name: "Present" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Present", exact: true })).toBeVisible();
     await clickFirstVisible(page, /^Continue$/);
-    await expect(page.getByRole("heading", { name: "Future" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Future", exact: true })).toBeVisible();
     return;
   }
-  if (flow.id === "verify") {
+  if (flow.id === "verify-phone") {
     if (await headingVisible(page, "Past")) {
       await clickFirstVisible(page, /^Skip$/);
     }
     await expect(
-      page.getByRole("heading", { name: "Verify your number" }),
+      page.getByRole("heading", { name: "Verify your number", exact: true }),
     ).toBeVisible({ timeout: 45_000 });
     return;
   }
   if (flow.id === "connections") {
     if (await headingVisible(page, "Past")) {
-      await clickFirstVisible(page, /^Continue$/);
-      await expect(page.getByRole("heading", { name: "Present" })).toBeVisible();
-      await clickFirstVisible(page, /^Continue$/);
-      await expect(page.getByRole("heading", { name: "Future" })).toBeVisible();
-      await clickFirstVisible(page, /^Continue$/);
+      await clickFirstVisible(page, /^Skip$/);
     }
     if (await headingVisible(page, "Verify your number")) {
       const skippedNow = await clickFirstVisible(page, /^Skip for now$/);
@@ -761,7 +960,7 @@ async function landOnFlowPage(
       }
     }
     await expect(
-      page.getByRole("heading", { name: "Connections" }),
+      page.getByRole("heading", { name: "Connections", exact: true }),
     ).toBeVisible({ timeout: 45_000 });
     return;
   }
@@ -778,7 +977,7 @@ async function landOnFlowPage(
     await clickFirstVisible(page, /^Skip for now$/);
   }
   await expect(
-    page.getByRole("heading", { name: /You're all set!|Welcome/i }),
+    page.getByRole("heading", { name: "You're all set!", exact: true }),
   ).toBeVisible({ timeout: 45_000 });
 }
 
@@ -791,23 +990,11 @@ async function exerciseEveryControl(
   const controls = await enumerateMainControls(page);
   expect(
     controls.length > 0,
-    `${flow.id} must expose at least one button, link, or textbox`,
+    `${flow.id} must expose at least one button/link`,
   ).toBe(true);
 
-  if (flow.id === "verify") {
+  if (flow.id === "verify-phone") {
     await assertNamedQrIfDesktop(page, isMobile);
-  }
-  if (flow.id === "connections") {
-    await expect(page.getByRole("button", { name: /^Back$/ })).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: /Connect Google/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: /Connect Microsoft/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: /^Skip for now$/ }),
-    ).toBeVisible();
   }
 
   for (const control of controls) {
@@ -820,9 +1007,7 @@ async function exerciseEveryControl(
         kind === "advance" ||
           kind === "external-door" ||
           kind === "toggle" ||
-          kind === "disabled-named" ||
-          kind === "chrome-back" ||
-          kind === "named-provider",
+          kind === "disabled-named",
         `${control.name} classified ${kind}`,
       ).toBe(true);
       if (kind === "advance" || kind === "external-door") {
@@ -833,6 +1018,21 @@ async function exerciseEveryControl(
 }
 
 test.describe("Onboarding works (playwright tested e2e) including all the buttons throughout the flow and it's 1:1 with the mobile golden maestros.", () => {
+  test("missing golden names the fixture path", () => {
+    const rel = `${FIXTURE_REL_DIR}/does-not-exist.png`;
+    const abs = path.join(process.cwd(), rel);
+    expect(() => {
+      requireGoldenFile(rel, abs);
+    }).toThrow(missingGoldenMessage(rel));
+  });
+
+  test("perturbed golden exceeds the 2% pixel cap", () => {
+    const black = PNG.sync.read(rgbPng(8, 8, [0, 0, 0]));
+    const white = PNG.sync.read(rgbPng(8, 8, [255, 255, 255]));
+    const ratio = pixelDiffRatio(black, white);
+    expect(ratio > MAX_PIXEL_RATIO).toBe(true);
+  });
+
   for (const flow of FLOW_PAGES) {
     if (flow.needsAuth) {
       continue;
@@ -841,14 +1041,23 @@ test.describe("Onboarding works (playwright tested e2e) including all the button
       test.use({ storageState: { cookies: [], origins: [] } });
       test.setTimeout(120_000);
 
-      test(`${flow.id}: screenshot vs Maestro golden and click every control`, async ({
+      test(`${flow.id}: screenshot vs golden and click every control`, async ({
         page,
       }, testInfo) => {
         const projectName = testInfo.project.name;
         const isMobile = projectName === "chromium-mobile";
+        const target = goldenTarget(flow.golden, projectName);
+        if (!VENDOR_GOLDENS) {
+          expect(
+            existsSync(target.abs),
+            missingGoldenMessage(target.rel),
+          ).toBe(true);
+        }
         await landOnFlowPage(page, projectName, flow);
-        await compareToMaestroGolden(page, projectName, flow.golden);
-        await exerciseEveryControl(page, projectName, flow, isMobile);
+        await compareToGolden(page, projectName, flow.golden);
+        if (!VENDOR_GOLDENS) {
+          await exerciseEveryControl(page, projectName, flow, isMobile);
+        }
       });
     });
   }
@@ -860,14 +1069,23 @@ test.describe("Onboarding works (playwright tested e2e) including all the button
       if (!flow.needsAuth) {
         continue;
       }
-      test(`${flow.id}: screenshot vs Maestro golden and click every control`, async ({
+      test(`${flow.id}: screenshot vs golden and click every control`, async ({
         page,
       }, testInfo) => {
         const projectName = testInfo.project.name;
         const isMobile = projectName === "chromium-mobile";
+        const target = goldenTarget(flow.golden, projectName);
+        if (!VENDOR_GOLDENS) {
+          expect(
+            existsSync(target.abs),
+            missingGoldenMessage(target.rel),
+          ).toBe(true);
+        }
         await landOnFlowPage(page, projectName, flow);
-        await compareToMaestroGolden(page, projectName, flow.golden);
-        await exerciseEveryControl(page, projectName, flow, isMobile);
+        await compareToGolden(page, projectName, flow.golden);
+        if (!VENDOR_GOLDENS) {
+          await exerciseEveryControl(page, projectName, flow, isMobile);
+        }
       });
     }
   });

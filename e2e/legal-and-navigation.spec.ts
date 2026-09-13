@@ -86,7 +86,7 @@ test.describe("Legal and support journeys", () => {
     page,
   }) => {
     await page.goto("/do-not-sell", { waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/\/privacy-request$/);
+    await expect(page).toHaveURL(/\/privacy-request\/opt-out$/) /* SeoRedirect target since 469ec43 (2026-09-08) */;
     await expect(
       page.getByRole("heading", { name: /your privacy choices/i }),
     ).toBeVisible();

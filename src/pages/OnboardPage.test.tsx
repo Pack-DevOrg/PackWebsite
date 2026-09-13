@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { ONBOARD_PATH, OnboardPage } from "./OnboardPage";
 import { I18nProvider } from "@/i18n/I18nProvider";
-import { DEFAULT_SHARE_IMAGE_URL } from "@/seo/pageSeo";
+import { DEFAULT_SHARE_IMAGE_URL, SITE_ORIGIN } from "@/seo/pageSeo";
 import { ThemeProvider } from "@/styles/ThemeProvider";
 
 const loginMock = jest.fn();
@@ -170,5 +170,66 @@ describe("OnboardPage /onboard five-step app flow", () => {
         .querySelector('meta[name="twitter:image"]')
         ?.getAttribute("content"),
     ).toBe(DEFAULT_SHARE_IMAGE_URL);
+  });
+
+  it("declares absolute apple-touch icons so iMessage never fetches /error", async () => {
+    const touchIconUrl = `${SITE_ORIGIN}/apple-touch-icon.png`;
+    const touchSizes = ["120x120", "152x152", "167x167", "180x180"] as const;
+
+    renderAt(ONBOARD_PATH);
+
+    await waitFor(() => {
+      expect(
+        document.head
+          .querySelector('link[rel="apple-touch-icon"]:not([sizes])')
+          ?.getAttribute("href"),
+      ).toBe(touchIconUrl);
+    });
+
+    const previewAssetUrls = [
+      document.head
+        .querySelector('meta[property="og:image"]')
+        ?.getAttribute("content"),
+      document.head
+        .querySelector('meta[property="og:image:secure_url"]')
+        ?.getAttribute("content"),
+      document.head
+        .querySelector('meta[name="twitter:image"]')
+        ?.getAttribute("content"),
+      document.head
+        .querySelector('link[rel="apple-touch-icon"]:not([sizes])')
+        ?.getAttribute("href"),
+      document.head
+        .querySelector('link[rel="apple-touch-icon-precomposed"]:not([sizes])')
+        ?.getAttribute("href"),
+      ...touchSizes.flatMap((size) => [
+        document.head
+          .querySelector(`link[rel="apple-touch-icon"][sizes="${size}"]`)
+          ?.getAttribute("href"),
+        document.head
+          .querySelector(
+            `link[rel="apple-touch-icon-precomposed"][sizes="${size}"]`,
+          )
+          ?.getAttribute("href"),
+      ]),
+    ];
+
+    expect(previewAssetUrls).toHaveLength(13);
+    for (const url of previewAssetUrls) {
+      expect(url).toEqual(expect.any(String));
+      expect(url).toMatch(/^https:\/\/www\.trypackai\.com\//);
+      expect(url === "/error" || url?.includes("/error")).toBe(false);
+      const path = new URL(url as string).pathname;
+      expect(
+        path.startsWith("/images/") || path === "/apple-touch-icon.png",
+      ).toBe(true);
+    }
+
+    expect(
+      document.head.querySelectorAll('link[rel="apple-touch-icon"]'),
+    ).toHaveLength(touchSizes.length + 1);
+    expect(
+      document.head.querySelectorAll('link[rel="apple-touch-icon-precomposed"]'),
+    ).toHaveLength(touchSizes.length + 1);
   });
 });

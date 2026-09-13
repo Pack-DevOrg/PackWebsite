@@ -8,7 +8,10 @@ import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
 import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
-import { DEFAULT_SHARE_IMAGE_URL } from "@/seo/pageSeo";
+import { DEFAULT_SHARE_IMAGE_URL, SITE_ORIGIN } from "@/seo/pageSeo";
+
+// iOS HEAD-probes this URL instead of missing *-precomposed.png paths that 200 as /error HTML.
+const APPLE_TOUCH_ICON_URL = `${SITE_ORIGIN}/apple-touch-icon.png`;
 
 export const ONBOARD_PATH = "/onboard";
 
@@ -103,6 +106,48 @@ function OnboardFlow() {
         <meta property="og:image:alt" content="Pack" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={DEFAULT_SHARE_IMAGE_URL} />
+        <link rel="apple-touch-icon" href={APPLE_TOUCH_ICON_URL} />
+        <link rel="apple-touch-icon-precomposed" href={APPLE_TOUCH_ICON_URL} />
+        <link
+          rel="apple-touch-icon"
+          sizes="120x120"
+          href={APPLE_TOUCH_ICON_URL}
+        />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="120x120"
+          href={APPLE_TOUCH_ICON_URL}
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="152x152"
+          href={APPLE_TOUCH_ICON_URL}
+        />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="152x152"
+          href={APPLE_TOUCH_ICON_URL}
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="167x167"
+          href={APPLE_TOUCH_ICON_URL}
+        />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="167x167"
+          href={APPLE_TOUCH_ICON_URL}
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href={APPLE_TOUCH_ICON_URL}
+        />
+        <link
+          rel="apple-touch-icon-precomposed"
+          sizes="180x180"
+          href={APPLE_TOUCH_ICON_URL}
+        />
       </Helmet>
       <Shell>
         {/* data-testid="onboard-step" is the land-smoke + deploy verifier

@@ -32,7 +32,7 @@ test.describe("Additional public page coverage", () => {
     const question = page.getByRole("button", {name: /what is pack\?/i});
     await question.click();
     await expect(
-      page.getByText(/pack is a travel planning app/i),
+      page.getByText(/pack is an ai travel app/i),
     ).toBeVisible();
 
     await expect(
@@ -51,22 +51,22 @@ test.describe("Additional public page coverage", () => {
     await dismissConsentBannerIfVisible(page);
 
     await expect(
-      page.getByRole("heading", {name: /how doneai works/i}),
+      page.getByRole("heading", {name: /how pack works/i}),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", {
-        name: /traditional travel planning vs\. the doneai flow/i,
+        name: /generic trip tools vs\. pack/i,
       }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", {name: /traditional method/i}),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", {name: /doneai process/i}),
+      page.getByRole("heading", {name: /pack process/i}),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", {
-        name: /see how doneai would handle your next trip/i,
+        name: /see how pack would handle your next trip/i,
       }),
     ).toBeVisible();
     await expect(

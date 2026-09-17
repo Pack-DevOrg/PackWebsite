@@ -1,7 +1,6 @@
 import {
   benchmarkMetricExplanations,
   benchmarkOverview,
-  hard100Cases,
   latestVerifiedPackRun,
 } from "./travelContextBenchmark";
 
@@ -41,13 +40,9 @@ describe("travelContextBenchmark public DeeperBench 2.0", () => {
     expect(latestVerifiedPackRun.llmCalls).toBe("not yet verified");
   });
 
-  it("ships the 2.0 4x25 public prompts", () => {
-    expect(hard100Cases).toHaveLength(100);
-    expect(hard100Cases[0]?.number).toBe("db2-t1-001");
-    expect(hard100Cases.map((c) => c.number)).toContain("db2-t4-025");
-    expect(
-      hard100Cases.some((c) => c.title === "@family Japan for about a week."),
-    ).toBe(false);
+  it("does not export the hard-100 prompt list", async () => {
+    const mod = await import("./travelContextBenchmark");
+    expect(mod).not.toHaveProperty("hard100Cases");
   });
 });
 

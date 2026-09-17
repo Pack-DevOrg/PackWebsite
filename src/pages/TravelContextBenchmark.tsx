@@ -4,7 +4,6 @@ import {
   benchmarkMetricExplanations,
   benchmarkOverview,
   benchmarkStatusBarNote,
-  hard100Cases,
   hard100CorpusSizeLabel,
   hardestTenShootoutRows,
   latestVerifiedPackRun,
@@ -247,41 +246,6 @@ const ResultGrid = styled.div`
   gap: var(--space-2);
 `;
 
-const FullCaseList = styled.div`
-  display: grid;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--border-radius);
-  background: rgba(0, 0, 0, 0.18);
-`;
-
-const FullCaseRow = styled.article`
-  display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr);
-  gap: var(--space-2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: var(--space-3);
-
-  &:last-child {
-    border-bottom: 0;
-  }
-
-  span {
-    color: var(--color-accent);
-    font-weight: 800;
-  }
-
-  strong {
-    display: block;
-    color: var(--color-text-primary);
-  }
-
-  p {
-    margin: 0.35rem 0 0;
-    color: var(--color-text-secondary);
-    line-height: 1.55;
-  }
-`;
-
 const ResultItem = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: var(--space-2);
@@ -468,15 +432,6 @@ const ScoreValue = styled.strong<{ $status?: "pass" | "partial" | "fail" | "unsc
   line-height: 1.15;
 `;
 
-const CaseHardReason = styled.span`
-  display: block;
-  max-width: 18rem;
-  margin-top: 0.45rem;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-  line-height: 1.45;
-`;
-
 const ComponentList = styled.ul`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -521,7 +476,7 @@ const ComponentChip = styled.li<{ $status: "pass" | "partial" | "fail" }>`
 
 const ModelResultCell = styled.div`
   display: grid;
-  grid-template-rows: 2rem 1.25rem 1.25rem 4.65rem minmax(4.25rem, auto);
+  grid-template-rows: 2rem 1.25rem 1.25rem 4.65rem;
   align-content: start;
   gap: 0.35rem;
   min-width: 0;
@@ -540,13 +495,6 @@ const ComponentBreakdownSlot = styled.div`
   display: grid;
   align-content: start;
   min-width: 0;
-`;
-
-const ModelResultText = styled.p`
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-  line-height: 1.45;
 `;
 
 const ChartGrid = styled.div`
@@ -797,14 +745,12 @@ interface CaseModelResultProps {
   readonly cost: string;
   readonly runtime: string;
   readonly components: RubricComponents;
-  readonly result: string;
 }
 
 const CaseModelResult = ({
   cost,
   runtime,
   components,
-  result,
 }: CaseModelResultProps) => (
   <ModelResultCell>
     <ScoreValue $status={statusForScore(formatScore(components))}>
@@ -815,7 +761,6 @@ const CaseModelResult = ({
     <ComponentBreakdownSlot>
       <ComponentBreakdown components={components} />
     </ComponentBreakdownSlot>
-    <ModelResultText>{result}</ModelResultText>
   </ModelResultCell>
 );
 
@@ -1012,8 +957,9 @@ const TravelContextBenchmark = () => (
       <SectionText>
         Each row is one of ten especially difficult cases selected from the
         hard-100 corpus as a focused test set. The table reports rubric score,
-        cost, runtime, rubric components, and the scored result note for Pack's
-        architecture and the frontier-agent baselines on those same cases.
+        cost, runtime, and rubric components for Pack's architecture and the
+        frontier-agent baselines on those same cases. Case prompts and expected
+        outcomes stay unpublished.
       </SectionText>
       <TableWrap>
         <ShootoutTable>
@@ -1029,15 +975,13 @@ const TravelContextBenchmark = () => (
             {hardestTenShootoutRows.map((row) => (
               <tr key={row.number}>
                 <td>
-                  <strong>{row.number}. {row.title}</strong>
-                  <CaseHardReason>{row.hardReason}</CaseHardReason>
+                  <strong>Case {row.number}</strong>
                 </td>
                 <td>
                   <CaseModelResult
                     cost={row.packCost}
                     runtime={row.packRuntime}
                     components={row.packComponents}
-                    result={row.packResult}
                   />
                 </td>
                 <td>
@@ -1045,7 +989,6 @@ const TravelContextBenchmark = () => (
                     cost={row.gptCost}
                     runtime={row.gptRuntime}
                     components={row.gptComponents}
-                    result={row.gptResult}
                   />
                 </td>
                 <td>
@@ -1053,7 +996,6 @@ const TravelContextBenchmark = () => (
                     cost={row.opusCost}
                     runtime={row.opusRuntime}
                     components={row.opusComponents}
-                    result={row.opusResult}
                   />
                 </td>
               </tr>
@@ -1116,22 +1058,6 @@ const TravelContextBenchmark = () => (
       </ScoreCardGrid>
     </Section>
 
-    <Section>
-      <SectionTitle>Hard-100 Corpus Cases</SectionTitle>
-      <SectionText>
-        The official hard-100 result covers every request listed here.
-      </SectionText>
-      <FullCaseList>
-        {hard100Cases.map((caseItem) => (
-          <FullCaseRow key={caseItem.number}>
-            <span>{caseItem.number}</span>
-            <div>
-              <strong>{caseItem.title}</strong>
-            </div>
-          </FullCaseRow>
-        ))}
-      </FullCaseList>
-    </Section>
   </Page>
 );
 

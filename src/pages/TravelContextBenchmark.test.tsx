@@ -1,4 +1,6 @@
 import React from "react";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { render, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
@@ -56,5 +58,28 @@ describe("TravelContextBenchmark public copy", () => {
       "The reported run covers all 100 hard-corpus cases.",
     );
     expect(pageSource).toContain("100 cases · 4×25");
+  });
+
+  it("does not publish hard-100 case titles or packResult gold", () => {
+    const { container } = renderPage();
+    const pageSource = container.textContent ?? "";
+
+    expect(pageSource).not.toContain("Indy 500 next year.");
+    expect(pageSource).not.toContain("flghts to chicago sept 18-21 pls");
+    expect(pageSource).not.toContain("db2-t1-001");
+    expect(pageSource).not.toContain("@family Japan for about a week.");
+    expect(pageSource).not.toContain(
+      "Passed: used the 2027 family spring-break window",
+    );
+    expect(pageSource).not.toContain("Hard-100 Corpus Cases");
+    expect(pageSource).toContain("Pack DeeperBench");
+    expect(pageSource).toContain("100 cases · 4×25");
+
+    const source = readFileSync(
+      path.join(__dirname, "TravelContextBenchmark.tsx"),
+      "utf8",
+    );
+    expect(source).not.toContain("hard100Cases");
+    expect(source).not.toContain("packResult");
   });
 });

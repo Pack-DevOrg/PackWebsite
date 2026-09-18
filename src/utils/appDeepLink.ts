@@ -11,6 +11,8 @@
  * Kept free of import.meta/env access so the logic is directly unit-testable.
  */
 
+import { captureSiteAction } from "../tracking/posthog";
+
 export const APP_SCHEME_PREFIX = "com.packai.app://";
 
 export const DEFAULT_APPLE_APP_ID = "6761626050";
@@ -67,6 +69,8 @@ export const attemptOpenInApp = (options: {
   readonly env: OpenInAppEnvironment;
 }): (() => void) => {
   const { shareId, userAgent, appleAppId, env } = options;
+
+  captureSiteAction("deep_link");
 
   env.navigate(buildShareAppSchemeUrl(shareId));
 

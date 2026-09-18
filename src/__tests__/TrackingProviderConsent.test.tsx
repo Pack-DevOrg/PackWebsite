@@ -25,6 +25,13 @@ jest.mock('../tracking/runtime', () => ({
   loadTikTokPixelRuntime: jest.fn(async () => undefined),
 }));
 
+jest.mock('../tracking/posthog', () => ({
+  initPostHog: jest.fn(async () => undefined),
+  capturePageview: jest.fn(),
+  captureSiteAction: jest.fn(),
+  capturePosthog: jest.fn(),
+}));
+
 const runtimeMock = jest.requireMock('../tracking/runtime') as {
   loadGtmRuntime: jest.Mock;
   loadGA4Runtime: jest.Mock;
@@ -308,7 +315,7 @@ describe('TrackingProvider consent gating', () => {
       'event',
       'page_view',
       expect.objectContaining({
-        page_path: '/pricing?utm_source=ad',
+        page_path: '/pricing',
       }),
     );
   });

@@ -56,6 +56,7 @@ import { apiEndpoints } from "../config/appConfig";
 import { useI18n } from "../i18n/I18nProvider";
 import { getAcceptanceNoticeLegalCopy } from "../legal/legalUiCopy";
 import { useTracking } from "./TrackingProvider";
+import { captureSiteAction } from "../tracking/posthog";
 import { BorderBeam } from "@pack/web-effects/border-beam";
 import { ThinkingOrb } from "@pack/web-effects/thinking-orbs";
 
@@ -628,6 +629,24 @@ const SubmitButton = styled.button`
   }
 `;
 
+const TextMeButton = styled.button`
+  margin-top: ${(props) => props.theme.spacing[2]};
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: ${(props) => props.theme.typography.fontSizes.small};
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-text-primary);
+  }
+`;
+
 const ErrorMessage = styled.div`
   color: ${(props) => props.theme.colors.error.main};
   font-size: ${(props) => props.theme.typography.fontSizes.small};
@@ -1053,6 +1072,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
 
       setIsSubmitted(true);
       setSubmittedMarketingEmailConsent(marketingEmailOptIn);
+      captureSiteAction("waitlist_submit");
       
       // Track successful form completion
       trackFormSubmit('waitlist_form', {
@@ -1256,6 +1276,9 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
                   t("waitlist.done")
                 )}
               </SubmitButton>
+              <TextMeButton type="button" data-site-action="text_me">
+                Text me
+              </TextMeButton>
 
               {showLegalNotice ? (
                 <CollectionNotice>

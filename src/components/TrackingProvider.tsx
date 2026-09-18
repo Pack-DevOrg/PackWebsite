@@ -26,6 +26,7 @@ import {
   type ConsentStatus,
 } from '../tracking/consent';
 import { useMountEffect } from '@/hooks/useMountEffect';
+import {capturePageview, initPostHog} from '../tracking/posthog';
 
 type IdleRequestDeadline = {
   readonly didTimeout: boolean;
@@ -787,6 +788,8 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       lastTikTokPagePathRef.current = trackedPage;
     }
 
+    capturePageview(trackedPage);
+
     if (env.DEV) {
       const summary = summarizePathForLogs(trackedPage);
       console.log(`Tracking page view: ${summary.path}`, {hasQuery: summary.hasQuery});
@@ -847,6 +850,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
         applyConsentDecision={applyConsentDecision}
         setGpcApplies={setGpcApplies}
       />
+      <PostHogBootstrap />
       {hasAnalyticsConsent || hasMarketingConsent ? (
         <TrackingScriptLoader
           key={`scripts:${hasAnalyticsConsent}:${hasMarketingConsent}:${gtmId ?? 'none'}`}
@@ -961,6 +965,13 @@ const TrackingGpcBootstrap: React.FC<{
   return null;
 };
 
+const PostHogBootstrap: React.FC = () => {
+  useMountEffect(() => {
+    void initPostHog();
+  });
+  return null;
+};
+
 const TrackingScriptLoader: React.FC<{
   readonly loadGtm: () => Promise<void>;
   readonly loadGA4: () => Promise<void>;
@@ -968,7 +979,9 @@ const TrackingScriptLoader: React.FC<{
   readonly loadTikTokPixel: () => Promise<void>;
 }> = ({ loadGtm, loadGA4, loadMetaPixel, loadTikTokPixel }) => {
   useMountEffect(() => {
+    void initPostHog();
     return runWhenIdle(() => {
+      void initPostHog();
       void loadGtm();
       void loadGA4();
       void loadMetaPixel();

@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly VITE_GA4_MEASUREMENT_ID: string
   readonly VITE_META_PIXEL_ID: string
   readonly VITE_TIKTOK_PIXEL_ID: string
+  readonly VITE_POSTHOG_KEY: string
+  readonly VITE_POSTHOG_HOST: string
   readonly VITE_RECAPTCHA_SITE_KEY: string
   readonly VITE_DEBUG_TRACKING: string
   readonly VITE_ENABLE_CONSOLE_LOGS: string

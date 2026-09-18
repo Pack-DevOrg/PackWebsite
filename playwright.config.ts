@@ -27,7 +27,7 @@ export default defineConfig({
   webServer: shouldUseLocalWebServer
     ? {
         command:
-          "VITE_RECAPTCHA_SITE_KEY=e2e-local-site-key npm run dev -- --host 127.0.0.1 --port 4173 --strictPort",
+          "VITE_RECAPTCHA_SITE_KEY=e2e-local-site-key VITE_POSTHOG_KEY=phc_e2e_site_analytics VITE_POSTHOG_HOST=https://us.i.posthog.com npm run dev -- --host 127.0.0.1 --port 4173 --strictPort",
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

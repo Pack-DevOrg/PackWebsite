@@ -104,6 +104,7 @@ export const VerifyPhoneCta: React.FC<VerifyPhoneCtaProps> = ({
     <Root data-testid="verify-phone-cta">
       <CtaButton
         type="button"
+        data-site-action="text_me"
         onClick={() => {
           void onClick();
         }}

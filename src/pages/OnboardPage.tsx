@@ -1,10 +1,14 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import styled from "styled-components";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
+import {
+  OnboardShell,
+  OnboardViewport,
+  OnboardViewportLock,
+} from "@/components/onboard/OnboardPrimitives";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
 import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
@@ -59,22 +63,6 @@ function shouldAdvanceSignupBecauseAuthenticated(
   return stepIndex === SIGNUP_INDEX;
 }
 
-const Page = styled.main`
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(1.25rem, 4vw, 2.5rem);
-  background: ${({ theme }) => theme.colors.background.primary};
-  color: ${({ theme }) => theme.colors.text.primary};
-`;
-
-const Shell = styled.section`
-  width: min(720px, 100%);
-  display: grid;
-  gap: 1.25rem;
-`;
-
 function OnboardFlow() {
   const { status } = useAuth();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
@@ -91,7 +79,8 @@ function OnboardFlow() {
   };
 
   return (
-    <Page>
+    <OnboardViewport data-testid="onboard-viewport">
+      <OnboardViewportLock />
       <Helmet>
         <title>Onboard | Pack</title>
         <meta name="robots" content="noindex, nofollow" />
@@ -149,7 +138,7 @@ function OnboardFlow() {
           href={APPLE_TOUCH_ICON_URL}
         />
       </Helmet>
-      <Shell>
+      <OnboardShell>
         {/* data-testid="onboard-step" is the land-smoke + deploy verifier
             token for /onboard (scripts/land-smoke.mjs, deploy-app-origin.mjs).
             No data-step: the DOM carries no app screen identifiers (see
@@ -169,8 +158,8 @@ function OnboardFlow() {
           <ConnectionsStep onContinue={goNext} onSkip={goNext} />
         ) : null}
         {step === "complete" ? <CompleteStep /> : null}
-      </Shell>
-    </Page>
+      </OnboardShell>
+    </OnboardViewport>
   );
 }
 

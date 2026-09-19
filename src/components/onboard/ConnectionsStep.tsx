@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import {
+  OnboardStepFrame,
   PrimaryButton,
   SheetCard,
   StepBody,
@@ -98,12 +99,13 @@ function connectedSubtitleBecauseEmail(email: string | null): string | null {
   return `Connected: ${email}`;
 }
 
-const Frame = styled.div`
+const Body = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: ${onboardTokens.spacing.m}px;
-  padding: ${onboardTokens.spacing.l}px ${onboardTokens.spacing.m}px;
+  min-height: 0;
+  overflow: auto;
 `;
 
 const Header = styled.div`
@@ -284,8 +286,9 @@ export function ConnectionsStep({
   );
 
   return (
-    <SheetCard>
-      <Frame>
+    <SheetCard $fill>
+      <OnboardStepFrame>
+        <Body>
         <BackButton type="button" aria-label="Back" onClick={handleBack}>
           ‹
         </BackButton>
@@ -354,6 +357,7 @@ export function ConnectionsStep({
             <SoonLabel>Soon</SoonLabel>
           </AccountRow>
         </AccountList>
+        </Body>
         <Actions>
           <PrimaryButton
             type="button"
@@ -363,7 +367,7 @@ export function ConnectionsStep({
           </PrimaryButton>
           {skipControlBecauseDisconnected(anyConnected, handleSkip)}
         </Actions>
-      </Frame>
+      </OnboardStepFrame>
     </SheetCard>
   );
 }

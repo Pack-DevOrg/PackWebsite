@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import {
   onboardTokens,
+  OnboardStepFrame,
   ProviderButton,
   SheetCard,
   StepBody,
@@ -15,11 +16,17 @@ import {
  * Phone verification is its own onboarding step (VerifyPhoneStep). */
 export type SignupLoginStepProps = Record<string, never>;
 
-const Stack = styled.div`
+const CopyBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${onboardTokens.spacing.s}px;
+`;
+
+const Actions = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${onboardTokens.spacing.m}px;
-  padding: ${onboardTokens.spacing.l}px ${onboardTokens.spacing.m}px;
+  width: 100%;
 `;
 
 const Accent = styled.span`
@@ -99,30 +106,34 @@ export function SignupLoginStep() {
     void login({identityProvider, redirectPath: '/onboard'});
   };
   return (
-    <SheetCard>
-      <Stack>
-        <StepTitle>
-          Welcome to <Accent>Pack</Accent>
-        </StepTitle>
-        <StepBody>Choose your preferred sign-in method</StepBody>
-        <ProviderButton provider="google" onClick={() => startLogin(TokenProvider.Google)}>
-          <BrandMark>
-            <GoogleBrandIcon />
-          </BrandMark>
-          Continue with Google
-        </ProviderButton>
-        <ProviderButton provider="apple" onClick={() => startLogin(TokenProvider.Apple)}>
-          <BrandMark>
-            <AppleBrandIcon />
-          </BrandMark>
-          Continue with Apple
-        </ProviderButton>
-        <Policy>
-          By continuing you agree to our{' '}
-          <PolicyLink href="/terms/">Terms of Service</PolicyLink> and{' '}
-          <PolicyLink href="/privacy/">Privacy Policy</PolicyLink>.
-        </Policy>
-      </Stack>
+    <SheetCard $fill>
+      <OnboardStepFrame>
+        <CopyBlock>
+          <StepTitle>
+            Welcome to <Accent>Pack</Accent>
+          </StepTitle>
+          <StepBody>Choose your preferred sign-in method</StepBody>
+        </CopyBlock>
+        <Actions>
+          <ProviderButton provider="google" onClick={() => startLogin(TokenProvider.Google)}>
+            <BrandMark>
+              <GoogleBrandIcon />
+            </BrandMark>
+            Continue with Google
+          </ProviderButton>
+          <ProviderButton provider="apple" onClick={() => startLogin(TokenProvider.Apple)}>
+            <BrandMark>
+              <AppleBrandIcon />
+            </BrandMark>
+            Continue with Apple
+          </ProviderButton>
+          <Policy>
+            By continuing you agree to our{' '}
+            <PolicyLink href="/terms/">Terms of Service</PolicyLink> and{' '}
+            <PolicyLink href="/privacy/">Privacy Policy</PolicyLink>.
+          </Policy>
+        </Actions>
+      </OnboardStepFrame>
     </SheetCard>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, {createGlobalStyle} from 'styled-components';
 
 export const onboardTokens = Object.freeze({
   primary: '#F0C62D',
@@ -88,13 +88,72 @@ function providerInkBecauseBrand(provider: ProviderKind): string {
   return onboardTokens.appleText;
 }
 
-export const SheetCard = styled.div`
+export const OnboardViewportLock = createGlobalStyle`
+  html,
+  body,
+  #root {
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+`;
+
+export const OnboardViewport = styled.main`
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  background: ${onboardTokens.textOnPrimary};
+  color: ${onboardTokens.textPrimary};
+`;
+
+export const OnboardShell = styled.section`
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 430px;
+  margin-inline: auto;
+`;
+
+export const OnboardStepFrame = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: space-between;
+  gap: ${onboardTokens.spacing.m}px;
+  padding: ${onboardTokens.spacing.l}px ${onboardTokens.spacing.m}px;
+`;
+
+export const SheetCard = styled.div<{ $fill?: boolean }>`
   background: ${onboardTokens.darkGray2};
   border: 1px solid ${onboardTokens.borderSubtle};
   border-radius: ${onboardTokens.borderRadius.r28}px
     ${onboardTokens.borderRadius.r28}px 0 0;
   box-shadow: none;
   backdrop-filter: none;
+  ${(props) =>
+    props.$fill === true
+      ? `
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+  `
+      : ''}
 `;
 
 const StyledPrimaryButton = styled.button`
@@ -203,6 +262,15 @@ export const StepTitle = styled.h2`
   font-size: ${onboardTokens.fontSize.m15}px;
   font-weight: ${onboardTokens.fontWeight.semibold};
   color: ${onboardTokens.textPrimary};
+`;
+
+export const StepHeroTitle = styled.h2`
+  margin: 0;
+  font-size: 44px;
+  line-height: 50px;
+  font-weight: ${onboardTokens.fontWeight.bold};
+  color: ${onboardTokens.primary};
+  text-align: center;
 `;
 
 export const StepBody = styled.p`

@@ -9,6 +9,10 @@ import {
 } from "@/api/client";
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
+import {
+  OnboardStepFrame,
+  SheetCard,
+} from "@/components/onboard/OnboardPrimitives";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { PACK_VERIFY_SMS_E164 } from "./VerifyPhoneCta";
 
@@ -87,10 +91,18 @@ async function checkPhoneVerificationStatus(
   return "pending";
 }
 
-const Root = styled.div`
-  display: grid;
+const CopyBlock = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: ${({ theme }) => theme.spacing[3]};
-  max-width: 28rem;
+`;
+
+const Actions = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: ${({ theme }) => theme.spacing[3]};
+  width: 100%;
 `;
 
 const Title = styled.h2`
@@ -131,13 +143,13 @@ const TextPackLink = styled.a`
 const QrFrame = styled.svg`
   width: 180px;
   height: 180px;
-  justify-self: center;
+  align-self: center;
   background: ${({ theme }) => theme.colors.text.primary};
   border-radius: 12px;
 `;
 
 const SkipLink = styled.button`
-  justify-self: start;
+  align-self: start;
   padding: 0;
   border: none;
   background: none;
@@ -281,33 +293,41 @@ export const VerifyPhoneStep: React.FC<VerifyPhoneStepProps> = ({
   };
 
   return (
-    <Root data-testid="verify-phone-step">
-      <Title>Verify your number</Title>
-      <Lead>You text Pack the code. We never text you.</Lead>
-      {smsHref !== null && code !== null && !showDesktopQr ? (
-        <TextPackLink href={smsHref}>
-          <MessageCircle aria-hidden="true" />
-          Text Pack
-        </TextPackLink>
-      ) : null}
-      {smsHref !== null && showDesktopQr ? (
-        <QrEncodingSmsHref smsHref={smsHref} />
-      ) : null}
-      {code !== null ? (
-        <Lead>
-          Text {PACK_VERIFY_SMS_E164} with {code}
-        </Lead>
-      ) : null}
-      {errorCopy !== null ? <ErrorCopy role="alert">{errorCopy}</ErrorCopy> : null}
-      <SkipLink
-        type="button"
-        onClick={() => {
-          onSkipClick();
-        }}
-      >
-        Skip
-      </SkipLink>
-    </Root>
+    <SheetCard $fill>
+      <OnboardStepFrame data-testid="verify-phone-step">
+        <CopyBlock>
+          <Title>Verify your number</Title>
+          <Lead>You text Pack the code. We never text you.</Lead>
+        </CopyBlock>
+        <Actions>
+          {smsHref !== null && code !== null && !showDesktopQr ? (
+            <TextPackLink href={smsHref}>
+              <MessageCircle aria-hidden="true" />
+              Text Pack
+            </TextPackLink>
+          ) : null}
+          {smsHref !== null && showDesktopQr ? (
+            <QrEncodingSmsHref smsHref={smsHref} />
+          ) : null}
+          {code !== null ? (
+            <Lead>
+              Text {PACK_VERIFY_SMS_E164} with {code}
+            </Lead>
+          ) : null}
+          {errorCopy !== null ? (
+            <ErrorCopy role="alert">{errorCopy}</ErrorCopy>
+          ) : null}
+          <SkipLink
+            type="button"
+            onClick={() => {
+              onSkipClick();
+            }}
+          >
+            Skip
+          </SkipLink>
+        </Actions>
+      </OnboardStepFrame>
+    </SheetCard>
   );
 };
 

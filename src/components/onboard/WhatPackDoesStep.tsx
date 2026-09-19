@@ -2,11 +2,12 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 
 import {
+  OnboardStepFrame,
   PrimaryButton,
   ProgressDots,
   SheetCard,
   StepBody,
-  StepTitle,
+  StepHeroTitle,
   onboardTokens,
 } from './OnboardPrimitives';
 
@@ -66,14 +67,6 @@ function nextIndexBecausePager(current: number): number {
   return current + 1;
 }
 
-const Frame = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.m}px;
-  padding: ${onboardTokens.spacing.l}px ${onboardTokens.spacing.m}px;
-`;
-
 const CopyBlock = styled.div`
   display: flex;
   flex-direction: column;
@@ -117,14 +110,14 @@ export function WhatPackDoesStep({
   };
 
   return (
-    <SheetCard>
-      <Frame>
-        <ProgressDots count={SCREENS.length} activeIndex={current} />
+    <SheetCard $fill>
+      <OnboardStepFrame>
         <CopyBlock>
-          <StepTitle>{screen.title}</StepTitle>
+          <StepHeroTitle>{screen.title}</StepHeroTitle>
           <StepBody>{screen.subtitle}</StepBody>
         </CopyBlock>
         <Actions>
+          <ProgressDots count={SCREENS.length} activeIndex={current} />
           <PrimaryButton type="button" onClick={continuePager}>
             Continue
           </PrimaryButton>
@@ -132,7 +125,7 @@ export function WhatPackDoesStep({
             Skip
           </SkipButton>
         </Actions>
-      </Frame>
+      </OnboardStepFrame>
     </SheetCard>
   );
 }

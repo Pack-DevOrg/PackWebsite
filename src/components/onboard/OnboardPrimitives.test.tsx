@@ -2,11 +2,15 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 
 import {
+  OnboardShell,
+  OnboardViewport,
+  OnboardViewportLock,
   PrimaryButton,
   ProgressDots,
   ProviderButton,
   SheetCard,
   StepBody,
+  StepHeroTitle,
   StepTitle,
   onboardTokens,
 } from "./OnboardPrimitives";
@@ -137,6 +141,29 @@ describe("OnboardPrimitives", () => {
 
     expect(isAbsentOrNone(declaredValue(css, "box-shadow"))).toBe(true);
     expect(isAbsentOrNone(declaredValue(css, "backdrop-filter"))).toBe(true);
+  });
+
+  it("fills the phone viewport with dvh and safe-area, never vh", () => {
+    render(
+      <>
+        <OnboardViewportLock />
+        <OnboardViewport>
+          <OnboardShell>shell</OnboardShell>
+        </OnboardViewport>
+        <SheetCard $fill>filled</SheetCard>
+        <StepHeroTitle>Past</StepHeroTitle>
+      </>
+    );
+
+    const css = stylesheetText();
+    expect(css).toContain("100dvh");
+    expect(css).toContain("max-width:430px");
+    expect(css).toContain("env(safe-area-inset-top");
+    expect(css).toContain("env(safe-area-inset-bottom");
+    expect(css).toMatch(/overflow:\s*hidden/);
+    expect(css).not.toMatch(/min-height:\s*100vh(?!d)/);
+    expect(css).not.toMatch(/(?<![d])100vh/);
+    expect(screen.getByText("Past")).toBeInTheDocument();
   });
 
   it("renders ProviderButton brand labels, StepTitle, and StepBody", () => {

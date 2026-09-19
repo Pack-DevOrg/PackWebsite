@@ -151,6 +151,26 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expectNoInternalIdentifiers(view.container);
   });
 
+  it("locks /onboard to the dynamic viewport with no page-level 100vh", () => {
+    renderAt(ONBOARD_PATH);
+    const viewport = screen.getByTestId("onboard-viewport");
+    const css = Array.from(document.querySelectorAll("style"))
+      .map((node) => node.textContent ?? "")
+      .join("\n");
+    const viewportRules = Array.from(viewport.classList)
+      .map((cls) => {
+        const escaped = cls.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return css.match(new RegExp(`\\.${escaped}[^{]*\\{[^}]*\\}`, "g")) ?? [];
+      })
+      .flat()
+      .join("\n");
+    expect(viewport).toBeInTheDocument();
+    expect(css).toContain("100dvh");
+    expect(css).toContain("env(safe-area-inset-top");
+    expect(viewportRules).toContain("100dvh");
+    expect(viewportRules).not.toMatch(/min-height:\s*100vh\b/);
+  });
+
   it("sets og:image and twitter:image to the homepage gold share asset", async () => {
     renderAt(ONBOARD_PATH);
 

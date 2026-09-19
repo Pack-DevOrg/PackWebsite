@@ -222,3 +222,39 @@ test.describe("Onboard authenticated G order", () => {
   },
   );
 });
+
+const LIVE_ONBOARD = /trypackai\.com/i.test(process.env.E2E_BASE_URL ?? "");
+
+test.describe("live hosted-UI Continue with Google/Apple", () => {
+  test.use({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    storageState: { cookies: [], origins: [] },
+  });
+  test.setTimeout(60_000);
+
+  test("clicks Continue with Google and Apple; authorize 302s to the IdP", async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "chromium-mobile",
+      "live gate is chromium-mobile iPhone viewport",
+    );
+    test.skip(!LIVE_ONBOARD, "live gate against trypackai.com (E2E_BASE_URL)");
+
+    const gate = await import("../scripts/onboard-auth-gate.mjs");
+    expect(gate.AUTH_GATE_PROVIDERS.map((row) => row.name)).toEqual([
+      "Continue with Google",
+      "Continue with Apple",
+    ]);
+    const baseURL =
+      testInfo.project.use.baseURL ??
+      process.env.E2E_BASE_URL ??
+      "https://www.trypackai.com";
+    await gate.clickOnboardAuthorizeGate(page, {
+      onboardUrl: new URL("/onboard", baseURL).toString(),
+      expectedClientId: gate.expectedWebClientIdFromDisk(),
+    });
+  });
+});

@@ -3,6 +3,8 @@ import { readFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { runLandSmoke } from "./land-smoke.mjs";
+
 const DEFAULT_APP_ALIAS_BECAUSE_WWW_TRYPACKAI = "www.trypackai.com";
 const DEFAULT_VERIFY_ROUTE_BECAUSE_UNDEPLOYED_ONBOARD = "/onboard";
 const ONBOARD_STEP_TOKEN = 'data-testid="onboard-step"';
@@ -493,13 +495,27 @@ export async function runDeployAppOrigin(options = {}) {
     "/*",
   ]);
 
+  const routes = resolveVerifyRoutesBecauseMergedOnboard(env);
   await verifyLiveMergedRoutes({
     alias: appAlias,
     env,
     distDir,
+    routes,
     fetchImpl,
     readFileImpl,
   });
+
+  const smokeCode = await runLandSmoke({
+    origin: `https://${appAlias}`,
+    routes,
+    distDir,
+    authGate: true,
+    cwd,
+    env,
+  });
+  if (smokeCode !== 0) {
+    throw new Error("land-smoke failed after website deploy");
+  }
 }
 
 if (isDirectCliBecauseArgv1(process.argv[1], import.meta.url)) {

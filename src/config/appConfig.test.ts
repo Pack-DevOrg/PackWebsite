@@ -42,6 +42,11 @@ describe("appConfig website cognito web client", () => {
     expect(appConfigSource).not.toContain("VITE_COGNITO_CLIENT_ID");
   });
 
+  it("keeps the parked fallback behind __DEV__ so prod dist can drop parked-awaiting", () => {
+    expect(appConfigSource).toMatch(/if \(__DEV__\) \{/);
+    expect(appConfigSource).toContain("parked-awaiting-CognitoWebUserPoolClientId");
+  });
+
   it("keeps the production hosted-UI callback at trypackai auth/callback", () => {
     expect(appConfig.cognitoRedirectUri).toBe(PRODUCTION_CALLBACK);
   });

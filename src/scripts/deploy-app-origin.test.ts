@@ -95,4 +95,14 @@ describe("deploy-app-origin live merged-route verify", () => {
     expect(invalidationAt).toBeGreaterThan(-1);
     expect(verifyCallAt).toBeGreaterThan(invalidationAt);
   });
+
+  it("runs land-smoke auth-gate after verifyLiveMergedRoutes", () => {
+    const source = readFileSync(DEPLOY_SCRIPT, "utf8");
+    expect(source).toMatch(/import \{ runLandSmoke \} from "\.\/land-smoke\.mjs"/);
+    const verifyAt = source.indexOf("await verifyLiveMergedRoutes(");
+    const smokeAt = source.indexOf("await runLandSmoke(");
+    expect(verifyAt).toBeGreaterThan(-1);
+    expect(smokeAt).toBeGreaterThan(verifyAt);
+    expect(source).toMatch(/authGate:\s*true/);
+  });
 });

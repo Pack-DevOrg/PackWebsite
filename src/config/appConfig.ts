@@ -121,21 +121,23 @@ const defaultOauthResourceServerIdentifier =
   (env.VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER as string | undefined)?.trim() ||
   "api.trypackai.com";
 
-// parked: awaiting deploy of CognitoWebUserPoolClientId. Never the iOS app client.
+// parked: missing web client id. Gated on __DEV__ so prod bundles DCE the token.
 function parkedCognitoWebClientIdBecauseCognitoWebUserPoolClientIdNotDeployed(): string {
   return "parked-awaiting-CognitoWebUserPoolClientId";
 }
 
 function cognitoWebClientIdFromWebEnv(): string {
   const raw = env.VITE_COGNITO_WEB_CLIENT_ID;
-  if (typeof raw !== "string") {
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+  }
+  if (__DEV__) {
     return parkedCognitoWebClientIdBecauseCognitoWebUserPoolClientIdNotDeployed();
   }
-  const trimmed = raw.trim();
-  if (trimmed.length === 0) {
-    return parkedCognitoWebClientIdBecauseCognitoWebUserPoolClientIdNotDeployed();
-  }
-  return trimmed;
+  throw new Error("VITE_COGNITO_WEB_CLIENT_ID is required");
 }
 
 const baseScopes = [

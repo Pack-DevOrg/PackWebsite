@@ -215,8 +215,19 @@ test.describe("Onboard authenticated G order", () => {
       page.getByRole("heading", { name: /You're all set!|Welcome/i }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /Let us handle the rest|Continue/i }),
+      page.getByRole("link", { name: /Let us handle the rest/i }),
     ).toBeVisible();
+    const completeSms = page.getByRole("link", {
+      name: /Let us handle the rest/i,
+    });
+    await expect(completeSms).toHaveAttribute(
+      "href",
+      new RegExp(`^sms:.*${PACK_VERIFY_E164.replace("+", "\\+")}`),
+    );
+    if (!isMobile) {
+      await expect(page.getByText(PACK_VERIFY_E164)).toBeVisible();
+      await expect(page.getByRole("button", { name: "Copy" })).toBeVisible();
+    }
     await captureStep(page, projectName, "welcome");
     await assertNoInternalIdentifiers(page);
   },

@@ -3,6 +3,8 @@ import { join } from "node:path";
 import {
   appConfig,
   isTryPackHostname,
+  publicContactConfig,
+  requirePackSmsE164BecausePublicConfig,
   shouldExposeTsaForHostname,
 } from "./appConfig";
 
@@ -49,6 +51,58 @@ describe("appConfig website cognito web client", () => {
 
   it("keeps the production hosted-UI callback at trypackai auth/callback", () => {
     expect(appConfig.cognitoRedirectUri).toBe(PRODUCTION_CALLBACK);
+  });
+});
+
+describe("appConfig public Pack SMS number", () => {
+  const envProduction = readFileSync(
+    join(process.cwd(), ".env.production"),
+    "utf8",
+  );
+
+  function envProductionValue(name: string): string | undefined {
+    const line = envProduction.split("\n").find((row) =>
+      row.startsWith(`${name}=`),
+    );
+    if (line === undefined) {
+      return undefined;
+    }
+    return line.slice(name.length + 1).trim();
+  }
+
+  it("exposes the configured Sendblue E.164 on publicContactConfig", () => {
+    expect(publicContactConfig.packSmsE164).toMatch(/^\+[1-9]\d{7,14}$/);
+    expect(appConfigSource).toContain("VITE_PACK_SMS_E164");
+    expect(appConfigSource).not.toContain("+13054392989");
+  });
+
+  it("fails closed when the public SMS number is missing or a placeholder", () => {
+    expect(() => requirePackSmsE164BecausePublicConfig(undefined)).toThrow(
+      /VITE_PACK_SMS_E164 is required/,
+    );
+    expect(() => requirePackSmsE164BecausePublicConfig("")).toThrow(
+      /VITE_PACK_SMS_E164 is required/,
+    );
+    expect(() => requirePackSmsE164BecausePublicConfig("placeholder")).toThrow(
+      /VITE_PACK_SMS_E164 is required/,
+    );
+    expect(() => requirePackSmsE164BecausePublicConfig("parked")).toThrow(
+      /VITE_PACK_SMS_E164 is required/,
+    );
+    expect(() => requirePackSmsE164BecausePublicConfig("TODO")).toThrow(
+      /VITE_PACK_SMS_E164 is required/,
+    );
+    expect(() => requirePackSmsE164BecausePublicConfig("15555550100")).toThrow(
+      /Invalid packSmsE164/,
+    );
+  });
+
+  it("prod env ships a real E.164, not a placeholder", () => {
+    const value = envProductionValue("VITE_PACK_SMS_E164");
+    expect(value).toBeDefined();
+    expect(requirePackSmsE164BecausePublicConfig(value)).toMatch(
+      /^\+[1-9]\d{7,14}$/,
+    );
   });
 });
 

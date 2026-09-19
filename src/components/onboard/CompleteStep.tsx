@@ -1,23 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import {publicContactConfig} from '../../config/appConfig';
+import {copyTextToClipboard} from '../../utils/clipboard';
 import {
-  buildAppStoreUrl,
-  DEFAULT_APPLE_APP_ID,
-} from '../../utils/appDeepLink';
-import {
-  PrimaryButton,
   SheetCard,
   StepBody,
   StepTitle,
   onboardTokens,
 } from './OnboardPrimitives';
 
-export interface CompleteStepProps {
-  onContinue?: () => void;
-}
-
-const APPLE_APP_ID = DEFAULT_APPLE_APP_ID;
+export const COMPLETE_SMS_BODY = 'Hi Pack';
+export const COMPLETE_DESKTOP_MIN_WIDTH_PX = 740;
 
 const COMPLETE_HIGHLIGHTS = [
   'Smart trip planning',
@@ -25,21 +19,26 @@ const COMPLETE_HIGHLIGHTS = [
   'Built with love',
 ] as const;
 
-export const completeStepLocation = {
-  assign(url: string): void {
-    window.location.assign(url);
-  },
-};
+export function buildCompleteSmsHrefBecauseSendblue(
+  e164: string,
+  body: string,
+): string {
+  return `sms:${e164}?body=${encodeURIComponent(body)}`;
+}
 
-function defaultOnContinueBecauseAppStore(
-  onContinue: CompleteStepProps['onContinue'],
-): () => void {
-  if (onContinue === undefined) {
-    return () => {
-      completeStepLocation.assign(buildAppStoreUrl(APPLE_APP_ID));
-    };
+function viewportIsDesktopBecauseMinWidth(width: number): boolean {
+  return width >= COMPLETE_DESKTOP_MIN_WIDTH_PX;
+}
+
+function currentViewportWidthBecauseWindow(): number {
+  if (typeof window === 'undefined') {
+    return 0;
   }
-  return onContinue;
+  return window.innerWidth;
+}
+
+function copyPackNumberBecauseDesktop(e164: string): void {
+  void copyTextToClipboard(e164);
 }
 
 const Frame = styled.div`
@@ -84,10 +83,61 @@ const CtaWrap = styled.div`
   width: 100%;
 `;
 
-export function CompleteStep({
-  onContinue,
-}: CompleteStepProps): React.ReactElement {
-  const handleContinue = defaultOnContinueBecauseAppStore(onContinue);
+const CtaLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 100%;
+  height: ${onboardTokens.buttonHeightL}px;
+  border: none;
+  border-radius: ${onboardTokens.borderRadius.r10}px;
+  background: ${onboardTokens.primary};
+  color: ${onboardTokens.textOnPrimary};
+  font-size: ${onboardTokens.fontSize.m}px;
+  font-weight: ${onboardTokens.fontWeight.semibold};
+  text-decoration: none;
+  box-sizing: border-box;
+`;
+
+const DesktopNumberRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: ${onboardTokens.spacing.s}px;
+`;
+
+const PackNumber = styled.span`
+  color: ${onboardTokens.textPrimary};
+  font-size: ${onboardTokens.fontSize.m}px;
+  font-weight: ${onboardTokens.fontWeight.semibold};
+`;
+
+const CopyButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: ${onboardTokens.buttonHeightL / 2}px;
+  padding: 0 ${onboardTokens.spacing.s12}px;
+  border: 1px solid ${onboardTokens.borderMedium};
+  border-radius: ${onboardTokens.borderRadius.r10}px;
+  background: ${onboardTokens.darkGray3};
+  color: ${onboardTokens.textPrimary};
+  font-size: ${onboardTokens.fontSize.s}px;
+  font-weight: ${onboardTokens.fontWeight.semibold};
+`;
+
+export function CompleteStep(): React.ReactElement {
+  const packSmsE164 = publicContactConfig.packSmsE164;
+  const smsHref = buildCompleteSmsHrefBecauseSendblue(
+    packSmsE164,
+    COMPLETE_SMS_BODY,
+  );
+  const showDesktopNumber = viewportIsDesktopBecauseMinWidth(
+    currentViewportWidthBecauseWindow(),
+  );
 
   return (
     <SheetCard>
@@ -101,10 +151,20 @@ export function CompleteStep({
           ))}
         </Highlights>
         <CtaWrap>
-          <PrimaryButton type="button" onClick={handleContinue}>
-            Let us handle the rest
-          </PrimaryButton>
+          <CtaLink href={smsHref}>Let us handle the rest</CtaLink>
         </CtaWrap>
+        {showDesktopNumber ? (
+          <DesktopNumberRow data-testid="complete-pack-number">
+            <PackNumber>{packSmsE164}</PackNumber>
+            <CopyButton
+              type="button"
+              onClick={() => {
+                copyPackNumberBecauseDesktop(packSmsE164);
+              }}>
+              Copy
+            </CopyButton>
+          </DesktopNumberRow>
+        ) : null}
       </Frame>
     </SheetCard>
   );

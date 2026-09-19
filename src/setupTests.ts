@@ -86,6 +86,7 @@ if (!(globalThis as { TextDecoder?: typeof globalThis.TextDecoder }).TextDecoder
   VITE_META_PIXEL_ID: '3101676426887721',
   VITE_POSTHOG_KEY: 'phc_test_site',
   VITE_POSTHOG_HOST: 'https://us.i.posthog.com',
+  VITE_PACK_SMS_E164: '+13054392989',
   DEV: true
 };
 

@@ -1,19 +1,49 @@
 import React from "react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fireEvent, render, screen } from "@testing-library/react";
 
+import { publicContactConfig } from "../../config/appConfig";
+import { copyTextToClipboard } from "../../utils/clipboard";
 import {
-  buildAppStoreUrl,
-  DEFAULT_APPLE_APP_ID,
-} from "../../utils/appDeepLink";
-import { CompleteStep, completeStepLocation } from "./CompleteStep";
+  COMPLETE_DESKTOP_MIN_WIDTH_PX,
+  COMPLETE_SMS_BODY,
+  CompleteStep,
+  buildCompleteSmsHrefBecauseSendblue,
+} from "./CompleteStep";
 
-const APPLE_APP_ID = DEFAULT_APPLE_APP_ID;
+jest.mock("../../utils/clipboard", () => ({
+  copyTextToClipboard: jest.fn(async () => undefined),
+}));
 
 const INTERNAL_IDENTIFIERS =
   /OnboardingCompleteScreen|SignupLoginScreen|ConnectedAccountsScreen|PhotosConnectScreen|NotificationsSetupScreen|CompleteStep|data-step/;
 
+const completeStepSource = readFileSync(
+  join(process.cwd(), "src/components/onboard/CompleteStep.tsx"),
+  "utf8",
+);
+
+const MOBILE_WIDTH_PX = 390;
+
+function setViewportWidth(width: number): void {
+  Object.defineProperty(window, "innerWidth", {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
+}
+
 describe("CompleteStep", () => {
+  const originalInnerWidth = window.innerWidth;
+
+  afterEach(() => {
+    setViewportWidth(originalInnerWidth);
+    jest.clearAllMocks();
+  });
+
   it("pins app complete-screen copy, highlight order, and CTA", () => {
+    setViewportWidth(MOBILE_WIDTH_PX);
     const { container } = render(<CompleteStep />);
     const text = container.textContent ?? "";
 
@@ -28,7 +58,7 @@ describe("CompleteStep", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Built with love")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Let us handle the rest" })
+      screen.getByRole("link", { name: "Let us handle the rest" })
     ).toBeInTheDocument();
 
     expect(text.indexOf("✓")).toBeGreaterThan(-1);
@@ -53,36 +83,53 @@ describe("CompleteStep", () => {
     expect(container.innerHTML).not.toMatch(INTERNAL_IDENTIFIERS);
   });
 
-  it("calls onContinue once when the CTA is clicked", () => {
-    const onContinue = jest.fn();
-    render(<CompleteStep onContinue={onContinue} />);
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Let us handle the rest" })
+  it("CTA href is sms: to the public Sendblue number with a prefilled body", () => {
+    setViewportWidth(MOBILE_WIDTH_PX);
+    render(<CompleteStep />);
+    const cta = screen.getByRole("link", { name: "Let us handle the rest" });
+    const href = cta.getAttribute("href");
+    const configured = publicContactConfig.packSmsE164;
+    const expected = buildCompleteSmsHrefBecauseSendblue(
+      configured,
+      COMPLETE_SMS_BODY,
     );
 
-    expect(onContinue).toHaveBeenCalledTimes(1);
+    if (href === null) {
+      throw new Error("complete CTA missing href");
+    }
+    expect(href.startsWith("sms:")).toBe(true);
+    expect(href).toContain(configured);
+    expect(href).toMatch(/[?&]body=/);
+    expect(href).toBe(expected);
+    expect(completeStepSource).not.toContain("+13054392989");
+    expect(completeStepSource).toContain("publicContactConfig.packSmsE164");
   });
 
-  it("assigns the App Store URL when the CTA is clicked with no onContinue", () => {
-    const assign = jest
-      .spyOn(completeStepLocation, "assign")
-      .mockImplementation(() => undefined);
+  it("shows the Pack number and a copy button on desktop", () => {
+    setViewportWidth(COMPLETE_DESKTOP_MIN_WIDTH_PX);
+    render(<CompleteStep />);
+    const configured = publicContactConfig.packSmsE164;
 
-    try {
-      render(<CompleteStep />);
-      fireEvent.click(
-        screen.getByRole("button", { name: "Let us handle the rest" })
-      );
+    expect(screen.getByText(configured)).toBeVisible();
+    expect(screen.getByRole("button", { name: "Copy" })).toBeVisible();
 
-      expect(assign).toHaveBeenCalledTimes(1);
-      expect(assign).toHaveBeenCalledWith(buildAppStoreUrl(APPLE_APP_ID));
-    } finally {
-      assign.mockRestore();
-    }
+    fireEvent.click(screen.getByRole("button", { name: "Copy" }));
+    expect(copyTextToClipboard).toHaveBeenCalledTimes(1);
+    expect(copyTextToClipboard).toHaveBeenCalledWith(configured);
+  });
+
+  it("hides the Pack number and copy button on a phone-width viewport", () => {
+    setViewportWidth(MOBILE_WIDTH_PX);
+    render(<CompleteStep />);
+
+    expect(
+      screen.queryByTestId("complete-pack-number")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy" })).not.toBeInTheDocument();
   });
 
   it("renders no progress-dot markup", () => {
+    setViewportWidth(MOBILE_WIDTH_PX);
     render(<CompleteStep />);
 
     expect(screen.queryAllByTestId("onboard-progress-dot")).toHaveLength(0);

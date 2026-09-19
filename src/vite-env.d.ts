@@ -21,6 +21,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_BASE_URL: string
   readonly VITE_OAUTH_RESOURCE_SERVER_IDENTIFIER: string
   readonly VITE_PACK_API_KEY: string
+  readonly VITE_PACK_SMS_E164: string
   readonly VITE_OAUTH_SCOPES: string
   readonly VITE_DEV_MODE: string
   readonly VITE_ENABLE_ENCRYPTED_WAITLIST: string

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import {publicContactConfig} from '../../config/appConfig';
 import {copyTextToClipboard} from '../../utils/clipboard';
 import {
+  OnboardStepFrame,
   SheetCard,
   StepBody,
   StepTitle,
@@ -41,12 +42,11 @@ function copyPackNumberBecauseDesktop(e164: string): void {
   void copyTextToClipboard(e164);
 }
 
-const Frame = styled.div`
+const CopyBlock = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: ${onboardTokens.spacing.m}px;
-  padding: ${onboardTokens.spacing.l}px ${onboardTokens.spacing.m}px;
 `;
 
 const Checkmark = styled.span`
@@ -80,6 +80,10 @@ const Highlight = styled.li`
 `;
 
 const CtaWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: ${onboardTokens.spacing.m}px;
   width: 100%;
 `;
 
@@ -140,32 +144,34 @@ export function CompleteStep(): React.ReactElement {
   );
 
   return (
-    <SheetCard>
-      <Frame>
-        <Checkmark>✓</Checkmark>
-        <StepTitle>You&apos;re all set!</StepTitle>
-        <StepBody>Relax, we&apos;ve got you covered.</StepBody>
-        <Highlights>
-          {COMPLETE_HIGHLIGHTS.map((label) => (
-            <Highlight key={label}>{label}</Highlight>
-          ))}
-        </Highlights>
+    <SheetCard $fill>
+      <OnboardStepFrame>
+        <CopyBlock>
+          <Checkmark>✓</Checkmark>
+          <StepTitle>You&apos;re all set!</StepTitle>
+          <StepBody>Relax, we&apos;ve got you covered.</StepBody>
+          <Highlights>
+            {COMPLETE_HIGHLIGHTS.map((label) => (
+              <Highlight key={label}>{label}</Highlight>
+            ))}
+          </Highlights>
+        </CopyBlock>
         <CtaWrap>
           <CtaLink href={smsHref}>Let us handle the rest</CtaLink>
+          {showDesktopNumber ? (
+            <DesktopNumberRow data-testid="complete-pack-number">
+              <PackNumber>{packSmsE164}</PackNumber>
+              <CopyButton
+                type="button"
+                onClick={() => {
+                  copyPackNumberBecauseDesktop(packSmsE164);
+                }}>
+                Copy
+              </CopyButton>
+            </DesktopNumberRow>
+          ) : null}
         </CtaWrap>
-        {showDesktopNumber ? (
-          <DesktopNumberRow data-testid="complete-pack-number">
-            <PackNumber>{packSmsE164}</PackNumber>
-            <CopyButton
-              type="button"
-              onClick={() => {
-                copyPackNumberBecauseDesktop(packSmsE164);
-              }}>
-              Copy
-            </CopyButton>
-          </DesktopNumberRow>
-        ) : null}
-      </Frame>
+      </OnboardStepFrame>
     </SheetCard>
   );
 }

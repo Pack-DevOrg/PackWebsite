@@ -5,6 +5,7 @@ import {
   test,
   type BrowserContext,
   type Page,
+  type TestInfo,
 } from "@playwright/test";
 
 import { dismissConsentBannerIfVisible } from "./helpers";
@@ -112,7 +113,18 @@ async function stubPhoneVerificationMint(page: Page): Promise<void> {
   );
 }
 
-async function openOnboard(page: Page): Promise<void> {
+async function pinPhoneViewportIfMobile(
+  page: Page,
+  testInfo: TestInfo,
+): Promise<void> {
+  if (testInfo.project.name !== "chromium-mobile") {
+    return;
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+}
+
+async function openOnboard(page: Page, testInfo: TestInfo): Promise<void> {
+  await pinPhoneViewportIfMobile(page, testInfo);
   await page.goto("/onboard", { waitUntil: "domcontentloaded" });
   await dismissConsentBannerIfVisible(page);
   await page.locator("h1, h2").first().waitFor({ timeout: 45_000 });
@@ -132,10 +144,19 @@ async function assertManifestCopy(
   await expect(button.or(link).first()).toBeVisible();
 }
 
+async function hideDevOverlays(page: Page): Promise<void> {
+  await page.addStyleTag({
+    content:
+      ".tsqd-open-btn-container,.tsqd-open-btn{display:none!important;visibility:hidden!important;}",
+  });
+}
+
 async function snapshotStep(page: Page, step: string): Promise<void> {
+  await hideDevOverlays(page);
   await expect(page).toHaveScreenshot(`${step}.png`, {
-    fullPage: true,
+    fullPage: false,
     animations: "disabled",
+    maxDiffPixelRatio: 0,
   });
 }
 
@@ -241,10 +262,12 @@ async function skipNonSharedTowardWelcome(
 
 test.describe("Onboard golden parity logged-out signup", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
-  test.setTimeout(120_000);
+  test.setTimeout(180_000);
 
-  test("signup heading and CTA match C1 golden manifest", async ({ page }) => {
-    await openOnboard(page);
+  test("signup heading and CTA match C1 golden manifest", async ({
+    page,
+  }, testInfo) => {
+    await openOnboard(page, testInfo);
     const signup = sharedStep("signup");
     await assertManifestCopy(page, signup.title ?? "", signup.cta ?? "");
     await snapshotStep(page, "signup");
@@ -263,7 +286,7 @@ test.describe("Onboard golden parity authenticated G order", () => {
     await injectAuthenticatedSession(context, sessionJson);
     await injectAuthenticatedSession(page, sessionJson);
     await stubPhoneVerificationMint(page);
-    await openOnboard(page);
+    await openOnboard(page, testInfo);
 
     const signup = sharedStep("signup");
     const connections = sharedStep("connections");

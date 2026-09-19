@@ -160,6 +160,14 @@ test.describe("Onboard authenticated G order", () => {
     await captureStep(page, projectName, "what-pack-does");
     await assertNoInternalIdentifiers(page);
 
+    const startHits: { status: number }[] = [];
+    page.on("response", (response) => {
+      if (!response.url().includes("/user/information/phone-verification/start")) {
+        return;
+      }
+      startHits.push({ status: response.status() });
+    });
+
     await clickIfVisible(page, /Skip for now|Skip/i);
     await clickIfVisible(page, /^Continue$/);
 
@@ -169,16 +177,24 @@ test.describe("Onboard authenticated G order", () => {
     // The E2E account is already bound (verifiedPhone true): the step mints,
     // polls, sees approved, and advances on its own — racing the link/QR
     // render. Accept whichever lands first; assert the verify UI only while
-    // the step is still on screen.
+    // the step is still on screen. A 4xx must show the typed reason, not
+    // "Unable to start verification."
     const connectionsAfterVerify = page.getByRole("heading", { name: "Connections" });
     const textPackLink = page.getByRole("link", { name: "Text Pack" });
     const qr = page.locator(
       'canvas, img[alt*="QR" i], [data-testid*="qr" i], svg[aria-label*="QR" i]',
     );
+    const startAlert = page.getByRole("alert");
     await expect(
-      connectionsAfterVerify.or(textPackLink).or(qr).first(),
+      connectionsAfterVerify.or(textPackLink).or(qr).or(startAlert).first(),
     ).toBeVisible({ timeout: 20000 });
-    if (await connectionsAfterVerify.isVisible()) {
+    await expect.poll(() => startHits.length).toBeGreaterThan(0);
+    if (await startAlert.isVisible().catch(() => false)) {
+      const alertText = (await startAlert.innerText()).trim();
+      expect(alertText).not.toBe("Unable to start verification.");
+      expect(alertText.length).toBeGreaterThan(0);
+      await captureStep(page, projectName, "verify-start-refused");
+    } else if (await connectionsAfterVerify.isVisible()) {
       await captureStep(page, projectName, "verify-auto-advanced");
     } else {
       if (isMobile) {

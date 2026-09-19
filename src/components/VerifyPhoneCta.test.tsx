@@ -172,4 +172,31 @@ describe("VerifyPhoneCta", () => {
     expect(screen.getByText(/\+13054392989/)).toBeInTheDocument();
     expect(screen.getByText(new RegExp(SYNTHETIC_CODE))).toBeInTheDocument();
   });
+
+  it("renders the typed API reason when start returns 4xx", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: "Forbidden",
+      text: async () =>
+        JSON.stringify({
+          success: false,
+          error: {
+            message:
+              "Device attestation policy cannot be resolved for this Cognito client",
+            code: "DEVICE_ATTESTATION_CLIENT_UNKNOWN",
+            details: {
+              reason: "cognito client_id is not in the attestation policy map",
+            },
+          },
+        }),
+    });
+    renderCta(locationHrefTarget);
+    fireEvent.click(screen.getByRole("button", { name: "Text Pack" }));
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toBe(
+      "DEVICE_ATTESTATION_CLIENT_UNKNOWN: cognito client_id is not in the attestation policy map",
+    );
+    expect(screen.queryByText("Unable to start verification.")).not.toBeInTheDocument();
+  });
 });

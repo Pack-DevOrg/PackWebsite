@@ -12,17 +12,33 @@ const SYNTHETIC_SMS_HREF = "sms:+13054392989?body=A1b2C3d4E5";
 const START_PATH = "/user/information/phone-verification/start";
 const CHECK_PATH = "/user/information/phone-verification/check";
 const MOBILE_WIDTH_PX = 390;
+const B93_REASON =
+  "DEVICE_ATTESTATION_CLIENT_UNKNOWN: cognito client_id is not in the attestation policy map";
+
+const getAccessTokenMock = jest.fn(async () => "synth-access-token");
+const useAuthMock = jest.fn();
 
 jest.mock("@/auth/AuthContext", () => ({
-  useAuth: () => ({
-    status: "unauthenticated",
-    user: null,
-    login: jest.fn(),
-    logout: jest.fn(),
-    getAccessToken: async () => null,
-    tokens: null,
-  }),
+  useAuth: () => useAuthMock(),
 }));
+
+const unauthenticatedAuth = {
+  status: "unauthenticated",
+  user: null,
+  login: jest.fn(),
+  logout: jest.fn(),
+  getAccessToken: async () => null,
+  tokens: null,
+};
+
+const authenticatedAuth = {
+  status: "authenticated",
+  user: { sub: "user-synth-1", email: "tests@trypackai.com" },
+  login: jest.fn(),
+  logout: jest.fn(),
+  getAccessToken: getAccessTokenMock,
+  tokens: { tokenType: "Bearer" },
+};
 
 jest.mock("@/config/appConfig", () => ({
   appConfig: {
@@ -111,6 +127,8 @@ describe("VerifyPhoneStep", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     checkCalls = 0;
+    getAccessTokenMock.mockResolvedValue("synth-access-token");
+    useAuthMock.mockReturnValue(unauthenticatedAuth);
     setViewportWidth(MOBILE_WIDTH_PX);
     global.fetch = jest.fn(async (input: RequestInfo | URL): Promise<Response> => {
       const href = String(input);
@@ -189,5 +207,59 @@ describe("VerifyPhoneStep", () => {
     expect(mocks.onVerified).not.toHaveBeenCalled();
     expect(checkCalls).toBe(checksAtSkip);
     expect(screen.queryByText("Text me the code")).not.toBeInTheDocument();
+  });
+
+  it("start with a web session is 200 pending and sends Authorization", async () => {
+    useAuthMock.mockReturnValue(authenticatedAuth);
+    renderStep();
+    const cta = await screen.findByRole("link", { name: "Text Pack" });
+    expect(cta.getAttribute("href")).toBe(SYNTHETIC_SMS_HREF);
+    expect(screen.getByText(`Text +13054392989 with ${SYNTHETIC_CODE}`)).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    const startCall = (global.fetch as jest.Mock).mock.calls.find((call) =>
+      String(call[0]).includes(START_PATH),
+    );
+    expect(startCall).toBeDefined();
+    const init = startCall?.[1] as RequestInit;
+    expect(init.method).toBe("POST");
+    expect(init.headers).toEqual(
+      expect.objectContaining({
+        Authorization: "Bearer synth-access-token",
+      }),
+    );
+    expect(JSON.parse(String(init.body))).toEqual({ platform: "web" });
+    expect(checkCalls).toBe(1);
+  });
+
+  it("renders the typed API reason when start returns 4xx", async () => {
+    useAuthMock.mockReturnValue(authenticatedAuth);
+    global.fetch = jest.fn(async (input: RequestInfo | URL): Promise<Response> => {
+      const href = String(input);
+      if (href.includes(START_PATH)) {
+        return {
+          ok: false,
+          status: 403,
+          statusText: "Forbidden",
+          text: async () =>
+            JSON.stringify({
+              success: false,
+              error: {
+                message:
+                  "Device attestation policy cannot be resolved for this Cognito client",
+                code: "DEVICE_ATTESTATION_CLIENT_UNKNOWN",
+                details: {
+                  reason: "cognito client_id is not in the attestation policy map",
+                },
+              },
+            }),
+        } as Response;
+      }
+      throw new Error(`unexpected fetch ${href}`);
+    });
+    renderStep();
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toBe(B93_REASON);
+    expect(screen.queryByText("Unable to start verification.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Text Pack" })).not.toBeInTheDocument();
   });
 });

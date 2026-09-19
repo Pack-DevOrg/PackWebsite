@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react";
 import {
   mintPhoneVerificationStart,
   requestPublicApi,
+  startVerificationRefusalCopy,
   type ApiClient,
 } from "@/api/client";
 import { useApiClient } from "@/api/useApiClient";
@@ -256,11 +257,14 @@ export const VerifyPhoneStep: React.FC<VerifyPhoneStepProps> = ({
         intervalIdRef.current = window.setInterval(() => {
           void tick();
         }, VERIFY_STATUS_POLL_INTERVAL_MS);
-      } catch {
+      } catch (error: unknown) {
         if (pollStopRef.current !== "running") {
           return;
         }
-        setErrorCopy("Unable to start verification.");
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
+        setErrorCopy(startVerificationRefusalCopy(error));
       }
     };
 

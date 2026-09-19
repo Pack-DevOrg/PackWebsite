@@ -21,6 +21,73 @@ export class ApiRequestError extends Error {
   }
 }
 
+function trimmedStringBecauseUnknown(value: unknown): string {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim();
+}
+
+function detailReasonBecauseEnvelope(details: unknown): string {
+  if (details === null || typeof details !== "object") {
+    return "";
+  }
+  return trimmedStringBecauseUnknown(
+    (details as Record<string, unknown>).reason,
+  );
+}
+
+/** Typed 4xx/5xx reason from a Pack StandardApiResponse error envelope.
+ * B93 attestation deny is `DEVICE_ATTESTATION_CLIENT_UNKNOWN` plus details.reason. */
+export function typedApiRefusalReason(parsed: unknown): string | undefined {
+  if (parsed === null || typeof parsed !== "object") {
+    return undefined;
+  }
+  const record = parsed as Record<string, unknown>;
+  const error = record.error;
+  if (error === null || typeof error !== "object") {
+    const topLevel = trimmedStringBecauseUnknown(record.message);
+    if (topLevel.length > 0) {
+      return topLevel;
+    }
+    return undefined;
+  }
+  const envelope = error as Record<string, unknown>;
+  const code = trimmedStringBecauseUnknown(envelope.code);
+  const message = trimmedStringBecauseUnknown(envelope.message);
+  const detailReason = detailReasonBecauseEnvelope(envelope.details);
+  if (code.length > 0 && detailReason.length > 0) {
+    return `${code}: ${detailReason}`;
+  }
+  if (message.length > 0) {
+    return message;
+  }
+  if (code.length > 0) {
+    return code;
+  }
+  return undefined;
+}
+
+export function startVerificationRefusalCopy(error: unknown): string {
+  if (error instanceof ApiRequestError) {
+    const fromDetails = typedApiRefusalReason(error.details);
+    if (fromDetails !== undefined) {
+      return fromDetails;
+    }
+    const fromMessage = error.message.trim();
+    if (fromMessage.length > 0) {
+      return fromMessage;
+    }
+  }
+  if (error instanceof Error) {
+    const fromMessage = error.message.trim();
+    if (fromMessage.length > 0) {
+      return fromMessage;
+    }
+  }
+  return "Unable to start verification.";
+}
+
 const joinUrl = (base: string, path: string): string => {
   if (path.startsWith("http://") || path.startsWith("https://")) {
     return path;
@@ -80,11 +147,9 @@ const parseApiResponse = async (response: Response): Promise<unknown> => {
   }
 
   if (!response.ok) {
-    const apiMessage = (parsed as { error?: { message?: string } })?.error?.message;
+    const typed = typedApiRefusalReason(parsed);
     const normalizedMessage =
-      (typeof apiMessage === "string" && apiMessage.trim().length > 0
-        ? apiMessage.trim()
-        : undefined) ||
+      typed ||
       (typeof response.statusText === "string" && response.statusText.trim().length > 0
         ? response.statusText.trim()
         : undefined) ||

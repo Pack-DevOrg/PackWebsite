@@ -75,4 +75,10 @@ test.describe("App settings grants", () => {
   }) => {
     await expectCognitoAuthorize(page, "/en/app/settings");
   });
+
+  test("unauthenticated /app/settings/wallet hits Cognito authorize", async ({
+    page,
+  }) => {
+    await expectCognitoAuthorize(page, "/app/settings/wallet");
+  });
 });

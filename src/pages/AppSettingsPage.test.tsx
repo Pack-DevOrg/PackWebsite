@@ -101,6 +101,9 @@ describe("AppSettingsPage", () => {
     expect(screen.getByText("tests@trypackai.com")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Text Pack" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Open Wallet & Vault" }),
+    ).toHaveAttribute("href", "/app/settings/wallet");
     expect(loginMock).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole("button", { name: "Connect mail" }));
@@ -139,6 +142,9 @@ describe("AppSettingsPage", () => {
       screen.queryByRole("button", { name: "Connect calendar" }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Open Wallet & Vault" }),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("No account on this session")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Text Pack" })).toBeInTheDocument();
     expect(loginMock).not.toHaveBeenCalled();

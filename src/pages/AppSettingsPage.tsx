@@ -2,7 +2,7 @@ import React, { useEffect, useState, type ReactNode } from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Calendar, LogOut, Mail, MessageCircle, Settings, Users } from "lucide-react";
+import { Calendar, LogOut, Mail, MessageCircle, Settings, Users, Wallet } from "lucide-react";
 import { useApiClient } from "@/api/useApiClient";
 import {
   listFriends,
@@ -162,6 +162,7 @@ const CALENDAR_CONNECTED_COPY = "Connected for trip alerts.";
 const CALENDAR_DISCONNECTED_COPY = "Not connected.";
 const PHONE_LAST_SYNC_COPY = "Text Pack from this browser.";
 const EMAIL_FORWARDING_HREF = "/setup/email-forwarding";
+const WALLET_VAULT_HREF = "/app/settings/wallet";
 
 const emailOnSessionOrMissing = (email: string | undefined): string => {
   if (email === undefined) {
@@ -614,6 +615,27 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
                 {friends.length === 0 ? (
                   <LastSync>No friends yet.</LastSync>
                 ) : null}
+              </Panel>
+
+              <Panel aria-label="Wallet and Vault">
+                <PageHeader title="Wallet & Vault">
+                  <DiscGlyph>
+                    <Wallet aria-hidden="true" />
+                  </DiscGlyph>
+                </PageHeader>
+                <ServiceRow>
+                  <ServiceCopy>
+                    <ServiceTitle>
+                      <ServiceLink to={WALLET_VAULT_HREF}>
+                        Open Wallet & Vault
+                      </ServiceLink>
+                    </ServiceTitle>
+                    <LastSync>
+                      Connect Stripe Link, store vault credentials, and read
+                      every virtual card as typed rows.
+                    </LastSync>
+                  </ServiceCopy>
+                </ServiceRow>
               </Panel>
 
               <Panel aria-label="Account settings">

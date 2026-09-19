@@ -20,6 +20,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { isSupportedLocale, localizePath } from "@/i18n/config";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
+import { WalletVaultSettingsPage } from "@/pages/WalletVaultSettingsPage";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { lazyImportWithRetry } from "@/utils/lazyImportWithRetry";
 import { capabilityPageDefinitions } from "@/content/capabilityPages";
@@ -911,7 +912,10 @@ const NonHomeRoutes: React.FC = () => {
           <Route path="trips" element={<EnhancedTripsPage />} />
           <Route path="friends" element={<FriendsPage />} />
           <Route path="stats" element={<TravelStatsPage />} />
-          <Route path="settings" element={<AppSettingsPage />} />
+          <Route path="settings" element={<Outlet />}>
+            <Route index element={<AppSettingsPage />} />
+            <Route path="wallet" element={<WalletVaultSettingsPage />} />
+          </Route>
         </Route>
         <Route path="/:locale" element={<LocalizedOutlet />}>
           <Route
@@ -1222,7 +1226,10 @@ const NonHomeRoutes: React.FC = () => {
             <Route path="trips" element={<EnhancedTripsPage />} />
             <Route path="friends" element={<FriendsPage />} />
             <Route path="stats" element={<TravelStatsPage />} />
-            <Route path="settings" element={<AppSettingsPage />} />
+            <Route path="settings" element={<Outlet />}>
+              <Route index element={<AppSettingsPage />} />
+              <Route path="wallet" element={<WalletVaultSettingsPage />} />
+            </Route>
           </Route>
           <Route
             path="*"

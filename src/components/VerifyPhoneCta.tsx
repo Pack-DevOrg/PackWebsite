@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { MessageCircle } from "lucide-react";
-import { mintPhoneVerificationStart } from "@/api/client";
+import { mintPhoneVerificationStart, startVerificationRefusalCopy } from "@/api/client";
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
 
@@ -93,8 +93,8 @@ export const VerifyPhoneCta: React.FC<VerifyPhoneCtaProps> = ({
         return;
       }
       setFallbackCode(minted.code);
-    } catch {
-      setErrorMessage("Unable to start verification.");
+    } catch (error: unknown) {
+      setErrorMessage(startVerificationRefusalCopy(error));
     } finally {
       setPending(false);
     }

@@ -1,5 +1,11 @@
 import {appConfig} from '@/config/appConfig';
-import {createApiClient, mintPhoneVerificationStart} from './client';
+import {
+  ApiRequestError,
+  createApiClient,
+  mintPhoneVerificationStart,
+  startVerificationRefusalCopy,
+  typedApiRefusalReason,
+} from './client';
 
 jest.mock('@/config/appConfig', () => ({
   appConfig: {
@@ -95,6 +101,73 @@ describe('mintPhoneVerificationStart', () => {
         }),
         body: JSON.stringify({platform: 'web'}),
       }),
+    );
+  });
+
+  it('throws the B93 typed reason when start is a 403 attestation deny', async () => {
+    const attestationBody = {
+      success: false,
+      error: {
+        message:
+          'Device attestation policy cannot be resolved for this Cognito client',
+        code: 'DEVICE_ATTESTATION_CLIENT_UNKNOWN',
+        details: {
+          reason: 'cognito client_id is not in the attestation policy map',
+        },
+      },
+    };
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Forbidden',
+      text: async () => JSON.stringify(attestationBody),
+    });
+    const client = createApiClient(
+      async () => 'synth-access-token',
+      () => 'Bearer',
+    );
+
+    await expect(mintPhoneVerificationStart(client)).rejects.toEqual(
+      expect.objectContaining({
+        name: 'ApiRequestError',
+        status: 403,
+        message:
+          'DEVICE_ATTESTATION_CLIENT_UNKNOWN: cognito client_id is not in the attestation policy map',
+      }),
+    );
+  });
+});
+
+describe('typedApiRefusalReason', () => {
+  it('joins attestation code and details.reason', () => {
+    expect(
+      typedApiRefusalReason({
+        success: false,
+        error: {
+          message: 'Device attestation policy cannot be resolved for this Cognito client',
+          code: 'DEVICE_ATTESTATION_CLIENT_UNKNOWN',
+          details: {
+            reason: 'cognito client_id is not in the attestation policy map',
+          },
+        },
+      }),
+    ).toBe(
+      'DEVICE_ATTESTATION_CLIENT_UNKNOWN: cognito client_id is not in the attestation policy map',
+    );
+  });
+});
+
+describe('startVerificationRefusalCopy', () => {
+  it('uses the typed ApiRequestError message', () => {
+    expect(
+      startVerificationRefusalCopy(
+        new ApiRequestError(
+          403,
+          'DEVICE_ATTESTATION_CLIENT_UNKNOWN: cognito client_id is not in the attestation policy map',
+        ),
+      ),
+    ).toBe(
+      'DEVICE_ATTESTATION_CLIENT_UNKNOWN: cognito client_id is not in the attestation policy map',
     );
   });
 });

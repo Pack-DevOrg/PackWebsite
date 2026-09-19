@@ -240,6 +240,7 @@ export const publicContactConfig = {
   supportEmail: appConfig.supportEmail,
   forwardingEmail: appConfig.forwardingEmail,
   friendsEmail: appConfig.friendsEmail,
+  packSmsE164: requirePackSmsE164BecausePublicConfig(env.VITE_PACK_SMS_E164),
 };
 
 export const shouldExposeTsaForCurrentHost = (): boolean => {
@@ -350,4 +351,21 @@ function assertEmail(value: string, fieldName: string): void {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
     throw new Error(`Invalid ${fieldName}`);
   }
+}
+
+export function requirePackSmsE164BecausePublicConfig(raw: unknown): string {
+  if (typeof raw !== "string") {
+    throw new Error("VITE_PACK_SMS_E164 is required");
+  }
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) {
+    throw new Error("VITE_PACK_SMS_E164 is required");
+  }
+  if (/placeholder|parked|todo|xxx/i.test(trimmed)) {
+    throw new Error("VITE_PACK_SMS_E164 is required");
+  }
+  if (!/^\+[1-9]\d{7,14}$/.test(trimmed)) {
+    throw new Error("Invalid packSmsE164");
+  }
+  return trimmed;
 }

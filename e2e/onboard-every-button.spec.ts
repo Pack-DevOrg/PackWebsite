@@ -41,7 +41,6 @@ const PACKAPP_GOLDEN_ABS_DIR = path.join(
   "onboarding",
 );
 const PACK_VERIFY_E164 = "+13054392989";
-const APP_STORE_ID = "6761626050";
 const MAX_PIXEL_RATIO = 0.02;
 const E2E_USER = "tests@trypackai.com";
 const SESSION_STORAGE_KEY = "pack.auth.session.v1";
@@ -732,6 +731,7 @@ async function clickAndClassify(
       expect(control.href).toMatch(
         new RegExp(`sms:.*${PACK_VERIFY_E164.replace("+", "\\+")}`),
       );
+      expect(control.href).toMatch(/[?&]body=/);
     }
     const loc = locatorForControl(page, control);
     const popupPromise = page
@@ -739,6 +739,11 @@ async function clickAndClassify(
       .catch(() => null);
     await loc.click();
     const popup = await popupPromise;
+    const afterHrefClick = page.url();
+    expect(
+      afterHrefClick !== "about:blank" && !afterHrefClick.includes("chrome-error"),
+      `href door ${control.name} must not open a blank route, url=${afterHrefClick}`,
+    ).toBe(true);
     if (popup !== null) {
       const popupUrl = popup.url();
       expect(
@@ -823,9 +828,17 @@ async function clickAndClassify(
   }
 
   if (/let us handle the rest/i.test(control.name)) {
-    const store =
-      afterUrl.includes("apps.apple.com") || afterUrl.includes(APP_STORE_ID);
-    expect(store, `complete CTA must open App Store, url=${afterUrl}`).toBe(true);
+    const blank =
+      afterUrl === "about:blank" || afterUrl.includes("chrome-error");
+    expect(
+      blank === false,
+      `complete CTA must not open a blank route, url=${afterUrl}`,
+    ).toBe(true);
+    const smsDoor = doorNameBecauseHref(control.href) === "SMS deep link";
+    expect(
+      smsDoor,
+      `complete CTA href must be sms:, got ${control.href}`,
+    ).toBe(true);
     return "external-door";
   }
 
@@ -995,6 +1008,11 @@ async function exerciseEveryControl(
 
   if (flow.id === "verify-phone") {
     await assertNamedQrIfDesktop(page, isMobile);
+  }
+
+  if (flow.id === "complete" && isMobile === false) {
+    await expect(page.getByText(PACK_VERIFY_E164)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Copy" })).toBeVisible();
   }
 
   for (const control of controls) {

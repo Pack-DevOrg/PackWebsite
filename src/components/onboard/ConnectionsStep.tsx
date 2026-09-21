@@ -1,14 +1,14 @@
 import React from 'react';
-import styled from 'styled-components';
-
+import {Pressable, Text, View} from 'react-native';
 import {
-  OnboardStepFrame,
-  PrimaryButton,
-  SheetCard,
-  StepBody,
-  StepTitle,
-  onboardTokens,
-} from './OnboardPrimitives';
+  OnboardingContent,
+  OnboardingHeader,
+  OnboardingPrimaryButton,
+  OnboardingSkipButton,
+  OnboardingSubtitle,
+  OnboardingTitle,
+  tokens,
+} from '@pack/ui-primitives';
 
 export interface ConnectionsStepProps {
   onContinue?: () => void;
@@ -99,138 +99,6 @@ function connectedSubtitleBecauseEmail(email: string | null): string | null {
   return `Connected: ${email}`;
 }
 
-const Body = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: ${onboardTokens.spacing.m}px;
-  min-height: 0;
-  overflow: auto;
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  text-align: center;
-`;
-
-const BackButton = styled.button`
-  align-self: flex-start;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.xl}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-  cursor: pointer;
-`;
-
-const Security = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: ${onboardTokens.spacing.s}px;
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.m}px;
-  border: 1px solid ${onboardTokens.borderSubtle};
-  border-radius: ${onboardTokens.borderRadius.r16}px;
-  background: ${onboardTokens.darkGray3};
-  text-align: left;
-`;
-
-const SecurityCopy = styled.p`
-  margin: 0;
-  color: ${onboardTokens.textSecondary};
-  font-size: ${onboardTokens.fontSize.xs}px;
-  line-height: 16px;
-`;
-
-const AccountList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${onboardTokens.spacing.s}px;
-`;
-
-const AccountRow = styled.button<{ $connected: boolean; $disabledLook: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: ${onboardTokens.spacing.m}px;
-  width: 100%;
-  min-height: 60px;
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.s12}px;
-  border: 1px solid
-    ${(props) =>
-      props.$connected ? onboardTokens.primary : onboardTokens.borderSubtle};
-  border-radius: ${onboardTokens.borderRadius.r16}px;
-  background: ${onboardTokens.darkGray3};
-  color: ${onboardTokens.textPrimary};
-  text-align: left;
-  cursor: pointer;
-  opacity: ${(props) => (props.$disabledLook ? 0.6 : 1)};
-`;
-
-const AccountMark = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border: 1px solid ${onboardTokens.borderSubtle};
-  border-radius: ${onboardTokens.borderRadius.l}px;
-  background: ${onboardTokens.darkGray2};
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-`;
-
-const AccountCopy = styled.span`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-`;
-
-const AccountTitle = styled.span<{ $muted: boolean }>`
-  font-size: ${onboardTokens.fontSize.m}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-  color: ${(props) =>
-    props.$muted ? onboardTokens.textSecondary : onboardTokens.textPrimary};
-`;
-
-const AccountSubtitle = styled.span`
-  font-size: ${onboardTokens.fontSize.xs}px;
-  color: ${onboardTokens.textSecondary};
-`;
-
-const SoonLabel = styled.span`
-  font-size: ${onboardTokens.fontSize.xs}px;
-  font-style: italic;
-  color: ${onboardTokens.textSecondary};
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  width: 100%;
-`;
-
-const SkipButton = styled.button`
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.m}px;
-  min-height: 32px;
-  border: 1px solid ${onboardTokens.borderMedium};
-  border-radius: ${onboardTokens.borderRadius.l}px;
-  background: ${onboardTokens.darkGray3};
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m15}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-  cursor: pointer;
-`;
-
 function skipControlBecauseDisconnected(
   anyConnected: boolean,
   onSkip: () => void,
@@ -238,14 +106,7 @@ function skipControlBecauseDisconnected(
   if (anyConnected) {
     return null;
   }
-  return (
-    <SkipButton
-      type="button"
-      onClick={onSkip}
-      data-testid="connected-accounts-skip-button">
-      Skip for now
-    </SkipButton>
-  );
+  return <OnboardingSkipButton onPress={onSkip} />;
 }
 
 function connectedEmailLine(email: string | null): React.ReactNode {
@@ -253,7 +114,105 @@ function connectedEmailLine(email: string | null): React.ReactNode {
   if (subtitle === null) {
     return null;
   }
-  return <AccountSubtitle>{subtitle}</AccountSubtitle>;
+  return (
+    <Text
+      style={{
+        fontSize: tokens.typography.fontSize.xs,
+        color: tokens.colors.textSecondary,
+      }}>
+      {subtitle}
+    </Text>
+  );
+}
+
+function AccountRow({
+  connected,
+  disabledLook,
+  testID,
+  disabled,
+  onPress,
+  mark,
+  title,
+  subtitle,
+  soon,
+}: {
+  readonly connected: boolean;
+  readonly disabledLook: boolean;
+  readonly testID: string;
+  readonly disabled: boolean;
+  readonly onPress?: () => void;
+  readonly mark: string;
+  readonly title: string;
+  readonly subtitle: React.ReactNode;
+  readonly soon?: boolean;
+}): React.ReactElement {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      disabled={disabled}
+      onPress={onPress}
+      testID={testID}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: tokens.spacing.m,
+        width: '100%',
+        minHeight: 60,
+        paddingVertical: tokens.spacing.s,
+        paddingHorizontal: tokens.spacing.s12,
+        borderWidth: 1,
+        borderColor: connected
+          ? tokens.colors.primary
+          : tokens.colors.borderSubtle,
+        borderRadius: tokens.borderRadius.r16,
+        backgroundColor: tokens.colors.darkGray3,
+        opacity: disabledLook ? 0.6 : 1,
+      }}>
+      <View
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: tokens.borderRadius.l,
+          borderWidth: 1,
+          borderColor: tokens.colors.borderSubtle,
+          backgroundColor: tokens.colors.darkGray2,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={{
+            color: tokens.colors.textPrimary,
+            fontSize: tokens.typography.fontSize.m,
+            fontWeight: tokens.typography.fontWeight.bold,
+          }}>
+          {mark}
+        </Text>
+      </View>
+      <View style={{flex: 1, minWidth: 0}}>
+        <Text
+          style={{
+            fontSize: tokens.typography.fontSize.m,
+            fontWeight: tokens.typography.fontWeight.bold,
+            color: disabledLook
+              ? tokens.colors.textSecondary
+              : tokens.colors.textPrimary,
+          }}>
+          {title}
+        </Text>
+        {subtitle}
+      </View>
+      {soon === true ? (
+        <Text
+          style={{
+            fontSize: tokens.typography.fontSize.xs,
+            fontStyle: 'italic',
+            color: tokens.colors.textSecondary,
+          }}>
+          Soon
+        </Text>
+      ) : null}
+    </Pressable>
+  );
 }
 
 export function ConnectionsStep({
@@ -286,88 +245,88 @@ export function ConnectionsStep({
   );
 
   return (
-    <SheetCard $fill>
-      <OnboardStepFrame>
-        <Body>
-        <BackButton type="button" aria-label="Back" onClick={handleBack}>
-          ‹
-        </BackButton>
-        <Header>
-          <StepTitle>Connections</StepTitle>
-          <StepBody data-testid="connected-accounts-why-connect">
+    <OnboardingContent scrollEnabled={false}>
+      <View style={{gap: tokens.spacing.m, minHeight: 0}}>
+        <OnboardingHeader
+          showBack
+          onBack={handleBack}
+          backAccessibilityLabel="Back"
+        />
+        <View style={{alignItems: 'center'}}>
+          <OnboardingTitle>Connections</OnboardingTitle>
+          <OnboardingSubtitle testID="connected-accounts-why-connect">
             Straight from your inbox and calendar.
-          </StepBody>
-        </Header>
-        <Security>
-          <SecurityCopy>
+          </OnboardingSubtitle>
+        </View>
+        <View
+          style={{
+            paddingVertical: tokens.spacing.s,
+            paddingHorizontal: tokens.spacing.m,
+            borderWidth: 1,
+            borderColor: tokens.colors.borderSubtle,
+            borderRadius: tokens.borderRadius.r16,
+            backgroundColor: tokens.colors.darkGray3,
+          }}>
+          <Text
+            style={{
+              color: tokens.colors.textSecondary,
+              fontSize: tokens.typography.fontSize.xs,
+              lineHeight: 16,
+            }}>
             Google-approved auditors have reviewed how we protect your data. Everything stays encrypted between you and Pack.
-          </SecurityCopy>
-        </Security>
-        <AccountList>
+          </Text>
+        </View>
+        <View style={{gap: tokens.spacing.s}}>
           <AccountRow
-            type="button"
-            $connected={googleIsConnected}
-            $disabledLook={false}
-            data-testid="connect-google-button"
+            connected={googleIsConnected}
+            disabledLook={false}
+            testID="connect-google-button"
             disabled={googleIsLoading}
-            onClick={handleConnectGoogle}>
-            <AccountMark>G</AccountMark>
-            <AccountCopy>
-              <AccountTitle $muted={false}>
-                {googleAccountLabelBecauseState(
-                  googleIsLoading,
-                  googleIsConnected,
-                )}
-              </AccountTitle>
-              {connectedEmailLine(
-                googleIsConnected ? googleAddress : null,
-              )}
-            </AccountCopy>
-          </AccountRow>
+            onPress={handleConnectGoogle}
+            mark="G"
+            title={googleAccountLabelBecauseState(
+              googleIsLoading,
+              googleIsConnected,
+            )}
+            subtitle={connectedEmailLine(
+              googleIsConnected ? googleAddress : null,
+            )}
+          />
           <AccountRow
-            type="button"
-            $connected={microsoftIsConnected}
-            $disabledLook={false}
-            data-testid="connect-microsoft-button"
+            connected={microsoftIsConnected}
+            disabledLook={false}
+            testID="connect-microsoft-button"
             disabled={microsoftIsLoading}
-            onClick={handleConnectMicrosoft}>
-            <AccountMark>M</AccountMark>
-            <AccountCopy>
-              <AccountTitle $muted={false}>
-                {microsoftAccountLabelBecauseState(
-                  microsoftIsLoading,
-                  microsoftIsConnected,
-                )}
-              </AccountTitle>
-              {connectedEmailLine(
-                microsoftIsConnected ? microsoftAddress : null,
-              )}
-            </AccountCopy>
-          </AccountRow>
+            onPress={handleConnectMicrosoft}
+            mark="M"
+            title={microsoftAccountLabelBecauseState(
+              microsoftIsLoading,
+              microsoftIsConnected,
+            )}
+            subtitle={connectedEmailLine(
+              microsoftIsConnected ? microsoftAddress : null,
+            )}
+          />
           <AccountRow
-            type="button"
-            $connected={false}
-            $disabledLook={true}
-            data-testid="connect-apple-button"
-            disabled={true}>
-            <AccountMark>A</AccountMark>
-            <AccountCopy>
-              <AccountTitle $muted={true}>Connect Apple</AccountTitle>
-            </AccountCopy>
-            <SoonLabel>Soon</SoonLabel>
-          </AccountRow>
-        </AccountList>
-        </Body>
-        <Actions>
-          <PrimaryButton
-            type="button"
-            disabled={!anyConnected}
-            onClick={handleContinue}>
-            Continue
-          </PrimaryButton>
-          {skipControlBecauseDisconnected(anyConnected, handleSkip)}
-        </Actions>
-      </OnboardStepFrame>
-    </SheetCard>
+            connected={false}
+            disabledLook
+            testID="connect-apple-button"
+            disabled
+            mark="A"
+            title="Connect Apple"
+            subtitle={null}
+            soon
+          />
+        </View>
+      </View>
+      <View style={{width: '100%', alignItems: 'center'}}>
+        <OnboardingPrimaryButton
+          disabled={!anyConnected}
+          onPress={handleContinue}>
+          Continue
+        </OnboardingPrimaryButton>
+        {skipControlBecauseDisconnected(anyConnected, handleSkip)}
+      </View>
+    </OnboardingContent>
   );
 }

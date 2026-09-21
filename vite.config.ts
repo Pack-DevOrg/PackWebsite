@@ -32,6 +32,7 @@ const packLocalityCatalogDir = path.join(
   'src',
 );
 const packWebEffectsDir = path.join(repoRootDir, 'PackServer', 'packages', 'web-effects', 'vendor');
+const packUiPrimitivesDir = path.join(rootDir, 'packages', 'ui-primitives', 'src');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
 const localNodeModules = path.join(rootDir, 'node_modules');
 const resolveModuleDir = (moduleName: string): string => {
@@ -711,6 +712,8 @@ export default defineConfig(({ mode, ssrBuild }) => {
     '@pack/web-effects/thinking-orbs': normalizePath(
       path.join(packWebEffectsDir, 'thinking-orbs', 'dist', 'index.es.js'),
     ),
+    '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
+    'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
     'react/jsx-dev-runtime': normalizePath(reactJsxDevRuntimeEntry),
@@ -913,6 +916,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
         },
       },
       react({
+        exclude: [/node_modules/, /[\\/]\.vite-cache[\\/]/],
         babel: {
           plugins: babelPlugins,
         },
@@ -933,11 +937,15 @@ export default defineConfig(({ mode, ssrBuild }) => {
       alias: resolveAliases,
     },
     optimizeDeps: {
-      include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod'],
+      include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod', 'react-native-web'],
       exclude: ['react-google-recaptcha', 'react-markdown'], // Load these dynamically
     },
     define: {
       __DEV__: mode === 'development',
+      global: 'globalThis',
+      'process.env.NODE_ENV': JSON.stringify(
+        mode === 'production' ? 'production' : 'development',
+      ),
       __APP_ENV__: JSON.stringify({
         ...viteEnv,
         ...(publicTsaBoardUrl.length > 0
@@ -977,6 +985,8 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'react-helmet-async',
         'styled-components',
         'lucide-react',
+        'react-native-web',
+        'react-native',
       ],
     },
     server: {
@@ -989,6 +999,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),
           normalizePath(packServerTravelPlannerFixtureCorpusDir),
+          normalizePath(packUiPrimitivesDir),
           normalizePath(reactModuleDir),
           normalizePath(reactDomModuleDir),
           normalizePath(styledComponentsModuleDir),

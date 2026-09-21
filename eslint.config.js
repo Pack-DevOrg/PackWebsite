@@ -68,6 +68,42 @@ export default tseslint.config(
     },
   },
   {
+    files: [
+      'src/pages/OnboardPage.tsx',
+      'src/components/onboard/*Step.tsx',
+      'src/components/VerifyPhoneStep.tsx',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'styled-components',
+              message:
+                'Onboarding markup must come from @pack/ui-primitives, not website-only styled cards.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['**/OnboardPrimitives', '@/components/onboard/OnboardPrimitives'],
+              importNames: [
+                'SheetCard',
+                'OnboardStepFrame',
+                'StepTitle',
+                'StepHeroTitle',
+                'StepBody',
+                'OnboardShell',
+              ],
+              message:
+                'Onboarding chrome must be OnboardingContainer / Header / Title / buttons from @pack/ui-primitives.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/hooks/useMountEffect.ts', 'src/hooks/useMountEffect.tsx'],
     rules: {
       'no-restricted-imports': 'off',

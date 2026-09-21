@@ -1,15 +1,15 @@
 import React from 'react';
-import styled from 'styled-components';
+import {Pressable, Text, View} from 'react-native';
+import {
+  OnboardingContent,
+  OnboardingPrimaryLink,
+  OnboardingSubtitle,
+  OnboardingTitle,
+  tokens,
+} from '@pack/ui-primitives';
 
 import {publicContactConfig} from '../../config/appConfig';
 import {copyTextToClipboard} from '../../utils/clipboard';
-import {
-  OnboardStepFrame,
-  SheetCard,
-  StepBody,
-  StepTitle,
-  onboardTokens,
-} from './OnboardPrimitives';
 
 export const COMPLETE_SMS_BODY = 'Hi Pack';
 export const COMPLETE_DESKTOP_MIN_WIDTH_PX = 740;
@@ -42,97 +42,6 @@ function copyPackNumberBecauseDesktop(e164: string): void {
   void copyTextToClipboard(e164);
 }
 
-const CopyBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.m}px;
-`;
-
-const Checkmark = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: ${onboardTokens.primary};
-  color: ${onboardTokens.textOnPrimary};
-  font-size: ${onboardTokens.fontSize.xl}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-`;
-
-const Highlights = styled.ul`
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-`;
-
-const Highlight = styled.li`
-  margin: 0;
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-`;
-
-const CtaWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: ${onboardTokens.spacing.m}px;
-  width: 100%;
-`;
-
-const CtaLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  width: 100%;
-  height: ${onboardTokens.buttonHeightL}px;
-  border: none;
-  border-radius: ${onboardTokens.borderRadius.r10}px;
-  background: ${onboardTokens.primary};
-  color: ${onboardTokens.textOnPrimary};
-  font-size: ${onboardTokens.fontSize.m}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-  text-decoration: none;
-  box-sizing: border-box;
-`;
-
-const DesktopNumberRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: ${onboardTokens.spacing.s}px;
-`;
-
-const PackNumber = styled.span`
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-`;
-
-const CopyButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  height: ${onboardTokens.buttonHeightL / 2}px;
-  padding: 0 ${onboardTokens.spacing.s12}px;
-  border: 1px solid ${onboardTokens.borderMedium};
-  border-radius: ${onboardTokens.borderRadius.r10}px;
-  background: ${onboardTokens.darkGray3};
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.s}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-`;
-
 export function CompleteStep(): React.ReactElement {
   const packSmsE164 = publicContactConfig.packSmsE164;
   const smsHref = buildCompleteSmsHrefBecauseSendblue(
@@ -144,34 +53,90 @@ export function CompleteStep(): React.ReactElement {
   );
 
   return (
-    <SheetCard $fill>
-      <OnboardStepFrame>
-        <CopyBlock>
-          <Checkmark>✓</Checkmark>
-          <StepTitle>You&apos;re all set!</StepTitle>
-          <StepBody>Relax, we&apos;ve got you covered.</StepBody>
-          <Highlights>
-            {COMPLETE_HIGHLIGHTS.map((label) => (
-              <Highlight key={label}>{label}</Highlight>
-            ))}
-          </Highlights>
-        </CopyBlock>
-        <CtaWrap>
-          <CtaLink href={smsHref}>Let us handle the rest</CtaLink>
-          {showDesktopNumber ? (
-            <DesktopNumberRow data-testid="complete-pack-number">
-              <PackNumber>{packSmsE164}</PackNumber>
-              <CopyButton
-                type="button"
-                onClick={() => {
-                  copyPackNumberBecauseDesktop(packSmsE164);
+    <OnboardingContent scrollEnabled={false}>
+      <View style={{alignItems: 'center', gap: tokens.spacing.m}}>
+        <View
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: 32,
+            backgroundColor: tokens.colors.success,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text
+            style={{
+              color: tokens.colors.textOnPrimary,
+              fontSize: tokens.typography.fontSize.xl,
+              fontWeight: tokens.typography.fontWeight.bold,
+            }}>
+            ✓
+          </Text>
+        </View>
+        <OnboardingTitle>You&apos;re all set!</OnboardingTitle>
+        <OnboardingSubtitle>Relax, we&apos;ve got you covered.</OnboardingSubtitle>
+        <View style={{alignItems: 'center', gap: tokens.spacing.s}}>
+          {COMPLETE_HIGHLIGHTS.map((label) => (
+            <Text
+              key={label}
+              style={{
+                color: tokens.colors.textPrimary,
+                fontSize: tokens.typography.fontSize.m,
+                fontWeight: tokens.typography.fontWeight.semibold,
+              }}>
+              {label}
+            </Text>
+          ))}
+        </View>
+      </View>
+      <View style={{width: '100%', alignItems: 'center'}}>
+        <OnboardingPrimaryLink href={smsHref}>
+          Let us handle the rest
+        </OnboardingPrimaryLink>
+        {showDesktopNumber ? (
+          <View
+            testID="complete-pack-number"
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: tokens.spacing.s,
+            }}>
+            <Text
+              style={{
+                color: tokens.colors.textPrimary,
+                fontSize: tokens.typography.fontSize.m,
+                fontWeight: tokens.typography.fontWeight.semibold,
+              }}>
+              {packSmsE164}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                copyPackNumberBecauseDesktop(packSmsE164);
+              }}
+              style={{
+                height: tokens.buttonHeightL / 2,
+                paddingHorizontal: tokens.spacing.s12,
+                borderWidth: 1,
+                borderColor: tokens.colors.borderMedium,
+                borderRadius: tokens.borderRadius.r10,
+                backgroundColor: tokens.colors.darkGray3,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text
+                style={{
+                  color: tokens.colors.textPrimary,
+                  fontSize: tokens.typography.fontSize.s,
+                  fontWeight: tokens.typography.fontWeight.semibold,
                 }}>
                 Copy
-              </CopyButton>
-            </DesktopNumberRow>
-          ) : null}
-        </CtaWrap>
-      </OnboardStepFrame>
-    </SheetCard>
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
+      </View>
+    </OnboardingContent>
   );
 }

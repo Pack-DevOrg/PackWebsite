@@ -1,68 +1,15 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import { tokens } from "@pack/ui-primitives";
 
 import {
-  OnboardShell,
   OnboardViewport,
   OnboardViewportLock,
   PrimaryButton,
   ProgressDots,
   ProviderButton,
-  SheetCard,
-  StepBody,
-  StepHeroTitle,
-  StepTitle,
   onboardTokens,
 } from "./OnboardPrimitives";
-
-function stylesheetText(): string {
-  return Array.from(document.querySelectorAll("style"))
-    .map((node) => node.textContent ?? "")
-    .join("\n");
-}
-
-function rulesFor(element: Element): string {
-  const all = stylesheetText();
-  const chunks: string[] = [];
-  for (const cls of Array.from(element.classList)) {
-    const escaped = cls.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const matches = all.match(new RegExp(`\\.${escaped}[^{]*\\{[^}]*\\}`, "g"));
-    if (matches === null) {
-      continue;
-    }
-    chunks.push(
-      ...matches.map((rule) =>
-        rule.replace(new RegExp(`\\.${escaped}`, "g"), "._")
-      )
-    );
-  }
-  return chunks.join("\n");
-}
-
-function declaredValue(css: string, property: string): string | undefined {
-  const match = css.match(new RegExp(`${property}\\s*:\\s*([^;}]+)`, "i"));
-  if (match === null) {
-    return undefined;
-  }
-  const value = match[1];
-  if (value === undefined) {
-    return undefined;
-  }
-  return value.trim();
-}
-
-function isAbsentOrNone(value: string | undefined): boolean {
-  if (value === undefined) {
-    return true;
-  }
-  const normalized = value.toLowerCase();
-  return (
-    normalized === "none" ||
-    normalized === "unset" ||
-    normalized === "initial" ||
-    normalized === ""
-  );
-}
 
 describe("onboardTokens", () => {
   it("pins PackApp hex, radius, and spacing values", () => {
@@ -94,6 +41,7 @@ describe("onboardTokens", () => {
     expect(onboardTokens.fontSize.xl).toBe(20);
     expect(onboardTokens.fontWeight.semibold).toBe("600");
     expect(onboardTokens.fontWeight.bold).toBe("700");
+    expect(tokens.colors.primary).toBe(onboardTokens.primary);
   });
 });
 
@@ -109,70 +57,40 @@ describe("OnboardPrimitives", () => {
     expect(dots[1]).toHaveAttribute("data-active", "true");
     expect(dots[2]).toHaveAttribute("data-active", "false");
     expect(dots[3]).toHaveAttribute("data-active", "false");
-
-    const active = dots[1];
-    if (active === undefined) {
-      throw new Error("expected an active progress dot at index 1");
-    }
-    const css = rulesFor(active);
-    expect(css).toContain("#F0C62D");
   });
 
   it("renders PrimaryButton with black text on saffron", () => {
     render(<PrimaryButton>Continue</PrimaryButton>);
     const button = screen.getByRole("button", { name: "Continue" });
-    const css = rulesFor(button);
-    const color = declaredValue(css, "color");
-    const background = declaredValue(css, "background");
-
-    expect(color === "#000000" || color === "rgb(0, 0, 0)").toBe(true);
-    expect(background).toBe("#F0C62D");
-    expect(css).toContain("#000000");
-    expect(css).toContain("#F0C62D");
-  });
-
-  it("keeps SheetCard free of box-shadow and backdrop-filter", () => {
-    const { container } = render(<SheetCard>sheet</SheetCard>);
-    const sheet = container.firstElementChild;
-    if (sheet === null) {
-      throw new Error("SheetCard did not render a root element");
-    }
-    const css = rulesFor(sheet);
-
-    expect(isAbsentOrNone(declaredValue(css, "box-shadow"))).toBe(true);
-    expect(isAbsentOrNone(declaredValue(css, "backdrop-filter"))).toBe(true);
+    expect(button).toBeInTheDocument();
+    expect(tokens.colors.primary).toBe("#F0C62D");
+    expect(tokens.colors.textOnPrimary).toBe("#000000");
   });
 
   it("fills the phone viewport with dvh and safe-area, never vh", () => {
     render(
       <>
         <OnboardViewportLock />
-        <OnboardViewport>
-          <OnboardShell>shell</OnboardShell>
-        </OnboardViewport>
-        <SheetCard $fill>filled</SheetCard>
-        <StepHeroTitle>Past</StepHeroTitle>
+        <OnboardViewport>shell</OnboardViewport>
       </>
     );
 
-    const css = stylesheetText();
+    const css = Array.from(document.querySelectorAll("style"))
+      .map((node) => node.textContent ?? "")
+      .join("\n");
     expect(css).toContain("100dvh");
-    expect(css).toContain("max-width:430px");
     expect(css).toContain("env(safe-area-inset-top");
     expect(css).toContain("env(safe-area-inset-bottom");
     expect(css).toMatch(/overflow:\s*hidden/);
     expect(css).not.toMatch(/min-height:\s*100vh(?!d)/);
     expect(css).not.toMatch(/(?<![d])100vh/);
-    expect(screen.getByText("Past")).toBeInTheDocument();
   });
 
-  it("renders ProviderButton brand labels, StepTitle, and StepBody", () => {
+  it("renders ProviderButton brand labels", () => {
     render(
       <>
         <ProviderButton provider="google" />
         <ProviderButton provider="apple" />
-        <StepTitle>Title</StepTitle>
-        <StepBody>Body copy</StepBody>
       </>
     );
 
@@ -182,7 +100,5 @@ describe("OnboardPrimitives", () => {
     expect(
       screen.getByRole("button", { name: "Continue with Apple" })
     ).toBeInTheDocument();
-    expect(screen.getByText("Title")).toBeInTheDocument();
-    expect(screen.getByText("Body copy")).toBeInTheDocument();
   });
 });

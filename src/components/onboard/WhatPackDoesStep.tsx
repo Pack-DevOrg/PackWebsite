@@ -1,15 +1,14 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
-
+import {View} from 'react-native';
 import {
-  OnboardStepFrame,
-  PrimaryButton,
-  ProgressDots,
-  SheetCard,
-  StepBody,
-  StepHeroTitle,
-  onboardTokens,
-} from './OnboardPrimitives';
+  OnboardingContent,
+  OnboardingPrimaryButton,
+  OnboardingProgressDots,
+  OnboardingSecondaryButton,
+  OnboardingSubtitle,
+  OnboardingTitle,
+  tokens,
+} from '@pack/ui-primitives';
 
 export interface WhatPackDoesStepProps {
   onNext?: () => void;
@@ -67,31 +66,6 @@ function nextIndexBecausePager(current: number): number {
   return current + 1;
 }
 
-const CopyBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  text-align: center;
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  width: 100%;
-`;
-
-const SkipButton = styled.button`
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.m}px;
-  border: none;
-  background: none;
-  color: ${onboardTokens.textSecondary};
-  font-size: ${onboardTokens.fontSize.m}px;
-  cursor: pointer;
-`;
-
 export function WhatPackDoesStep({
   onNext,
   onSkip,
@@ -110,22 +84,30 @@ export function WhatPackDoesStep({
   };
 
   return (
-    <SheetCard $fill>
-      <OnboardStepFrame>
-        <CopyBlock>
-          <StepHeroTitle>{screen.title}</StepHeroTitle>
-          <StepBody>{screen.subtitle}</StepBody>
-        </CopyBlock>
-        <Actions>
-          <ProgressDots count={SCREENS.length} activeIndex={current} />
-          <PrimaryButton type="button" onClick={continuePager}>
-            Continue
-          </PrimaryButton>
-          <SkipButton type="button" onClick={handleSkip}>
-            Skip
-          </SkipButton>
-        </Actions>
-      </OnboardStepFrame>
-    </SheetCard>
+    <OnboardingContent scrollEnabled={false}>
+      <View style={{alignItems: 'center'}}>
+        <OnboardingTitle
+          style={{
+            fontSize: tokens.typography.fontSize.hero44,
+            lineHeight: tokens.typography.lineHeight.hero,
+            color: tokens.colors.primary,
+          }}>
+          {screen.title}
+        </OnboardingTitle>
+        <OnboardingSubtitle>{screen.subtitle}</OnboardingSubtitle>
+      </View>
+      <View style={{alignItems: 'center', width: '100%'}}>
+        <OnboardingProgressDots
+          currentStep={current + 1}
+          totalSteps={SCREENS.length}
+        />
+        <OnboardingPrimaryButton onPress={continuePager}>
+          Continue
+        </OnboardingPrimaryButton>
+        <OnboardingSecondaryButton onPress={handleSkip}>
+          Skip
+        </OnboardingSecondaryButton>
+      </View>
+    </OnboardingContent>
   );
 }

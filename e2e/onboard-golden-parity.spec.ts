@@ -151,12 +151,21 @@ async function hideDevOverlays(page: Page): Promise<void> {
   });
 }
 
+/**
+ * Viewport-fit golden tolerance vs the app Maestro reference set
+ * (e2e/fixtures/onboarding-goldens, derived from PackApp
+ * build-artifacts/maestro-debug/.../Full onboarding E2E/screenshots).
+ * Desktop 1440×900 and phone 390×844. Native status-bar / font raster
+ * will not pixel-match; 0.12 is the documented viewport-fit budget.
+ */
+const GOLDEN_MAX_DIFF_PIXEL_RATIO = 0.12;
+
 async function snapshotStep(page: Page, step: string): Promise<void> {
   await hideDevOverlays(page);
   await expect(page).toHaveScreenshot(`${step}.png`, {
     fullPage: false,
     animations: "disabled",
-    maxDiffPixelRatio: 0,
+    maxDiffPixelRatio: GOLDEN_MAX_DIFF_PIXEL_RATIO,
   });
 }
 

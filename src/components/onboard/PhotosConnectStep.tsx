@@ -1,13 +1,15 @@
 import React from 'react';
-import styled from 'styled-components';
-
+import {Text, View} from 'react-native';
 import {
-  PrimaryButton,
-  SheetCard,
-  StepBody,
-  StepTitle,
-  onboardTokens,
-} from './OnboardPrimitives';
+  OnboardingContent,
+  OnboardingPrimaryButton,
+  OnboardingSkipButton,
+  OnboardingSubtitle,
+  OnboardingTitle,
+  SheetGrabber,
+  SheetHeader,
+  tokens,
+} from '@pack/ui-primitives';
 
 export interface PhotosConnectStepProps {
   onSkip?: () => void;
@@ -32,13 +34,13 @@ const CATEGORY_LABELS = [
 ] as const;
 
 const CATEGORY_DOT_COLORS = [
-  onboardTokens.primary,
-  onboardTokens.textSecondary,
-  onboardTokens.textPrimary,
-  onboardTokens.borderMedium,
-  onboardTokens.darkGray3,
-  onboardTokens.textSecondary,
-  onboardTokens.primary,
+  tokens.colors.primary,
+  tokens.colors.textSecondary,
+  tokens.colors.textPrimary,
+  tokens.colors.borderMedium,
+  tokens.colors.darkGray3,
+  tokens.colors.textSecondary,
+  tokens.colors.primary,
 ] as const;
 
 function noopAction(): void {
@@ -53,209 +55,6 @@ function defaultSkipBecauseNoop(
   }
   return onSkip;
 }
-
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.m}px;
-  width: 100%;
-  max-width: 460px;
-  margin: 0 auto;
-  padding: ${onboardTokens.spacing.l}px ${onboardTokens.spacing.m}px;
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  text-align: center;
-  width: 100%;
-`;
-
-const Headline = styled(StepTitle)`
-  font-size: 36px;
-  line-height: 42px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-  text-align: center;
-`;
-
-const Accent = styled.span`
-  color: ${onboardTokens.primary};
-`;
-
-const Subtitle = styled(StepBody)`
-  text-align: center;
-`;
-
-const PassportCard = styled.div`
-  width: 100%;
-  background: ${onboardTokens.darkGray2};
-  border: 1px solid ${onboardTokens.borderSubtle};
-  border-radius: ${onboardTokens.borderRadius.r16}px;
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.m}px;
-`;
-
-const MapPlaceholder = styled.div`
-  width: 100%;
-  aspect-ratio: 960 / 500;
-  border-radius: ${onboardTokens.borderRadius.r16}px;
-  background: ${onboardTokens.darkGray3};
-`;
-
-const MetricsRow = styled.div`
-  display: flex;
-  width: 100%;
-  margin-top: ${onboardTokens.spacing.s}px;
-`;
-
-const Metric = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: center;
-  gap: ${onboardTokens.spacing.xs}px;
-`;
-
-const MetricValue = styled.span`
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.xl}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-`;
-
-const MetricLabel = styled.span`
-  color: ${onboardTokens.textSecondary};
-  font-size: ${onboardTokens.fontSize.xs}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-`;
-
-const CategoryList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${onboardTokens.spacing.s}px;
-  margin-top: ${onboardTokens.spacing.s}px;
-  padding: ${onboardTokens.spacing.m}px;
-  border-radius: ${onboardTokens.borderRadius.r16}px;
-  background: ${onboardTokens.darkGray3};
-  border: 1px solid ${onboardTokens.borderSubtle};
-`;
-
-const CategoryRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${onboardTokens.spacing.m}px;
-`;
-
-const CategoryLeft = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  min-width: 156px;
-`;
-
-const CategoryDot = styled.span<{ $color: string }>`
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
-  background: ${(props) => props.$color};
-`;
-
-const CategoryLabel = styled.span`
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.s}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-`;
-
-const CategoryValue = styled.span`
-  min-width: 24px;
-  text-align: right;
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.s}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  width: 100%;
-`;
-
-const SkipButton = styled.button`
-  cursor: pointer;
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.m}px;
-  min-height: 32px;
-  border-radius: ${onboardTokens.borderRadius.l}px;
-  background: ${onboardTokens.darkGray3};
-  border: 1px solid ${onboardTokens.borderMedium};
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m15}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-`;
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  background: ${onboardTokens.overlay70};
-`;
-
-const Sheet = styled(SheetCard)`
-  width: 100%;
-  max-width: 460px;
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.m}px
-    ${onboardTokens.spacing.l}px;
-  display: flex;
-  flex-direction: column;
-  gap: ${onboardTokens.spacing.s}px;
-`;
-
-const SheetHeadline = styled(StepTitle)`
-  font-size: ${onboardTokens.fontSize.xl}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-  text-align: center;
-`;
-
-const SheetCopy = styled(StepBody)`
-  text-align: center;
-`;
-
-const PrivacyCard = styled.div`
-  width: 100%;
-  margin-top: ${onboardTokens.spacing.m}px;
-  padding: ${onboardTokens.spacing.m}px;
-  border-radius: ${onboardTokens.borderRadius.r16}px;
-  background: ${onboardTokens.darkGray3};
-  border: 1px solid ${onboardTokens.borderSubtle};
-`;
-
-const PrivacyTitle = styled.p`
-  margin: 0 0 ${onboardTokens.spacing.xs}px;
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m15}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-  text-align: left;
-`;
-
-const PrivacyBody = styled.p`
-  margin: 0;
-  color: ${onboardTokens.textSecondary};
-  font-size: ${onboardTokens.fontSize.xs}px;
-  text-align: left;
-`;
-
-const PrivacyStrong = styled.span`
-  color: ${onboardTokens.textPrimary};
-  font-weight: ${onboardTokens.fontWeight.bold};
-`;
 
 export function PhotosConnectStep({
   onSkip,
@@ -273,72 +72,192 @@ export function PhotosConnectStep({
   };
 
   return (
-    <Root>
-      <Header>
-        <Headline>
-          Let&apos;s see the <Accent>places</Accent> you&apos;ve been
-        </Headline>
-        <Subtitle>
+    <OnboardingContent scrollEnabled={false}>
+      <View style={{alignItems: 'center', gap: tokens.spacing.m}}>
+        <OnboardingTitle>
+          Let&apos;s see the{' '}
+          <Text style={{color: tokens.colors.primary}}>places</Text> you&apos;ve
+          been
+        </OnboardingTitle>
+        <OnboardingSubtitle>
           Pack matches photos to find things you&apos;ve visited.
-        </Subtitle>
-      </Header>
-
-      <PassportCard>
-        <MapPlaceholder />
-        <MetricsRow>
-          {HEADLINE_STATS.map((stat) => (
-            <Metric key={stat.key}>
-              <MetricValue>0</MetricValue>
-              <MetricLabel>{stat.label}</MetricLabel>
-            </Metric>
-          ))}
-        </MetricsRow>
-        <CategoryList>
-          {CATEGORY_LABELS.map((label, index) => (
-            <CategoryRow key={label}>
-              <CategoryLeft>
-                <CategoryDot $color={CATEGORY_DOT_COLORS[index] ?? onboardTokens.primary} />
-                <CategoryLabel>{label}</CategoryLabel>
-              </CategoryLeft>
-              <CategoryValue>0</CategoryValue>
-            </CategoryRow>
-          ))}
-        </CategoryList>
-      </PassportCard>
-
-      <Actions>
-        <PrimaryButton type="button" onClick={() => setSheetOpen(true)}>
+        </OnboardingSubtitle>
+        <View
+          style={{
+            width: '100%',
+            backgroundColor: tokens.colors.darkGray2,
+            borderWidth: 1,
+            borderColor: tokens.colors.borderSubtle,
+            borderRadius: tokens.borderRadius.r16,
+            paddingVertical: tokens.spacing.s,
+            paddingHorizontal: tokens.spacing.m,
+          }}>
+          <View
+            style={{
+              width: '100%',
+              aspectRatio: 960 / 500,
+              borderRadius: tokens.borderRadius.r16,
+              backgroundColor: tokens.colors.darkGray3,
+            }}
+          />
+          <View style={{flexDirection: 'row', width: '100%', marginTop: tokens.spacing.s}}>
+            {HEADLINE_STATS.map((stat) => (
+              <View
+                key={stat.key}
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'baseline',
+                  justifyContent: 'center',
+                  gap: tokens.spacing.xs,
+                }}>
+                <Text
+                  style={{
+                    color: tokens.colors.textPrimary,
+                    fontSize: tokens.typography.fontSize.xl,
+                    fontWeight: tokens.typography.fontWeight.bold,
+                  }}>
+                  0
+                </Text>
+                <Text
+                  style={{
+                    color: tokens.colors.textSecondary,
+                    fontSize: tokens.typography.fontSize.xs,
+                    fontWeight: tokens.typography.fontWeight.semibold,
+                  }}>
+                  {stat.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+          <View
+            style={{
+              gap: tokens.spacing.s,
+              marginTop: tokens.spacing.s,
+              padding: tokens.spacing.m,
+              borderRadius: tokens.borderRadius.r16,
+              backgroundColor: tokens.colors.darkGray3,
+              borderWidth: 1,
+              borderColor: tokens.colors.borderSubtle,
+            }}>
+            {CATEGORY_LABELS.map((label, index) => (
+              <View
+                key={label}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: tokens.spacing.s,
+                  }}>
+                  <View
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: 3,
+                      backgroundColor:
+                        CATEGORY_DOT_COLORS[index] ?? tokens.colors.primary,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      color: tokens.colors.textPrimary,
+                      fontSize: tokens.typography.fontSize.s,
+                      fontWeight: tokens.typography.fontWeight.semibold,
+                    }}>
+                    {label}
+                  </Text>
+                </View>
+                <Text
+                  style={{
+                    color: tokens.colors.textPrimary,
+                    fontSize: tokens.typography.fontSize.s,
+                    fontWeight: tokens.typography.fontWeight.bold,
+                  }}>
+                  0
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+      <View style={{width: '100%', alignItems: 'center'}}>
+        <OnboardingPrimaryButton onPress={() => setSheetOpen(true)}>
           Connect Photos
-        </PrimaryButton>
-        <SkipButton
-          type="button"
-          onClick={handleSkip}
-          aria-label="Skip connecting Photos for now">
-          Skip for now
-        </SkipButton>
-      </Actions>
-
+        </OnboardingPrimaryButton>
+        <OnboardingSkipButton
+          onPress={handleSkip}
+          testID="photos-skip-button"
+          accessibilityLabel="Skip connecting Photos for now"
+        />
+      </View>
       {sheetOpen ? (
-        <Overlay>
-          <Sheet>
-            <SheetHeadline>Share your photos</SheetHeadline>
-            <SheetCopy>
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: tokens.colors.overlay70,
+            justifyContent: 'flex-end',
+          }}>
+          <View
+            style={{
+              backgroundColor: tokens.colors.darkGray2,
+              borderTopLeftRadius: tokens.borderRadius.r28,
+              borderTopRightRadius: tokens.borderRadius.r28,
+              paddingHorizontal: tokens.spacing.m,
+              paddingBottom: tokens.spacing.l,
+              gap: tokens.spacing.s,
+            }}>
+            <SheetGrabber />
+            <SheetHeader title="Share your photos" />
+            <OnboardingSubtitle>
               Pack finds the trips, landmarks, and restaurants hiding in your
               library.
-            </SheetCopy>
-            <PrivacyCard>
-              <PrivacyTitle>Private by default</PrivacyTitle>
-              <PrivacyBody>
+            </OnboardingSubtitle>
+            <View
+              style={{
+                padding: tokens.spacing.m,
+                borderRadius: tokens.borderRadius.r16,
+                backgroundColor: tokens.colors.darkGray3,
+                borderWidth: 1,
+                borderColor: tokens.colors.borderSubtle,
+              }}>
+              <Text
+                style={{
+                  color: tokens.colors.textPrimary,
+                  fontSize: tokens.typography.fontSize.m15,
+                  fontWeight: tokens.typography.fontWeight.bold,
+                }}>
+                Private by default
+              </Text>
+              <Text
+                style={{
+                  color: tokens.colors.textSecondary,
+                  fontSize: tokens.typography.fontSize.xs,
+                }}>
                 Only photo metadata — times, dates, places — is shared with us.{' '}
-                <PrivacyStrong>Never your photos.</PrivacyStrong>
-              </PrivacyBody>
-            </PrivacyCard>
-            <PrimaryButton type="button" onClick={handleSharePhotos}>
+                <Text
+                  style={{
+                    color: tokens.colors.textPrimary,
+                    fontWeight: tokens.typography.fontWeight.bold,
+                  }}>
+                  Never your photos.
+                </Text>
+              </Text>
+            </View>
+            <OnboardingPrimaryButton onPress={handleSharePhotos}>
               Share Photos
-            </PrimaryButton>
-          </Sheet>
-        </Overlay>
+            </OnboardingPrimaryButton>
+          </View>
+        </View>
       ) : null}
-    </Root>
+    </OnboardingContent>
   );
 }

@@ -73,6 +73,11 @@ async function openOnboard(page: Page): Promise<void> {
   await page.locator("h1, h2").first().waitFor({ timeout: 45_000 });
 }
 
+/**
+ * Parity spec: each onboarding step must fit the phone viewport (390×844)
+ * the same way the app Maestro goldens do. Pixel comparison lives in
+ * onboard-golden-parity.spec.ts (maxDiffPixelRatio 0.12).
+ */
 async function assertFitsViewport(page: Page): Promise<void> {
   const metrics = await page.evaluate(() => {
     const scrolling = document.scrollingElement ?? document.documentElement;

@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
-import styled from "styled-components";
-import { MessageCircle } from "lucide-react";
+import { Text, View } from "react-native";
 import {
   mintPhoneVerificationStart,
   requestPublicApi,
@@ -10,9 +9,13 @@ import {
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
 import {
-  OnboardStepFrame,
-  SheetCard,
-} from "@/components/onboard/OnboardPrimitives";
+  OnboardingContent,
+  OnboardingPrimaryLink,
+  OnboardingSecondaryButton,
+  OnboardingSubtitle,
+  OnboardingTitle,
+  tokens,
+} from "@pack/ui-primitives";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { PACK_VERIFY_SMS_E164 } from "./VerifyPhoneCta";
 
@@ -91,80 +94,6 @@ async function checkPhoneVerificationStatus(
   return "pending";
 }
 
-const CopyBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[3]};
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: ${({ theme }) => theme.spacing[3]};
-  width: 100%;
-`;
-
-const Title = styled.h2`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.typography.fontSizes.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
-`;
-
-const Lead = styled.p`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: ${({ theme }) => theme.typography.fontSizes.base};
-`;
-
-const TextPackLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 0.85rem 1.2rem;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 999px;
-  border: none;
-  background: ${({ theme }) => theme.colors.gradients.primaryButton};
-  color: ${({ theme }) => theme.colors.background.primary};
-  font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
-  text-decoration: none;
-  cursor: pointer;
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
-`;
-
-const QrFrame = styled.svg`
-  width: 180px;
-  height: 180px;
-  align-self: center;
-  background: ${({ theme }) => theme.colors.text.primary};
-  border-radius: 12px;
-`;
-
-const SkipLink = styled.button`
-  align-self: start;
-  padding: 0;
-  border: none;
-  background: none;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: ${({ theme }) => theme.typography.fontSizes.small};
-  cursor: pointer;
-  text-decoration: underline;
-`;
-
-const ErrorCopy = styled.p`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.typography.fontSizes.small};
-`;
-
 function QrEncodingSmsHref({ smsHref }: { readonly smsHref: string }) {
   const cells = 21;
   const modules: boolean[] = [];
@@ -173,12 +102,19 @@ function QrEncodingSmsHref({ smsHref }: { readonly smsHref: string }) {
     modules.push((ch + i * 7) % 2 === 0);
   }
   return (
-    <QrFrame
+    <svg
       data-testid="verify-phone-qr"
       data-sms-href={smsHref}
       viewBox={`0 0 ${cells} ${cells}`}
       role="img"
       aria-label="QR code to text Pack"
+      width={180}
+      height={180}
+      style={{
+        alignSelf: "center",
+        background: tokens.colors.textPrimary,
+        borderRadius: 12,
+      }}
     >
       <title>{smsHref}</title>
       {modules.map((on, index) => {
@@ -198,7 +134,7 @@ function QrEncodingSmsHref({ smsHref }: { readonly smsHref: string }) {
           />
         );
       })}
-    </QrFrame>
+    </svg>
   );
 }
 
@@ -293,41 +229,49 @@ export const VerifyPhoneStep: React.FC<VerifyPhoneStepProps> = ({
   };
 
   return (
-    <SheetCard $fill>
-      <OnboardStepFrame data-testid="verify-phone-step">
-        <CopyBlock>
-          <Title>Verify your number</Title>
-          <Lead>You text Pack the code. We never text you.</Lead>
-        </CopyBlock>
-        <Actions>
-          {smsHref !== null && code !== null && !showDesktopQr ? (
-            <TextPackLink href={smsHref}>
-              <MessageCircle aria-hidden="true" />
-              Text Pack
-            </TextPackLink>
-          ) : null}
-          {smsHref !== null && showDesktopQr ? (
-            <QrEncodingSmsHref smsHref={smsHref} />
-          ) : null}
-          {code !== null ? (
-            <Lead>
-              Text {PACK_VERIFY_SMS_E164} with {code}
-            </Lead>
-          ) : null}
-          {errorCopy !== null ? (
-            <ErrorCopy role="alert">{errorCopy}</ErrorCopy>
-          ) : null}
-          <SkipLink
-            type="button"
-            onClick={() => {
-              onSkipClick();
+    <OnboardingContent scrollEnabled={false}>
+      <View testID="verify-phone-step" style={{ gap: tokens.spacing.m }}>
+        <OnboardingTitle>Verify your number</OnboardingTitle>
+        <OnboardingSubtitle>
+          You text Pack the code. We never text you.
+        </OnboardingSubtitle>
+      </View>
+      <View style={{ width: "100%", alignItems: "center", gap: tokens.spacing.m }}>
+        {smsHref !== null && code !== null && !showDesktopQr ? (
+          <OnboardingPrimaryLink href={smsHref}>
+            Text Pack
+          </OnboardingPrimaryLink>
+        ) : null}
+        {smsHref !== null && showDesktopQr ? (
+          <QrEncodingSmsHref smsHref={smsHref} />
+        ) : null}
+        {code !== null ? (
+          <Text
+            style={{
+              color: tokens.colors.textSecondary,
+              fontSize: tokens.typography.fontSize.m,
+              textAlign: "center",
             }}
           >
-            Skip
-          </SkipLink>
-        </Actions>
-      </OnboardStepFrame>
-    </SheetCard>
+            Text {PACK_VERIFY_SMS_E164} with {code}
+          </Text>
+        ) : null}
+        {errorCopy !== null ? (
+          <Text
+            accessibilityRole="alert"
+            style={{
+              color: tokens.colors.textPrimary,
+              fontSize: tokens.typography.fontSize.s,
+            }}
+          >
+            {errorCopy}
+          </Text>
+        ) : null}
+        <OnboardingSecondaryButton onPress={onSkipClick}>
+          Skip
+        </OnboardingSecondaryButton>
+      </View>
+    </OnboardingContent>
   );
 };
 

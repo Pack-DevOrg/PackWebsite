@@ -6,6 +6,9 @@ export default {
     '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
     '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/src/__mocks__/fileMock.js',
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@pack/ui-primitives$': '<rootDir>/packages/ui-primitives/src/index.ts',
+    '^@pack/ui-primitives/(.*)$': '<rootDir>/packages/ui-primitives/src/$1',
+    '^react-native$': '<rootDir>/node_modules/react-native-web',
     // Vendored web effects: mock in jest. The real builds touch browser-only
     // APIs (matchMedia, canvas) that jsdom provides inconsistently across
     // suites, and resolving them through the workspace symlink pulls the

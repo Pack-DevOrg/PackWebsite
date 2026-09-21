@@ -2,6 +2,11 @@
 // Allow JSX elements
 import React from 'react';
 
+declare module '*.webp' {
+  const src: string;
+  export default src;
+}
+
 declare module '*.svg' {
   const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
   export default content;

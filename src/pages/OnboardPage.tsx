@@ -5,10 +5,10 @@ import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import {
-  OnboardShell,
   OnboardViewport,
   OnboardViewportLock,
 } from "@/components/onboard/OnboardPrimitives";
+import { OnboardingContainer } from "@pack/ui-primitives";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
 import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
@@ -138,7 +138,7 @@ function OnboardFlow() {
           href={APPLE_TOUCH_ICON_URL}
         />
       </Helmet>
-      <OnboardShell>
+      <OnboardingContainer showBack={false} showGlobe>
         {/* data-testid="onboard-step" is the land-smoke + deploy verifier
             token for /onboard (scripts/land-smoke.mjs, deploy-app-origin.mjs).
             No data-step: the DOM carries no app screen identifiers (see
@@ -158,7 +158,7 @@ function OnboardFlow() {
           <ConnectionsStep onContinue={goNext} onSkip={goNext} />
         ) : null}
         {step === "complete" ? <CompleteStep /> : null}
-      </OnboardShell>
+      </OnboardingContainer>
     </OnboardViewport>
   );
 }

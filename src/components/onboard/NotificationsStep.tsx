@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
-
+import {Pressable, Text, View} from 'react-native';
 import {
-  PrimaryButton,
-  SheetCard,
-  StepBody,
-  StepTitle,
-  onboardTokens,
-} from './OnboardPrimitives';
+  OnboardingContent,
+  OnboardingPrimaryButton,
+  OnboardingSecondaryButton,
+  OnboardingSubtitle,
+  OnboardingTitle,
+  tokens,
+} from '@pack/ui-primitives';
 
 export interface NotificationsStepProps {
   onAllow?: () => void;
@@ -66,157 +66,6 @@ function defaultOnSkipBecauseOptional(
   return onSkip;
 }
 
-const Frame = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${onboardTokens.spacing.l}px;
-  padding: ${onboardTokens.spacing.l}px ${onboardTokens.spacing.m}px;
-`;
-
-const TitleAccent = styled.span`
-  color: ${onboardTokens.accent};
-`;
-
-const PreviewStack = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-  align-self: center;
-  gap: ${onboardTokens.spacing.s12}px;
-`;
-
-const PreviewCard = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s12}px;
-  border-radius: ${onboardTokens.borderRadius.r16}px;
-  border: 1px solid ${onboardTokens.borderSubtle};
-  background: ${onboardTokens.darkGray3};
-  padding: ${onboardTokens.spacing.s12}px;
-`;
-
-const PreviewIcon = styled.span`
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: ${onboardTokens.primary};
-  color: ${onboardTokens.textOnPrimary};
-  font-size: ${onboardTokens.fontSize.xs}px;
-  font-weight: ${onboardTokens.fontWeight.bold};
-`;
-
-const PreviewBody = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const PreviewTitleRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${onboardTokens.spacing.s}px;
-`;
-
-const PreviewTitle = styled.span`
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m15}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const PreviewTime = styled.span`
-  color: ${onboardTokens.textSecondary};
-  font-size: ${onboardTokens.fontSize.xs}px;
-`;
-
-const PreviewMessage = styled.span`
-  color: ${onboardTokens.textSecondary};
-  font-size: ${onboardTokens.fontSize.s}px;
-  line-height: 18px;
-`;
-
-const ConsentRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${onboardTokens.spacing.m}px;
-  padding: 0 ${onboardTokens.spacing.xs}px;
-`;
-
-const ConsentCopy = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const ConsentHeading = styled.p`
-  margin: 0;
-  color: ${onboardTokens.textPrimary};
-  font-size: ${onboardTokens.fontSize.m15}px;
-  font-weight: ${onboardTokens.fontWeight.semibold};
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${onboardTokens.spacing.s}px;
-  margin-top: ${onboardTokens.spacing.s}px;
-`;
-
-const SkipButton = styled.button`
-  padding: ${onboardTokens.spacing.s}px ${onboardTokens.spacing.m}px;
-  border: none;
-  background: none;
-  color: ${onboardTokens.textSecondary};
-  font-size: ${onboardTokens.fontSize.m}px;
-  cursor: pointer;
-`;
-
-const ToggleTrack = styled.span<{ $on: boolean }>`
-  position: relative;
-  display: inline-block;
-  width: 51px;
-  height: 31px;
-  flex-shrink: 0;
-  border-radius: 16px;
-  background: ${(props) =>
-    props.$on ? onboardTokens.primary : onboardTokens.borderMedium};
-`;
-
-const ToggleThumb = styled.span<{ $on: boolean }>`
-  position: absolute;
-  top: 2px;
-  left: ${(props) => (props.$on ? '22px' : '2px')};
-  width: 27px;
-  height: 27px;
-  border-radius: 50%;
-  background: ${onboardTokens.textPrimary};
-`;
-
-const ToggleInput = styled.input`
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-`;
-
-const ToggleControl = styled.span`
-  position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
-`;
-
 export function NotificationsStep({
   onAllow,
   onSkip,
@@ -228,69 +77,149 @@ export function NotificationsStep({
   const skip = defaultOnSkipBecauseOptional(onSkip);
 
   return (
-    <SheetCard>
-      <Frame>
-        <StepTitle>
-          Turn on <TitleAccent>trip alerts</TitleAccent>
-        </StepTitle>
-        <PreviewStack data-testid="onboarding-notifications-preview">
+    <OnboardingContent scrollEnabled={false}>
+      <View style={{gap: tokens.spacing.l}}>
+        <OnboardingTitle>
+          Turn on{' '}
+          <Text style={{color: tokens.colors.accent}}>trip alerts</Text>
+        </OnboardingTitle>
+        <View
+          testID="onboarding-notifications-preview"
+          style={{width: '90%', alignSelf: 'center', gap: tokens.spacing.s12}}>
           {PREVIEW_EXAMPLES.map((example) => (
-            <PreviewCard key={example.id}>
-              <PreviewIcon aria-hidden="true">P</PreviewIcon>
-              <PreviewBody>
-                <PreviewTitleRow>
-                  <PreviewTitle>{example.title}</PreviewTitle>
-                  <PreviewTime>{example.timeLabel}</PreviewTime>
-                </PreviewTitleRow>
-                <PreviewMessage>{example.message}</PreviewMessage>
-              </PreviewBody>
-            </PreviewCard>
+            <View
+              key={example.id}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: tokens.spacing.s12,
+                borderRadius: tokens.borderRadius.r16,
+                borderWidth: 1,
+                borderColor: tokens.colors.borderSubtle,
+                backgroundColor: tokens.colors.darkGray3,
+                padding: tokens.spacing.s12,
+              }}>
+              <View
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 8,
+                  backgroundColor: tokens.colors.primary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={{
+                    color: tokens.colors.textOnPrimary,
+                    fontSize: tokens.typography.fontSize.xs,
+                    fontWeight: tokens.typography.fontWeight.bold,
+                  }}>
+                  P
+                </Text>
+              </View>
+              <View style={{flex: 1, minWidth: 0}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    gap: tokens.spacing.s,
+                  }}>
+                  <Text
+                    style={{
+                      color: tokens.colors.textPrimary,
+                      fontSize: tokens.typography.fontSize.m15,
+                      fontWeight: tokens.typography.fontWeight.semibold,
+                    }}
+                    numberOfLines={1}>
+                    {example.title}
+                  </Text>
+                  <Text
+                    style={{
+                      color: tokens.colors.textSecondary,
+                      fontSize: tokens.typography.fontSize.xs,
+                    }}>
+                    {example.timeLabel}
+                  </Text>
+                </View>
+                <Text
+                  style={{
+                    color: tokens.colors.textSecondary,
+                    fontSize: tokens.typography.fontSize.s,
+                    lineHeight: 18,
+                  }}>
+                  {example.message}
+                </Text>
+              </View>
+            </View>
           ))}
-        </PreviewStack>
-        <ConsentRow>
-          <ConsentCopy>
-            <ConsentHeading>{CONSENT_TITLE}</ConsentHeading>
-            <StepBody>{CONSENT_SUBTITLE}</StepBody>
-          </ConsentCopy>
-          <ToggleControl>
-            <ToggleTrack $on={marketingOptIn}>
-              <ToggleThumb $on={marketingOptIn} />
-            </ToggleTrack>
-            <ToggleInput
-              type="checkbox"
-              role="switch"
-              aria-label="Travel tips and product updates"
-              data-testid="onboarding-notifications-marketing-toggle"
-              checked={marketingOptIn}
-              onChange={(event) => {
-                setMarketingOptIn(event.target.checked);
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: tokens.spacing.m,
+          }}>
+          <View style={{flex: 1}}>
+            <Text
+              style={{
+                color: tokens.colors.textPrimary,
+                fontSize: tokens.typography.fontSize.m15,
+                fontWeight: tokens.typography.fontWeight.semibold,
+              }}>
+              {CONSENT_TITLE}
+            </Text>
+            <OnboardingSubtitle style={{textAlign: 'left', marginBottom: 0}}>
+              {CONSENT_SUBTITLE}
+            </OnboardingSubtitle>
+          </View>
+          <Pressable
+            accessibilityRole="switch"
+            accessibilityLabel="Travel tips and product updates"
+            accessibilityState={{checked: marketingOptIn}}
+            testID="onboarding-notifications-marketing-toggle"
+            onPress={() => {
+              setMarketingOptIn(!marketingOptIn);
+            }}
+            style={{
+              width: 51,
+              height: 31,
+              borderRadius: 16,
+              backgroundColor: marketingOptIn
+                ? tokens.colors.primary
+                : tokens.colors.borderMedium,
+              justifyContent: 'center',
+              paddingHorizontal: 2,
+            }}>
+            <View
+              style={{
+                width: 27,
+                height: 27,
+                borderRadius: 14,
+                backgroundColor: tokens.colors.textPrimary,
+                alignSelf: marketingOptIn ? 'flex-end' : 'flex-start',
               }}
             />
-          </ToggleControl>
-        </ConsentRow>
-        <Actions>
-          <PrimaryButton
-            type="button"
-            data-testid="onboarding-notifications-primary"
-            onClick={() => {
-              allow();
-              continueFlow();
-            }}
-          >
-            Turn on notifications
-          </PrimaryButton>
-          <SkipButton
-            type="button"
-            data-testid="onboarding-notifications-skip"
-            onClick={() => {
-              skip();
-              continueFlow();
-            }}
-          >
-            Not now
-          </SkipButton>
-        </Actions>
-      </Frame>
-    </SheetCard>
+          </Pressable>
+        </View>
+      </View>
+      <View style={{alignItems: 'center', width: '100%'}}>
+        <OnboardingPrimaryButton
+          testID="onboarding-notifications-primary"
+          onPress={() => {
+            allow();
+            continueFlow();
+          }}>
+          Turn on notifications
+        </OnboardingPrimaryButton>
+        <OnboardingSecondaryButton
+          testID="onboarding-notifications-skip"
+          onPress={() => {
+            skip();
+            continueFlow();
+          }}>
+          Not now
+        </OnboardingSecondaryButton>
+      </View>
+    </OnboardingContent>
   );
 }

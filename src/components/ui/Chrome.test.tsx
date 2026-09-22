@@ -97,7 +97,8 @@ describe("Chrome primitives", () => {
     expect(css).not.toMatch(/#fff(?:fff)?\b/i);
     expect(css).not.toMatch(/rgb\(\s*255\s*,\s*255\s*,\s*255\s*\)/i);
     expect(css).not.toMatch(/(?:^|[:\s])white(?:\s|;|$)/i);
-    expect(button).toHaveStyle({ color: "var(--color-text-on-accent)" });
+    // The rule text, not computed style: jsdom 20 (lockfile) and 26 (local store) resolve var() differently.
+    expect(css).toMatch(/(?:^|[;{\s])color:\s*var\(--color-text-on-accent\)/);
   });
 
   it("keeps Card free of box-shadow and backdrop-filter", () => {

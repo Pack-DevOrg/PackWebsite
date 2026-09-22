@@ -23,6 +23,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - run: npm ci --no-audit --no-fund
+      # land-smoke drives a real browser against the built site.
+      - run: npx playwright install --with-deps chromium
       - run: npm run lint
       - run: npm run typecheck
       - run: npx jest --ci --bail=0

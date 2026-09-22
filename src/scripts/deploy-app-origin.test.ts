@@ -96,6 +96,24 @@ describe("deploy-app-origin live merged-route verify", () => {
     expect(verifyCallAt).toBeGreaterThan(invalidationAt);
   });
 
+  it("checks local dist HTML before the S3 sync", () => {
+    const source = readFileSync(DEPLOY_SCRIPT, "utf8");
+    const localCheckAt = source.indexOf("assertLocalDistHtml(");
+    const syncAt = source.indexOf('"s3"');
+    expect(localCheckAt).toBeGreaterThan(-1);
+    expect(syncAt).toBeGreaterThan(localCheckAt);
+  });
+
+  it("runs npm run build for src/pages changes before the S3 sync", () => {
+    const source = readFileSync(DEPLOY_SCRIPT, "utf8");
+    const suiteAt = source.indexOf('suite === SSG_BUILD_SUITE');
+    const buildAt = source.indexOf('run("npm", ["run", "build"])');
+    const syncAt = source.indexOf('"s3"');
+    expect(suiteAt).toBeGreaterThan(-1);
+    expect(buildAt).toBeGreaterThan(suiteAt);
+    expect(syncAt).toBeGreaterThan(buildAt);
+  });
+
   it("runs land-smoke auth-gate after verifyLiveMergedRoutes", () => {
     const source = readFileSync(DEPLOY_SCRIPT, "utf8");
     expect(source).toMatch(/import \{ runLandSmoke \} from "\.\/land-smoke\.mjs"/);

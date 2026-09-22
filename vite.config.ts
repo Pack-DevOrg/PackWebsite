@@ -987,6 +987,11 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'lucide-react',
         'react-native-web',
         'react-native',
+        // CJS __esModule defaults. Node's native ESM loader binds
+        // `import createPrefixer from "inline-style-prefixer/..."` to
+        // `{ default: fn }`, so the onboard SSR chunk throws
+        // `createPrefixer is not a function` at module scope (minified: `b is not a function`).
+        'inline-style-prefixer',
       ],
     },
     server: {

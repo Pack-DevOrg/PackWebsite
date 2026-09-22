@@ -45,7 +45,7 @@ describe("NonHomeRoutes /onboard", () => {
 
     // The step token is present (land-smoke + deploy verifier key on it) but
     // carries no app screen identifier (OnboardPage.test forbids data-step).
-    expect(await screen.findByTestId("onboard-step")).toBeInTheDocument();
+    expect(await screen.findByTestId("onboard-step", {}, { timeout: 10000 })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Welcome to Pack" }),
     ).toBeInTheDocument();

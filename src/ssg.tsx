@@ -60,11 +60,21 @@ async function renderAppToString(app: React.ReactElement, url: string): Promise<
   return await new Promise((resolve, reject) => {
     let settled = false;
 
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const finish = () => {
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+        timeoutId = undefined;
+      }
+    };
+
     const resolveOnce = (value: string) => {
       if (settled) {
         return;
       }
       settled = true;
+      finish();
       resolve(value);
     };
 
@@ -73,6 +83,7 @@ async function renderAppToString(app: React.ReactElement, url: string): Promise<
         return;
       }
       settled = true;
+      finish();
       reject(error);
     };
 
@@ -80,22 +91,28 @@ async function renderAppToString(app: React.ReactElement, url: string): Promise<
     stream.on("end", () => resolveOnce(chunks.join("")));
     stream.on("error", rejectOnce);
 
+    let shellStarted = false;
+    let abortRender = () => {};
+    timeoutId = setTimeout(() => {
+      abortRender();
+      rejectOnce(new Error(`[ssg] render timed out for ${url}`));
+    }, 15000);
+
     const { pipe, abort } = renderToPipeableStream(app, {
       onShellReady: () => {
+        shellStarted = true;
         pipe(stream);
       },
       onShellError: rejectOnce,
       onError: (error) => {
         console.error(`[ssg] render error (${url})`, error);
+        if (shellStarted) {
+          abort();
+        }
+        rejectOnce(error);
       },
     });
-
-    const timeoutId = setTimeout(() => {
-      abort();
-      rejectOnce(new Error(`[ssg] render timed out for ${url}`));
-    }, 15000);
-
-    timeoutId.unref?.();
+    abortRender = abort;
   });
 }
 

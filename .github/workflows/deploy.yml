@@ -1,0 +1,38 @@
+name: Deploy website
+
+# Trunk deploy of app.trypackai.com (scripts/deploy-app-origin.mjs) on every master push.
+# Replaces the laptop `npm run deploy` (ledger A183). Role pack-gha-deploy-website (PackServer
+# stacks/ops) trusts only this repo's master. A running deploy is never cancelled; only the newest
+# waiting push runs next.
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-website
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_WEBSITE_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+      - name: Deploy app origin
+        run: npm run deploy

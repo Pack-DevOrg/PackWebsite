@@ -4,6 +4,11 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { runLandSmoke } from "./land-smoke.mjs";
+import {
+  SSG_BUILD_SUITE,
+  changedFilesForLand,
+  suitesForChangedFiles,
+} from "./website-land-suites.mjs";
 
 const DEFAULT_APP_ALIAS_BECAUSE_WWW_TRYPACKAI = "www.trypackai.com";
 const DEFAULT_VERIFY_ROUTE_BECAUSE_UNDEPLOYED_ONBOARD = "/onboard";
@@ -193,6 +198,31 @@ function deployFailureMessage(error) {
     return error.message;
   }
   return String(error);
+}
+
+export function assertLocalDistHtml(options = {}) {
+  const env = options.env !== undefined ? options.env : process.env;
+  const routes =
+    options.routes !== undefined
+      ? options.routes
+      : resolveVerifyRoutesBecauseMergedOnboard(env);
+  const distDir =
+    options.distDir !== undefined
+      ? options.distDir
+      : defaultDistDirBecauseCwd();
+  const readFileImpl =
+    options.readFileImpl !== undefined
+      ? options.readFileImpl
+      : defaultReadFileSyncBecauseUtf8();
+  const homeHtml = readFileImpl(distHtmlPathForRoute(distDir, "/"));
+  for (const rawRoute of routes) {
+    const route = publicRouteBecausePath(rawRoute);
+    const routeHtml =
+      route === "/"
+        ? homeHtml
+        : readFileImpl(distHtmlPathForRoute(distDir, route));
+    distinctiveTokenBecauseRouteHtml(route, routeHtml, homeHtml);
+  }
 }
 
 export async function verifyLiveMergedRoutes(options = {}) {
@@ -387,11 +417,26 @@ export async function runDeployAppOrigin(options = {}) {
 
   run("npm", ["run", "legal:check"]);
   run("node", ["scripts/sync-app-cloudfront-functions.mjs"]);
+
+  const changedFiles = changedFilesForLand({ env, cwd, execFileSync: exec });
+  for (const suite of suitesForChangedFiles(changedFiles)) {
+    if (suite === SSG_BUILD_SUITE) {
+      run("npm", ["run", "build"]);
+    }
+  }
+
   run("npm", ["run", "build:app-origin"]);
   run("npm", ["run", "stage:city-recommendation-assets"]);
 
   rmSync(resolve(distDir, "app"), { recursive: true, force: true });
   rmSync(resolve(distDir, "auth", "callback"), { recursive: true, force: true });
+
+  assertLocalDistHtml({
+    env,
+    distDir,
+    routes: resolveVerifyRoutesBecauseMergedOnboard(env),
+    readFileImpl,
+  });
 
   run("aws", [
     "s3",

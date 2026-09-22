@@ -12,9 +12,12 @@ import { Helmet } from "react-helmet-async";
 import { Download, ExternalLink, Sparkles } from "lucide-react";
 import { appConfig } from "@/config/appConfig";
 import { useI18n } from "@/i18n/I18nProvider";
+import { env } from "@/utils/env";
 
 const WEBSITE_URL = appConfig.publicSiteUrl;
-const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || "";
+const appleAppIdFromEnv = env.VITE_APPLE_APP_ID;
+const APPLE_APP_ID =
+  typeof appleAppIdFromEnv === "string" ? appleAppIdFromEnv : "";
 const APP_STORE_URL = APPLE_APP_ID
   ? `https://apps.apple.com/app/pack/id${APPLE_APP_ID}`
   : "https://apps.apple.com/search/app/pack";

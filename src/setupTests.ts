@@ -55,14 +55,16 @@ if (!(globalThis as { IntersectionObserver?: typeof IntersectionObserver }).Inte
   (globalThis as { IntersectionObserver?: typeof IntersectionObserver }).IntersectionObserver = IntersectionObserverMock;
 }
 
-if (!Element.prototype.scrollIntoView) {
+if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = jest.fn();
 }
 
-Object.defineProperty(window, 'scrollTo', {
-  value: jest.fn(),
-  writable: true,
-});
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, 'scrollTo', {
+    value: jest.fn(),
+    writable: true,
+  });
+}
 
 // Polyfill TextEncoder/TextDecoder for Node test environment
 if (!(globalThis as { TextEncoder?: typeof globalThis.TextEncoder }).TextEncoder) {

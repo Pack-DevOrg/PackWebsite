@@ -1,10 +1,10 @@
 import React, { Suspense, useState } from "react";
 import {
-  Navigate,
   Outlet,
   Route,
   Routes,
   useLocation,
+  useNavigate,
   useParams,
 } from "react-router-dom";
 import styled from "styled-components";
@@ -27,6 +27,23 @@ import { capabilityPageDefinitions } from "@/content/capabilityPages";
 import { Helmet } from "react-helmet-async";
 import { buildAbsoluteUrl } from "@/seo/pageSeo";
 
+/**
+ * Redirect after mount. `<Navigate>` on the first StaticRouter render is a
+ * no-op plus a warning, and the prerender used to keep going.
+ */
+const ClientReplace: React.FC<{ readonly to: string }> = ({ to }) => {
+  const navigate = useNavigate();
+
+  useMountEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    navigate(to, { replace: true });
+  });
+
+  return null;
+};
+
 /** Client-side redirect that still prerenders a titled, noindex head. */
 const SeoRedirect: React.FC<{ readonly to: string; readonly title: string }> = ({
   to,
@@ -38,7 +55,7 @@ const SeoRedirect: React.FC<{ readonly to: string; readonly title: string }> = (
       <meta name="robots" content="noindex, nofollow" />
       <link rel="canonical" href={buildAbsoluteUrl(to)} />
     </Helmet>
-    <Navigate to={to} replace />
+    <ClientReplace to={to} />
   </>
 );
 
@@ -379,9 +396,8 @@ const LocalizedRouteGuard: React.FC<{ readonly children: React.ReactNode }> = ({
   if (locale && !isSupportedLocale(locale)) {
     const redirectedPath = location.pathname.replace(new RegExp(`^/${locale}`), "") || "/";
     return (
-      <Navigate
+      <ClientReplace
         to={`${redirectedPath}${location.search}${location.hash}`}
-        replace
       />
     );
   }
@@ -400,7 +416,7 @@ const SeoGuideRoute: React.FC = () => {
   const { pathFor } = useI18n();
 
   if (guideSlug === "ai-travel-planning") {
-    return <Navigate to={pathFor("/features")} replace />;
+    return <ClientReplace to={pathFor("/features")} />;
   }
 
   return <SeoGuidePage slug={guideSlug} />;
@@ -475,7 +491,7 @@ const NonHomeRoutes: React.FC = () => {
         />
         <Route
           path="/benchmark/travel-context"
-          element={<Navigate to="/pack-deeperbench" replace />}
+          element={<ClientReplace to="/pack-deeperbench" />}
         />
         <Route
           path="/pack-deeperbench"
@@ -973,7 +989,7 @@ const NonHomeRoutes: React.FC = () => {
           />
           <Route
             path="benchmark/travel-context"
-            element={<Navigate to="/pack-deeperbench" replace />}
+            element={<ClientReplace to="/pack-deeperbench" />}
           />
           <Route
             path="pack-deeperbench"

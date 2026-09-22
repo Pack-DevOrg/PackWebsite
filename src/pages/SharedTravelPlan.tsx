@@ -31,6 +31,7 @@ import {
 import { buildGoogleCalendarUrl } from '../utils/calendarLinks';
 import { useMountEffect } from '../hooks/useMountEffect';
 import { useI18n } from '../i18n/I18nProvider';
+import { env } from '../utils/env';
 import type { SupportedLocale } from '../i18n/config';
 import {
   AppleGlyph,
@@ -46,9 +47,14 @@ import {
   type PackIconProps,
 } from '../components/share/packIcons';
 
+function viteString(name: string, fallback = ''): string {
+  const value = env[name];
+  return typeof value === 'string' && value.length > 0 ? value : fallback;
+}
+
 // Environment variables with fallbacks
-const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL || 'https://www.trypackai.com';
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
+const WEBSITE_URL = viteString('VITE_WEBSITE_URL', 'https://www.trypackai.com');
+const RECAPTCHA_SITE_KEY = viteString('VITE_RECAPTCHA_SITE_KEY');
 // appConfig.apiBaseUrl is the single API origin source (VITE_API_URL was
 // defined nowhere and always fell through).
 const SHARED_PLAN_API_BASE = appConfig.apiBaseUrl;
@@ -57,7 +63,7 @@ const SHARED_PLAN_API_BASE = appConfig.apiBaseUrl;
 // this window the page fetches without a token and lets the API decide.
 const RECAPTCHA_SETTLE_TIMEOUT_MS = 8000;
 
-const APPLE_APP_ID = import.meta.env.VITE_APPLE_APP_ID || DEFAULT_APPLE_APP_ID;
+const APPLE_APP_ID = viteString('VITE_APPLE_APP_ID', DEFAULT_APPLE_APP_ID);
 const APP_STORE_URL = buildAppStoreUrl(APPLE_APP_ID);
 
 const DateOnlyStringSchema = z.string().regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);

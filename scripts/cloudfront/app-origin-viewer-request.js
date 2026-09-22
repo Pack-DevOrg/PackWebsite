@@ -166,6 +166,35 @@ function handler(event) {
     );
   }
 
+  var tsaIataAirportAlias = canonicalUri.match(/^\/tsa\/([a-z0-9]{3})-airport$/);
+  if (tsaIataAirportAlias) {
+    return redirect(
+      'https://www.trypackai.com/tsa/' + tsaIataAirportAlias[1] + querySuffix,
+      301,
+      'Moved Permanently'
+    );
+  }
+
+  var tsaNameAliasRedirectMap = {
+    '/tsa/newark-airport': '/tsa/ewr',
+  };
+  if (tsaNameAliasRedirectMap[canonicalUri]) {
+    return redirect(
+      'https://www.trypackai.com' + tsaNameAliasRedirectMap[canonicalUri] + querySuffix,
+      301,
+      'Moved Permanently'
+    );
+  }
+
+  var tsaIataPath = canonicalUri.match(/^\/tsa\/([A-Za-z0-9]{3})$/);
+  if (tsaIataPath && tsaIataPath[1] !== tsaIataPath[1].toLowerCase()) {
+    return redirect(
+      'https://www.trypackai.com/tsa/' + tsaIataPath[1].toLowerCase() + querySuffix,
+      301,
+      'Moved Permanently'
+    );
+  }
+
   if (canonicalUri.length >= 3 && canonicalUri.slice(canonicalUri.length - 3) === '.md') {
     var routeWithoutMd = canonicalUri.slice(0, -3);
     if (markdownRouteMap[routeWithoutMd]) {

@@ -211,6 +211,7 @@ const LabsUpcomingPage = labsEnabled
   ? React.lazy(() => import("../pages/UpcomingLab"))
   : null;
 const TsaWaitTimesPage = React.lazy(() => import("../pages/TsaWaitTimesPage"));
+const TsaAirportPage = React.lazy(() => import("../pages/TsaAirportPage"));
 
 const LoadingScreenContainer = styled.div`
   min-height: 60vh;
@@ -874,6 +875,24 @@ const NonHomeRoutes: React.FC = () => {
             }
           />
         ) : null}
+        {tsaEnabled ? (
+          <Route
+            path="/tsa/:airportSlug"
+            element={
+              <AuthProvider>
+                <Layout>
+                  <Suspense fallback={null}>
+                    <TsaAirportPage />
+                  </Suspense>
+                  <Suspense fallback={null}>
+                    <Footer />
+                    <ScrollToTop />
+                  </Suspense>
+                </Layout>
+              </AuthProvider>
+            }
+          />
+        ) : null}
         <Route
           path="/how-it-works"
           element={
@@ -1184,6 +1203,24 @@ const NonHomeRoutes: React.FC = () => {
                   <Layout>
                     <Suspense fallback={null}>
                       <TsaWaitTimesPage />
+                    </Suspense>
+                    <Suspense fallback={null}>
+                      <Footer />
+                      <ScrollToTop />
+                    </Suspense>
+                  </Layout>
+                </AuthProvider>
+              }
+            />
+          ) : null}
+          {tsaEnabled ? (
+            <Route
+              path="tsa/:airportSlug"
+              element={
+                <AuthProvider>
+                  <Layout>
+                    <Suspense fallback={null}>
+                      <TsaAirportPage />
                     </Suspense>
                     <Suspense fallback={null}>
                       <Footer />

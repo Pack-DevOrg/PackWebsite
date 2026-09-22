@@ -26,6 +26,7 @@ const renderWaitlistForm = () =>
 
 jest.mock('../utils/env', () => ({
   env: {
+    VITE_PACK_SMS_E164: '+13054392989',
     VITE_RECAPTCHA_SITE_KEY: 'test-recaptcha-site-key',
     VITE_API_ENDPOINT: 'https://api.example.com/prod/subscribe',
     VITE_DEV_MODE: 'false',

@@ -100,7 +100,7 @@ const Underline = styled.span`
   border-radius: 1.5px;
   background: var(--color-accent);
   transition: transform 180ms ease, width 180ms ease;
-  will-change: transform, width;
+  will-change: transform;
 `;
 
 const arrowStyles = css`

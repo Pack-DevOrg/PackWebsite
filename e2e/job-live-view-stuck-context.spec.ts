@@ -760,6 +760,7 @@ async function assertLiveFetchNotPatchedBecauseProd(page: Page): Promise<void> {
 }
 
 test.describe("job live-view stuck context", () => {
+  // eslint-disable-next-line no-empty-pattern -- Playwright requires a destructured fixtures arg
   test.beforeEach(({}, testInfo) => {
     test.skip(
       testInfo.project.name !== "chromium-mobile",
@@ -823,6 +824,7 @@ test.describe("LIVE=1 trypackai live-view phone-hop", () => {
     retries: 0,
   });
 
+  // eslint-disable-next-line no-empty-pattern -- Playwright requires a destructured fixtures arg
   test.beforeEach(({}, testInfo) => {
     test.skip(
       testInfo.project.name !== "chromium-mobile",

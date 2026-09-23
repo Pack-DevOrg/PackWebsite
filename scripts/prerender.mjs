@@ -53,6 +53,7 @@ const routesToPrerender = [
   "/setup/email-forwarding",
   "/share",
   "/tsa",
+  "/tsa/ewr",
   "/oauth/callback",
 ];
 

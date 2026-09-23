@@ -34,6 +34,22 @@ const AirportWaitTimePublicSourceLabelSchema = z.enum([
   "estimated_third_party",
 ]);
 
+export const FaaAirportStatusSchema = z.object({
+  active: z.boolean(),
+  kind: z.enum(["ground_stop", "ground_delay", "closure", "none"]),
+  reason: z.string().optional(),
+  endsAt: z.string().optional(),
+  timeZone: z.string().optional(),
+});
+
+export const HeldFlightSchema = z.object({
+  flight: z.string(),
+  airline: z.string(),
+  scheduledTime: z.string(),
+  status: z.string(),
+  direction: z.enum(["departure", "arrival"]).optional(),
+});
+
 export const AirportWaitTimeSnapshotSchema = z.object({
   fetchStatus: z.enum([
     "available",
@@ -51,6 +67,8 @@ export const AirportWaitTimeSnapshotSchema = z.object({
   exactWaitMinutes: z.number().int().optional(),
   minWaitMinutes: z.number().int().optional(),
   maxWaitMinutes: z.number().int().optional(),
+  faaStatus: FaaAirportStatusSchema.optional(),
+  heldFlights: z.array(HeldFlightSchema).optional(),
 });
 
 export const AirportWaitTimePublicAirportSchema = z.object({
@@ -62,6 +80,8 @@ export const AirportWaitTimePublicAirportSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   snapshot: AirportWaitTimeSnapshotSchema.nullable(),
+  faaStatus: FaaAirportStatusSchema.optional(),
+  heldFlights: z.array(HeldFlightSchema).optional(),
 });
 
 export const AirportWaitTimePublicCollectionResponseSchema = z.object({
@@ -72,6 +92,11 @@ export const AirportWaitTimePublicCollectionResponseSchema = z.object({
 
 export type AirportWaitTimeObservation = z.infer<
   typeof AirportWaitTimeObservationSchema
+>;
+export type FaaAirportStatus = z.infer<typeof FaaAirportStatusSchema>;
+export type HeldFlight = z.infer<typeof HeldFlightSchema>;
+export type AirportWaitTimePublicAirport = z.infer<
+  typeof AirportWaitTimePublicAirportSchema
 >;
 export type AirportWaitTimePublicCollectionResponse = z.infer<
   typeof AirportWaitTimePublicCollectionResponseSchema

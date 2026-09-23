@@ -1,4 +1,5 @@
 import { appConfig } from "@/config/appConfig";
+import { isWebAttestationRefusal, WEB_ATTESTATION_HEADER, webAttestationHeaders } from "@/auth/webAttestation";
 
 export interface ApiRequestOptions<Body = unknown> {
   readonly path: string;
@@ -250,7 +251,8 @@ export const createApiClient = (
 ): ApiClient => {
   const performRequest = async <Response, Body>(
     options: ApiRequestOptions<Body>,
-    hasRetried = false
+    hasRetried = false,
+    attestationHeaders: Record<string, string> = {}
   ): Promise<Response> => {
     const token = await resolveAccessToken({
       forceRefresh: false,
@@ -265,6 +267,7 @@ export const createApiClient = (
     const headers: Record<string, string> = {
       Accept: "application/json",
       ...(options.headers ?? {}),
+      ...attestationHeaders,
       Authorization: `${tokenType} ${token}`,
     };
 
@@ -285,6 +288,20 @@ export const createApiClient = (
           : undefined,
       signal: options.signal,
     });
+
+    // Web attestation is per access token (jti): answer a WEB_ATTESTATION_* refusal once with a
+    // fresh one-time token on the SAME token. Refreshing the token would mint a new jti and fail again.
+    if ((response.status === 401 || response.status === 403) && !(WEB_ATTESTATION_HEADER in attestationHeaders)) {
+      const body = typeof response.clone === "function"
+        ? await response.clone().text().catch(() => "")
+        : "";
+      if (isWebAttestationRefusal(response.status, body)) {
+        const fresh = await webAttestationHeaders();
+        if (WEB_ATTESTATION_HEADER in fresh) {
+          return performRequest<Response, Body>(options, hasRetried, fresh);
+        }
+      }
+    }
 
     if (response.status === 401 && !hasRetried) {
       const refreshed = await resolveAccessToken({ forceRefresh: true });

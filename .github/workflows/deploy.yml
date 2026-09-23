@@ -45,10 +45,13 @@ jobs:
           token: ${{ steps.packserver-token.outputs.token }}
           persist-credentials: false
           path: PackServer
+          # generated/city-image-cache: the city-recommendation manifest stage-city-recommendation-assets
+          # reads; the tiles themselves come from the app-origin bucket (durable S3 source).
           sparse-checkout: |
             packages/schemas
             packages/locality-catalog
             packages/web-effects
+            generated/city-image-cache
       - uses: actions/setup-node@v4
         with:
           node-version-file: 'PackWebsite/.nvmrc'

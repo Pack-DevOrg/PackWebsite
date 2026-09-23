@@ -3,6 +3,13 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
+import {
+  accountConnectWindow,
+  GOOGLE_REDIRECT_URI,
+  GOOGLE_WEB_CLIENT_ID,
+  markOnboardConnectionsReturn,
+  writeConnectedMailboxSnapshot,
+} from "@/auth/accountConnect";
 import { ONBOARD_PATH, OnboardPage } from "./OnboardPage";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { DEFAULT_SHARE_IMAGE_URL, SITE_ORIGIN } from "@/seo/pageSeo";
@@ -66,6 +73,16 @@ function expectNoInternalIdentifiers(container: HTMLElement): void {
 describe("OnboardPage /onboard five-step app flow", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    sessionStorage.clear();
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({ success: true, data: { accounts: [] } }),
+      clone() {
+        return this;
+      },
+    })) as unknown as typeof fetch;
     useAuthMock.mockReturnValue({
       status: "unauthenticated",
       user: null,
@@ -251,5 +268,57 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expect(
       document.head.querySelectorAll('link[rel="apple-touch-icon-precomposed"]'),
     ).toHaveLength(touchSizes.length + 1);
+  });
+
+  async function openConnections() {
+    mockAuthenticatedSession();
+    renderAt(ONBOARD_PATH);
+    fireEvent.click(await screen.findByRole("button", { name: "Skip" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Skip" }));
+    expect(
+      await screen.findByRole("heading", { name: "Connections" }),
+    ).toBeInTheDocument();
+  }
+
+  it("pressing Connect Google starts the Gmail and Calendar consent redirect", async () => {
+    const assign = jest
+      .spyOn(accountConnectWindow, "assign")
+      .mockImplementation(() => undefined);
+
+    await openConnections();
+    fireEvent.click(screen.getByTestId("connect-google-button"));
+
+    expect(assign).toHaveBeenCalledTimes(1);
+    const url = new URL(String(assign.mock.calls[0]?.[0]));
+    expect(url.origin + url.pathname).toBe(
+      "https://accounts.google.com/o/oauth2/v2/auth",
+    );
+    expect(url.searchParams.get("client_id")).toBe(GOOGLE_WEB_CLIENT_ID);
+    expect(url.searchParams.get("redirect_uri")).toBe(GOOGLE_REDIRECT_URI);
+    expect(url.searchParams.get("scope")).toContain(
+      "https://www.googleapis.com/auth/gmail.modify",
+    );
+    expect(url.searchParams.get("scope")).toContain(
+      "https://www.googleapis.com/auth/calendar.readonly",
+    );
+    assign.mockRestore();
+  });
+
+  it("returns to Connections with the Google account shown connected", async () => {
+    markOnboardConnectionsReturn();
+    writeConnectedMailboxSnapshot({
+      googleEmail: "ada@pack.test",
+      microsoftEmail: null,
+    });
+    mockAuthenticatedSession();
+    renderAt(ONBOARD_PATH);
+
+    expect(
+      await screen.findByRole("heading", { name: "Connections" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Connected: ada@pack.test")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Continue" }),
+    ).toBeEnabled();
   });
 });

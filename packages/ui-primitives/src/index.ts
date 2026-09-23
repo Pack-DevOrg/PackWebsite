@@ -1,4 +1,5 @@
 export {tokens} from './tokens';
+export {ProviderMark} from './shims/ProviderMark';
 export type {PackAppTokens} from './tokens';
 export {LinearGradient} from './shims/LinearGradient';
 export {SafeAreaView} from './shims/SafeArea';

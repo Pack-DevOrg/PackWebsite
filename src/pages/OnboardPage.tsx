@@ -1,7 +1,19 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import {
+  consumeOnboardConnectionsReturn,
+  mailboxesFromAccountsPayload,
+  accountConnectWindow,
+  readConnectedMailboxSnapshot,
+  startGoogleAccountConnect,
+  startMicrosoftAccountConnect,
+  USER_ACCOUNTS_PATH,
+  type ConnectedMailboxSnapshot,
+} from "@/auth/accountConnect";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
+import { createApiClient } from "@/api/client";
+import { env } from "@/utils/env";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import {
@@ -36,7 +48,19 @@ export const ONBOARDING_SEQUENCE = [
 export type OnboardingScreenName = (typeof ONBOARDING_SEQUENCE)[number];
 
 const SIGNUP_INDEX = 0;
+const CONNECTIONS_INDEX = ONBOARDING_SEQUENCE.indexOf("connections");
 const LAST_STEP_INDEX = ONBOARDING_SEQUENCE.length - 1;
+
+function optionalEnv(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return undefined;
+  }
+  return trimmed;
+}
 
 export function firstOnboardingStepBecauseAppParity(): OnboardingScreenName {
   return ONBOARDING_SEQUENCE[SIGNUP_INDEX];
@@ -64,8 +88,11 @@ function shouldAdvanceSignupBecauseAuthenticated(
 }
 
 function OnboardFlow() {
-  const { status } = useAuth();
+  const { status, getAccessToken, tokens } = useAuth();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
+  const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
+    readConnectedMailboxSnapshot,
+  );
   const step = ONBOARDING_SEQUENCE[stepIndex];
 
   useEffect(() => {
@@ -74,8 +101,63 @@ function OnboardFlow() {
     }
   }, [status, stepIndex]);
 
+  // OAuth returns as a full load of /onboard. Land on Connections after the
+  // signup auto-advance so the connected mailbox is the screen they come back to.
+  useEffect(() => {
+    if (status !== "authenticated") {
+      return;
+    }
+    if (!consumeOnboardConnectionsReturn()) {
+      return;
+    }
+    setStepIndex(CONNECTIONS_INDEX);
+  }, [status]);
+
+  useEffect(() => {
+    if (step !== "connections" || status !== "authenticated") {
+      return;
+    }
+    let cancelled = false;
+    const client = createApiClient(
+      getAccessToken,
+      () => tokens?.tokenType ?? "Bearer",
+    );
+    void client
+      .request<unknown>({ path: USER_ACCOUNTS_PATH, method: "GET" })
+      .then((payload) => {
+        if (cancelled) {
+          return;
+        }
+        const rows = mailboxesFromAccountsPayload(payload);
+        const google = rows.find((row) => row.provider === "google");
+        const microsoft = rows.find((row) => row.provider === "microsoft");
+        setMailboxes((current) => ({
+          googleEmail: google?.email ?? current.googleEmail,
+          microsoftEmail: microsoft?.email ?? current.microsoftEmail,
+        }));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [getAccessToken, status, step, tokens?.tokenType]);
+
   const goNext = () => {
     setStepIndex((current) => nextStepIndexBecauseSequence(current));
+  };
+
+  const connectGoogle = () => {
+    accountConnectWindow.assign(
+      startGoogleAccountConnect(optionalEnv(env.VITE_GOOGLE_WEB_CLIENT_ID)),
+    );
+  };
+
+  const connectMicrosoft = () => {
+    void startMicrosoftAccountConnect(
+      optionalEnv(env.VITE_MICROSOFT_CLIENT_ID),
+    ).then((url) => {
+      accountConnectWindow.assign(url);
+    });
   };
 
   return (
@@ -155,7 +237,16 @@ function OnboardFlow() {
           <VerifyPhoneStep onVerified={goNext} onSkip={goNext} />
         ) : null}
         {step === "connections" ? (
-          <ConnectionsStep onContinue={goNext} onSkip={goNext} />
+          <ConnectionsStep
+            onContinue={goNext}
+            onSkip={goNext}
+            onConnectGoogle={connectGoogle}
+            onConnectMicrosoft={connectMicrosoft}
+            googleConnected={mailboxes.googleEmail !== null}
+            microsoftConnected={mailboxes.microsoftEmail !== null}
+            googleEmail={mailboxes.googleEmail}
+            microsoftEmail={mailboxes.microsoftEmail}
+          />
         ) : null}
         {step === "complete" ? <CompleteStep /> : null}
       </OnboardingContainer>

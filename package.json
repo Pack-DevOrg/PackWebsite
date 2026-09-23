@@ -43,9 +43,10 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.2.8",
-    "@pack/schemas": "file:../PackServer/packages/schemas",
+    "@pack/locality-catalog": "npm:@pack-devorg/locality-catalog@1.0.0-3287c1e5a528",
+    "@pack/schemas": "npm:@pack-devorg/schemas@1.0.0-3287c1e5a528",
     "@pack/ui-primitives": "file:./packages/ui-primitives",
-    "@pack/web-effects": "file:../PackServer/packages/web-effects",
+    "@pack/web-effects": "npm:@pack-devorg/web-effects@1.0.0-3287c1e5a528",
     "react-native-web": "0.19.13",
     "@tanstack/react-query": "5.90.2",
     "@tanstack/react-query-devtools": "5.90.2",

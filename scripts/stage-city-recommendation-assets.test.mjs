@@ -12,6 +12,7 @@ import test from "node:test";
 
 import {
   ASSET_CLASSES,
+  CITY_IMAGE_CACHE_PREFIX,
   main,
   resolveDurableSource,
 } from "./stage-city-recommendation-assets.mjs";
@@ -50,6 +51,14 @@ const writeManifest = (rootDir, fileName, manifest) => {
 
 const serializeSource = (source) =>
   `${source.kind}:${source.uri ?? source.path ?? ""}`;
+
+test("city-image manifests are S3 keys under generated/city-image-cache", () => {
+  for (const assetClass of Object.values(ASSET_CLASSES)) {
+    assert.equal(assetClass.manifestKey.startsWith(`${CITY_IMAGE_CACHE_PREFIX}/`), true);
+    assert.equal(assetClass.manifestKey.includes("PackServer"), false);
+    assert.equal("manifestPath" in assetClass, false);
+  }
+});
 
 test("default source for both asset classes does not join PackServer/tmp and sourceRun", () => {
   const cases = [

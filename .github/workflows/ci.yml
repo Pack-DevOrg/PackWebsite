@@ -21,14 +21,23 @@ jobs:
     timeout-minutes: 30
     steps:
       # The build reads three PackServer packages as a sibling checkout (../PackServer/packages/*,
-      # vite aliases + file: deps). PackServer is private: read-only deploy key, sparse, no history.
+      # vite aliases + file: deps). PackServer is private and the enterprise disables deploy keys:
+      # the pack-ci-read GitHub App (contents: read, installed on PackServer only) mints a 1 h token.
       - uses: actions/checkout@v4
         with:
           path: PackWebsite
+      - id: packserver-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PACK_CI_READ_APP_ID }}
+          private-key: ${{ secrets.PACK_CI_READ_APP_KEY }}
+          owner: Pack-DevOrg
+          repositories: PackServer
       - uses: actions/checkout@v4
         with:
           repository: Pack-DevOrg/PackServer
-          ssh-key: ${{ secrets.PACKSERVER_READ_KEY }}
+          token: ${{ steps.packserver-token.outputs.token }}
+          persist-credentials: false
           path: PackServer
           sparse-checkout: |
             packages/schemas

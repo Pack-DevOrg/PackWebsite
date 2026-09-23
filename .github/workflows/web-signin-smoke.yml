@@ -1,0 +1,58 @@
+name: Web sign-in smoke
+
+# GitHub-hosted Playwright. deploy.yml calls this after the website deploy.
+# The API stack deploy calls it with repository_dispatch type api-stack-deployed.
+on:
+  workflow_call:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [api-stack-deployed]
+
+permissions:
+  contents: read
+
+jobs:
+  signin-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Sign-in smoke
+        run: node scripts/web-signin-smoke.mjs
+      - name: Slack #auto-errors on failure
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SLACK_BOT_TOKEN:-}" ]; then
+            echo "SLACK_BOT_TOKEN missing" >&2
+            exit 1
+          fi
+          payload=$(SLACK_CHANNEL=C0A7YSE1Z0V SLACK_TEXT="web sign-in smoke RED sha=${GITHUB_SHA} run=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" node -e '
+          const body = {
+            channel: process.env.SLACK_CHANNEL,
+            text: process.env.SLACK_TEXT,
+            unfurl_links: false,
+          };
+          process.stdout.write(JSON.stringify(body));
+          ')
+          response=$(curl -sS -X POST \
+            -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d "$payload" \
+            https://slack.com/api/chat.postMessage)
+          SLACK_RESPONSE="$response" node -e '
+          const res = JSON.parse(process.env.SLACK_RESPONSE);
+          if (!res.ok) {
+            process.stderr.write(`chat.postMessage failed: ${res.error}\n`);
+            process.exit(1);
+          }
+          '

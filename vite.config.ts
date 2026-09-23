@@ -23,34 +23,8 @@ import {
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
 const repoRootDir = path.join(rootDir, '..');
-const packSchemasDir = path.join(repoRootDir, 'PackServer', 'packages', 'schemas', 'src');
-const packLocalityCatalogDir = path.join(
-  repoRootDir,
-  'PackServer',
-  'packages',
-  'locality-catalog',
-  'src',
-);
-const packWebEffectsDir = path.join(repoRootDir, 'PackServer', 'packages', 'web-effects', 'vendor');
 const packUiPrimitivesDir = path.join(rootDir, 'packages', 'ui-primitives', 'src');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
-const packServerPackagesDir = normalizePath(path.join(repoRootDir, 'PackServer', 'packages')) + '/';
-// PackServer package sources (../PackServer/packages/*) are aliased in as source, not installed. Their
-// bare imports (date-fns, ...) must resolve from this site's node_modules, the way they resolve on a
-// laptop only because PackServer/node_modules happens to exist. CI checks out the packages alone.
-const packServerBareImportsFromSite = {
-  name: 'pack-server-bare-imports-from-site',
-  enforce: 'pre' as const,
-  async resolveId(
-    this: {resolve: (s: string, i?: string, o?: {skipSelf?: boolean}) => Promise<{id: string} | null>},
-    source: string,
-    importer: string | undefined,
-  ) {
-    if (!importer || !normalizePath(importer).startsWith(packServerPackagesDir)) return null;
-    if (source.startsWith('.') || source.startsWith('/') || source.startsWith('\0') || source.startsWith('@pack/')) return null;
-    return this.resolve(source, path.join(rootDir, 'index.html'), {skipSelf: true});
-  },
-};
 const localNodeModules = path.join(rootDir, 'node_modules');
 const resolveModuleDir = (moduleName: string): string => {
   const localModuleDir = path.join(localNodeModules, moduleName);
@@ -93,12 +67,6 @@ const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
   packAppDir,
   'manual-live-activity-review',
-);
-const packServerTravelPlannerFixtureCorpusDir = path.join(
-  repoRootDir,
-  'PackServer',
-  'tmp',
-  'travel-planner-fixture-corpus',
 );
 const execFileAsync = promisify(execFile);
 
@@ -718,17 +686,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
     : styledComponentsModuleDir;
   const resolveAliases: Record<string, string> = {
     '@': normalizePath(srcDir),
-    // Catalog left @pack/schemas; resolve the extracted package first.
-    '@pack/schemas/locality-catalog': normalizePath(
-      path.join(packLocalityCatalogDir, 'locality-catalog.ts'),
-    ),
-    '@pack/schemas': normalizePath(packSchemasDir),
-    '@pack/web-effects/border-beam': normalizePath(
-      path.join(packWebEffectsDir, 'border-beam', 'dist', 'index.es.js'),
-    ),
-    '@pack/web-effects/thinking-orbs': normalizePath(
-      path.join(packWebEffectsDir, 'thinking-orbs', 'dist', 'index.es.js'),
-    ),
     '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
@@ -880,7 +837,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
 
   return {
     plugins: [
-      packServerBareImportsFromSite,
       {
         name: 'logo-lab-dev-api',
         configureServer(server) {
@@ -1005,6 +961,9 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'lucide-react',
         'react-native-web',
         'react-native',
+        '@pack/schemas',
+        '@pack/locality-catalog',
+        '@pack/web-effects',
         // CJS __esModule defaults. Node's native ESM loader binds
         // `import createPrefixer from "inline-style-prefixer/..."` to
         // `{ default: fn }`, so the onboard SSR chunk throws
@@ -1016,12 +975,9 @@ export default defineConfig(({ mode, ssrBuild }) => {
       fs: {
         allow: [
           normalizePath(rootDir),
-          normalizePath(packSchemasDir),
-          normalizePath(packLocalityCatalogDir),
           normalizePath(packAdsLogoLabOutputDir),
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),
-          normalizePath(packServerTravelPlannerFixtureCorpusDir),
           normalizePath(packUiPrimitivesDir),
           normalizePath(reactModuleDir),
           normalizePath(reactDomModuleDir),

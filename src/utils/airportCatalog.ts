@@ -1,4 +1,4 @@
-import { getAllAirportCatalogEntries } from "@pack/schemas/locality-catalog";
+import { getAllAirportCatalogEntries } from "@pack/locality-catalog/locality-catalog";
 
 export type AirportCatalogEntry = {
   readonly iata: string;

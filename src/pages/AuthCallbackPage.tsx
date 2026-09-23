@@ -7,6 +7,7 @@ import { useAuth } from "@/auth/AuthContext";
 import { appConfig } from "@/config/appConfig";
 import { clearLogoutIntent, hasLogoutIntent } from "@/auth/tokenStorage";
 import { useMountEffect } from "@/hooks/useMountEffect";
+import { webAttestationHeaders } from "@/auth/webAttestation";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 import { useI18n } from "@/i18n/I18nProvider";
 import packLogo from "@/assets/logo.png";
@@ -316,11 +317,14 @@ const bootstrapAuthenticatedUser = async (
   accessToken: string,
   tokenType: string,
 ): Promise<void> => {
+  // The first authenticated call mints the web attestation session for this access token
+  // (x-pack-web-attestation); without it the API answers WEB_ATTESTATION_REQUIRED.
   const response = await fetch(`${appConfig.apiBaseUrl}/user/information`, {
     method: "GET",
     headers: {
       Accept: "application/json",
       Authorization: `${tokenType || "Bearer"} ${accessToken}`,
+      ...(await webAttestationHeaders()),
     },
   });
 

@@ -15,13 +15,30 @@ concurrency:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: PackWebsite
     timeout-minutes: 30
     steps:
+      # The build reads three PackServer packages as a sibling checkout (../PackServer/packages/*,
+      # vite aliases + file: deps). PackServer is private: read-only deploy key, sparse, no history.
       - uses: actions/checkout@v4
+        with:
+          path: PackWebsite
+      - uses: actions/checkout@v4
+        with:
+          repository: Pack-DevOrg/PackServer
+          ssh-key: ${{ secrets.PACKSERVER_READ_KEY }}
+          path: PackServer
+          sparse-checkout: |
+            packages/schemas
+            packages/locality-catalog
+            packages/web-effects
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: 'PackWebsite/.nvmrc'
           cache: npm
+          cache-dependency-path: PackWebsite/package-lock.json
       - run: npm ci --no-audit --no-fund
       # land-smoke drives a real browser against the built site.
       - run: npx playwright install --with-deps chromium

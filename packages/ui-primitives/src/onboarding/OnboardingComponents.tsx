@@ -13,6 +13,7 @@ import {
 
 import {LinearGradient} from '../shims/LinearGradient';
 import {SafeAreaView} from '../shims/SafeArea';
+import {ProviderMark} from '../shims/ProviderMark';
 import {tokens} from '../tokens';
 import {TravelGlobeBackground} from './TravelGlobeBackground';
 
@@ -421,17 +422,26 @@ export function OnboardingProviderButton({
             : tokens.colors.appleBackground,
         },
       ]}>
-      <Text
-        style={[
-          styles.providerButtonText,
-          {
-            color: isGoogle
-              ? tokens.colors.googleText
-              : tokens.colors.appleText,
-          },
-        ]}>
-        {children ?? defaultProviderLabel(provider)}
-      </Text>
+      <View style={styles.providerButtonRow}>
+        <View style={styles.providerMark}>
+          <ProviderMark
+            provider={provider}
+            size={isGoogle ? 18 : 20}
+            color={isGoogle ? tokens.colors.googleText : tokens.colors.appleText}
+          />
+        </View>
+        <Text
+          style={[
+            styles.providerButtonText,
+            {
+              color: isGoogle
+                ? tokens.colors.googleText
+                : tokens.colors.appleText,
+            },
+          ]}>
+          {children ?? defaultProviderLabel(provider)}
+        </Text>
+      </View>
     </Pressable>
   );
 }
@@ -632,6 +642,14 @@ const styles = StyleSheet.create({
     fontWeight: tokens.typography.fontWeight.semibold,
     color: tokens.colors.textPrimary,
     textAlign: 'center',
+  },
+  providerButtonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  providerMark: {
+    marginRight: 12,
   },
   providerButton: {
     width: '100%',

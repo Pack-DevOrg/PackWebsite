@@ -34,6 +34,23 @@ const packLocalityCatalogDir = path.join(
 const packWebEffectsDir = path.join(repoRootDir, 'PackServer', 'packages', 'web-effects', 'vendor');
 const packUiPrimitivesDir = path.join(rootDir, 'packages', 'ui-primitives', 'src');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
+const packServerPackagesDir = normalizePath(path.join(repoRootDir, 'PackServer', 'packages')) + '/';
+// PackServer package sources (../PackServer/packages/*) are aliased in as source, not installed. Their
+// bare imports (date-fns, ...) must resolve from this site's node_modules, the way they resolve on a
+// laptop only because PackServer/node_modules happens to exist. CI checks out the packages alone.
+const packServerBareImportsFromSite = {
+  name: 'pack-server-bare-imports-from-site',
+  enforce: 'pre' as const,
+  async resolveId(
+    this: {resolve: (s: string, i?: string, o?: {skipSelf?: boolean}) => Promise<{id: string} | null>},
+    source: string,
+    importer: string | undefined,
+  ) {
+    if (!importer || !normalizePath(importer).startsWith(packServerPackagesDir)) return null;
+    if (source.startsWith('.') || source.startsWith('/') || source.startsWith('\0') || source.startsWith('@pack/')) return null;
+    return this.resolve(source, path.join(rootDir, 'index.html'), {skipSelf: true});
+  },
+};
 const localNodeModules = path.join(rootDir, 'node_modules');
 const resolveModuleDir = (moduleName: string): string => {
   const localModuleDir = path.join(localNodeModules, moduleName);
@@ -863,6 +880,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
 
   return {
     plugins: [
+      packServerBareImportsFromSite,
       {
         name: 'logo-lab-dev-api',
         configureServer(server) {

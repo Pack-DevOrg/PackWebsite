@@ -1,4 +1,5 @@
 import React, { useDeferredValue, useLayoutEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import {
@@ -307,12 +308,17 @@ const AirportHeading = styled.div`
   gap: 0.3rem;
 `;
 
-const AirportCode = styled.div`
+const AirportCode = styled(Link)`
   color: #f3d27a;
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const AirportName = styled.h3`
@@ -1860,7 +1866,9 @@ const TsaWaitTimesPage: React.FC = () => {
                   <AirportCard key={airport.airportCode}>
                     <AirportCardTop>
                       <AirportHeading>
-                        <AirportCode>{airport.airportCode}</AirportCode>
+                        <AirportCode to={`/tsa/${airport.airportCode.toLowerCase()}`}>
+                          {airport.airportCode}
+                        </AirportCode>
                         <AirportName>{airport.airportName}</AirportName>
                         <AirportMetaLine>
                           <AirportMeta>

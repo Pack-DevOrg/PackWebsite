@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
@@ -12,6 +12,8 @@ const STALE_FRAME_BADGE = "Stale frame";
 const STALE_FRAME_AGE_MS = 5000;
 const LIVE_VIEW_POLL_MS = 1000;
 const OTP_FIELD_RE = /otp|one-?time|2fa|totp/i;
+const LIVE_VIEW_OTP_INPUT_ID = "live-view-otp";
+const OTP_DIGITS_RE = /^\d{4,8}$/;
 
 const PageContainer = styled.main`
   min-height: 80vh;
@@ -84,6 +86,28 @@ const ResumeButton = styled.button`
   cursor: pointer;
 `;
 
+const OtpForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 24rem;
+`;
+
+const OtpLabel = styled.label`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 1rem;
+`;
+
+const OtpInput = styled.input`
+  padding: 0.75rem 1rem;
+  font-size: 1.5rem;
+  border-radius: 0.4rem;
+  border: 1px solid ${({ theme }) => theme.colors.text.secondary};
+  background: ${({ theme }) => theme.colors.background.primary};
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
 function emptyStringBecauseOptionalAttrMissing(): string {
   return "";
 }
@@ -131,6 +155,14 @@ const LiveViewHandoffSchema = z
     { message: "liveViewUrl hostname must not equal merchantHost" },
   );
 
+const PauseFieldSchema = z
+  .object({
+    autocomplete: z.string().optional(),
+    name: z.string().optional(),
+    id: z.string().optional(),
+  })
+  .optional();
+
 const LatestPointerSchema = z.object({
   seq: z.number().int(),
   ts: z.number(),
@@ -138,6 +170,7 @@ const LatestPointerSchema = z.object({
   url: z.string().optional(),
   paused: z.boolean().optional(),
   pauseForHelp: z.boolean().optional(),
+  field: PauseFieldSchema,
   progressItems: z
     .array(
       z.object({
@@ -161,13 +194,21 @@ const JobStatusProgressSchema = z.object({
     .optional(),
   paused: z.boolean().optional(),
   pauseForHelp: z.boolean().optional(),
+  field: PauseFieldSchema,
 });
+
+type PauseFieldAttrs = {
+  autocomplete: string;
+  name: string;
+  id: string;
+};
 
 export type LiveViewLatestFrame = {
   src: string;
   ts: number;
   seq: number;
   paused?: boolean;
+  field: PauseFieldAttrs | null;
 };
 
 function pausedFlagFromPointerBecauseTakeOver(pointer: {
@@ -197,39 +238,179 @@ function attrValueBecauseMissingIsEmpty(value: string | null): string {
   return value;
 }
 
+function pauseFieldAttrsBecauseParsed(field: {
+  autocomplete?: string;
+  name?: string;
+  id?: string;
+} | undefined): PauseFieldAttrs | null {
+  if (field === undefined) {
+    return null;
+  }
+  return {
+    autocomplete: field.autocomplete ?? emptyStringBecauseOptionalAttrMissing(),
+    name: field.name ?? emptyStringBecauseOptionalAttrMissing(),
+    id: field.id ?? emptyStringBecauseOptionalAttrMissing(),
+  };
+}
+
+function fieldAttrsAreOtpBecauseAutocompleteNameOrId(
+  attrs: PauseFieldAttrs,
+): boolean {
+  if (attrs.autocomplete === "one-time-code") {
+    return true;
+  }
+  if (OTP_FIELD_RE.test(attrs.autocomplete)) {
+    return true;
+  }
+  if (OTP_FIELD_RE.test(attrs.name)) {
+    return true;
+  }
+  if (OTP_FIELD_RE.test(attrs.id)) {
+    return true;
+  }
+  return false;
+}
+
 function fieldIsOtpBecauseAutocompleteNameOrId(
   target: EventTarget | null,
 ): boolean {
   if (!(target instanceof HTMLElement)) {
     return false;
   }
-  const autocomplete = attrValueBecauseMissingIsEmpty(
-    target.getAttribute("autocomplete"),
-  );
-  if (autocomplete === "one-time-code") {
-    return true;
+  return fieldAttrsAreOtpBecauseAutocompleteNameOrId({
+    autocomplete: attrValueBecauseMissingIsEmpty(
+      target.getAttribute("autocomplete"),
+    ),
+    name: attrValueBecauseMissingIsEmpty(target.getAttribute("name")),
+    id: attrValueBecauseMissingIsEmpty(target.getAttribute("id")),
+  });
+}
+
+function completeOtpDigitsBecauseKey(key: string): string | null {
+  if (OTP_DIGITS_RE.test(key)) {
+    return key;
   }
-  const name = attrValueBecauseMissingIsEmpty(target.getAttribute("name"));
-  const id = attrValueBecauseMissingIsEmpty(target.getAttribute("id"));
-  if (OTP_FIELD_RE.test(autocomplete)) {
-    return true;
-  }
-  if (OTP_FIELD_RE.test(name)) {
-    return true;
-  }
-  if (OTP_FIELD_RE.test(id)) {
-    return true;
-  }
-  return false;
+  return null;
 }
 
 function hitlKeyPayloadBecauseSynthetic(
   event: KeyboardEvent,
 ): { type: "key"; key?: string; code?: string } {
   if (fieldIsOtpBecauseAutocompleteNameOrId(event.target)) {
+    const fromKey = completeOtpDigitsBecauseKey(event.key);
+    if (fromKey !== null) {
+      return { type: "key", key: fromKey, code: event.code };
+    }
+    if (event.key === "Enter" && event.target instanceof HTMLInputElement) {
+      const fromValue = completeOtpDigitsBecauseKey(event.target.value);
+      if (fromValue !== null) {
+        return { type: "key", key: fromValue, code: event.code };
+      }
+    }
     return { type: "key" };
   }
   return { type: "key", key: event.key, code: event.code };
+}
+
+type SmsOtpCredential = Credential & { code?: string };
+
+function credentialsContainerBecauseNavigator(): CredentialsContainer | null {
+  if (typeof navigator === "undefined") {
+    return null;
+  }
+  const credentials = navigator.credentials;
+  if (credentials === undefined || credentials === null) {
+    return null;
+  }
+  if (typeof credentials.get !== "function") {
+    return null;
+  }
+  return credentials;
+}
+
+async function smsCodeBecauseWebOtp(signal: AbortSignal): Promise<string | null> {
+  const credentials = credentialsContainerBecauseNavigator();
+  if (credentials === null) {
+    return null;
+  }
+  try {
+    const request = {
+      otp: { transport: ["sms"] },
+      signal,
+    } as CredentialRequestOptions;
+    const credential = await credentials.get(request);
+    if (signal.aborted) {
+      return null;
+    }
+    if (credential === null) {
+      return null;
+    }
+    const code = (credential as SmsOtpCredential).code;
+    if (typeof code !== "string") {
+      return null;
+    }
+    if (code.length === 0) {
+      return null;
+    }
+    return code;
+  } catch {
+    return null;
+  }
+}
+
+function submitOtpCodeBecauseHitlKey(code: string): void {
+  const input = document.getElementById(LIVE_VIEW_OTP_INPUT_ID);
+  if (!(input instanceof HTMLInputElement)) {
+    return;
+  }
+  input.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key: code,
+      code: "Enter",
+      bubbles: true,
+    }),
+  );
+}
+
+function otpAskBecausePauseField(
+  paused: boolean,
+  field: PauseFieldAttrs | null,
+  previous: boolean,
+): boolean {
+  if (paused !== true) {
+    return false;
+  }
+  if (field === null) {
+    return previous;
+  }
+  return fieldAttrsAreOtpBecauseAutocompleteNameOrId(field);
+}
+
+function otpAskBecauseStatus(
+  status: {
+    paused?: boolean;
+    pauseForHelp?: boolean;
+    field?: {
+      autocomplete?: string;
+      name?: string;
+      id?: string;
+    };
+  },
+  previous: boolean,
+): boolean {
+  const mentionedPause =
+    status.paused !== undefined || status.pauseForHelp !== undefined;
+  if (
+    mentionedPause &&
+    pausedFlagFromPointerBecauseTakeOver(status) !== true
+  ) {
+    return false;
+  }
+  const field = pauseFieldAttrsBecauseParsed(status.field);
+  if (field === null) {
+    return previous;
+  }
+  return fieldAttrsAreOtpBecauseAutocompleteNameOrId(field);
 }
 
 function hitlPointerPayloadBecauseSynthetic(event: PointerEvent): {
@@ -292,9 +473,10 @@ export async function fetchLatestFrame(
   }
   const pointer = parsed.data;
   const paused = pausedFlagFromPointerBecauseTakeOver(pointer);
+  const field = pauseFieldAttrsBecauseParsed(pointer.field);
   const pointerUrl = pointer.url;
   if (typeof pointerUrl === "string" && pointerUrl.length > 0) {
-    return { src: pointerUrl, ts: pointer.ts, seq: pointer.seq, paused };
+    return { src: pointerUrl, ts: pointer.ts, seq: pointer.seq, paused, field };
   }
   const bytesResponse = await fetch(
     `${apiBaseUrl}/live-view/${jobId}/frames/${pointer.seq}`,
@@ -317,6 +499,7 @@ export async function fetchLatestFrame(
         ts: pointer.ts,
         seq: pointer.seq,
         paused,
+        field,
       };
     }
   }
@@ -326,6 +509,7 @@ export async function fetchLatestFrame(
     ts: pointer.ts,
     seq: pointer.seq,
     paused,
+    field,
   };
 }
 
@@ -338,6 +522,7 @@ type SessionViewState = {
   mode: "watch" | "take-over";
   frame: LiveViewLatestFrame | null;
   progressLabels: string[];
+  otpAsk: boolean;
 };
 
 function initialLiveViewPageStateBecauseMissingTokenIsExpired(
@@ -350,7 +535,7 @@ function initialLiveViewPageStateBecauseMissingTokenIsExpired(
 }
 
 function initialSessionViewBecauseWatchUntilPause(): SessionViewState {
-  return { mode: "watch", frame: null, progressLabels: [] };
+  return { mode: "watch", frame: null, progressLabels: [], otpAsk: false };
 }
 
 export function LiveViewConnectPage() {
@@ -366,6 +551,7 @@ export function LiveViewConnectPage() {
     initialSessionViewBecauseWatchUntilPause,
   );
   const [pollGeneration, setPollGeneration] = useState(0);
+  const [otpDraft, setOtpDraft] = useState("");
 
   useEffect(() => {
     if (token === null) {
@@ -440,6 +626,11 @@ export function LiveViewConnectPage() {
           mode: frame.paused === true ? "take-over" : "watch",
           frame,
           progressLabels: prev.progressLabels,
+          otpAsk: otpAskBecausePauseField(
+            frame.paused === true,
+            frame.field,
+            prev.otpAsk,
+          ),
         }));
       } catch {
         if (cancelled) {
@@ -478,6 +669,7 @@ export function LiveViewConnectPage() {
           mode: statusPaused ? "take-over" : prev.mode,
           frame: prev.frame,
           progressLabels: labels.length > 0 ? labels : prev.progressLabels,
+          otpAsk: otpAskBecauseStatus(statusParsed.data, prev.otpAsk),
         }));
       } catch {
         // keep the last frame
@@ -529,6 +721,32 @@ export function LiveViewConnectPage() {
     };
   }, [pageState, sessionView.mode]);
 
+  useEffect(() => {
+    if (pageState.kind !== "session") {
+      return;
+    }
+    if (sessionView.otpAsk !== true) {
+      setOtpDraft("");
+      return;
+    }
+    const abortController = new AbortController();
+    const run = async () => {
+      const code = await smsCodeBecauseWebOtp(abortController.signal);
+      if (abortController.signal.aborted) {
+        return;
+      }
+      if (code === null) {
+        return;
+      }
+      setOtpDraft(code);
+      submitOtpCodeBecauseHitlKey(code);
+    };
+    void run();
+    return () => {
+      abortController.abort();
+    };
+  }, [pageState, sessionView.otpAsk]);
+
   const onResume = () => {
     if (pageState.kind !== "session") {
       return;
@@ -547,9 +765,29 @@ export function LiveViewConnectPage() {
         mode: "watch",
         frame: prev.frame,
         progressLabels: prev.progressLabels,
+        otpAsk: false,
       }));
     };
     void run();
+  };
+
+  const onOtpChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const next = event.target.value;
+    setOtpDraft(next);
+    if (/^\d{6}$/.test(next) !== true) {
+      return;
+    }
+    event.target.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: next,
+        code: "Enter",
+        bubbles: true,
+      }),
+    );
+  };
+
+  const onOtpSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
   };
 
   const frame = sessionView.frame;
@@ -572,6 +810,19 @@ export function LiveViewConnectPage() {
                   Resume
                 </ResumeButton>
               </TakeOverBar>
+            ) : null}
+            {sessionView.mode === "take-over" && sessionView.otpAsk ? (
+              <OtpForm onSubmit={onOtpSubmit}>
+                <OtpLabel htmlFor={LIVE_VIEW_OTP_INPUT_ID}>Texted code</OtpLabel>
+                <OtpInput
+                  id={LIVE_VIEW_OTP_INPUT_ID}
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  autoFocus
+                  value={otpDraft}
+                  onChange={onOtpChange}
+                />
+              </OtpForm>
             ) : null}
             {frame !== null ? (
               <ScreenStage>

@@ -67,3 +67,10 @@ jobs:
           aws-region: us-east-1
       - name: Deploy app origin
         run: npm run deploy
+
+  # Real browser path after the site is live. The same workflow runs when the
+  # API stack deploy sends repository_dispatch type api-stack-deployed.
+  signin-smoke:
+    needs: deploy
+    uses: ./.github/workflows/web-signin-smoke.yml
+    secrets: inherit

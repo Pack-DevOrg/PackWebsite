@@ -54,4 +54,5 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npx jest --ci --bail=0
+      - run: node --test scripts/web-signin-smoke.test.mjs
       - run: npm run build

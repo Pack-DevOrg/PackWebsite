@@ -72,6 +72,15 @@ describe("ConnectionsStep", () => {
     expect(screen.queryAllByTestId("onboard-progress-dot")).toHaveLength(0);
     expect(screen.queryByTestId("onboard-progress-dots")).not.toBeInTheDocument();
 
+    const googleMark = screen.getByTestId("connect-google-button").querySelector("svg");
+    const microsoftMark = screen.getByTestId("connect-microsoft-button").querySelector("svg");
+    const appleMark = screen.getByTestId("connect-apple-button").querySelector("svg");
+    expect(googleMark?.querySelector('path[fill="#4285F4"]')).not.toBeNull();
+    expect(microsoftMark?.querySelector('rect[fill="#F25022"]')).not.toBeNull();
+    expect(appleMark?.querySelector("path")).not.toBeNull();
+    expect(screen.getByTestId("connect-google-button").textContent).not.toMatch(/\bG\b/);
+    expect(screen.getByTestId("connect-microsoft-button").textContent).not.toMatch(/\bM\b/);
+
     expect(container.textContent).not.toMatch(INTERNAL_IDENTIFIERS);
     expect(container.innerHTML).not.toMatch(INTERNAL_IDENTIFIERS);
     expect(attributeBlob(container)).not.toMatch(INTERNAL_IDENTIFIERS);

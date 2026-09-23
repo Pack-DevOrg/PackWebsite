@@ -1,19 +1,29 @@
 import React from 'react';
 
 /**
- * Google "G" and Apple glyph for the sign-in buttons: the same geometry and colors as PackApp's
- * GoogleOutlineIcon / AppleOutlineIcon (src/icons/svg), as DOM SVG for react-native-web.
- * The Google mark is never tinted (brand rule); the Apple glyph takes the button's text color.
+ * Google "G", Microsoft four-square, and Apple glyph: the same geometry and colors as PackApp's
+ * GoogleOutlineIcon / MicrosoftIcon / AppleOutlineIcon (src/icons/svg), as DOM SVG for react-native-web.
+ * Google and Microsoft marks are never tinted (brand rule); the Apple glyph takes the button's text color.
  */
 export function ProviderMark({
   provider,
   size,
   color,
 }: {
-  readonly provider: 'google' | 'apple';
+  readonly provider: 'google' | 'microsoft' | 'apple';
   readonly size: number;
   readonly color: string;
 }): React.ReactElement {
+  if (provider === 'microsoft') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="10" height="10" fill="#F25022" />
+        <rect x="13" y="1" width="10" height="10" fill="#7FBA00" />
+        <rect x="1" y="13" width="10" height="10" fill="#00A4EF" />
+        <rect x="13" y="13" width="10" height="10" fill="#FFB900" />
+      </svg>
+    );
+  }
   if (provider === 'google') {
     return (
       <svg width={size} height={size} viewBox="0 0 18 18" fill="none" aria-hidden="true" focusable="false">

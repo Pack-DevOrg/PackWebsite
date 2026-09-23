@@ -7,6 +7,7 @@ import {
   OnboardingSkipButton,
   OnboardingSubtitle,
   OnboardingTitle,
+  ProviderMark,
   tokens,
 } from '@pack/ui-primitives';
 
@@ -141,7 +142,7 @@ function AccountRow({
   readonly testID: string;
   readonly disabled: boolean;
   readonly onPress?: () => void;
-  readonly mark: string;
+  readonly mark: React.ReactNode;
   readonly title: string;
   readonly subtitle: React.ReactNode;
   readonly soon?: boolean;
@@ -179,14 +180,7 @@ function AccountRow({
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Text
-          style={{
-            color: tokens.colors.textPrimary,
-            fontSize: tokens.typography.fontSize.m,
-            fontWeight: tokens.typography.fontWeight.bold,
-          }}>
-          {mark}
-        </Text>
+        {mark}
       </View>
       <View style={{flex: 1, minWidth: 0}}>
         <Text
@@ -283,7 +277,13 @@ export function ConnectionsStep({
             testID="connect-google-button"
             disabled={googleIsLoading}
             onPress={handleConnectGoogle}
-            mark="G"
+            mark={
+              <ProviderMark
+                provider="google"
+                size={18}
+                color={tokens.colors.textPrimary}
+              />
+            }
             title={googleAccountLabelBecauseState(
               googleIsLoading,
               googleIsConnected,
@@ -298,7 +298,13 @@ export function ConnectionsStep({
             testID="connect-microsoft-button"
             disabled={microsoftIsLoading}
             onPress={handleConnectMicrosoft}
-            mark="M"
+            mark={
+              <ProviderMark
+                provider="microsoft"
+                size={18}
+                color={tokens.colors.textPrimary}
+              />
+            }
             title={microsoftAccountLabelBecauseState(
               microsoftIsLoading,
               microsoftIsConnected,
@@ -312,7 +318,13 @@ export function ConnectionsStep({
             disabledLook
             testID="connect-apple-button"
             disabled
-            mark="A"
+            mark={
+              <ProviderMark
+                provider="apple"
+                size={20}
+                color={tokens.colors.textSecondary}
+              />
+            }
             title="Connect Apple"
             subtitle={null}
             soon

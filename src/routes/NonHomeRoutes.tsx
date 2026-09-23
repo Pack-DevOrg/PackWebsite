@@ -81,6 +81,9 @@ const NotFoundPage = React.lazy(() => import("../pages/NotFoundPage"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const LiveViewConnectPage = React.lazy(() => import("../pages/LiveViewConnectPage"));
 const OnboardPage = React.lazy(() => import("../pages/OnboardPage"));
+const AccountConnectCallbackPage = React.lazy(
+  () => import("../pages/AccountConnectCallbackPage"),
+);
 const EmailForwardingSetupPage = React.lazy(
   () => import("../pages/EmailForwardingSetup")
 );
@@ -543,6 +546,22 @@ const NonHomeRoutes: React.FC = () => {
           element={
             <Suspense fallback={null}>
               <OnboardPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/api/auth/callback/google"
+          element={
+            <Suspense fallback={null}>
+              <AccountConnectCallbackPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/api/auth/callback/microsoft"
+          element={
+            <Suspense fallback={null}>
+              <AccountConnectCallbackPage />
             </Suspense>
           }
         />

@@ -1,8 +1,7 @@
 export {tokens} from './tokens';
-export {ProviderMark} from './shims/ProviderMark';
 export type {PackAppTokens} from './tokens';
-export {LinearGradient} from './shims/LinearGradient';
-export {SafeAreaView} from './shims/SafeArea';
+export {LinearGradient} from 'expo-linear-gradient';
+export {SafeAreaView} from 'react-native-safe-area-context';
 export {
   SheetChromeGrabber,
   SheetCloseButton,
@@ -23,5 +22,6 @@ export {
   OnboardingSkipButton,
   OnboardingSubtitle,
   OnboardingTitle,
+  ProviderMark,
 } from './onboarding/OnboardingComponents';
 export {TravelGlobeBackground} from './onboarding/TravelGlobeBackground';

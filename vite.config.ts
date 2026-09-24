@@ -88,7 +88,9 @@ const packAdsVideoLabTemplatesPath = path.join(
   packAdsVideoLabProjectDir,
   'templates.json',
 );
-const packAppDir = path.join(repoRootDir, 'PackApp');
+const packAppDir = [path.join(repoRootDir, 'PackApp'), path.join(repoRootDir, '..', 'PackApp')].find((dir) =>
+  fs.existsSync(path.join(dir, 'src', 'components', 'onboarding', 'OnboardingComponents.tsx')),
+) ?? path.join(repoRootDir, 'PackApp');
 const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
   packAppDir,
@@ -730,6 +732,21 @@ export default defineConfig(({ mode, ssrBuild }) => {
       path.join(packWebEffectsDir, 'thinking-orbs', 'dist', 'index.es.js'),
     ),
     '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
+    '@pack/app/onboarding/OnboardingComponents': normalizePath(
+      path.join(packAppDir, 'src', 'components', 'onboarding', 'OnboardingComponents.tsx'),
+    ),
+    '@pack/app/icons/GoogleOutlineIcon': normalizePath(
+      path.join(packAppDir, 'src', 'icons', 'svg', 'GoogleOutlineIcon.tsx'),
+    ),
+    '@pack/app/icons/AppleOutlineIcon': normalizePath(
+      path.join(packAppDir, 'src', 'icons', 'svg', 'AppleOutlineIcon.tsx'),
+    ),
+    '@pack/app/icons/MicrosoftIcon': normalizePath(
+      path.join(packAppDir, 'src', 'icons', 'svg', 'MicrosoftIcon.tsx'),
+    ),
+    '@pack/app/icons/ChevronLeftIcon': normalizePath(
+      path.join(packAppDir, 'src', 'icons', 'svg', 'ChevronLeftIcon.tsx'),
+    ),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
@@ -882,6 +899,37 @@ export default defineConfig(({ mode, ssrBuild }) => {
     plugins: [
       packServerBareImportsFromSite,
       {
+        name: 'pack-app-at-alias',
+        enforce: 'pre' as const,
+        resolveId(source, importer) {
+          if (!importer) {
+            return null;
+          }
+          const appRoot = normalizePath(packAppDir);
+          const fromApp = normalizePath(importer).startsWith(appRoot);
+          if (!fromApp) {
+            return null;
+          }
+          const webSrc = normalizePath(srcDir);
+          let rel = '';
+          if (source.startsWith('@/')) {
+            rel = source.slice(2);
+          } else if (normalizePath(source).startsWith(`${webSrc}/`)) {
+            rel = normalizePath(source).slice(webSrc.length + 1);
+          } else {
+            return null;
+          }
+          const base = path.join(packAppDir, 'src', rel);
+          for (const suffix of ['', '.tsx', '.ts', '.js', '/index.ts', '/index.tsx']) {
+            const file = `${base}${suffix}`;
+            if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+              return normalizePath(file);
+            }
+          }
+          return null;
+        },
+      },
+      {
         name: 'logo-lab-dev-api',
         configureServer(server) {
           server.middlewares.use(
@@ -1019,6 +1067,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
           normalizePath(packSchemasDir),
           normalizePath(packLocalityCatalogDir),
           normalizePath(packAdsLogoLabOutputDir),
+          normalizePath(packAppDir),
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),
           normalizePath(packServerTravelPlannerFixtureCorpusDir),

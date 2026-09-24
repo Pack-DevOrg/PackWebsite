@@ -3,14 +3,13 @@ import {join} from 'node:path';
 import React from 'react';
 import {render, screen} from '@testing-library/react';
 
+import * as appOnboarding from '@pack/app/onboarding/OnboardingComponents';
 import {
   OnboardingPrimaryButton,
   OnboardingPrimaryLink,
   OnboardingSecondaryButton,
   OnboardingSkipButton,
 } from '@pack/ui-primitives';
-
-const APP_MODULE = '@pack/app/onboarding/OnboardingComponents';
 
 jest.mock('@pack/app/onboarding/OnboardingComponents', () => {
   const React = require('react');
@@ -68,7 +67,10 @@ const websiteSource = readFileSync(
 );
 
 describe('OnboardingComponents', () => {
-  it('renders the app primary and secondary controls', () => {
+  it('re-exports the app primary and secondary controls', () => {
+    expect(OnboardingPrimaryButton).toBe(appOnboarding.OnboardingPrimaryButton);
+    expect(OnboardingSecondaryButton).toBe(appOnboarding.OnboardingSecondaryButton);
+
     render(
       <>
         <OnboardingPrimaryButton onPress={() => undefined}>Continue</OnboardingPrimaryButton>
@@ -90,9 +92,10 @@ describe('OnboardingComponents', () => {
     expect(screen.getByTestId('earlier-skip').getAttribute('data-full-width')).toBe('true');
   });
 
-  it('fails when the website keeps a copied button, shim, or pasted mark', () => {
-    expect(websiteSource).toContain(`from '${APP_MODULE}'`);
+  it('fails when the website keeps a copied button or a shim directory', () => {
+    expect(websiteSource).toContain("from '@pack/app/onboarding/OnboardingComponents'");
     expect(websiteSource.includes('export function OnboardingPrimaryButton')).toBe(false);
+    expect(websiteSource.includes('export const OnboardingPrimaryButton')).toBe(false);
     expect(websiteSource.includes('function LinearGradient')).toBe(false);
     expect(websiteSource.includes('function SafeAreaView')).toBe(false);
     expect(websiteSource.includes('gradientAngle')).toBe(false);

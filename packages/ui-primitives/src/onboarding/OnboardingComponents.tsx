@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  type PressableStateCallbackType,
-} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
 import {
   ONBOARDING_CTA_MAX_WIDTH,
-  OnboardingContainer as AppOnboardingContainer,
+  OnboardingContainer,
   OnboardingContent,
   OnboardingEyebrow,
   OnboardingPrimaryButton,
@@ -25,22 +19,13 @@ import {tokens} from '../tokens';
 
 export {
   ONBOARDING_CTA_MAX_WIDTH,
+  OnboardingContainer,
   OnboardingContent,
   OnboardingEyebrow,
   OnboardingPrimaryButton,
   OnboardingSecondaryButton,
   OnboardingSubtitle,
 };
-
-export function OnboardingTitle(
-  props: React.ComponentProps<typeof AppOnboardingTitle>,
-): React.ReactElement {
-  return (
-    <Text accessibilityRole="header" style={styles.titleWrap}>
-      <AppOnboardingTitle {...props} />
-    </Text>
-  );
-}
 
 export function OnboardingHeader({
   currentStep,
@@ -59,13 +44,10 @@ export function OnboardingHeader({
     <View style={styles.header}>
       {showBack ? (
         <Pressable
-          style={(state: PressableStateCallbackType) => [
-            styles.backButton,
-            state.pressed ? styles.backButtonPressed : null,
-          ]}
           onPress={onBack}
           accessibilityLabel={backAccessibilityLabel}
-          accessibilityRole="button">
+          accessibilityRole="button"
+          style={styles.backButton}>
           <ChevronLeftIcon size={20} color={tokens.colors.textSecondary} />
         </Pressable>
       ) : (
@@ -75,21 +57,19 @@ export function OnboardingHeader({
         <View style={styles.progressContainer}>
           <OnboardingProgressDots currentStep={currentStep} totalSteps={totalSteps} />
         </View>
-      ) : (
-        <View style={styles.progressContainer} />
-      )}
-      <View style={styles.headerSpacer} />
+      ) : null}
     </View>
   );
 }
 
-type AppContainerProps = React.ComponentProps<typeof AppOnboardingContainer>;
-
-export function OnboardingContainer({
-  showGlobe: _showGlobe,
-  ...props
-}: AppContainerProps & {readonly showGlobe?: boolean}): React.ReactElement {
-  return <AppOnboardingContainer {...props} />;
+export function OnboardingTitle(
+  props: React.ComponentProps<typeof AppOnboardingTitle>,
+): React.ReactElement {
+  return (
+    <Text accessibilityRole="header">
+      <AppOnboardingTitle {...props} />
+    </Text>
+  );
 }
 
 type OnboardingPrimaryLinkProps = {
@@ -149,6 +129,7 @@ export function OnboardingProgressDots({
         key={index}
         testID="onboard-progress-dot"
         accessibilityState={{selected: isActive}}
+        dataSet={{active: isActive ? 'true' : 'false'}}
         style={[styles.dot, isActive ? styles.dotActive : styles.dotIdle]}
       />
     );
@@ -237,14 +218,11 @@ export function OnboardingProviderButton({
   );
 }
 
-const styles = StyleSheet.create({
-  titleWrap: {
-    textAlign: 'center',
-  },
+const styles = {
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     paddingHorizontal: 20,
     paddingVertical: tokens.spacing.m,
     minHeight: 60,
@@ -254,30 +232,23 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: tokens.borderRadius.r20,
     backgroundColor: tokens.colors.backgroundTransparent,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonPressed: {
-    opacity: 0.7,
-  },
-  headerSpacer: {
-    width: 40,
-    height: 40,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   progressContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
     marginHorizontal: 20,
   },
   primaryLink: {
-    width: '100%',
+    width: '100%' as const,
     maxWidth: ONBOARDING_CTA_MAX_WIDTH,
-    alignSelf: 'center',
+    alignSelf: 'center' as const,
   },
   progressDots: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     gap: tokens.spacing.xs,
     marginBottom: tokens.spacing.xs,
   },
@@ -293,22 +264,22 @@ const styles = StyleSheet.create({
     backgroundColor: tokens.colors.borderMedium,
   },
   providerButtonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   providerMark: {
     marginRight: 12,
   },
   providerButton: {
-    width: '100%',
+    width: '100%' as const,
     height: tokens.buttonHeightL,
     borderRadius: tokens.borderRadius.r10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   providerButtonText: {
     fontSize: tokens.typography.fontSize.xl,
     fontWeight: tokens.typography.fontWeight.semibold,
   },
-});
+};

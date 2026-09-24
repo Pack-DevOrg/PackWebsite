@@ -220,14 +220,9 @@ export function OnboardingSkipButton({
   accessibilityLabel = 'Skip for now',
 }: OnboardingSkipButtonProps): React.ReactElement {
   return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      testID={testID}
-      style={styles.skipButton}>
-      <Text style={styles.skipButtonText}>Skip for now</Text>
-    </Pressable>
+    <OnboardingSecondaryButton onPress={onPress} fullWidth testID={testID}>
+      {accessibilityLabel}
+    </OnboardingSecondaryButton>
   );
 }
 
@@ -397,22 +392,5 @@ const styles = StyleSheet.create({
   providerButtonText: {
     fontSize: tokens.typography.fontSize.xl,
     fontWeight: tokens.typography.fontWeight.semibold,
-  },
-  skipButton: {
-    width: '100%',
-    alignSelf: 'stretch',
-    paddingHorizontal: tokens.spacing.xl,
-    paddingVertical: tokens.spacing.m,
-    borderRadius: tokens.borderRadius.xl,
-    backgroundColor: tokens.colors.backgroundTransparent,
-    borderWidth: 1,
-    borderColor: tokens.colors.borderSubtle,
-    marginBottom: tokens.spacing.m,
-  },
-  skipButtonText: {
-    fontSize: tokens.typography.fontSize.m,
-    fontWeight: tokens.typography.fontWeight.semibold,
-    color: tokens.colors.textSecondary,
-    textAlign: 'center',
   },
 });

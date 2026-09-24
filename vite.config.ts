@@ -110,6 +110,23 @@ const packAppOnboardingComponents = path.join(
   'OnboardingComponents.tsx',
 );
 const packAppRuntimeStub = path.join(srcDir, 'onboarding', 'packAppIconPropsStub.ts');
+const packAppLinearGradient = path.join(
+  existingPackAppDir(),
+  'node_modules/expo-linear-gradient/build/LinearGradient.js',
+);
+const packAppSafeArea = path.join(
+  existingPackAppDir(),
+  'node_modules/react-native-safe-area-context/lib/module/index.js',
+);
+const packAppSvg = [
+  path.join(rootDir, 'node_modules/react-native-svg/lib/module/index.js'),
+  path.join(repoRootDir, 'node_modules/react-native-svg/lib/module/index.js'),
+  path.join(repoRootDir, '..', 'node_modules/react-native-svg/lib/module/index.js'),
+].find((candidate) => fs.existsSync(candidate)) ?? path.join(
+  repoRootDir,
+  '..',
+  'node_modules/react-native-svg/lib/module/index.js',
+);
 const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
   packAppDir,
@@ -765,6 +782,9 @@ export default defineConfig(({ mode, ssrBuild }) => {
     ),
     'react-native-reanimated': normalizePath(packAppRuntimeStub),
     '@react-navigation/native': normalizePath(packAppRuntimeStub),
+    'expo-linear-gradient': normalizePath(packAppLinearGradient),
+    'react-native-safe-area-context': normalizePath(packAppSafeArea),
+    'react-native-svg': normalizePath(packAppSvg),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),

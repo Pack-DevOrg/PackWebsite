@@ -4,6 +4,9 @@ import React from 'react';
 import {render, screen} from '@testing-library/react';
 
 import {OnboardingPrimaryButton as AppOnboardingPrimaryButton} from 'pack-app/components/onboarding/OnboardingComponents';
+import {AppleOutlineIcon} from 'pack-app/icons/svg/AppleOutlineIcon';
+import {GoogleOutlineIcon} from 'pack-app/icons/svg/GoogleOutlineIcon';
+import {MicrosoftIcon} from 'pack-app/icons/svg/MicrosoftIcon';
 import {
   OnboardingContainer,
   OnboardingPrimaryButton,
@@ -82,16 +85,21 @@ describe('OnboardingComponents', () => {
         <OnboardingPrimaryLink href="sms:+1555">Text Pack</OnboardingPrimaryLink>
       </>,
     );
-    const gradients = screen.getAllByTestId('expo-linear-gradient');
-    expect(gradients).toHaveLength(2);
-    expect(gradients[0]?.getAttribute('data-colors')).toContain('#F0C62D');
-    expect(gradients[1]?.getAttribute('data-colors')).toContain('#F0C62D');
+    const painted = Array.from(document.querySelectorAll('div')).filter((node) =>
+      (node.getAttribute('style') ?? '').includes('linear-gradient'),
+    );
+    expect(painted.length).toBeGreaterThanOrEqual(2);
+    expect(painted[0]?.getAttribute('style') ?? '').toMatch(/240,\s*198,\s*45|F0C62D/i);
+    expect(painted[1]?.getAttribute('style') ?? '').toMatch(/240,\s*198,\s*45|F0C62D/i);
     const link = screen.getByRole('link', {name: 'Text Pack'});
     expect(link.getAttribute('href')).toBe('sms:+1555');
-    expect(link.querySelector('[data-testid="expo-linear-gradient"]')).not.toBeNull();
     const label = screen.getByText('Text Pack');
-    expect(label.closest('[data-testid="expo-linear-gradient"]')).not.toBeNull();
+    const gradient = label.parentElement?.closest('div[style*="linear-gradient"]');
+    expect(gradient).not.toBeNull();
+    expect(gradient?.contains(label)).toBe(true);
+    expect(label.querySelector('div[style*="linear-gradient"]')).toBeNull();
     expect(label.parentElement?.tagName).not.toBe('A');
+    expect(label.closest('a')).toBe(link);
   });
 
   it('wraps the shell in the app safe-area view', () => {
@@ -108,7 +116,7 @@ describe('OnboardingComponents', () => {
   });
 
   it('renders provider marks from the app icon components', () => {
-    render(
+    const {container} = render(
       <>
         <OnboardingProviderButton provider="google" onPress={() => undefined}>
           Continue with Google
@@ -117,6 +125,9 @@ describe('OnboardingComponents', () => {
           Continue with Apple
         </OnboardingProviderButton>
         <ProviderMark provider="microsoft" size={18} color="#fff" />
+        <GoogleOutlineIcon size={18} />
+        <AppleOutlineIcon size={20} color="#fff" />
+        <MicrosoftIcon size={18} />
       </>,
     );
     expect(screen.getByText('Continue with Google')).toBeInTheDocument();
@@ -124,7 +135,23 @@ describe('OnboardingComponents', () => {
     expect(screen.queryByText('G')).toBeNull();
     expect(screen.queryByText('M')).toBeNull();
     expect(screen.queryByText('A')).toBeNull();
-    expect(document.querySelectorAll('svg').length).toBeGreaterThanOrEqual(3);
+    const marks = Array.from(container.querySelectorAll('svg')).map(
+      (node) => node.innerHTML,
+    );
+    expect(marks).toHaveLength(6);
+    expect(marks[0]).toBe(marks[3]);
+    expect(marks[1]).toBe(marks[4]);
+    expect(marks[2]).toBe(marks[5]);
+    const accounts = [
+      join(process.cwd(), '..', 'PackApp', 'src', 'screens', 'onboarding', 'ConnectedAccountsScreen.tsx'),
+      join(process.cwd(), '..', '..', 'PackApp', 'src', 'screens', 'onboarding', 'ConnectedAccountsScreen.tsx'),
+    ].find((candidate) => existsSync(candidate));
+    expect(accounts).toBeDefined();
+    const accountsSource = readFileSync(accounts ?? '', 'utf8');
+    expect(accountsSource).toContain('OnboardingPrimaryButton');
+    expect(accountsSource).toContain(
+      "from '@/components/onboarding/OnboardingComponents'",
+    );
   });
 
   it('renders Skip for now on the full-width secondary control', () => {

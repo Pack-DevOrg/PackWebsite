@@ -1,4 +1,39 @@
-import type {FC} from 'react';
+import type {ComponentType, FC, ReactNode} from 'react';
+
+declare module 'expo-linear-gradient' {
+  export const LinearGradient: ComponentType<{
+    colors: readonly string[];
+    start?: {x: number; y: number};
+    end?: {x: number; y: number};
+    style?: unknown;
+    children?: ReactNode;
+  }>;
+}
+
+declare module 'react-native-safe-area-context' {
+  export const SafeAreaProvider: ComponentType<{
+    children?: ReactNode;
+    initialMetrics?: unknown;
+  }>;
+  export const SafeAreaView: ComponentType<{
+    children?: ReactNode;
+    style?: unknown;
+  }>;
+}
+
+declare module 'react-native-svg' {
+  export const Svg: ComponentType<{
+    children?: ReactNode;
+    width?: number;
+    height?: number;
+    viewBox?: string;
+    fill?: string;
+    style?: unknown;
+  }>;
+  export const Path: ComponentType<{d?: string; fill?: string}>;
+  export const Rect: ComponentType<Record<string, unknown>>;
+  export const G: ComponentType<{children?: ReactNode}>;
+}
 
 type AppIconProps = {
   size?: number;

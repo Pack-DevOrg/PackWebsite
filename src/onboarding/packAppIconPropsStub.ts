@@ -7,23 +7,6 @@ export type IconProps = {
   style?: unknown;
 };
 
-export function LinearGradient({
-  colors,
-  children,
-}: {
-  readonly colors?: readonly string[];
-  readonly children?: React.ReactNode;
-}): React.ReactElement {
-  return React.createElement(
-    'div',
-    {
-      'data-testid': 'expo-linear-gradient',
-      'data-colors': (colors ?? []).join(','),
-    },
-    children,
-  );
-}
-
 export function useSharedValue<T>(value: T): {value: T} {
   return {value};
 }

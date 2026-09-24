@@ -28,6 +28,19 @@ const appOnboardingComponents = path.join(
   'OnboardingComponents.tsx',
 );
 const appRuntimeStub = path.join(rootDir, 'src', 'onboarding', 'packAppIconPropsStub.ts');
+const appLinearGradient = path.join(
+  appRoot,
+  'node_modules/expo-linear-gradient/build/LinearGradient.js',
+);
+const appSafeArea = path.join(
+  appRoot,
+  'node_modules/react-native-safe-area-context/lib/module/index.js',
+);
+const svgModule = [
+  path.join(rootDir, 'node_modules/react-native-svg/lib/module/index.js'),
+  path.join(rootDir, '..', 'node_modules/react-native-svg/lib/module/index.js'),
+  path.join(rootDir, '..', '..', 'node_modules/react-native-svg/lib/module/index.js'),
+].find((candidate) => fs.existsSync(candidate));
 
 export default {
   preset: 'ts-jest',
@@ -41,7 +54,9 @@ export default {
     '^@pack/ui-primitives/(.*)$': '<rootDir>/packages/ui-primitives/src/$1',
     '^pack-app/icons/svg/(.*)$': `${appIconsDir}/$1`,
     '^pack-app/components/onboarding/OnboardingComponents$': appOnboardingComponents,
-    '^expo-linear-gradient$': appRuntimeStub,
+    '^expo-linear-gradient$': appLinearGradient,
+    '^react-native-safe-area-context$': appSafeArea,
+    '^react-native-svg$': svgModule,
     '^react-native-reanimated$': appRuntimeStub,
     '^@react-navigation/native$': appRuntimeStub,
     '^react-native$': '<rootDir>/node_modules/react-native-web',

@@ -16,10 +16,20 @@ function insideWebLib(basedir) {
 }
 
 function webBuild(abs) {
-  if (abs.endsWith('.js')) {
-    return abs.replace(/\.js$/, '.web.js');
+  const extensions = ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs'];
+  const candidates = [];
+  for (const ext of extensions) {
+    if (abs.endsWith(ext)) {
+      candidates.push(`${abs.slice(0, -ext.length)}.web${ext}`);
+    }
   }
-  return `${abs}.web.js`;
+  candidates.push(
+    `${abs}.web.tsx`,
+    `${abs}.web.ts`,
+    `${abs}.web.jsx`,
+    `${abs}.web.js`,
+  );
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
 }
 
 function packAppRoot(rootDir) {
@@ -63,9 +73,8 @@ module.exports = function resolveWebBuild(request, options) {
     return path.join(options.rootDir, 'src/onboarding/packAppIconPropsStub.ts');
   }
   if (request.startsWith('.') && insideWebLib(basedir)) {
-    const abs = path.resolve(basedir, request);
-    const web = webBuild(abs);
-    if (fs.existsSync(web)) {
+    const web = webBuild(path.resolve(basedir, request));
+    if (web) {
       return web;
     }
   }

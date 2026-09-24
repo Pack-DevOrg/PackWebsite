@@ -89,19 +89,6 @@ const packAdsVideoLabTemplatesPath = path.join(
   'templates.json',
 );
 const packAppDir = path.join(repoRootDir, 'PackApp');
-function existingPackAppDir(): string {
-  const candidates = [
-    path.join(rootDir, '..', 'PackApp'),
-    path.join(rootDir, '..', '..', 'PackApp'),
-  ];
-  for (const candidate of candidates) {
-    if (fs.existsSync(path.join(candidate, 'src', 'icons', 'svg', 'GoogleOutlineIcon.tsx'))) {
-      return candidate;
-    }
-  }
-  return candidates[0] ?? packAppDir;
-}
-const packAppIconsDir = path.join(existingPackAppDir(), 'src', 'icons', 'svg');
 const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
   packAppDir,
@@ -743,15 +730,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
       path.join(packWebEffectsDir, 'thinking-orbs', 'dist', 'index.es.js'),
     ),
     '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
-    'pack-app/icons/svg/GoogleOutlineIcon': normalizePath(
-      path.join(packAppIconsDir, 'GoogleOutlineIcon.tsx'),
-    ),
-    'pack-app/icons/svg/AppleOutlineIcon': normalizePath(
-      path.join(packAppIconsDir, 'AppleOutlineIcon.tsx'),
-    ),
-    'pack-app/icons/svg/MicrosoftIcon': normalizePath(
-      path.join(packAppIconsDir, 'MicrosoftIcon.tsx'),
-    ),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
@@ -965,23 +943,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
       // nm-store dependency tree is immutable (chflags uchg), so any plugin
       // writing under node_modules fails with EPERM.
       imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
-      {
-        name: 'pack-app-icon-props-stub',
-        enforce: 'pre',
-        resolveId(source, importer) {
-          if (importer === undefined) {
-            return null;
-          }
-          const normalizedImporter = normalizePath(importer);
-          if (!normalizedImporter.includes('/PackApp/src/icons/svg/')) {
-            return null;
-          }
-          if (source !== '../Icon') {
-            return null;
-          }
-          return path.join(srcDir, 'onboarding', 'packAppIconPropsStub.ts');
-        },
-      },
     ],
     cacheDir: '.vite-cache',
     // Use absolute root so assets resolve correctly for deep links (e.g., /share/*)
@@ -992,19 +953,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
     resolve: {
       dedupe: ['react', 'react-dom', 'styled-components'],
       alias: resolveAliases,
-      extensions: [
-        '.web.tsx',
-        '.web.ts',
-        '.web.jsx',
-        '.web.js',
-        '.mjs',
-        '.js',
-        '.mts',
-        '.ts',
-        '.jsx',
-        '.tsx',
-        '.json',
-      ],
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod', 'react-native-web'],

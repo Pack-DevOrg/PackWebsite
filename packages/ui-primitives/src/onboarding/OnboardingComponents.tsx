@@ -11,49 +11,11 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import {LinearGradient} from 'expo-linear-gradient';
-import {
-  SafeAreaProvider,
-  SafeAreaView,
-} from 'react-native-safe-area-context';
-import {AppleOutlineIcon} from 'pack-app/icons/svg/AppleOutlineIcon';
-import {GoogleOutlineIcon} from 'pack-app/icons/svg/GoogleOutlineIcon';
-import {MicrosoftIcon} from 'pack-app/icons/svg/MicrosoftIcon';
-
+import {LinearGradient} from '../shims/LinearGradient';
+import {SafeAreaView} from '../shims/SafeArea';
+import {ProviderMark} from '../shims/ProviderMark';
 import {tokens} from '../tokens';
 import {TravelGlobeBackground} from './TravelGlobeBackground';
-
-const WEB_SAFE_AREA = {
-  insets: {top: 0, right: 0, bottom: 0, left: 0},
-  frame: {x: 0, y: 0, width: 0, height: 0},
-};
-
-type GradientColors = readonly [string, string, ...string[]];
-
-function primaryGradient(disabled: boolean): GradientColors {
-  if (disabled) {
-    return [tokens.colors.gray, tokens.colors.gray];
-  }
-  return [tokens.colors.primary, tokens.colors.primaryDark];
-}
-
-export function ProviderMark({
-  provider,
-  size,
-  color,
-}: {
-  readonly provider: 'google' | 'microsoft' | 'apple';
-  readonly size: number;
-  readonly color: string;
-}): React.ReactElement {
-  if (provider === 'microsoft') {
-    return <MicrosoftIcon size={size} />;
-  }
-  if (provider === 'google') {
-    return <GoogleOutlineIcon size={size} />;
-  }
-  return <AppleOutlineIcon size={size} color={color} />;
-}
 
 export const ONBOARDING_CTA_MAX_WIDTH = 320;
 
@@ -152,30 +114,28 @@ export function OnboardingContainer({
 }: OnboardingContainerProps): React.ReactElement {
   const showHeader = showBack === true || currentStep !== undefined;
   return (
-    <SafeAreaProvider initialMetrics={WEB_SAFE_AREA}>
-      <SafeAreaView style={styles.container}>
-        <LinearGradient
-          colors={[
-            tokens.colors.black,
-            tokens.colors.darkGray1,
-            tokens.colors.darkGray2,
-          ] as GradientColors}
-          style={StyleSheet.absoluteFillObject}
-          start={{x: 0.1, y: 0}}
-          end={{x: 0.9, y: 1}}
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={[
+          tokens.colors.black,
+          tokens.colors.darkGray1,
+          tokens.colors.darkGray2,
+        ]}
+        style={StyleSheet.absoluteFillObject}
+        start={{x: 0.1, y: 0}}
+        end={{x: 0.9, y: 1}}
+      />
+      {showGlobe ? <TravelGlobeBackground /> : null}
+      {showHeader ? (
+        <OnboardingHeader
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          onBack={onBack}
+          showBack={showBack}
         />
-        {showGlobe ? <TravelGlobeBackground /> : null}
-        {showHeader ? (
-          <OnboardingHeader
-            currentStep={currentStep}
-            totalSteps={totalSteps}
-            onBack={onBack}
-            showBack={showBack}
-          />
-        ) : null}
-        <View style={styles.foreground}>{children}</View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+      ) : null}
+      <View style={styles.foreground}>{children}</View>
+    </SafeAreaView>
   );
 }
 
@@ -331,7 +291,11 @@ export function OnboardingPrimaryButton({
       accessibilityLabel={accessibilityLabel}
       testID={testID}>
       <LinearGradient
-        colors={primaryGradient(isVisuallyDisabled)}
+        colors={
+          isVisuallyDisabled
+            ? [tokens.colors.gray, tokens.colors.gray]
+            : [tokens.colors.primary, tokens.colors.primaryDark]
+        }
         style={styles.primaryButtonGradient}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}>
@@ -349,22 +313,19 @@ export function OnboardingPrimaryLink({
   testID,
   accessibilityLabel,
 }: OnboardingPrimaryLinkProps): React.ReactElement {
-  const anchor = {
-    href,
-    accessibilityRole: 'link' as const,
-    testID,
-    accessibilityLabel,
-  };
   return (
     <Pressable
-      {...anchor}
+      accessibilityRole="link"
+      href={href}
+      testID={testID}
+      accessibilityLabel={accessibilityLabel}
       style={[
         styles.primaryButton,
         styles.primaryButtonConstrained,
         {maxWidth: ONBOARDING_CTA_MAX_WIDTH},
       ]}>
       <LinearGradient
-        colors={primaryGradient(false)}
+        colors={[tokens.colors.primary, tokens.colors.primaryDark]}
         style={styles.primaryButtonGradient}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}>
@@ -621,8 +582,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   primaryButtonGradient: {
-    width: '100%',
-    alignSelf: 'stretch',
     minHeight: tokens.buttonHeightL,
     paddingVertical: tokens.spacing.m,
     alignItems: 'center',

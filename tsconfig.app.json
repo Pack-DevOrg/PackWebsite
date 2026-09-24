@@ -29,9 +29,6 @@
       "@/*": ["src/*"],
       "@pack/ui-primitives": ["packages/ui-primitives/src/index.ts"],
       "@pack/ui-primitives/*": ["packages/ui-primitives/src/*"],
-      "@pack/schemas": ["../PackServer/packages/schemas/src/index.ts"],
-      "@pack/schemas/*": ["../PackServer/packages/schemas/src/*"],
-      "@pack/web-effects/*": ["../PackServer/packages/web-effects/vendor/*/dist"],
       "react-native": ["node_modules/react-native-web"]
     }
   },

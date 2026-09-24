@@ -1,14 +1,20 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const websiteRoot = path.resolve(import.meta.dirname, "..");
-const packServerRoot = path.resolve(websiteRoot, "../PackServer");
 const defaultDistDir = path.resolve(websiteRoot, "dist");
 
 const MISSING_DURABLE_SOURCE =
   "No durable S3 source for city assets. Set PACK_APP_BUCKET, pass --bucket, or --source-dir. Default is durable S3 (the published baseImageUrl prefix on the app-origin bucket), not PackServer/tmp.";
+
+// Manifests are an S3 read on the app-origin bucket, same durable source as
+// the tiles. Keys:
+//   generated/city-image-cache/openai-city-sheet-images.json
+//   generated/city-image-cache/openai-city-headers.json
+export const CITY_IMAGE_CACHE_PREFIX = "generated/city-image-cache";
 
 // One entry per published city-image asset class. Both classes ship through
 // the same deploy path (deploy-app-origin.mjs syncs dist/assets with
@@ -20,20 +26,14 @@ const MISSING_DURABLE_SOURCE =
 export const ASSET_CLASSES = {
   "city-recommendations": {
     // Square recommendation tiles sliced from OpenAI city sheets.
-    manifestPath: path.join(
-      packServerRoot,
-      "generated/city-image-cache/openai-city-sheet-images.json",
-    ),
+    manifestKey: `${CITY_IMAGE_CACHE_PREFIX}/openai-city-sheet-images.json`,
     basePathPrefix: "assets/city-recommendations/",
     extension: ".webp",
   },
   "city-headers": {
     // Wide header-art banners (assetClass: 'header'); entry paths are
     // relative to the run root (images/<code>-<city>-<variant>.png).
-    manifestPath: path.join(
-      packServerRoot,
-      "generated/city-image-cache/openai-city-headers.json",
-    ),
+    manifestKey: `${CITY_IMAGE_CACHE_PREFIX}/openai-city-headers.json`,
     basePathPrefix: "assets/city-headers/",
     extension: ".png",
   },
@@ -194,6 +194,27 @@ export const defaultS3Sync = (uri, targetDir, env = process.env) => {
   });
 };
 
+export const defaultS3Cp = (uri, targetFile, env = process.env) => {
+  execFileSync("aws", ["s3", "cp", uri, targetFile], {
+    stdio: "inherit",
+    cwd: process.cwd(),
+    env,
+  });
+};
+
+const readManifest = ({ assetClass, args, env, captureJson, s3Cp }) => {
+  if (args.manifest) {
+    return readJson(path.resolve(args.manifest));
+  }
+  const bucket = resolveAppBucket({ env, args, captureJson });
+  const uri = `${bucket}/${assetClass.manifestKey}`;
+  const destDir = fs.mkdtempSync(path.join(os.tmpdir(), "city-image-manifest-"));
+  const dest = path.join(destDir, path.basename(assetClass.manifestKey));
+  const copy = s3Cp ?? ((from, to) => defaultS3Cp(from, to, env));
+  copy(uri, dest);
+  return readJson(dest);
+};
+
 const resolveDistribution = ({ env, captureJson }) => {
   const appAlias =
     env.PACK_APP_DISTRIBUTION_ALIAS?.trim() ||
@@ -341,10 +362,16 @@ export const stageAssetClass = ({
   distDir,
   env = process.env,
   s3Sync,
+  s3Cp,
   captureJson,
 }) => {
-  const manifestPath = path.resolve(args.manifest ?? assetClass.manifestPath);
-  const manifest = readJson(manifestPath);
+  const manifest = readManifest({
+    assetClass,
+    args,
+    env,
+    captureJson,
+    s3Cp,
+  });
   const { assetBasePath, entries } = validateManifest(manifest, assetClass);
   const source = resolveDurableSource({
     manifest,
@@ -384,6 +411,7 @@ export const main = ({
   argv = process.argv,
   env = process.env,
   s3Sync,
+  s3Cp,
   captureJson,
 } = {}) => {
   const args = parseArgs(argv);
@@ -415,6 +443,7 @@ export const main = ({
       distDir,
       env,
       s3Sync,
+      s3Cp,
       captureJson: jsonCapture,
     });
   }

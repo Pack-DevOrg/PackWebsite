@@ -2,19 +2,21 @@ import React from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {
   ONBOARDING_CTA_MAX_WIDTH,
+  OnboardingContainer as AppOnboardingContainer,
+  OnboardingHeader as AppOnboardingHeader,
   OnboardingPrimaryButton,
+  OnboardingSecondaryButton,
   OnboardingTitle as AppOnboardingTitle,
 } from '@pack/app/onboarding/OnboardingComponents';
 import {AppleOutlineIcon} from '@pack/app/icons/AppleOutlineIcon';
-import {ChevronLeftIcon} from '@pack/app/icons/ChevronLeftIcon';
 import {GoogleOutlineIcon} from '@pack/app/icons/GoogleOutlineIcon';
 import {MicrosoftIcon} from '@pack/app/icons/MicrosoftIcon';
 
 import {tokens} from '../tokens';
+import {TravelGlobeBackground} from './TravelGlobeBackground';
 
 export {
   ONBOARDING_CTA_MAX_WIDTH,
-  OnboardingContainer,
   OnboardingContent,
   OnboardingEyebrow,
   OnboardingPrimaryButton,
@@ -22,30 +24,26 @@ export {
   OnboardingSubtitle,
 } from '@pack/app/onboarding/OnboardingComponents';
 
-export function OnboardingHeader({
-  onBack,
-  showBack = true,
-  backAccessibilityLabel = 'Go back',
-}: {
-  readonly onBack?: () => void;
-  readonly showBack?: boolean;
-  readonly backAccessibilityLabel?: string;
-}): React.ReactElement {
+type AppContainerProps = React.ComponentProps<typeof AppOnboardingContainer>;
+type AppHeaderProps = React.ComponentProps<typeof AppOnboardingHeader>;
+
+export function OnboardingContainer({
+  showGlobe = false,
+  children,
+  ...rest
+}: AppContainerProps & {readonly showGlobe?: boolean}): React.ReactElement {
   return (
-    <View style={styles.header}>
-      {showBack ? (
-        <Pressable
-          onPress={onBack}
-          accessibilityLabel={backAccessibilityLabel}
-          accessibilityRole="button"
-          style={styles.backButton}>
-          <ChevronLeftIcon size={20} color={tokens.colors.textSecondary} />
-        </Pressable>
-      ) : (
-        <View style={styles.backButton} />
-      )}
-    </View>
+    <AppOnboardingContainer {...rest}>
+      {showGlobe ? <TravelGlobeBackground /> : null}
+      {children}
+    </AppOnboardingContainer>
   );
+}
+
+export function OnboardingHeader(
+  props: AppHeaderProps & {readonly backAccessibilityLabel?: string},
+): React.ReactElement {
+  return <AppOnboardingHeader {...(props as AppHeaderProps)} />;
 }
 
 export function OnboardingTitle(
@@ -210,22 +208,6 @@ export function OnboardingProviderButton({
 }
 
 const styles = {
-  header: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    paddingHorizontal: 20,
-    paddingVertical: tokens.spacing.m,
-    minHeight: 60,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: tokens.borderRadius.r20,
-    backgroundColor: tokens.colors.backgroundTransparent,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
   primaryLink: {
     width: '100%' as const,
     maxWidth: ONBOARDING_CTA_MAX_WIDTH,

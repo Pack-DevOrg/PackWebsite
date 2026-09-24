@@ -1,56 +1,115 @@
 import React from 'react';
 import {View} from 'react-native';
 
-function SvgPart({children}: {children?: React.ReactNode}): React.ReactElement {
-  return React.createElement(View, null, children);
-}
+export const ONBOARDING_CTA_MAX_WIDTH = 320;
 
-(SvgPart as typeof SvgPart & {View: typeof View}).View = View;
-
-export const Svg = SvgPart;
-export const Path = SvgPart;
-export const Rect = SvgPart;
-export const Circle = SvgPart;
-export const G = SvgPart;
-export const Line = SvgPart;
-export const Polyline = SvgPart;
-export const Polygon = SvgPart;
-export const Ellipse = SvgPart;
-
-export function LinearGradient({
+export function OnboardingContainer({
   children,
-  colors,
-  style,
 }: {
   children?: React.ReactNode;
-  colors?: readonly string[];
-  style?: object;
 }): React.ReactElement {
-  const backgroundImage = colors ? `linear-gradient(90deg, ${colors.join(', ')})` : undefined;
+  return React.createElement('div', null, children);
+}
+
+export function OnboardingContent({
+  children,
+}: {
+  children?: React.ReactNode;
+}): React.ReactElement {
+  return React.createElement('div', null, children);
+}
+
+export function OnboardingEyebrow({
+  children,
+}: {
+  children?: React.ReactNode;
+}): React.ReactElement {
+  return React.createElement('span', null, children);
+}
+
+export function OnboardingHeader({
+  backAccessibilityLabel = 'Go back',
+  showBack = true,
+  onBack,
+}: {
+  backAccessibilityLabel?: string;
+  showBack?: boolean;
+  onBack?: () => void;
+}): React.ReactElement {
+  if (!showBack) {
+    return React.createElement('div', null);
+  }
   return React.createElement(
-    View,
-    {style: [style, backgroundImage ? {backgroundImage} : null]},
-    children,
+    'button',
+    {type: 'button', onClick: onBack},
+    backAccessibilityLabel,
   );
 }
 
-export function SafeAreaView({
+export function OnboardingPrimaryButton(props: {
+  children?: React.ReactNode;
+  testID?: string;
+  onPress?: () => void;
+  disabled?: boolean;
+}): React.ReactElement {
+  return React.createElement(
+    'button',
+    {
+      type: 'button',
+      disabled: Boolean(props.disabled),
+      onClick: props.onPress,
+      'data-testid': props.testID ?? 'app-onboarding-primary',
+    },
+    props.children,
+  );
+}
+
+export function OnboardingSecondaryButton(props: {
+  children?: React.ReactNode;
+  testID?: string;
+  onPress?: () => void;
+  fullWidth?: boolean;
+}): React.ReactElement {
+  return React.createElement(
+    'button',
+    {
+      type: 'button',
+      onClick: props.onPress,
+      'data-testid': props.testID ?? 'app-onboarding-secondary',
+      'data-full-width': props.fullWidth ? 'true' : 'false',
+    },
+    props.children,
+  );
+}
+
+export function OnboardingSubtitle({
   children,
-  style,
+  testID,
 }: {
   children?: React.ReactNode;
-  style?: object;
+  testID?: string;
 }): React.ReactElement {
-  return React.createElement(View, {style}, children);
+  return React.createElement('div', {'data-testid': testID}, children);
 }
 
-export function SafeAreaProvider({children}: {children?: React.ReactNode}): React.ReactNode {
-  return children ?? null;
+export function OnboardingTitle({
+  children,
+}: {
+  children?: React.ReactNode;
+}): React.ReactElement {
+  return React.createElement('span', null, children);
 }
 
-export function useSafeAreaInsets(): {top: number; right: number; bottom: number; left: number} {
-  return {top: 0, right: 0, bottom: 0, left: 0};
+function iconMark(testID: string) {
+  return function IconMark(): React.ReactElement {
+    return React.createElement('span', {'data-testid': testID});
+  };
 }
+
+export const GoogleOutlineIcon = iconMark('app-google-icon');
+export const AppleOutlineIcon = iconMark('app-apple-icon');
+export const MicrosoftIcon = iconMark('app-microsoft-icon');
+export const ChevronLeftIcon = iconMark('app-chevron-icon');
 
 export function useNavigation(): {goBack: () => void; navigate: () => void} {
   return {
@@ -60,10 +119,6 @@ export function useNavigation(): {goBack: () => void; navigate: () => void} {
 }
 
 export function useFocusEffect(_effect: () => void | (() => void)): void {}
-
-export function NavigationContainer({children}: {children?: React.ReactNode}): React.ReactNode {
-  return children ?? null;
-}
 
 export function useSharedValue<T>(value: T): {value: T} {
   return {value};
@@ -85,4 +140,8 @@ export function withDelay<T>(_delayMs: number, value: T): T {
   return value;
 }
 
-export default SvgPart;
+const Animated = {
+  View,
+};
+
+export default Animated;

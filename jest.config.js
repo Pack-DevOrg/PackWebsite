@@ -5,14 +5,12 @@ export default {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
     '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
     '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/src/__mocks__/fileMock.js',
+    '^@/(.*)$': '<rootDir>/src/$1',
     '^@pack/ui-primitives$': '<rootDir>/packages/ui-primitives/src/index.ts',
     '^@pack/ui-primitives/(.*)$': '<rootDir>/packages/ui-primitives/src/$1',
+    '^@pack/app/onboarding/OnboardingComponents$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
+    '^@pack/app/icons/(.*)$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
     '^react-native$': '<rootDir>/node_modules/react-native-web',
-    '^@react-navigation/native$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
-    '^react-native-reanimated$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
-    '^expo-linear-gradient$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
-    '^react-native-safe-area-context$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
-    '^react-native-svg$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
     // Vendored web effects: mock in jest. The real builds touch browser-only
     // APIs (matchMedia, canvas) that jsdom provides inconsistently across
     // suites, and resolving them through the workspace symlink pulls the
@@ -36,10 +34,6 @@ export default {
       useESM: true,
     }],
   },
-  resolver: '<rootDir>/scripts/jest-web-resolver.cjs',
-  transformIgnorePatterns: [
-    'node_modules/(?!(expo-linear-gradient|react-native-svg|react-native-safe-area-context)/)',
-  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   testMatch: ['<rootDir>/src/**/*.test.(ts|tsx|js|jsx)'],

@@ -747,6 +747,12 @@ export default defineConfig(({ mode, ssrBuild }) => {
     '@pack/app/icons/ChevronLeftIcon': normalizePath(
       path.join(packAppDir, 'src', 'icons', 'svg', 'ChevronLeftIcon.tsx'),
     ),
+    '@react-navigation/native': normalizePath(
+      path.join(rootDir, 'src', 'onboarding', 'packAppIconPropsStub.ts'),
+    ),
+    'react-native-reanimated': normalizePath(
+      path.join(rootDir, 'src', 'onboarding', 'packAppIconPropsStub.ts'),
+    ),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),

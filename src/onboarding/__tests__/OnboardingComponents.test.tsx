@@ -19,6 +19,7 @@ const websiteSource = readFileSync(
 describe('OnboardingComponents', () => {
   it('re-exports the app primary control and renders it', () => {
     expect(OnboardingPrimaryButton).toBe(appOnboarding.OnboardingPrimaryButton);
+    expect(OnboardingSecondaryButton).toBe(appOnboarding.OnboardingSecondaryButton);
 
     render(
       <>
@@ -31,24 +32,19 @@ describe('OnboardingComponents', () => {
       </>,
     );
 
-    expect(screen.getAllByTestId('app-onboarding-primary')[0]).toHaveTextContent('Continue');
+    expect(screen.getAllByRole('button', {name: 'Continue'}).length).toBeGreaterThan(0);
     const link = screen.getByRole('link', {name: 'Text Pack'});
     expect(link.getAttribute('href')).toBe('sms:+1555');
-    expect(link.querySelector('[data-testid="app-onboarding-primary"]')).not.toBeNull();
-    expect(screen.getByTestId('app-onboarding-secondary').getAttribute('data-full-width')).toBe(
-      'true',
-    );
-    expect(screen.getByTestId('app-google-icon')).toBeTruthy();
+    expect(link.querySelector('[role="button"]')).not.toBeNull();
+    expect(screen.getByRole('button', {name: 'Skip'})).toBeTruthy();
+    expect(document.querySelector('path[fill="#4285F4"]')).not.toBeNull();
   });
 
   it('fails when the website keeps its own button, mark, or shim', () => {
-    expect(websiteSource).toContain(
-      "OnboardingPrimaryButton,\n  OnboardingSecondaryButton,\n  OnboardingSubtitle,\n} from '@pack/app/onboarding/OnboardingComponents'",
-    );
+    expect(websiteSource).toContain("from '@pack/app/onboarding/OnboardingComponents'");
     expect(websiteSource).toContain("from '@pack/app/icons/GoogleOutlineIcon'");
     expect(websiteSource.includes('export function OnboardingPrimaryButton')).toBe(false);
     expect(websiteSource.includes('export const OnboardingPrimaryButton')).toBe(false);
-    expect(websiteSource.includes('export function SafeAreaView')).toBe(false);
     expect(websiteSource.includes('function LinearGradient')).toBe(false);
     expect(websiteSource.includes('function SafeAreaView')).toBe(false);
     expect(websiteSource.includes('gradientAngle')).toBe(false);

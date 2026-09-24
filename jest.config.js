@@ -1,6 +1,10 @@
 export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  resolver: '<rootDir>/scripts/jest-pack-app-resolver.cjs',
+  transformIgnorePatterns: [
+    'node_modules/(?!(expo-linear-gradient|react-native-svg|react-native-safe-area-context)/)',
+  ],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
     '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
@@ -8,8 +12,6 @@ export default {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@pack/ui-primitives$': '<rootDir>/packages/ui-primitives/src/index.ts',
     '^@pack/ui-primitives/(.*)$': '<rootDir>/packages/ui-primitives/src/$1',
-    '^@pack/app/onboarding/OnboardingComponents$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
-    '^@pack/app/icons/(.*)$': '<rootDir>/src/onboarding/packAppIconPropsStub.ts',
     '^react-native$': '<rootDir>/node_modules/react-native-web',
     // Vendored web effects: mock in jest. The real builds touch browser-only
     // APIs (matchMedia, canvas) that jsdom provides inconsistently across

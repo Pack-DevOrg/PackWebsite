@@ -29,6 +29,26 @@
       "@/*": ["src/*"],
       "@pack/ui-primitives": ["packages/ui-primitives/src/index.ts"],
       "@pack/ui-primitives/*": ["packages/ui-primitives/src/*"],
+      "@pack/app/onboarding/OnboardingComponents": [
+        "../PackApp/src/components/onboarding/OnboardingComponents.tsx",
+        "../../PackApp/src/components/onboarding/OnboardingComponents.tsx"
+      ],
+      "@pack/app/icons/GoogleOutlineIcon": [
+        "../PackApp/src/icons/svg/GoogleOutlineIcon.tsx",
+        "../../PackApp/src/icons/svg/GoogleOutlineIcon.tsx"
+      ],
+      "@pack/app/icons/AppleOutlineIcon": [
+        "../PackApp/src/icons/svg/AppleOutlineIcon.tsx",
+        "../../PackApp/src/icons/svg/AppleOutlineIcon.tsx"
+      ],
+      "@pack/app/icons/MicrosoftIcon": [
+        "../PackApp/src/icons/svg/MicrosoftIcon.tsx",
+        "../../PackApp/src/icons/svg/MicrosoftIcon.tsx"
+      ],
+      "@pack/app/icons/ChevronLeftIcon": [
+        "../PackApp/src/icons/svg/ChevronLeftIcon.tsx",
+        "../../PackApp/src/icons/svg/ChevronLeftIcon.tsx"
+      ],
       "@pack/schemas": ["../PackServer/packages/schemas/src/index.ts"],
       "@pack/schemas/*": ["../PackServer/packages/schemas/src/*"],
       "@pack/web-effects/*": ["../PackServer/packages/web-effects/vendor/*/dist"],

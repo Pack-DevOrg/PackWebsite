@@ -747,12 +747,9 @@ export default defineConfig(({ mode, ssrBuild }) => {
     '@pack/app/icons/ChevronLeftIcon': normalizePath(
       path.join(packAppDir, 'src', 'icons', 'svg', 'ChevronLeftIcon.tsx'),
     ),
-    '@react-navigation/native': normalizePath(
-      path.join(rootDir, 'src', 'onboarding', 'packAppIconPropsStub.ts'),
-    ),
-    'react-native-reanimated': normalizePath(
-      path.join(rootDir, 'src', 'onboarding', 'packAppIconPropsStub.ts'),
-    ),
+    '@react-navigation/native': normalizePath(path.join(rootDir, 'scripts', 'pack-app-navigation.cjs')),
+    'react-native-reanimated': normalizePath(path.join(rootDir, 'scripts', 'pack-app-reanimated.cjs')),
+    'react-native-svg': normalizePath(path.join(rootDir, 'scripts', 'react-native-svg-web.cjs')),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
@@ -905,32 +902,34 @@ export default defineConfig(({ mode, ssrBuild }) => {
     plugins: [
       packServerBareImportsFromSite,
       {
-        name: 'pack-app-at-alias',
+        name: 'pack-app-web-builds',
         enforce: 'pre' as const,
         resolveId(source, importer) {
           if (!importer) {
             return null;
           }
+          const importerPath = normalizePath(importer);
           const appRoot = normalizePath(packAppDir);
-          const fromApp = normalizePath(importer).startsWith(appRoot);
-          if (!fromApp) {
-            return null;
-          }
-          const webSrc = normalizePath(srcDir);
-          let rel = '';
-          if (source.startsWith('@/')) {
-            rel = source.slice(2);
-          } else if (normalizePath(source).startsWith(`${webSrc}/`)) {
-            rel = normalizePath(source).slice(webSrc.length + 1);
-          } else {
-            return null;
-          }
-          const base = path.join(packAppDir, 'src', rel);
-          for (const suffix of ['', '.tsx', '.ts', '.js', '/index.ts', '/index.tsx']) {
-            const file = `${base}${suffix}`;
-            if (fs.existsSync(file) && fs.statSync(file).isFile()) {
-              return normalizePath(file);
+          if (importerPath.startsWith(appRoot) && source.startsWith('@/')) {
+            const base = path.join(packAppDir, 'src', source.slice(2));
+            for (const suffix of ['', '.tsx', '.ts', '.js', '/index.ts', '/index.tsx']) {
+              const file = `${base}${suffix}`;
+              if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+                return normalizePath(file);
+              }
             }
+          }
+          if (
+            importerPath.includes('/expo-linear-gradient/') &&
+            (source === './NativeLinearGradient' || source.endsWith('/NativeLinearGradient'))
+          ) {
+            const webFile = path.join(path.dirname(importer), 'NativeLinearGradient.web.js');
+            if (fs.existsSync(webFile)) {
+              return normalizePath(webFile);
+            }
+          }
+          if (source === 'react-native/Libraries/Utilities/codegenNativeComponent') {
+            return normalizePath(path.join(rootDir, 'scripts', 'pack-app-codegen.cjs'));
           }
           return null;
         },
@@ -1059,6 +1058,9 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'lucide-react',
         'react-native-web',
         'react-native',
+        'expo-linear-gradient',
+        'react-native-safe-area-context',
+        'react-native-svg',
         // CJS __esModule defaults. Node's native ESM loader binds
         // `import createPrefixer from "inline-style-prefixer/..."` to
         // `{ default: fn }`, so the onboard SSR chunk throws

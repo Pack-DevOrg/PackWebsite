@@ -1,14 +1,16 @@
 import React from 'react';
 import {Pressable, Text, View} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {
   ONBOARDING_CTA_MAX_WIDTH,
   OnboardingContainer as AppOnboardingContainer,
-  OnboardingHeader as AppOnboardingHeader,
+  OnboardingContent as AppOnboardingContent,
   OnboardingPrimaryButton,
   OnboardingSecondaryButton,
   OnboardingTitle as AppOnboardingTitle,
 } from '@pack/app/onboarding/OnboardingComponents';
 import {AppleOutlineIcon} from '@pack/app/icons/AppleOutlineIcon';
+import {ChevronLeftIcon} from '@pack/app/icons/ChevronLeftIcon';
 import {GoogleOutlineIcon} from '@pack/app/icons/GoogleOutlineIcon';
 import {MicrosoftIcon} from '@pack/app/icons/MicrosoftIcon';
 
@@ -17,33 +19,62 @@ import {TravelGlobeBackground} from './TravelGlobeBackground';
 
 export {
   ONBOARDING_CTA_MAX_WIDTH,
-  OnboardingContent,
   OnboardingEyebrow,
   OnboardingPrimaryButton,
   OnboardingSecondaryButton,
   OnboardingSubtitle,
 } from '@pack/app/onboarding/OnboardingComponents';
 
+const safeAreaMetrics = {frame: {x: 0, y: 0, width: 0, height: 0}, insets: {top: 0, right: 0, bottom: 0, left: 0}};
+
+function withSafeArea(node: React.ReactElement): React.ReactElement {
+  return <SafeAreaProvider initialMetrics={safeAreaMetrics}>{node}</SafeAreaProvider>;
+}
+
 type AppContainerProps = React.ComponentProps<typeof AppOnboardingContainer>;
-type AppHeaderProps = React.ComponentProps<typeof AppOnboardingHeader>;
 
 export function OnboardingContainer({
   showGlobe = false,
   children,
   ...rest
 }: AppContainerProps & {readonly showGlobe?: boolean}): React.ReactElement {
-  return (
+  return withSafeArea(
     <AppOnboardingContainer {...rest}>
       {showGlobe ? <TravelGlobeBackground /> : null}
       {children}
-    </AppOnboardingContainer>
+    </AppOnboardingContainer>,
   );
 }
 
-export function OnboardingHeader(
-  props: AppHeaderProps & {readonly backAccessibilityLabel?: string},
+export function OnboardingContent(
+  props: React.ComponentProps<typeof AppOnboardingContent>,
 ): React.ReactElement {
-  return <AppOnboardingHeader {...(props as AppHeaderProps)} />;
+  return withSafeArea(<AppOnboardingContent {...props} />);
+}
+
+export function OnboardingHeader({
+  onBack,
+  showBack = true,
+  backAccessibilityLabel = 'Go back',
+}: {
+  readonly onBack?: () => void;
+  readonly showBack?: boolean;
+  readonly backAccessibilityLabel?: string;
+  readonly currentStep?: number;
+  readonly totalSteps?: number;
+}): React.ReactElement {
+  if (!showBack) {
+    return <View />;
+  }
+  return (
+    <Pressable
+      onPress={onBack}
+      accessibilityRole="button"
+      accessibilityLabel={backAccessibilityLabel}
+      style={styles.backButton}>
+      <ChevronLeftIcon size={20} color={tokens.colors.textSecondary} />
+    </Pressable>
+  );
 }
 
 export function OnboardingTitle(
@@ -214,20 +245,27 @@ const styles = {
     alignSelf: 'center' as const,
   },
   skipButton: {
-    paddingVertical: tokens.spacing.s,
-    paddingHorizontal: tokens.spacing.m,
+    width: '100%' as const,
+    maxWidth: ONBOARDING_CTA_MAX_WIDTH,
     alignSelf: 'center' as const,
-    minHeight: 32,
-    justifyContent: 'center' as const,
-    borderRadius: tokens.borderRadius.m,
-    backgroundColor: tokens.colors.backgroundLight,
+    paddingHorizontal: tokens.spacing.xl,
+    paddingVertical: tokens.spacing.m,
+    borderRadius: tokens.borderRadius.xl,
+    backgroundColor: tokens.colors.backgroundTransparent,
     borderWidth: 1,
-    borderColor: tokens.colors.borderMedium,
+    borderColor: tokens.colors.borderLight,
+    marginBottom: tokens.spacing.m,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   skipText: {
-    fontSize: tokens.typography.fontSize.m15,
-    color: tokens.colors.textPrimary,
+    fontSize: tokens.typography.fontSize.m,
     fontWeight: tokens.typography.fontWeight.semibold,
+    color: tokens.colors.textSecondary,
     textAlign: 'center' as const,
   },
   progressDots: {

@@ -2,12 +2,7 @@ import React from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {
   ONBOARDING_CTA_MAX_WIDTH,
-  OnboardingContainer,
-  OnboardingContent,
-  OnboardingEyebrow,
   OnboardingPrimaryButton,
-  OnboardingSecondaryButton,
-  OnboardingSubtitle,
   OnboardingTitle as AppOnboardingTitle,
 } from '@pack/app/onboarding/OnboardingComponents';
 import {AppleOutlineIcon} from '@pack/app/icons/AppleOutlineIcon';
@@ -25,17 +20,13 @@ export {
   OnboardingPrimaryButton,
   OnboardingSecondaryButton,
   OnboardingSubtitle,
-};
+} from '@pack/app/onboarding/OnboardingComponents';
 
 export function OnboardingHeader({
-  currentStep,
-  totalSteps = 10,
   onBack,
   showBack = true,
   backAccessibilityLabel = 'Go back',
 }: {
-  readonly currentStep?: number;
-  readonly totalSteps?: number;
   readonly onBack?: () => void;
   readonly showBack?: boolean;
   readonly backAccessibilityLabel?: string;
@@ -53,11 +44,6 @@ export function OnboardingHeader({
       ) : (
         <View style={styles.backButton} />
       )}
-      {currentStep !== undefined ? (
-        <View style={styles.progressContainer}>
-          <OnboardingProgressDots currentStep={currentStep} totalSteps={totalSteps} />
-        </View>
-      ) : null}
     </View>
   );
 }
@@ -109,9 +95,14 @@ export function OnboardingSkipButton({
   accessibilityLabel = 'Skip for now',
 }: OnboardingSkipButtonProps): React.ReactElement {
   return (
-    <OnboardingSecondaryButton onPress={onPress} fullWidth testID={testID}>
-      {accessibilityLabel}
-    </OnboardingSecondaryButton>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
+      style={styles.skipButton}>
+      <Text style={styles.skipText}>Skip for now</Text>
+    </Pressable>
   );
 }
 
@@ -235,15 +226,27 @@ const styles = {
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
   },
-  progressContainer: {
-    flex: 1,
-    alignItems: 'center' as const,
-    marginHorizontal: 20,
-  },
   primaryLink: {
     width: '100%' as const,
     maxWidth: ONBOARDING_CTA_MAX_WIDTH,
     alignSelf: 'center' as const,
+  },
+  skipButton: {
+    paddingVertical: tokens.spacing.s,
+    paddingHorizontal: tokens.spacing.m,
+    alignSelf: 'center' as const,
+    minHeight: 32,
+    justifyContent: 'center' as const,
+    borderRadius: tokens.borderRadius.m,
+    backgroundColor: tokens.colors.backgroundLight,
+    borderWidth: 1,
+    borderColor: tokens.colors.borderMedium,
+  },
+  skipText: {
+    fontSize: tokens.typography.fontSize.m15,
+    color: tokens.colors.textPrimary,
+    fontWeight: tokens.typography.fontWeight.semibold,
+    textAlign: 'center' as const,
   },
   progressDots: {
     flexDirection: 'row' as const,

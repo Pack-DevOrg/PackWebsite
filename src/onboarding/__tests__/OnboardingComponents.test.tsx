@@ -5,10 +5,14 @@ import {render, screen} from '@testing-library/react';
 
 import * as appOnboarding from '@pack/app/onboarding/OnboardingComponents';
 import {
+  OnboardingContainer,
+  OnboardingContent,
+  OnboardingEyebrow,
   OnboardingPrimaryButton,
   OnboardingPrimaryLink,
   OnboardingSecondaryButton,
   OnboardingSkipButton,
+  OnboardingSubtitle,
 } from '@pack/ui-primitives';
 
 jest.mock('@pack/app/onboarding/OnboardingComponents', () => {
@@ -70,6 +74,10 @@ describe('OnboardingComponents', () => {
   it('re-exports the app primary and secondary controls', () => {
     expect(OnboardingPrimaryButton).toBe(appOnboarding.OnboardingPrimaryButton);
     expect(OnboardingSecondaryButton).toBe(appOnboarding.OnboardingSecondaryButton);
+    expect(OnboardingContainer).toBe(appOnboarding.OnboardingContainer);
+    expect(OnboardingContent).toBe(appOnboarding.OnboardingContent);
+    expect(OnboardingEyebrow).toBe(appOnboarding.OnboardingEyebrow);
+    expect(OnboardingSubtitle).toBe(appOnboarding.OnboardingSubtitle);
 
     render(
       <>
@@ -88,14 +96,19 @@ describe('OnboardingComponents', () => {
     expect(link.querySelector('[data-testid="app-onboarding-primary"]')).not.toBeNull();
     const skip = screen.getByTestId('connected-accounts-skip-button');
     expect(skip).toHaveTextContent('Skip for now');
-    expect(skip.getAttribute('data-full-width')).toBe('true');
+    expect(skip.getAttribute('data-full-width')).not.toBe('true');
     expect(screen.getByTestId('earlier-skip').getAttribute('data-full-width')).toBe('true');
   });
 
   it('fails when the website keeps a copied button or a shim directory', () => {
-    expect(websiteSource).toContain("from '@pack/app/onboarding/OnboardingComponents'");
+    expect(websiteSource).toContain(
+      "OnboardingPrimaryButton,\n  OnboardingSecondaryButton,\n  OnboardingSubtitle,\n} from '@pack/app/onboarding/OnboardingComponents'",
+    );
     expect(websiteSource.includes('export function OnboardingPrimaryButton')).toBe(false);
     expect(websiteSource.includes('export const OnboardingPrimaryButton')).toBe(false);
+    expect(websiteSource.includes('export function OnboardingContainer')).toBe(false);
+    expect(websiteSource.includes('export const OnboardingContainer')).toBe(false);
+    expect(websiteSource.includes('export function SafeAreaView')).toBe(false);
     expect(websiteSource.includes('function LinearGradient')).toBe(false);
     expect(websiteSource.includes('function SafeAreaView')).toBe(false);
     expect(websiteSource.includes('gradientAngle')).toBe(false);

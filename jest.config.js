@@ -1,6 +1,26 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
+function packAppIconsDir() {
+  const candidates = [
+    path.join(rootDir, '..', 'PackApp', 'src', 'icons', 'svg'),
+    path.join(rootDir, '..', '..', 'PackApp', 'src', 'icons', 'svg'),
+  ];
+  return (
+    candidates.find((dir) => fs.existsSync(path.join(dir, 'GoogleOutlineIcon.tsx'))) ??
+    candidates[0]
+  );
+}
+
+const appIconsDir = packAppIconsDir();
+
 export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  resolver: '<rootDir>/scripts/jest-web-resolver.cjs',
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
     '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
@@ -8,6 +28,7 @@ export default {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@pack/ui-primitives$': '<rootDir>/packages/ui-primitives/src/index.ts',
     '^@pack/ui-primitives/(.*)$': '<rootDir>/packages/ui-primitives/src/$1',
+    '^pack-app/icons/svg/(.*)$': `${appIconsDir}/$1`,
     '^react-native$': '<rootDir>/node_modules/react-native-web',
     // Vendored web effects: mock in jest. The real builds touch browser-only
     // APIs (matchMedia, canvas) that jsdom provides inconsistently across
@@ -33,6 +54,9 @@ export default {
     }],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!(expo-linear-gradient|react-native-svg|react-native-safe-area-context)/)',
+  ],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   testMatch: ['<rootDir>/src/**/*.test.(ts|tsx|js|jsx)'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],

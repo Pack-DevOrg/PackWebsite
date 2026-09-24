@@ -4,18 +4,30 @@ import {fileURLToPath} from 'node:url';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
-function packAppIconsDir() {
+function packAppRoot() {
   const candidates = [
-    path.join(rootDir, '..', 'PackApp', 'src', 'icons', 'svg'),
-    path.join(rootDir, '..', '..', 'PackApp', 'src', 'icons', 'svg'),
+    path.join(rootDir, '..', 'PackApp'),
+    path.join(rootDir, '..', '..', 'PackApp'),
   ];
   return (
-    candidates.find((dir) => fs.existsSync(path.join(dir, 'GoogleOutlineIcon.tsx'))) ??
-    candidates[0]
+    candidates.find((dir) =>
+      fs.existsSync(
+        path.join(dir, 'src', 'components', 'onboarding', 'OnboardingComponents.tsx'),
+      ),
+    ) ?? candidates[candidates.length - 1]
   );
 }
 
-const appIconsDir = packAppIconsDir();
+const appRoot = packAppRoot();
+const appIconsDir = path.join(appRoot, 'src', 'icons', 'svg');
+const appOnboardingComponents = path.join(
+  appRoot,
+  'src',
+  'components',
+  'onboarding',
+  'OnboardingComponents.tsx',
+);
+const appRuntimeStub = path.join(rootDir, 'src', 'onboarding', 'packAppIconPropsStub.ts');
 
 export default {
   preset: 'ts-jest',
@@ -25,10 +37,13 @@ export default {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
     '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',
     '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/src/__mocks__/fileMock.js',
-    '^@/(.*)$': '<rootDir>/src/$1',
     '^@pack/ui-primitives$': '<rootDir>/packages/ui-primitives/src/index.ts',
     '^@pack/ui-primitives/(.*)$': '<rootDir>/packages/ui-primitives/src/$1',
     '^pack-app/icons/svg/(.*)$': `${appIconsDir}/$1`,
+    '^pack-app/components/onboarding/OnboardingComponents$': appOnboardingComponents,
+    '^expo-linear-gradient$': appRuntimeStub,
+    '^react-native-reanimated$': appRuntimeStub,
+    '^@react-navigation/native$': appRuntimeStub,
     '^react-native$': '<rootDir>/node_modules/react-native-web',
     // Vendored web effects: mock in jest. The real builds touch browser-only
     // APIs (matchMedia, canvas) that jsdom provides inconsistently across

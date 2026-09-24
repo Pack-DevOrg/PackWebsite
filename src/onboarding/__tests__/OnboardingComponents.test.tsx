@@ -3,62 +3,7 @@ import {join} from 'node:path';
 import React from 'react';
 import {render, screen} from '@testing-library/react';
 
-jest.mock('expo-linear-gradient', () => {
-  const ReactLib = require('react') as typeof React;
-  return {
-    LinearGradient: ({
-      children,
-      colors,
-    }: {
-      readonly children?: React.ReactNode;
-      readonly colors: readonly string[];
-    }) =>
-      ReactLib.createElement(
-        'div',
-        {
-          'data-testid': 'expo-linear-gradient',
-          'data-colors': colors.join(','),
-        },
-        children,
-      ),
-  };
-});
-
-jest.mock('react-native-safe-area-context', () => {
-  const ReactLib = require('react') as typeof React;
-  return {
-    SafeAreaProvider: ({children}: {readonly children?: React.ReactNode}) =>
-      ReactLib.createElement(ReactLib.Fragment, null, children),
-    SafeAreaView: ({children}: {readonly children?: React.ReactNode}) =>
-      ReactLib.createElement('div', {'data-testid': 'app-safe-area'}, children),
-    useSafeAreaInsets: () => ({top: 0, right: 0, bottom: 0, left: 0}),
-  };
-});
-
-jest.mock('pack-app/icons/svg/GoogleOutlineIcon', () => {
-  const ReactLib = require('react') as typeof React;
-  return {
-    GoogleOutlineIcon: () =>
-      ReactLib.createElement('svg', {'data-testid': 'app-google-mark'}),
-  };
-});
-
-jest.mock('pack-app/icons/svg/AppleOutlineIcon', () => {
-  const ReactLib = require('react') as typeof React;
-  return {
-    AppleOutlineIcon: () =>
-      ReactLib.createElement('svg', {'data-testid': 'app-apple-mark'}),
-  };
-});
-
-jest.mock('pack-app/icons/svg/MicrosoftIcon', () => {
-  const ReactLib = require('react') as typeof React;
-  return {
-    MicrosoftIcon: () =>
-      ReactLib.createElement('svg', {'data-testid': 'app-microsoft-mark'}),
-  };
-});
-
+import {OnboardingPrimaryButton as AppOnboardingPrimaryButton} from 'pack-app/components/onboarding/OnboardingComponents';
 import {
   OnboardingContainer,
   OnboardingPrimaryButton,
@@ -68,6 +13,35 @@ import {
   ProviderMark,
 } from '@pack/ui-primitives';
 
+function packAppOnboardingSource(): string {
+  const candidates = [
+    join(
+      process.cwd(),
+      '..',
+      'PackApp',
+      'src',
+      'components',
+      'onboarding',
+      'OnboardingComponents.tsx',
+    ),
+    join(
+      process.cwd(),
+      '..',
+      '..',
+      'PackApp',
+      'src',
+      'components',
+      'onboarding',
+      'OnboardingComponents.tsx',
+    ),
+  ];
+  const found = candidates.find((candidate) => existsSync(candidate));
+  if (found === undefined) {
+    throw new Error('PackApp OnboardingComponents.tsx is not on disk');
+  }
+  return readFileSync(found, 'utf8');
+}
+
 const websiteSource = readFileSync(
   join(
     process.cwd(),
@@ -76,8 +50,10 @@ const websiteSource = readFileSync(
   'utf8',
 );
 
+const appSource = packAppOnboardingSource();
+
 describe('OnboardingComponents', () => {
-  it('has no shim directory and does not paste library bodies', () => {
+  it('renders the app button, not a website gradient or shim', () => {
     expect(
       existsSync(join(process.cwd(), 'packages/ui-primitives/src/shims')),
     ).toBe(false);
@@ -85,19 +61,16 @@ describe('OnboardingComponents', () => {
     expect(websiteSource.includes('function LinearGradient')).toBe(false);
     expect(websiteSource.includes('function SafeAreaView')).toBe(false);
     expect(websiteSource.includes('M17.64 9.2045')).toBe(false);
-    expect(websiteSource.includes("from 'expo-linear-gradient'")).toBe(true);
-    expect(websiteSource.includes("from 'react-native-safe-area-context'")).toBe(
+    expect(
+      websiteSource.includes(
+        "from 'pack-app/components/onboarding/OnboardingComponents'",
+      ),
+    ).toBe(true);
+    expect(appSource.includes("from 'expo-linear-gradient'")).toBe(true);
+    expect(appSource.includes("from 'react-native-safe-area-context'")).toBe(
       true,
     );
-    expect(websiteSource.includes("from 'pack-app/icons/svg/GoogleOutlineIcon'")).toBe(
-      true,
-    );
-    expect(websiteSource.includes("from 'pack-app/icons/svg/MicrosoftIcon'")).toBe(
-      true,
-    );
-    expect(websiteSource.includes("from 'pack-app/icons/svg/AppleOutlineIcon'")).toBe(
-      true,
-    );
+    expect(OnboardingPrimaryButton).toBe(AppOnboardingPrimaryButton);
   });
 
   it('paints Continue and Text Pack with the app gradient outside of Text', () => {
@@ -114,14 +87,14 @@ describe('OnboardingComponents', () => {
     expect(gradients[0]?.getAttribute('data-colors')).toContain('#F0C62D');
     expect(gradients[1]?.getAttribute('data-colors')).toContain('#F0C62D');
     const link = screen.getByRole('link', {name: 'Text Pack'});
+    expect(link.getAttribute('href')).toBe('sms:+1555');
     expect(link.querySelector('[data-testid="expo-linear-gradient"]')).not.toBeNull();
-    expect(link.querySelector('span [data-testid="expo-linear-gradient"]')).toBeNull();
     const label = screen.getByText('Text Pack');
-    expect(link.contains(label)).toBe(true);
-    expect(label.parentElement).not.toBe(link);
+    expect(label.closest('[data-testid="expo-linear-gradient"]')).not.toBeNull();
+    expect(label.parentElement?.tagName).not.toBe('A');
   });
 
-  it('wraps the onboarding shell in the safe-area view', () => {
+  it('wraps the shell in the app safe-area view', () => {
     render(
       <OnboardingContainer showBack={false} showGlobe={false}>
         <OnboardingPrimaryButton onPress={() => undefined}>
@@ -129,8 +102,9 @@ describe('OnboardingComponents', () => {
         </OnboardingPrimaryButton>
       </OnboardingContainer>,
     );
-    const safe = screen.getByTestId('app-safe-area');
-    expect(safe.contains(screen.getByText('Continue'))).toBe(true);
+    expect(screen.getByText('Continue')).toBeInTheDocument();
+    expect(appSource.includes('<SafeAreaView')).toBe(true);
+    expect(websiteSource.includes('<SafeAreaView')).toBe(false);
   });
 
   it('renders provider marks from the app icon components', () => {
@@ -145,10 +119,12 @@ describe('OnboardingComponents', () => {
         <ProviderMark provider="microsoft" size={18} color="#fff" />
       </>,
     );
-    expect(screen.getByTestId('app-google-mark')).toBeInTheDocument();
-    expect(screen.getByTestId('app-apple-mark')).toBeInTheDocument();
-    expect(screen.getByTestId('app-microsoft-mark')).toBeInTheDocument();
+    expect(screen.getByText('Continue with Google')).toBeInTheDocument();
+    expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
     expect(screen.queryByText('G')).toBeNull();
+    expect(screen.queryByText('M')).toBeNull();
+    expect(screen.queryByText('A')).toBeNull();
+    expect(document.querySelectorAll('svg').length).toBeGreaterThanOrEqual(3);
   });
 
   it('renders Skip for now on the full-width secondary control', () => {

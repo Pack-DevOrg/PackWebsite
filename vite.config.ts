@@ -101,7 +101,15 @@ function existingPackAppDir(): string {
   }
   return candidates[0] ?? packAppDir;
 }
-const packAppIconsDir = path.join(existingPackAppDir(), 'src', 'icons', 'svg');
+const packAppSourceDir = path.join(existingPackAppDir(), 'src');
+const packAppIconsDir = path.join(packAppSourceDir, 'icons', 'svg');
+const packAppOnboardingComponents = path.join(
+  packAppSourceDir,
+  'components',
+  'onboarding',
+  'OnboardingComponents.tsx',
+);
+const packAppRuntimeStub = path.join(srcDir, 'onboarding', 'packAppIconPropsStub.ts');
 const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
   packAppDir,
@@ -752,6 +760,11 @@ export default defineConfig(({ mode, ssrBuild }) => {
     'pack-app/icons/svg/MicrosoftIcon': normalizePath(
       path.join(packAppIconsDir, 'MicrosoftIcon.tsx'),
     ),
+    'pack-app/components/onboarding/OnboardingComponents': normalizePath(
+      packAppOnboardingComponents,
+    ),
+    'react-native-reanimated': normalizePath(packAppRuntimeStub),
+    '@react-navigation/native': normalizePath(packAppRuntimeStub),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
@@ -966,6 +979,56 @@ export default defineConfig(({ mode, ssrBuild }) => {
       // writing under node_modules fails with EPERM.
       imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
       {
+        name: 'pack-app-source-alias',
+        enforce: 'pre',
+        resolveId(source, importer) {
+          if (importer === undefined || !source.startsWith('@/')) {
+            return null;
+          }
+          if (!normalizePath(importer).includes('/PackApp/')) {
+            return null;
+          }
+          const rel = source.slice(2);
+          const base = path.join(packAppSourceDir, rel);
+          const extensions = ['.tsx', '.ts', '.jsx', '.js'];
+          if (fs.existsSync(base) && fs.statSync(base).isFile()) {
+            return base;
+          }
+          for (const ext of extensions) {
+            if (fs.existsSync(base + ext)) {
+              return base + ext;
+            }
+          }
+          for (const ext of extensions) {
+            const indexFile = path.join(base, `index${ext}`);
+            if (fs.existsSync(indexFile)) {
+              return indexFile;
+            }
+          }
+          return null;
+        },
+      },
+      {
+        name: 'expo-linear-gradient-jsx',
+        enforce: 'pre',
+        async transform(code, id) {
+          if (!id.includes('expo-linear-gradient') || !id.endsWith('.js')) {
+            return null;
+          }
+          if (!code.includes('<')) {
+            return null;
+          }
+          const esbuild = await import('esbuild');
+          const result = esbuild.transformSync(code, {
+            loader: 'jsx',
+            jsx: 'automatic',
+            format: 'esm',
+            sourcefile: id,
+          });
+          return {code: result.code, map: result.map};
+        },
+      },
+      {
         name: 'pack-app-icon-props-stub',
         enforce: 'pre',
         resolveId(source, importer) {
@@ -1057,6 +1120,10 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'lucide-react',
         'react-native-web',
         'react-native',
+        'expo-linear-gradient',
+        'react-native-safe-area-context',
+        'react-native-svg',
+        'react-native-reanimated',
         // CJS __esModule defaults. Node's native ESM loader binds
         // `import createPrefixer from "inline-style-prefixer/..."` to
         // `{ default: fn }`, so the onboard SSR chunk throws
@@ -1071,6 +1138,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
           normalizePath(packSchemasDir),
           normalizePath(packLocalityCatalogDir),
           normalizePath(packAdsLogoLabOutputDir),
+          normalizePath(packAppSourceDir),
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),
           normalizePath(packServerTravelPlannerFixtureCorpusDir),

@@ -89,44 +89,6 @@ const packAdsVideoLabTemplatesPath = path.join(
   'templates.json',
 );
 const packAppDir = path.join(repoRootDir, 'PackApp');
-function existingPackAppDir(): string {
-  const candidates = [
-    path.join(rootDir, '..', 'PackApp'),
-    path.join(rootDir, '..', '..', 'PackApp'),
-  ];
-  for (const candidate of candidates) {
-    if (fs.existsSync(path.join(candidate, 'src', 'icons', 'svg', 'GoogleOutlineIcon.tsx'))) {
-      return candidate;
-    }
-  }
-  return candidates[0] ?? packAppDir;
-}
-const packAppSourceDir = path.join(existingPackAppDir(), 'src');
-const packAppIconsDir = path.join(packAppSourceDir, 'icons', 'svg');
-const packAppOnboardingComponents = path.join(
-  packAppSourceDir,
-  'components',
-  'onboarding',
-  'OnboardingComponents.tsx',
-);
-const packAppRuntimeStub = path.join(srcDir, 'onboarding', 'packAppIconPropsStub.ts');
-const packAppLinearGradient = path.join(
-  existingPackAppDir(),
-  'node_modules/expo-linear-gradient/build/LinearGradient.js',
-);
-const packAppSafeArea = path.join(
-  existingPackAppDir(),
-  'node_modules/react-native-safe-area-context/lib/module/index.js',
-);
-const packAppSvg = [
-  path.join(rootDir, 'node_modules/react-native-svg/lib/module/index.js'),
-  path.join(repoRootDir, 'node_modules/react-native-svg/lib/module/index.js'),
-  path.join(repoRootDir, '..', 'node_modules/react-native-svg/lib/module/index.js'),
-].find((candidate) => fs.existsSync(candidate)) ?? path.join(
-  repoRootDir,
-  '..',
-  'node_modules/react-native-svg/lib/module/index.js',
-);
 const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
   packAppDir,
@@ -768,23 +730,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
       path.join(packWebEffectsDir, 'thinking-orbs', 'dist', 'index.es.js'),
     ),
     '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
-    'pack-app/icons/svg/GoogleOutlineIcon': normalizePath(
-      path.join(packAppIconsDir, 'GoogleOutlineIcon.tsx'),
-    ),
-    'pack-app/icons/svg/AppleOutlineIcon': normalizePath(
-      path.join(packAppIconsDir, 'AppleOutlineIcon.tsx'),
-    ),
-    'pack-app/icons/svg/MicrosoftIcon': normalizePath(
-      path.join(packAppIconsDir, 'MicrosoftIcon.tsx'),
-    ),
-    'pack-app/components/onboarding/OnboardingComponents': normalizePath(
-      packAppOnboardingComponents,
-    ),
-    'react-native-reanimated': normalizePath(packAppRuntimeStub),
-    '@react-navigation/native': normalizePath(packAppRuntimeStub),
-    'expo-linear-gradient': normalizePath(packAppLinearGradient),
-    'react-native-safe-area-context': normalizePath(packAppSafeArea),
-    'react-native-svg': normalizePath(packAppSvg),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
@@ -998,73 +943,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
       // nm-store dependency tree is immutable (chflags uchg), so any plugin
       // writing under node_modules fails with EPERM.
       imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
-      {
-        name: 'pack-app-source-alias',
-        enforce: 'pre',
-        resolveId(source, importer) {
-          if (importer === undefined || !source.startsWith('@/')) {
-            return null;
-          }
-          if (!normalizePath(importer).includes('/PackApp/')) {
-            return null;
-          }
-          const rel = source.slice(2);
-          const base = path.join(packAppSourceDir, rel);
-          const extensions = ['.tsx', '.ts', '.jsx', '.js'];
-          if (fs.existsSync(base) && fs.statSync(base).isFile()) {
-            return base;
-          }
-          for (const ext of extensions) {
-            if (fs.existsSync(base + ext)) {
-              return base + ext;
-            }
-          }
-          for (const ext of extensions) {
-            const indexFile = path.join(base, `index${ext}`);
-            if (fs.existsSync(indexFile)) {
-              return indexFile;
-            }
-          }
-          return null;
-        },
-      },
-      {
-        name: 'expo-linear-gradient-jsx',
-        enforce: 'pre',
-        async transform(code, id) {
-          if (!id.includes('expo-linear-gradient') || !id.endsWith('.js')) {
-            return null;
-          }
-          if (!code.includes('<')) {
-            return null;
-          }
-          const esbuild = await import('esbuild');
-          const result = esbuild.transformSync(code, {
-            loader: 'jsx',
-            jsx: 'automatic',
-            format: 'esm',
-            sourcefile: id,
-          });
-          return {code: result.code, map: result.map};
-        },
-      },
-      {
-        name: 'pack-app-icon-props-stub',
-        enforce: 'pre',
-        resolveId(source, importer) {
-          if (importer === undefined) {
-            return null;
-          }
-          const normalizedImporter = normalizePath(importer);
-          if (!normalizedImporter.includes('/PackApp/src/icons/svg/')) {
-            return null;
-          }
-          if (source !== '../Icon') {
-            return null;
-          }
-          return path.join(srcDir, 'onboarding', 'packAppIconPropsStub.ts');
-        },
-      },
     ],
     cacheDir: '.vite-cache',
     // Use absolute root so assets resolve correctly for deep links (e.g., /share/*)
@@ -1075,19 +953,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
     resolve: {
       dedupe: ['react', 'react-dom', 'styled-components'],
       alias: resolveAliases,
-      extensions: [
-        '.web.tsx',
-        '.web.ts',
-        '.web.jsx',
-        '.web.js',
-        '.mjs',
-        '.js',
-        '.mts',
-        '.ts',
-        '.jsx',
-        '.tsx',
-        '.json',
-      ],
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod', 'react-native-web'],
@@ -1140,10 +1005,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'lucide-react',
         'react-native-web',
         'react-native',
-        'expo-linear-gradient',
-        'react-native-safe-area-context',
-        'react-native-svg',
-        'react-native-reanimated',
         // CJS __esModule defaults. Node's native ESM loader binds
         // `import createPrefixer from "inline-style-prefixer/..."` to
         // `{ default: fn }`, so the onboard SSR chunk throws
@@ -1158,7 +1019,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
           normalizePath(packSchemasDir),
           normalizePath(packLocalityCatalogDir),
           normalizePath(packAdsLogoLabOutputDir),
-          normalizePath(packAppSourceDir),
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),
           normalizePath(packServerTravelPlannerFixtureCorpusDir),

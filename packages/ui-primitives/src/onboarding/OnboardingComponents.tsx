@@ -1,45 +1,23 @@
 import React from 'react';
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
   type PressableStateCallbackType,
   type StyleProp,
   type TextStyle,
+  type ViewStyle,
 } from 'react-native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-import {AppleOutlineIcon} from 'pack-app/icons/svg/AppleOutlineIcon';
-import {GoogleOutlineIcon} from 'pack-app/icons/svg/GoogleOutlineIcon';
-import {MicrosoftIcon} from 'pack-app/icons/svg/MicrosoftIcon';
-import {
-  ONBOARDING_CTA_MAX_WIDTH,
-  OnboardingContainer as AppOnboardingContainer,
-  OnboardingContent as AppOnboardingContent,
-  OnboardingEyebrow,
-  OnboardingPrimaryButton,
-  OnboardingSecondaryButton,
-  OnboardingSubtitle,
-} from 'pack-app/components/onboarding/OnboardingComponents';
-
+import {LinearGradient} from '../shims/LinearGradient';
+import {SafeAreaView} from '../shims/SafeArea';
+import {ProviderMark} from '../shims/ProviderMark';
 import {tokens} from '../tokens';
 import {TravelGlobeBackground} from './TravelGlobeBackground';
 
-export {
-  ONBOARDING_CTA_MAX_WIDTH,
-  OnboardingEyebrow,
-  OnboardingPrimaryButton,
-  OnboardingSecondaryButton,
-  OnboardingSubtitle,
-};
-
-const WEB_SAFE_AREA = {
-  insets: {top: 0, right: 0, bottom: 0, left: 0},
-  frame: {x: 0, y: 0, width: 0, height: 0},
-};
-
-type ProviderName = 'google' | 'microsoft' | 'apple';
+export const ONBOARDING_CTA_MAX_WIDTH = 320;
 
 type OnboardingContainerProps = {
   readonly children: React.ReactNode;
@@ -58,21 +36,49 @@ type OnboardingHeaderProps = {
   readonly backAccessibilityLabel?: string;
 };
 
+type OnboardingContentProps = {
+  readonly children: React.ReactNode;
+  readonly centered?: boolean;
+  readonly style?: StyleProp<ViewStyle>;
+  readonly scrollEnabled?: boolean;
+};
+
 type OnboardingTitleProps = {
   readonly children: React.ReactNode;
   readonly style?: StyleProp<TextStyle>;
 };
 
-type OnboardingContentProps = {
+type OnboardingSubtitleProps = {
   readonly children: React.ReactNode;
-  readonly centered?: boolean;
-  readonly style?: unknown;
-  readonly scrollEnabled?: boolean;
+  readonly style?: StyleProp<TextStyle>;
+  readonly testID?: string;
+};
+
+type OnboardingPrimaryButtonProps = {
+  readonly onPress: () => void;
+  readonly loading?: boolean;
+  readonly disabled?: boolean;
+  readonly showDisabledStyle?: boolean;
+  readonly children: React.ReactNode;
+  readonly maxWidth?: number;
+  readonly fullWidth?: boolean;
+  readonly testID?: string;
+  readonly accessibilityLabel?: string;
 };
 
 type OnboardingPrimaryLinkProps = {
   readonly href: string;
   readonly children: React.ReactNode;
+  readonly testID?: string;
+  readonly accessibilityLabel?: string;
+};
+
+type OnboardingSecondaryButtonProps = {
+  readonly onPress: () => void;
+  readonly children: React.ReactNode;
+  readonly fullWidth?: boolean;
+  readonly maxWidth?: number;
+  readonly style?: StyleProp<ViewStyle>;
   readonly testID?: string;
   readonly accessibilityLabel?: string;
 };
@@ -83,50 +89,54 @@ type OnboardingSkipButtonProps = {
   readonly accessibilityLabel?: string;
 };
 
+type ProviderKind = 'google' | 'apple';
+
 type OnboardingProviderButtonProps = {
-  readonly provider: 'google' | 'apple';
+  readonly provider: ProviderKind;
   readonly onPress: () => void;
   readonly children?: React.ReactNode;
   readonly testID?: string;
 };
 
-export function ProviderMark({
-  provider,
-  size,
-  color,
-}: {
-  readonly provider: ProviderName;
-  readonly size: number;
-  readonly color: string;
-}): React.ReactElement {
-  if (provider === 'microsoft') {
-    return <MicrosoftIcon size={size} />;
-  }
+function defaultProviderLabel(provider: ProviderKind): string {
   if (provider === 'google') {
-    return <GoogleOutlineIcon size={size} />;
+    return 'Continue with Google';
   }
-  return <AppleOutlineIcon size={size} color={color} />;
+  return 'Continue with Apple';
 }
 
 export function OnboardingContainer({
   children,
-  showGlobe = true,
-  showBack,
   currentStep,
-  totalSteps,
+  totalSteps = 10,
   onBack,
+  showBack = true,
+  showGlobe = true,
 }: OnboardingContainerProps): React.ReactElement {
+  const showHeader = showBack === true || currentStep !== undefined;
   return (
-    <SafeAreaProvider initialMetrics={WEB_SAFE_AREA}>
-      <AppOnboardingContainer
-        showBack={showBack}
-        currentStep={currentStep}
-        totalSteps={totalSteps}
-        onBack={onBack}>
-        {showGlobe ? <TravelGlobeBackground /> : null}
-        {children}
-      </AppOnboardingContainer>
-    </SafeAreaProvider>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={[
+          tokens.colors.black,
+          tokens.colors.darkGray1,
+          tokens.colors.darkGray2,
+        ]}
+        style={StyleSheet.absoluteFillObject}
+        start={{x: 0.1, y: 0}}
+        end={{x: 0.9, y: 1}}
+      />
+      {showGlobe ? <TravelGlobeBackground /> : null}
+      {showHeader ? (
+        <OnboardingHeader
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          onBack={onBack}
+          showBack={showBack}
+        />
+      ) : null}
+      <View style={styles.foreground}>{children}</View>
+    </SafeAreaView>
   );
 }
 
@@ -142,6 +152,7 @@ export function OnboardingHeader({
       onBack();
     }
   };
+
   return (
     <View style={styles.header}>
       {showBack ? (
@@ -160,7 +171,10 @@ export function OnboardingHeader({
       )}
       {currentStep !== undefined ? (
         <View style={styles.progressContainer}>
-          <OnboardingProgressDots currentStep={currentStep} totalSteps={totalSteps} />
+          <OnboardingProgressDots
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+          />
           <Text style={styles.progressText}>
             Step {currentStep} of {totalSteps}
           </Text>
@@ -170,6 +184,32 @@ export function OnboardingHeader({
       )}
       <View style={styles.headerSpacer} />
     </View>
+  );
+}
+
+export function OnboardingContent({
+  children,
+  centered = false,
+  style,
+  scrollEnabled = true,
+}: OnboardingContentProps): React.ReactElement {
+  const contentStyles = [
+    styles.content,
+    centered ? styles.contentCentered : null,
+    style,
+  ];
+  if (!scrollEnabled) {
+    return <View style={contentStyles}>{children}</View>;
+  }
+  return (
+    <ScrollView
+      style={styles.contentScroll}
+      contentContainerStyle={contentStyles}
+      bounces={false}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled">
+      {children}
+    </ScrollView>
   );
 }
 
@@ -184,13 +224,87 @@ export function OnboardingTitle({
   );
 }
 
-export function OnboardingContent(
-  props: OnboardingContentProps,
-): React.ReactElement {
+export function OnboardingSubtitle({
+  children,
+  style,
+  testID,
+}: OnboardingSubtitleProps): React.ReactElement {
   return (
-    <SafeAreaProvider initialMetrics={WEB_SAFE_AREA}>
-      <AppOnboardingContent {...props} />
-    </SafeAreaProvider>
+    <Text testID={testID} style={[styles.subtitle, style]}>
+      {children}
+    </Text>
+  );
+}
+
+export function OnboardingEyebrow({
+  children,
+  style,
+  align = 'center',
+}: {
+  readonly children: React.ReactNode;
+  readonly style?: StyleProp<TextStyle>;
+  readonly align?: 'center' | 'left';
+}): React.ReactElement {
+  return (
+    <Text
+      style={[
+        styles.eyebrowText,
+        align === 'center' ? styles.eyebrowCenter : styles.eyebrowLeft,
+        style,
+      ]}>
+      {children}
+    </Text>
+  );
+}
+
+export function OnboardingPrimaryButton({
+  onPress,
+  loading = false,
+  disabled = false,
+  showDisabledStyle = true,
+  maxWidth,
+  fullWidth = false,
+  testID,
+  accessibilityLabel,
+  children,
+}: OnboardingPrimaryButtonProps): React.ReactElement {
+  const resolvedMaxWidth = fullWidth
+    ? undefined
+    : (maxWidth ?? ONBOARDING_CTA_MAX_WIDTH);
+  const isInteractionDisabled = disabled || loading;
+  const isVisuallyDisabled = isInteractionDisabled && showDisabledStyle;
+  return (
+    <Pressable
+      style={(state: PressableStateCallbackType) => [
+        styles.primaryButton,
+        state.pressed && styles.primaryButtonPressed,
+        isVisuallyDisabled && styles.primaryButtonDisabled,
+        fullWidth
+          ? styles.primaryButtonFullWidth
+          : styles.primaryButtonConstrained,
+        !fullWidth && resolvedMaxWidth !== undefined
+          ? {maxWidth: resolvedMaxWidth}
+          : null,
+      ]}
+      onPress={onPress}
+      disabled={isInteractionDisabled}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}>
+      <LinearGradient
+        colors={
+          isVisuallyDisabled
+            ? [tokens.colors.gray, tokens.colors.gray]
+            : [tokens.colors.primary, tokens.colors.primaryDark]
+        }
+        style={styles.primaryButtonGradient}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 0}}>
+        <Text style={styles.primaryButtonText}>
+          {loading ? 'Loading...' : children}
+        </Text>
+      </LinearGradient>
+    </Pressable>
   );
 }
 
@@ -206,10 +320,46 @@ export function OnboardingPrimaryLink({
       href={href}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
-      style={styles.linkHit}>
-      <OnboardingPrimaryButton onPress={() => undefined}>
-        {children}
-      </OnboardingPrimaryButton>
+      style={[
+        styles.primaryButton,
+        styles.primaryButtonConstrained,
+        {maxWidth: ONBOARDING_CTA_MAX_WIDTH},
+      ]}>
+      <LinearGradient
+        colors={[tokens.colors.primary, tokens.colors.primaryDark]}
+        style={styles.primaryButtonGradient}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 0}}>
+        <Text style={styles.primaryButtonText}>{children}</Text>
+      </LinearGradient>
+    </Pressable>
+  );
+}
+
+export function OnboardingSecondaryButton({
+  onPress,
+  children,
+  fullWidth = false,
+  maxWidth = ONBOARDING_CTA_MAX_WIDTH,
+  style,
+  testID,
+  accessibilityLabel,
+}: OnboardingSecondaryButtonProps): React.ReactElement {
+  return (
+    <Pressable
+      style={(state: PressableStateCallbackType) => [
+        styles.secondaryButton,
+        fullWidth
+          ? styles.secondaryButtonFullWidth
+          : [styles.secondaryButtonConstrained, {maxWidth}],
+        state.pressed && styles.secondaryButtonPressed,
+        style,
+      ]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}>
+      <Text style={styles.secondaryButtonText}>{children}</Text>
     </Pressable>
   );
 }
@@ -220,8 +370,12 @@ export function OnboardingSkipButton({
   accessibilityLabel = 'Skip for now',
 }: OnboardingSkipButtonProps): React.ReactElement {
   return (
-    <OnboardingSecondaryButton onPress={onPress} fullWidth testID={testID}>
-      {accessibilityLabel}
+    <OnboardingSecondaryButton
+      onPress={onPress}
+      fullWidth
+      testID={testID}
+      accessibilityLabel={accessibilityLabel}>
+      Skip for now
     </OnboardingSecondaryButton>
   );
 }
@@ -250,13 +404,6 @@ export function OnboardingProgressDots({
       {dots}
     </View>
   );
-}
-
-function defaultProviderLabel(provider: 'google' | 'apple'): string {
-  if (provider === 'google') {
-    return 'Continue with Google';
-  }
-  return 'Continue with Apple';
 }
 
 export function OnboardingProviderButton({
@@ -304,6 +451,27 @@ export function OnboardingProviderButton({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    minHeight: 0,
+    backgroundColor: tokens.colors.black,
+  },
+  foreground: {
+    flex: 1,
+    minHeight: 0,
+    zIndex: 1,
+  },
+  eyebrowCenter: {
+    alignSelf: 'center',
+  },
+  eyebrowLeft: {
+    alignSelf: 'flex-start',
+  },
+  eyebrowText: {
+    fontSize: tokens.typography.fontSize.xs,
+    fontWeight: tokens.typography.fontWeight.semibold,
+    color: tokens.colors.textSecondary,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -311,6 +479,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: tokens.spacing.m,
     minHeight: 60,
+    zIndex: 1,
   },
   backButton: {
     width: 40,
@@ -339,29 +508,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 20,
   },
-  progressText: {
-    fontSize: tokens.typography.fontSize.xs,
-    color: tokens.colors.textSecondary,
-    fontWeight: tokens.typography.fontWeight.medium,
-  },
-  title: {
-    fontSize: tokens.typography.fontSize.xxxl32,
-    fontWeight: tokens.typography.fontWeight.bold,
-    color: tokens.colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: tokens.spacing.m,
-    lineHeight: tokens.typography.lineHeight.title,
-  },
-  linkHit: {
-    width: '100%',
-    maxWidth: ONBOARDING_CTA_MAX_WIDTH,
-    alignSelf: 'center',
-  },
   progressDots: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: tokens.spacing.xs,
+    marginBottom: tokens.spacing.xs,
+  },
+  progressText: {
+    fontSize: tokens.typography.fontSize.xs,
+    color: tokens.colors.textSecondary,
+    fontWeight: tokens.typography.fontWeight.medium,
   },
   dot: {
     width: tokens.spacing.s,
@@ -373,6 +530,93 @@ const styles = StyleSheet.create({
   },
   dotIdle: {
     backgroundColor: tokens.colors.borderMedium,
+  },
+  content: {
+    flexGrow: 1,
+    paddingHorizontal: tokens.spacing.m,
+    paddingVertical: tokens.spacing.xl,
+    justifyContent: 'space-between',
+  },
+  contentScroll: {
+    flex: 1,
+  },
+  contentCentered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: tokens.typography.fontSize.xxxl32,
+    fontWeight: tokens.typography.fontWeight.bold,
+    color: tokens.colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: tokens.spacing.m,
+    lineHeight: tokens.typography.lineHeight.title,
+  },
+  subtitle: {
+    fontSize: tokens.typography.fontSize.m,
+    color: tokens.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: tokens.typography.lineHeight.subtitle,
+    marginBottom: tokens.spacing.xl,
+  },
+  primaryButton: {
+    borderRadius: tokens.borderRadius.l,
+    overflow: 'hidden',
+    backgroundColor: tokens.colors.primary,
+    marginBottom: tokens.spacing.m,
+  },
+  primaryButtonConstrained: {
+    width: '100%',
+    alignSelf: 'center',
+  },
+  primaryButtonFullWidth: {
+    width: '100%',
+    alignSelf: 'stretch',
+  },
+  primaryButtonPressed: {
+    transform: [{scale: 0.98}],
+  },
+  primaryButtonDisabled: {
+    opacity: 0.6,
+  },
+  primaryButtonGradient: {
+    minHeight: tokens.buttonHeightL,
+    paddingVertical: tokens.spacing.m,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButtonText: {
+    fontSize: tokens.typography.fontSize.l,
+    fontWeight: tokens.typography.fontWeight.bold,
+    color: tokens.colors.textOnPrimary,
+    textAlign: 'center',
+  },
+  secondaryButton: {
+    paddingHorizontal: tokens.spacing.xl,
+    paddingVertical: tokens.spacing.m,
+    borderRadius: tokens.borderRadius.xl,
+    backgroundColor: tokens.colors.backgroundTransparent,
+    borderWidth: 1,
+    borderColor: tokens.colors.borderSubtle,
+    marginBottom: tokens.spacing.m,
+  },
+  secondaryButtonConstrained: {
+    width: '100%',
+    alignSelf: 'center',
+  },
+  secondaryButtonFullWidth: {
+    width: '100%',
+    alignSelf: 'stretch',
+  },
+  secondaryButtonPressed: {
+    opacity: 0.7,
+    transform: [{scale: 0.98}],
+  },
+  secondaryButtonText: {
+    fontSize: tokens.typography.fontSize.m,
+    fontWeight: tokens.typography.fontWeight.semibold,
+    color: tokens.colors.textSecondary,
+    textAlign: 'center',
   },
   providerButtonRow: {
     flexDirection: 'row',

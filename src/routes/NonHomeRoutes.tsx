@@ -542,6 +542,14 @@ const NonHomeRoutes: React.FC = () => {
           }
         />
         <Route
+          path="/lv/:shortId"
+          element={
+            <Suspense fallback={null}>
+              <LiveViewConnectPage />
+            </Suspense>
+          }
+        />
+        <Route
           path="/onboard"
           element={
             <Suspense fallback={null}>
@@ -1059,6 +1067,7 @@ const NonHomeRoutes: React.FC = () => {
           />
           <Route path="unsubscribe" element={<Suspense fallback={null}><UnsubscribePage /></Suspense>} />
           <Route path="live-view" element={<Suspense fallback={null}><LiveViewConnectPage /></Suspense>} />
+          <Route path="lv/:shortId" element={<Suspense fallback={null}><LiveViewConnectPage /></Suspense>} />
           <Route path="onboard" element={<Suspense fallback={null}><OnboardPage /></Suspense>} />
           <Route
             path="privacy-request"

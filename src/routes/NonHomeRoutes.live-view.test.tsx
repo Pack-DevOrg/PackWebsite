@@ -46,4 +46,15 @@ describe("NonHomeRoutes live-view", () => {
       screen.queryByRole("heading", { name: "Page not found" }),
     ).not.toBeInTheDocument();
   });
+
+  it("routes the SMS short link /lv/<id> to the live-view page, not NotFoundPage", async () => {
+    renderAt("/lv/AbC123xy");
+
+    expect(
+      await screen.findByRole("heading", { name: /Sign in to watch Pack work|Pack needs your help/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Page not found" }),
+    ).not.toBeInTheDocument();
+  });
 });

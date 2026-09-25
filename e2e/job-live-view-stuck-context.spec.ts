@@ -759,6 +759,35 @@ async function assertLiveFetchNotPatchedBecauseProd(page: Page): Promise<void> {
   expect(fetchSrc.includes("tok-e2e-night-d")).toBe(false);
 }
 
+function base64UrlJsonBecauseJwtSegment(value: Record<string, unknown>): string {
+  return Buffer.from(JSON.stringify(value)).toString("base64url");
+}
+
+/** GET /live-view is owner-checked: the fixture page runs with a signed-in session. */
+async function injectFixtureAuthSessionBecauseLiveViewIsOwnerOnly(page: Page): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+  const idToken = `${base64UrlJsonBecauseJwtSegment({ alg: "none", typ: "JWT" })}.${base64UrlJsonBecauseJwtSegment({
+    sub: "e2e-live-view-owner",
+    email: "tests@trypackai.com",
+    iat: now,
+    exp: now + 3600,
+  })}.`;
+  const issuedAt = Date.now();
+  const sessionJson = JSON.stringify({
+    tokens: {
+      accessToken: idToken,
+      idToken,
+      refreshToken: "e2e-refresh",
+      tokenType: "Bearer",
+      issuedAt,
+      accessTokenExpiresAt: issuedAt + 3_600_000,
+    },
+  });
+  await page.addInitScript((raw: string) => {
+    window.sessionStorage.setItem("pack.auth.session.v1", raw);
+  }, sessionJson);
+}
+
 test.describe("job live-view stuck context", () => {
   // eslint-disable-next-line no-empty-pattern -- Playwright requires a destructured fixtures arg
   test.beforeEach(({}, testInfo) => {
@@ -778,6 +807,7 @@ test.describe("job live-view stuck context", () => {
     test.setTimeout(fixtureTimeoutMsBecauseViteWarmup());
     mkdirSync(SHOT_DIR, { recursive: true });
     await seedTrackingConsentBeforeLoad(page);
+    await injectFixtureAuthSessionBecauseLiveViewIsOwnerOnly(page);
     await mockLiveViewJobApis(page);
 
     await page.goto(`/live-view?token=${TOKEN}`, {

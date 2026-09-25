@@ -1,9 +1,18 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { Helmet } from "react-helmet-async";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { z } from "zod";
 
+import type { ApiClient } from "../api/client";
+import { useApiClient } from "../api/useApiClient";
+import { AuthProvider, useAuth } from "../auth/AuthContext";
 import { appConfig } from "../config/appConfig";
 
 const LIVE_VIEW_EXPIRED_HEADING = "Pack needs your help — this link expired";
@@ -14,6 +23,13 @@ const LIVE_VIEW_POLL_MS = 1000;
 const OTP_FIELD_RE = /otp|one-?time|2fa|totp/i;
 const LIVE_VIEW_OTP_INPUT_ID = "live-view-otp";
 const OTP_DIGITS_RE = /^\d{4,8}$/;
+/** Cloudflare Browser Run viewer host: the signed tab-mode viewer, iframed for take-over. */
+const CLOUDFLARE_LIVE_VIEW_HOST = "live.browser.run";
+const LIVE_VIEW_SIGN_IN_HEADING = "Sign in to watch Pack work";
+const LIVE_VIEW_SIGN_IN_BUTTON = "Sign in";
+/** The private session emulates a phone (iPhone 15 CSS viewport). */
+const MOBILE_VIEWPORT_WIDTH_PX = 393;
+const MOBILE_VIEWPORT_HEIGHT_PX = 659;
 
 const PageContainer = styled.main`
   min-height: 80vh;
@@ -36,6 +52,16 @@ const ScreenStage = styled.div`
   position: relative;
   width: 100%;
   max-width: 72rem;
+`;
+
+const LiveViewPhoneFrame = styled.iframe`
+  display: block;
+  width: min(100%, ${MOBILE_VIEWPORT_WIDTH_PX}px);
+  aspect-ratio: ${MOBILE_VIEWPORT_WIDTH_PX} / ${MOBILE_VIEWPORT_HEIGHT_PX};
+  margin: 0 auto;
+  border: 0;
+  border-radius: 1.25rem;
+  background: ${({ theme }) => theme.colors.background.secondary};
 `;
 
 const LiveViewFrameImage = styled.img`
@@ -421,12 +447,6 @@ function hitlPointerPayloadBecauseSynthetic(event: PointerEvent): {
   return { type: "pointer", x: event.clientX, y: event.clientY };
 }
 
-function liveViewHandoffGetUrlBecauseTokenQuery(token: string): string {
-  const url = new URL(`${appConfig.apiBaseUrl}/live-view`);
-  url.searchParams.set("token", token);
-  return url.toString();
-}
-
 function opaqueLiveViewTokenFromSearchParamsBecauseQueryMustNotCarryUrl(
   searchParams: URLSearchParams,
 ): string | null {
@@ -440,15 +460,86 @@ function opaqueLiveViewTokenFromSearchParamsBecauseQueryMustNotCarryUrl(
   return token;
 }
 
-function jobIdFromHandoffBodyBecauseServerExpiry(body: unknown): string | null {
-  const parsed = LiveViewHandoffSchema.safeParse(body);
+const ApiDataEnvelopeSchema = z.object({
+  success: z.literal(true),
+  data: z.unknown(),
+});
+
+/** GET /live-view answers `{success, data}`; tests and older fixtures send the bare body. */
+function handoffBodyBecauseApiEnvelope(body: unknown): unknown {
+  const envelope = ApiDataEnvelopeSchema.safeParse(body);
+  if (envelope.success) {
+    return envelope.data.data;
+  }
+  return body;
+}
+
+type ResolvedLiveViewHandoff = { jobId: string; liveViewUrl: string };
+
+function handoffBecauseServerExpiry(body: unknown): ResolvedLiveViewHandoff | null {
+  const parsed = LiveViewHandoffSchema.safeParse(handoffBodyBecauseApiEnvelope(body));
   if (!parsed.success) {
     return null;
   }
   if (parsed.data.expiresAtMs <= Date.now()) {
     return null;
   }
-  return parsed.data.jobId;
+  return { jobId: parsed.data.jobId, liveViewUrl: parsed.data.liveViewUrl };
+}
+
+function cloudflareViewerBecauseHost(liveViewUrl: string): boolean {
+  try {
+    return new URL(liveViewUrl).hostname === CLOUDFLARE_LIVE_VIEW_HOST;
+  } catch {
+    return false;
+  }
+}
+
+/** The opaque link from the text (`?token=`) or the SMS short link (`/lv/<id>`). */
+export type LiveViewLinkQuery = { token: string } | { lv: string };
+
+/**
+ * Resolves the owner's handoff. Prod: the authenticated API client
+ * (GET /live-view is owner-checked). Rejects or returns an invalid body when
+ * the link is unknown, expired, or someone else's.
+ */
+export type ResolveLiveViewHandoff = (
+  query: LiveViewLinkQuery,
+  signal: AbortSignal,
+) => Promise<unknown>;
+
+export function liveViewResolvePathBecauseLinkQuery(query: LiveViewLinkQuery): string {
+  const params = new URLSearchParams();
+  if ("token" in query) {
+    params.set("token", query.token);
+  } else {
+    params.set("lv", query.lv);
+  }
+  return `/live-view?${params.toString()}`;
+}
+
+export function resolveLiveViewHandoffBecauseApiClient(
+  client: ApiClient,
+): ResolveLiveViewHandoff {
+  return (query, signal) =>
+    client.request<unknown>({
+      path: liveViewResolvePathBecauseLinkQuery(query),
+      method: "GET",
+      signal,
+    });
+}
+
+function linkQueryBecauseTokenOrShortId(
+  token: string | null,
+  shortId: string | undefined,
+): LiveViewLinkQuery | null {
+  if (token !== null) {
+    return { token };
+  }
+  if (shortId !== undefined && shortId.length > 0) {
+    return { lv: shortId };
+  }
+  return null;
 }
 
 export async function fetchLatestFrame(
@@ -516,7 +607,7 @@ export async function fetchLatestFrame(
 type LiveViewPageState =
   | { kind: "pending" }
   | { kind: "expired" }
-  | { kind: "session"; jobId: string };
+  | { kind: "session"; jobId: string; liveViewUrl: string };
 
 type SessionViewState = {
   mode: "watch" | "take-over";
@@ -526,9 +617,9 @@ type SessionViewState = {
 };
 
 function initialLiveViewPageStateBecauseMissingTokenIsExpired(
-  token: string | null,
+  query: LiveViewLinkQuery | null,
 ): LiveViewPageState {
-  if (token === null) {
+  if (query === null) {
     return { kind: "expired" };
   }
   return { kind: "pending" };
@@ -538,14 +629,23 @@ function initialSessionViewBecauseWatchUntilPause(): SessionViewState {
   return { mode: "watch", frame: null, progressLabels: [], otpAsk: false };
 }
 
-export function LiveViewConnectPage() {
+export function LiveViewConnectView({
+  resolveHandoff,
+}: {
+  readonly resolveHandoff: ResolveLiveViewHandoff;
+}) {
   const [searchParams] = useSearchParams();
+  const { shortId } = useParams<{ shortId?: string }>();
   const token =
     opaqueLiveViewTokenFromSearchParamsBecauseQueryMustNotCarryUrl(
       searchParams,
     );
+  const linkQuery = useMemo(
+    () => linkQueryBecauseTokenOrShortId(token, shortId),
+    [token, shortId],
+  );
   const [pageState, setPageState] = useState<LiveViewPageState>(() =>
-    initialLiveViewPageStateBecauseMissingTokenIsExpired(token),
+    initialLiveViewPageStateBecauseMissingTokenIsExpired(linkQuery),
   );
   const [sessionView, setSessionView] = useState<SessionViewState>(
     initialSessionViewBecauseWatchUntilPause,
@@ -554,7 +654,7 @@ export function LiveViewConnectPage() {
   const [otpDraft, setOtpDraft] = useState("");
 
   useEffect(() => {
-    if (token === null) {
+    if (linkQuery === null) {
       setPageState({ kind: "expired" });
       return;
     }
@@ -565,30 +665,16 @@ export function LiveViewConnectPage() {
 
     const run = async () => {
       try {
-        const response = await fetch(
-          liveViewHandoffGetUrlBecauseTokenQuery(token),
-          {
-            method: "GET",
-            signal: abortController.signal,
-          },
-        );
+        const body = await resolveHandoff(linkQuery, abortController.signal);
         if (abortController.signal.aborted) {
           return;
         }
-        if (!response.ok) {
+        const handoff = handoffBecauseServerExpiry(body);
+        if (handoff === null) {
           setPageState({ kind: "expired" });
           return;
         }
-        const body: unknown = await response.json();
-        if (abortController.signal.aborted) {
-          return;
-        }
-        const jobId = jobIdFromHandoffBodyBecauseServerExpiry(body);
-        if (jobId === null) {
-          setPageState({ kind: "expired" });
-          return;
-        }
-        setPageState({ kind: "session", jobId });
+        setPageState({ kind: "session", ...handoff });
       } catch {
         if (abortController.signal.aborted) {
           return;
@@ -602,10 +688,14 @@ export function LiveViewConnectPage() {
     return () => {
       abortController.abort();
     };
-  }, [token]);
+  }, [linkQuery, resolveHandoff]);
 
   useEffect(() => {
     if (pageState.kind !== "session") {
+      return;
+    }
+    // The Cloudflare viewer is live and takes input itself; frames are the fallback.
+    if (cloudflareViewerBecauseHost(pageState.liveViewUrl)) {
       return;
     }
     const jobId = pageState.jobId;
@@ -791,6 +881,11 @@ export function LiveViewConnectPage() {
   };
 
   const frame = sessionView.frame;
+  const cloudflareViewerUrl =
+    pageState.kind === "session" &&
+    cloudflareViewerBecauseHost(pageState.liveViewUrl)
+      ? pageState.liveViewUrl
+      : null;
   const showStale =
     frame !== null &&
     frameIsStaleBecauseOlderThanFiveSeconds(frame.ts, Date.now());
@@ -801,7 +896,16 @@ export function LiveViewConnectPage() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <PageContainer>
-        {pageState.kind === "session" ? (
+        {cloudflareViewerUrl !== null ? (
+          <ScreenStage>
+            <LiveViewPhoneFrame
+              title={MERCHANT_CHECKOUT_LIVE_VIEW_ALT}
+              src={cloudflareViewerUrl}
+              allow="clipboard-read; clipboard-write"
+              referrerPolicy="no-referrer"
+            />
+          </ScreenStage>
+        ) : pageState.kind === "session" ? (
           <>
             {sessionView.mode === "take-over" ? (
               <TakeOverBar>
@@ -847,6 +951,62 @@ export function LiveViewConnectPage() {
         ) : null}
       </PageContainer>
     </>
+  );
+}
+
+/**
+ * GET /live-view is owner-checked, so the page needs the user's session.
+ * Signed out → one sign-in button that comes back to this same link.
+ */
+function LiveViewAuthGate() {
+  const { status, login } = useAuth();
+  const client = useApiClient();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const { shortId } = useParams<{ shortId?: string }>();
+  const resolveHandoff = useMemo(
+    () => resolveLiveViewHandoffBecauseApiClient(client),
+    [client],
+  );
+  const hasLink =
+    linkQueryBecauseTokenOrShortId(
+      opaqueLiveViewTokenFromSearchParamsBecauseQueryMustNotCarryUrl(searchParams),
+      shortId,
+    ) !== null;
+  // No link → the expired page, without a sign-in round trip.
+  if (status === "authenticated" || !hasLink) {
+    return <LiveViewConnectView resolveHandoff={resolveHandoff} />;
+  }
+  if (status === "loading") {
+    return null;
+  }
+  return (
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <PageContainer>
+        <FallbackHeading>{LIVE_VIEW_SIGN_IN_HEADING}</FallbackHeading>
+        <ResumeButton
+          type="button"
+          onClick={() => {
+            void login({
+              redirectPath: location.pathname + location.search + location.hash,
+            });
+          }}
+        >
+          {LIVE_VIEW_SIGN_IN_BUTTON}
+        </ResumeButton>
+      </PageContainer>
+    </>
+  );
+}
+
+export function LiveViewConnectPage() {
+  return (
+    <AuthProvider>
+      <LiveViewAuthGate />
+    </AuthProvider>
   );
 }
 

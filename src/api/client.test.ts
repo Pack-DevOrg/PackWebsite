@@ -7,6 +7,8 @@ import {
   typedApiRefusalReason,
 } from './client';
 
+const ensureWebDeviceAttestationSessionMock = jest.fn();
+
 jest.mock('@/config/appConfig', () => ({
   appConfig: {
     apiBaseUrl: 'https://api.example.com/dev',
@@ -15,9 +17,20 @@ jest.mock('@/config/appConfig', () => ({
   },
 }));
 
+jest.mock('@/lib/device-attestation-client', () => ({
+  ensureWebDeviceAttestationSession: (...args: unknown[]) =>
+    ensureWebDeviceAttestationSessionMock(...args),
+  webAttestationRequestHeaders: (token?: string) => ({
+    'x-pack-platform': 'web',
+    'x-pack-source': 'website',
+    ...(token ? {'x-pack-web-attestation': token} : {}),
+  }),
+}));
+
 describe('createApiClient', () => {
   beforeEach(() => {
     appConfig.environment = 'prod';
+    ensureWebDeviceAttestationSessionMock.mockReset();
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -43,6 +56,8 @@ describe('createApiClient', () => {
         headers: expect.objectContaining({
           Authorization: 'Bearer test-token',
           Accept: 'application/json',
+          'x-pack-platform': 'web',
+          'x-pack-source': 'website',
         }),
       }),
     );
@@ -135,6 +150,46 @@ describe('mintPhoneVerificationStart', () => {
           'DEVICE_ATTESTATION_CLIENT_UNKNOWN: cognito client_id is not in the attestation policy map',
       }),
     );
+  });
+});
+
+describe('createApiClient web attestation', () => {
+  it('mints a web session and retries on WEB_ATTESTATION_REQUIRED', async () => {
+    ensureWebDeviceAttestationSessionMock.mockResolvedValue(undefined);
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        clone: () => ({
+          text: async () =>
+            JSON.stringify({
+              error: {code: 'WEB_ATTESTATION_REQUIRED'},
+            }),
+        }),
+        text: async () =>
+          JSON.stringify({
+            error: {code: 'WEB_ATTESTATION_REQUIRED'},
+          }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify({ok: true}),
+      });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const client = createApiClient(
+      async () => 'test-token',
+      () => 'Bearer',
+    );
+    await client.request({path: '/user/information'});
+
+    expect(ensureWebDeviceAttestationSessionMock).toHaveBeenCalledWith(
+      'test-token',
+      'Bearer',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
 

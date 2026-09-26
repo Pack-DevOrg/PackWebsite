@@ -183,6 +183,8 @@ interface ResolvedAppConfig {
   readonly apiKey?: string;
   readonly oauthScopes: readonly string[];
   readonly environment: AppEnvironment;
+  readonly turnstileSiteKey?: string;
+  readonly recaptchaSiteKey?: string;
 }
 
 const resolvedConfig = validateResolvedAppConfig({
@@ -221,6 +223,8 @@ const resolvedConfig = validateResolvedAppConfig({
   apiKey: env.VITE_PACK_API_KEY as string | undefined,
   oauthScopes: scopeList,
   environment: inferredEnvironment,
+  turnstileSiteKey: optionalNonEmptyString(env.VITE_TURNSTILE_SITE_KEY),
+  recaptchaSiteKey: optionalNonEmptyString(env.VITE_RECAPTCHA_SITE_KEY),
 });
 
 export const appConfig = {
@@ -321,6 +325,12 @@ function validateResolvedAppConfig(value: ResolvedAppConfig): ResolvedAppConfig 
   if (value.apiKey !== undefined) {
     assertNonEmptyString(value.apiKey, "apiKey");
   }
+  if (value.turnstileSiteKey !== undefined) {
+    assertNonEmptyString(value.turnstileSiteKey, "turnstileSiteKey");
+  }
+  if (value.recaptchaSiteKey !== undefined) {
+    assertNonEmptyString(value.recaptchaSiteKey, "recaptchaSiteKey");
+  }
   if (value.oauthScopes.length === 0) {
     throw new Error("At least one OAuth scope is required");
   }
@@ -331,6 +341,14 @@ function validateResolvedAppConfig(value: ResolvedAppConfig): ResolvedAppConfig 
     throw new Error(`Invalid environment "${value.environment}"`);
   }
   return value;
+}
+
+function optionalNonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
 }
 
 function assertNonEmptyString(value: string, fieldName: string): void {

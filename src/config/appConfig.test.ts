@@ -54,6 +54,13 @@ describe("appConfig website cognito web client", () => {
   });
 });
 
+describe("appConfig web attestation site keys", () => {
+  it("reads Turnstile first and reCAPTCHA as the fallback token source", () => {
+    expect(appConfigSource).toContain("VITE_TURNSTILE_SITE_KEY");
+    expect(appConfigSource).toContain("VITE_RECAPTCHA_SITE_KEY");
+  });
+});
+
 describe("appConfig public Pack SMS number", () => {
   const envProduction = readFileSync(
     join(process.cwd(), ".env.production"),

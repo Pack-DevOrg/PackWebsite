@@ -13,6 +13,7 @@ const completeLoginMock = jest.fn();
 const loginMock = jest.fn();
 const trackConversionMock = jest.fn();
 const navigateMock = jest.fn();
+const ensureWebDeviceAttestationSessionMock = jest.fn();
 const replaceStateMock = jest.spyOn(window.history, "replaceState");
 const fetchMock = jest.fn();
 
@@ -29,6 +30,11 @@ jest.mock("@/hooks/useConversionTracking", () => ({
   }),
 }));
 
+jest.mock("@/lib/device-attestation-client", () => ({
+  ensureWebDeviceAttestationSession: (...args: unknown[]) =>
+    ensureWebDeviceAttestationSessionMock(...args),
+}));
+
 jest.mock("react-router-dom", () => {
   const actual = jest.requireActual("react-router-dom");
   return {
@@ -42,6 +48,7 @@ describe("AuthCallbackPage", () => {
     jest.clearAllMocks();
     fetchMock.mockReset();
     replaceStateMock.mockClear();
+    ensureWebDeviceAttestationSessionMock.mockResolvedValue(undefined);
     (global as typeof globalThis & { fetch: typeof fetch }).fetch =
       fetchMock as unknown as typeof fetch;
   });
@@ -72,16 +79,23 @@ describe("AuthCallbackPage", () => {
       ok: true,
       text: async () => "",
     });
+    ensureWebDeviceAttestationSessionMock.mockResolvedValue(undefined);
 
     renderPage("/oauth/callback?code=off-domain-code&state=off-domain-state");
 
     await waitFor(() => {
+      expect(ensureWebDeviceAttestationSessionMock).toHaveBeenCalledWith(
+        "access-token-value",
+        "Bearer",
+      );
       expect(fetchMock).toHaveBeenCalledWith(
         "https://test-api-endpoint.com/api/user/information",
         expect.objectContaining({
           method: "GET",
           headers: expect.objectContaining({
             Authorization: "Bearer access-token-value",
+            "x-pack-platform": "web",
+            "x-pack-source": "website",
           }),
         }),
       );

@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
 import { appConfig } from "@/config/appConfig";
+import { ensureWebDeviceAttestationSession } from "@/lib/device-attestation-client";
 import { clearLogoutIntent, hasLogoutIntent } from "@/auth/tokenStorage";
 import { useMountEffect } from "@/hooks/useMountEffect";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
@@ -316,11 +317,14 @@ const bootstrapAuthenticatedUser = async (
   accessToken: string,
   tokenType: string,
 ): Promise<void> => {
+  await ensureWebDeviceAttestationSession(accessToken, tokenType);
   const response = await fetch(`${appConfig.apiBaseUrl}/user/information`, {
     method: "GET",
     headers: {
       Accept: "application/json",
       Authorization: `${tokenType || "Bearer"} ${accessToken}`,
+      "x-pack-platform": "web",
+      "x-pack-source": "website",
     },
   });
 

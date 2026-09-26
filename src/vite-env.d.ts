@@ -12,6 +12,7 @@ interface ImportMetaEnv {
   readonly VITE_POSTHOG_KEY: string
   readonly VITE_POSTHOG_HOST: string
   readonly VITE_RECAPTCHA_SITE_KEY: string
+  readonly VITE_TURNSTILE_SITE_KEY: string
   readonly VITE_DEBUG_TRACKING: string
   readonly VITE_ENABLE_CONSOLE_LOGS: string
   readonly VITE_COGNITO_CLIENT_ID: string

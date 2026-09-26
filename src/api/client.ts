@@ -1,4 +1,8 @@
 import { appConfig } from "@/config/appConfig";
+import {
+  ensureWebDeviceAttestationSession,
+  webAttestationRequestHeaders,
+} from "@/lib/device-attestation-client";
 
 export interface ApiRequestOptions<Body = unknown> {
   readonly path: string;
@@ -264,6 +268,7 @@ export const createApiClient = (
     const url = joinUrl(getApiBaseUrl(), options.path);
     const headers: Record<string, string> = {
       Accept: "application/json",
+      ...webAttestationRequestHeaders(),
       ...(options.headers ?? {}),
       Authorization: `${tokenType} ${token}`,
     };
@@ -287,6 +292,19 @@ export const createApiClient = (
     });
 
     if (response.status === 401 && !hasRetried) {
+      let errorCode: string | undefined;
+      try {
+        const parsed = JSON.parse(await response.clone().text()) as {
+          error?: { code?: string };
+        };
+        errorCode = parsed.error?.code;
+      } catch {
+        errorCode = undefined;
+      }
+      if (errorCode === "WEB_ATTESTATION_REQUIRED") {
+        await ensureWebDeviceAttestationSession(token, tokenType);
+        return performRequest<Response, Body>(options, true);
+      }
       const refreshed = await resolveAccessToken({ forceRefresh: true });
       if (!refreshed) {
         throw new ApiRequestError(401, "Authentication required.");

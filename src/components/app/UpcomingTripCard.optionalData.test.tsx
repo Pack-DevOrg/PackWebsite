@@ -7,7 +7,7 @@ import type { Trip } from "@/api/trips";
 import { UpcomingTripCard } from "./UpcomingTripCard";
 
 jest.mock(
-  "@pack/schemas/locality-catalog",
+  "@pack/locality-catalog/locality-catalog",
   () => ({
     getAllAirportCatalogEntries: () => [],
   }),

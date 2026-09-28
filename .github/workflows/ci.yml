@@ -1,12 +1,15 @@
 name: CI
 
 # Required check `ci` on PRs and the merge queue (ruleset "trunk: PR + CI + merge queue").
+# Hermetic: this repo plus npm install. @pack/* comes from GitHub Packages
+# (see .npmrc). No PackServer checkout. pack-ci-read is not used here.
 on:
   pull_request:
   merge_group:
 
 permissions:
   contents: read
+  packages: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -15,40 +18,17 @@ concurrency:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: PackWebsite
     timeout-minutes: 30
     steps:
-      # The build reads three PackServer packages as a sibling checkout (../PackServer/packages/*,
-      # vite aliases + file: deps). PackServer is private and the enterprise disables deploy keys:
-      # the pack-ci-read GitHub App (contents: read, installed on PackServer only) mints a 1 h token.
       - uses: actions/checkout@v4
-        with:
-          path: PackWebsite
-      - id: packserver-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ vars.PACK_CI_READ_APP_ID }}
-          private-key: ${{ secrets.PACK_CI_READ_APP_KEY }}
-          owner: Pack-DevOrg
-          repositories: PackServer
-      - uses: actions/checkout@v4
-        with:
-          repository: Pack-DevOrg/PackServer
-          token: ${{ steps.packserver-token.outputs.token }}
-          persist-credentials: false
-          path: PackServer
-          sparse-checkout: |
-            packages/schemas
-            packages/locality-catalog
-            packages/web-effects
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'PackWebsite/.nvmrc'
+          node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: PackWebsite/package-lock.json
+          cache-dependency-path: package-lock.json
       - run: npm ci --no-audit --no-fund
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # land-smoke drives a real browser against the built site.
       - run: npx playwright install --with-deps chromium
       - run: npm run lint

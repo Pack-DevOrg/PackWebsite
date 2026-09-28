@@ -4,6 +4,10 @@ name: Deploy website
 # Replaces the laptop `npm run deploy` (ledger A183). Role pack-gha-deploy-website (PackServer
 # stacks/ops) trusts only this repo's master. A running deploy is never cancelled; only the newest
 # waiting push runs next.
+#
+# City-image manifests are an S3 read on the app-origin bucket
+# (generated/city-image-cache/*.json). Tiles stay at the baseImageUrl prefix.
+# No PackServer checkout. pack-ci-read is not used here.
 on:
   push:
     branches:
@@ -13,6 +17,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: read
 
 concurrency:
   group: deploy-website
@@ -21,43 +26,17 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: PackWebsite
     timeout-minutes: 30
     steps:
-      # The build reads three PackServer packages as a sibling checkout (../PackServer/packages/*,
-      # vite aliases + file: deps). PackServer is private and the enterprise disables deploy keys:
-      # the pack-ci-read GitHub App (contents: read, installed on PackServer only) mints a 1 h token.
       - uses: actions/checkout@v4
-        with:
-          path: PackWebsite
-      - id: packserver-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ vars.PACK_CI_READ_APP_ID }}
-          private-key: ${{ secrets.PACK_CI_READ_APP_KEY }}
-          owner: Pack-DevOrg
-          repositories: PackServer
-      - uses: actions/checkout@v4
-        with:
-          repository: Pack-DevOrg/PackServer
-          token: ${{ steps.packserver-token.outputs.token }}
-          persist-credentials: false
-          path: PackServer
-          # generated/city-image-cache: the city-recommendation manifest stage-city-recommendation-assets
-          # reads; the tiles themselves come from the app-origin bucket (durable S3 source).
-          sparse-checkout: |
-            packages/schemas
-            packages/locality-catalog
-            packages/web-effects
-            generated/city-image-cache
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'PackWebsite/.nvmrc'
+          node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: PackWebsite/package-lock.json
+          cache-dependency-path: package-lock.json
       - run: npm ci --no-audit --no-fund
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # The post-deploy live verify drives a real browser against the published routes.
       - run: npx playwright install --with-deps chromium
       - name: Configure AWS credentials via OIDC

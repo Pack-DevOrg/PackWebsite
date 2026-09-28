@@ -12,6 +12,7 @@ import test from "node:test";
 
 import {
   ASSET_CLASSES,
+  CITY_IMAGE_CACHE_PREFIX,
   main,
   resolveDurableSource,
 } from "./stage-city-recommendation-assets.mjs";
@@ -50,6 +51,52 @@ const writeManifest = (rootDir, fileName, manifest) => {
 
 const serializeSource = (source) =>
   `${source.kind}:${source.uri ?? source.path ?? ""}`;
+
+test("city-image manifests are S3 keys under generated/city-image-cache", () => {
+  for (const assetClass of Object.values(ASSET_CLASSES)) {
+    assert.equal(
+      assetClass.manifestKey.startsWith(`${CITY_IMAGE_CACHE_PREFIX}/`),
+      true,
+    );
+    assert.equal(assetClass.manifestKey.includes("PackServer"), false);
+    assert.equal("manifestPath" in assetClass, false);
+  }
+});
+
+test("default staging reads the manifest from S3 and writes it back into dist", () => {
+  const rootDir = mkdtempSync(join(tmpdir(), "city-assets-manifest-s3-"));
+  const distDir = join(rootDir, "dist");
+  const copied = [];
+  main({
+    argv: [
+      "node",
+      "stage-city-recommendation-assets.mjs",
+      "--class",
+      "city-recommendations",
+      "--dist-dir",
+      distDir,
+    ],
+    env: { PACK_APP_BUCKET: "s3://pack-test-bucket" },
+    captureJson: rejectAws,
+    s3Sync: (uri, targetDir) => {
+      mkdirSync(targetDir, { recursive: true });
+      writeFileSync(join(targetDir, "NYC.webp"), "from-s3");
+    },
+    s3Cp: (uri, targetFile) => {
+      copied.push(uri);
+      writeFileSync(targetFile, `${JSON.stringify(recManifest)}\n`);
+    },
+  });
+  assert.deepEqual(copied, [
+    "s3://pack-test-bucket/generated/city-image-cache/openai-city-sheet-images.json",
+  ]);
+  const republished = join(
+    distDir,
+    "generated/city-image-cache/openai-city-sheet-images.json",
+  );
+  assert.equal(existsSync(republished), true);
+  assert.equal(JSON.parse(readFileSync(republished, "utf8")).sourceRun, REC_SOURCE_RUN);
+});
 
 test("default source for both asset classes does not join PackServer/tmp and sourceRun", () => {
   const cases = [

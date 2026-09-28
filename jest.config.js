@@ -1,6 +1,10 @@
 export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  resolver: '<rootDir>/scripts/jest-pack-app-resolver.cjs',
+  transformIgnorePatterns: [
+    'node_modules/(?!(expo-linear-gradient|expo-constants|react-native-svg|react-native-safe-area-context|react-native-reanimated|react-native-worklets|@react-navigation)/)',
+  ],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.js',
     '\\.md\\?raw$': '<rootDir>/src/__mocks__/rawTextMock.js',

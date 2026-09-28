@@ -33,6 +33,7 @@ const packLocalityCatalogDir = path.join(
 );
 const packWebEffectsDir = path.join(repoRootDir, 'PackServer', 'packages', 'web-effects', 'vendor');
 const packUiPrimitivesDir = path.join(rootDir, 'packages', 'ui-primitives', 'src');
+const packAppSrc = path.resolve(rootDir, '../../PackApp/src');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
 const packServerPackagesDir = normalizePath(path.join(repoRootDir, 'PackServer', 'packages')) + '/';
 // PackServer package sources (../PackServer/packages/*) are aliased in as source, not installed. Their
@@ -49,6 +50,98 @@ const packServerBareImportsFromSite = {
     if (!importer || !normalizePath(importer).startsWith(packServerPackagesDir)) return null;
     if (source.startsWith('.') || source.startsWith('/') || source.startsWith('\0') || source.startsWith('@pack/')) return null;
     return this.resolve(source, path.join(rootDir, 'index.html'), {skipSelf: true});
+  },
+};
+const WEB_SOURCE_EXTS = ['.tsx', '.ts', '.jsx', '.js', '.mjs'];
+
+function resolvePackAppFile(absNoExt: string): string | null {
+  if (fs.existsSync(absNoExt) && fs.statSync(absNoExt).isFile()) {
+    return absNoExt;
+  }
+  for (const ext of ['.web.tsx', '.web.ts', '.web.jsx', '.web.js']) {
+    if (fs.existsSync(absNoExt + ext)) {
+      return absNoExt + ext;
+    }
+  }
+  for (const ext of WEB_SOURCE_EXTS) {
+    if (fs.existsSync(absNoExt + ext)) {
+      return absNoExt + ext;
+    }
+  }
+  for (const ext of WEB_SOURCE_EXTS) {
+    const indexFile = path.join(absNoExt, `index${ext}`);
+    if (fs.existsSync(indexFile)) {
+      return indexFile;
+    }
+  }
+  return null;
+}
+
+const installedPackageRoots = [
+  path.resolve(rootDir, '../../PackApp/node_modules'),
+  path.resolve(rootDir, '../../node_modules'),
+];
+
+function fallbackInstalledPackage(source: string): string | null {
+  if (
+    source.startsWith('.') ||
+    source.startsWith('/') ||
+    source.startsWith('@pack/') ||
+    source.startsWith('@/') ||
+    source.startsWith('\0')
+  ) {
+    return null;
+  }
+  const name = source.startsWith('@')
+    ? source.split('/').slice(0, 2).join('/')
+    : source.split('/')[0];
+  if (!name || fs.existsSync(path.join(localNodeModules, name))) {
+    return null;
+  }
+  const rest = source.slice(name.length).replace(/^\//, '');
+  for (const root of installedPackageRoots) {
+    const dir = path.join(root, name);
+    if (!fs.existsSync(dir)) {
+      continue;
+    }
+    const target = rest ? path.join(dir, rest) : dir;
+    if (!rest) {
+      const pkgPath = path.join(dir, 'package.json');
+      if (fs.existsSync(pkgPath)) {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {module?: string; main?: string};
+        const entry = pkg.module || pkg.main;
+        if (entry) {
+          const abs = path.join(dir, entry);
+          if (fs.existsSync(abs)) {
+            return abs;
+          }
+        }
+      }
+    }
+    return resolvePackAppFile(target);
+  }
+  return null;
+}
+
+const packAppSourceAlias = {
+  name: 'pack-app-source',
+  enforce: 'pre' as const,
+  async resolveId(
+    this: {resolve: (s: string, i?: string, o?: {skipSelf?: boolean}) => Promise<{id: string} | null>},
+    source: string,
+    importer: string | undefined,
+  ) {
+    if (source.startsWith('@pack/app/')) {
+      return resolvePackAppFile(path.join(packAppSrc, source.slice('@pack/app/'.length)));
+    }
+    if (importer && source.startsWith('@/') && normalizePath(importer).startsWith(normalizePath(packAppSrc) + '/')) {
+      return resolvePackAppFile(path.join(packAppSrc, source.slice(2)));
+    }
+    const installed = fallbackInstalledPackage(source);
+    if (installed) {
+      return installed;
+    }
+    return null;
   },
 };
 const localNodeModules = path.join(rootDir, 'node_modules');
@@ -764,6 +857,14 @@ export default defineConfig(({ mode, ssrBuild }) => {
       pure: true,
     },
   ]);
+  const reanimatedPlugin = [
+    path.resolve(rootDir, '../../PackApp/node_modules/react-native-reanimated/plugin/index.js'),
+    path.resolve(rootDir, '../../node_modules/react-native-reanimated/plugin/index.js'),
+    path.join(localNodeModules, 'react-native-reanimated/plugin/index.js'),
+  ].find((file) => fs.existsSync(file));
+  if (reanimatedPlugin) {
+    babelPlugins.push(reanimatedPlugin);
+  }
 
   const manualChunks = isSSR
     ? undefined
@@ -943,6 +1044,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
       // nm-store dependency tree is immutable (chflags uchg), so any plugin
       // writing under node_modules fails with EPERM.
       imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
+      packAppSourceAlias,
     ],
     cacheDir: '.vite-cache',
     // Use absolute root so assets resolve correctly for deep links (e.g., /share/*)
@@ -953,6 +1055,19 @@ export default defineConfig(({ mode, ssrBuild }) => {
     resolve: {
       dedupe: ['react', 'react-dom', 'styled-components'],
       alias: resolveAliases,
+      extensions: [
+        '.web.tsx',
+        '.web.ts',
+        '.web.jsx',
+        '.web.js',
+        '.mjs',
+        '.js',
+        '.mts',
+        '.ts',
+        '.jsx',
+        '.tsx',
+        '.json',
+      ],
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod', 'react-native-web'],

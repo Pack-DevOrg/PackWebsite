@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
 import { imagetools } from 'vite-imagetools';
 import {execFile, execFileSync} from 'node:child_process';
@@ -111,6 +111,21 @@ function fallbackInstalledPackage(source: string): string | null {
   }
   return null;
 }
+
+// expo-linear-gradient ships JSX inside .js files. Vite parses node_modules .js as plain
+// JavaScript, so this package's files go through esbuild's jsx loader first.
+const jsxInJsPackages = {
+  name: 'jsx-in-js-packages',
+  enforce: 'pre' as const,
+  async transform(code: string, id: string) {
+    const file = normalizePath(id.split('?')[0]);
+    if (!/\/node_modules\/expo-linear-gradient\/build\/.*\.js$/u.test(file)) {
+      return null;
+    }
+    const out = await transformWithEsbuild(code, file, {loader: 'jsx', jsx: 'automatic'});
+    return {code: out.code, map: out.map};
+  },
+};
 
 const packAppSourceAlias = {
   name: 'pack-app-source',
@@ -792,7 +807,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
     ? path.join(styledComponentsModuleDir, 'dist', 'styled-components.esm.js')
     : styledComponentsModuleDir;
   const resolveAliases: Record<string, string> = {
-    '@': normalizePath(srcDir),
     '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
@@ -1014,6 +1028,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
       // nm-store dependency tree is immutable (chflags uchg), so any plugin
       // writing under node_modules fails with EPERM.
       imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
+      jsxInJsPackages,
       packAppSourceAlias,
     ],
     cacheDir: '.vite-cache',
@@ -1024,7 +1039,26 @@ export default defineConfig(({ mode, ssrBuild }) => {
     },
     resolve: {
       dedupe: ['react', 'react-dom', 'styled-components'],
-      alias: resolveAliases,
+      alias: [
+        // '@/x' is this site's src, except from PackApp source, where it is PackApp's src.
+        // The alias plugin runs before every user plugin, so the split lives here.
+        {
+          find: /^@\/(.*)$/u,
+          replacement: '$1',
+          async customResolver(
+            this: {resolve: (s: string, i?: string, o?: Record<string, unknown>) => Promise<{id: string} | null>},
+            updated: string,
+            importer?: string,
+            options?: Record<string, unknown>,
+          ) {
+            if (importer && normalizePath(importer).startsWith(normalizePath(packAppSrc) + '/')) {
+              return resolvePackAppFile(path.join(packAppSrc, updated));
+            }
+            return this.resolve(path.join(srcDir, updated), importer, {...options, skipSelf: true});
+          },
+        },
+        ...Object.entries(resolveAliases).map(([find, replacement]) => ({find, replacement})),
+      ],
       extensions: [
         '.web.tsx',
         '.web.ts',
@@ -1089,6 +1123,19 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'styled-components',
         'lucide-react',
         'react-native-web',
+        'expo-linear-gradient',
+        'expo-constants',
+        'react-native-reanimated',
+        'react-native-worklets',
+        'react-native-svg',
+        'react-native-safe-area-context',
+        '@react-navigation/native',
+        '@react-navigation/core',
+        '@react-navigation/routers',
+        'use-latest-callback',
+        'use-sync-external-store',
+        'react-is',
+        'color',
         'react-native',
         '@pack/schemas',
         '@pack/locality-catalog',

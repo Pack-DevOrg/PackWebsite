@@ -45,7 +45,7 @@ jobs:
           repository: Pack-DevOrg/PackApp
           token: ${{ steps.packapp-token.outputs.token }}
           persist-credentials: false
-          path: .pack-app
+          path: PackApp
           sparse-checkout: |
             src
       - uses: actions/setup-node@v4

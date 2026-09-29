@@ -98,21 +98,24 @@ describe('OnboardingComponents', () => {
     expect(skip.getAttribute('style') ?? '').not.toMatch(/min-height:\s*32px/);
   });
 
-  it('checks PackApp out beside this repo for CI and the prod build', () => {
+  it('checks PackApp out for CI and the prod build', () => {
     const ci = readFileSync(join(ROOT, '.github/workflows/ci.yml'), 'utf8');
     const deploy = readFileSync(join(ROOT, '.github/workflows/deploy.yml'), 'utf8');
     for (const source of [ci, deploy]) {
       expect(source).toContain('repository: Pack-DevOrg/PackApp');
       expect(source).toMatch(/path: PackApp\n\s+sparse-checkout: \|\n\s+src/);
-      expect(source).toMatch(/repositories: \|\n\s+PackServer\n\s+PackApp/);
+      expect(source).toMatch(/repositories: \|\n\s+PackApp\n/);
     }
     const vite = readFileSync(join(ROOT, 'vite.config.ts'), 'utf8');
     const resolver = readFileSync(join(ROOT, 'scripts/jest-pack-app-resolver.cjs'), 'utf8');
-    const sibling = "path.join(repoRootDir, 'PackApp')";
+    const sibling = "path.join(rootDir, 'PackApp')";
     const verifyTree = "path.resolve(rootDir, '../../PackApp')";
     expect(vite.indexOf(sibling)).toBeGreaterThan(-1);
     expect(vite.indexOf(sibling)).toBeLessThan(vite.indexOf(verifyTree));
     expect(vite).not.toContain("path.resolve(rootDir, '../../PackApp/src')");
+    expect(resolver.indexOf("path.resolve(__dirname, '../PackApp')")).toBeLessThan(
+      resolver.indexOf("path.resolve(__dirname, '../../PackApp')"),
+    );
     expect(resolver.indexOf("path.resolve(__dirname, '../../PackApp')")).toBeLessThan(
       resolver.indexOf("path.resolve(__dirname, '../../../PackApp')"),
     );

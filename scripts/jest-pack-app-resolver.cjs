@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-// CI and deploy check PackApp out beside this repo (../PackApp, two levels
+// CI and deploy sparse-check PackApp out into ./PackApp; a laptop keeps it beside this repo (../PackApp, two levels
 // up from scripts/). A session worktree keeps that checkout one level further.
 function packAppCheckout(candidates) {
   for (const dir of candidates) {
@@ -12,6 +12,7 @@ function packAppCheckout(candidates) {
   return candidates[0];
 }
 const PACK_APP_DIR = packAppCheckout([
+  path.resolve(__dirname, '../PackApp'),
   path.resolve(__dirname, '../../PackApp'),
   path.resolve(__dirname, '../../../PackApp'),
 ]);

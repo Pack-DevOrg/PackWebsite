@@ -24,7 +24,7 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
 const repoRootDir = path.join(rootDir, '..');
 const packUiPrimitivesDir = path.join(rootDir, 'packages', 'ui-primitives', 'src');
-// CI and deploy sparse-check PackApp out into .pack-app; a laptop has it beside this repo (../PackApp). A session
+// CI and deploy sparse-check PackApp out into ./PackApp; a laptop has it beside this repo (../PackApp). A session
 // worktree is PackAll/<seat>/PackWebsite, so the same checkout is two levels up.
 function packAppCheckout(candidates: readonly string[]): string {
   for (const dir of candidates) {
@@ -35,7 +35,7 @@ function packAppCheckout(candidates: readonly string[]): string {
   return candidates[0];
 }
 const packAppDir = packAppCheckout([
-  path.join(rootDir, '.pack-app'),
+  path.join(rootDir, 'PackApp'),
   path.join(repoRootDir, 'PackApp'),
   path.resolve(rootDir, '../../PackApp'),
 ]);

@@ -37,3 +37,4 @@ legal-review/screenshots
 *.njsproj
 *.sln
 *.sw?
+.pack-app/

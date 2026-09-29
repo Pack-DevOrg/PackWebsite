@@ -1,12 +1,15 @@
 name: CI
 
 # Required check `ci` on PRs and the merge queue (ruleset "trunk: PR + CI + merge queue").
+# Hermetic: this repo plus npm install. @pack/* comes from GitHub Packages
+# (see .npmrc). No PackServer checkout. pack-ci-read mints a read token for the PackApp source checkout only.
 on:
   pull_request:
   merge_group:
 
 permissions:
   contents: read
+  packages: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -15,51 +18,36 @@ concurrency:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: PackWebsite
     timeout-minutes: 30
     steps:
-      # The build reads PackServer packages and PackApp onboarding source as sibling
-      # checkouts (../PackServer/packages/*, ../PackApp/src). Both repos are private and
-      # the enterprise disables deploy keys: the pack-ci-read GitHub App (contents: read,
-      # installed on PackServer and PackApp) mints a 1 h token.
+      # Onboarding renders PackApp components: src comes from a sparse checkout of the private
+      # PackApp repo (pack-ci-read GitHub App, contents: read, 1 h token). PackServer packages
+      # are installed from GitHub Packages.
       - uses: actions/checkout@v4
-        with:
-          path: PackWebsite
-      - id: packserver-token
+      - id: packapp-token
         uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.PACK_CI_READ_APP_ID }}
           private-key: ${{ secrets.PACK_CI_READ_APP_KEY }}
           owner: Pack-DevOrg
           repositories: |
-            PackServer
             PackApp
       - uses: actions/checkout@v4
         with:
-          repository: Pack-DevOrg/PackServer
-          token: ${{ steps.packserver-token.outputs.token }}
-          persist-credentials: false
-          path: PackServer
-          sparse-checkout: |
-            packages/schemas
-            packages/locality-catalog
-            packages/web-effects
-      - uses: actions/checkout@v4
-        with:
           repository: Pack-DevOrg/PackApp
-          token: ${{ steps.packserver-token.outputs.token }}
+          token: ${{ steps.packapp-token.outputs.token }}
           persist-credentials: false
-          path: PackApp
+          path: .pack-app
           sparse-checkout: |
             src
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'PackWebsite/.nvmrc'
+          node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: PackWebsite/package-lock.json
+          cache-dependency-path: package-lock.json
       - run: npm ci --no-audit --no-fund
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # land-smoke drives a real browser against the built site.
       - run: npx playwright install --with-deps chromium
       - run: npm run lint

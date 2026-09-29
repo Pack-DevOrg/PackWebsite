@@ -47,7 +47,7 @@ describe("published @pack packages", () => {
       const text = read(workflow);
       expect(text.includes("Pack-DevOrg/PackServer")).toBe(false);
       expect(text).not.toMatch(/repositories: \|\n(?:\s+\w+\n)*?\s+PackServer/);
-      expect(text.match(/sparse-checkout/g)).toHaveLength(1);
+      expect(text.match(/sparse-checkout:/g)).toHaveLength(1);
       expect(text).toContain("repository: Pack-DevOrg/PackApp");
       expect(text).toContain("NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}");
     }

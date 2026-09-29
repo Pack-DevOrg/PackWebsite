@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
 import { imagetools } from 'vite-imagetools';
 import {execFile, execFileSync} from 'node:child_process';
@@ -24,7 +24,130 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const srcDir = path.join(rootDir, 'src');
 const repoRootDir = path.join(rootDir, '..');
 const packUiPrimitivesDir = path.join(rootDir, 'packages', 'ui-primitives', 'src');
+// CI and deploy sparse-check PackApp out into ./PackApp; a laptop has it beside this repo (../PackApp). A session
+// worktree is PackAll/<seat>/PackWebsite, so the same checkout is two levels up.
+function packAppCheckout(candidates: readonly string[]): string {
+  for (const dir of candidates) {
+    if (fs.existsSync(path.join(dir, 'src'))) {
+      return dir;
+    }
+  }
+  return candidates[0];
+}
+const packAppDir = packAppCheckout([
+  path.join(rootDir, 'PackApp'),
+  path.join(repoRootDir, 'PackApp'),
+  path.resolve(rootDir, '../../PackApp'),
+]);
+const packAppSrc = path.join(packAppDir, 'src');
 const normalizePath = (uri: string) => uri.replace(/\\/g, '/');
+const WEB_SOURCE_EXTS = ['.tsx', '.ts', '.jsx', '.js', '.mjs'];
+
+function resolvePackAppFile(absNoExt: string): string | null {
+  if (fs.existsSync(absNoExt) && fs.statSync(absNoExt).isFile()) {
+    return absNoExt;
+  }
+  for (const ext of ['.web.tsx', '.web.ts', '.web.jsx', '.web.js']) {
+    if (fs.existsSync(absNoExt + ext)) {
+      return absNoExt + ext;
+    }
+  }
+  for (const ext of WEB_SOURCE_EXTS) {
+    if (fs.existsSync(absNoExt + ext)) {
+      return absNoExt + ext;
+    }
+  }
+  for (const ext of WEB_SOURCE_EXTS) {
+    const indexFile = path.join(absNoExt, `index${ext}`);
+    if (fs.existsSync(indexFile)) {
+      return indexFile;
+    }
+  }
+  return null;
+}
+
+const installedPackageRoots = [
+  path.join(packAppDir, 'node_modules'),
+  path.resolve(rootDir, '../../node_modules'),
+];
+
+function fallbackInstalledPackage(source: string): string | null {
+  if (
+    source.startsWith('.') ||
+    source.startsWith('/') ||
+    source.startsWith('@pack/') ||
+    source.startsWith('@/') ||
+    source.startsWith('\0')
+  ) {
+    return null;
+  }
+  const name = source.startsWith('@')
+    ? source.split('/').slice(0, 2).join('/')
+    : source.split('/')[0];
+  if (!name || fs.existsSync(path.join(localNodeModules, name))) {
+    return null;
+  }
+  const rest = source.slice(name.length).replace(/^\//, '');
+  for (const root of installedPackageRoots) {
+    const dir = path.join(root, name);
+    if (!fs.existsSync(dir)) {
+      continue;
+    }
+    const target = rest ? path.join(dir, rest) : dir;
+    if (!rest) {
+      const pkgPath = path.join(dir, 'package.json');
+      if (fs.existsSync(pkgPath)) {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {module?: string; main?: string};
+        const entry = pkg.module || pkg.main;
+        if (entry) {
+          const abs = path.join(dir, entry);
+          if (fs.existsSync(abs)) {
+            return abs;
+          }
+        }
+      }
+    }
+    return resolvePackAppFile(target);
+  }
+  return null;
+}
+
+// expo-linear-gradient ships JSX inside .js files. Vite parses node_modules .js as plain
+// JavaScript, so this package's files go through esbuild's jsx loader first.
+const jsxInJsPackages = {
+  name: 'jsx-in-js-packages',
+  enforce: 'pre' as const,
+  async transform(code: string, id: string) {
+    const file = normalizePath(id.split('?')[0]);
+    if (!/\/node_modules\/expo-linear-gradient\/build\/.*\.js$/u.test(file)) {
+      return null;
+    }
+    const out = await transformWithEsbuild(code, file, {loader: 'jsx', jsx: 'automatic'});
+    return {code: out.code, map: out.map};
+  },
+};
+
+const packAppSourceAlias = {
+  name: 'pack-app-source',
+  enforce: 'pre' as const,
+  async resolveId(
+    this: {resolve: (s: string, i?: string, o?: {skipSelf?: boolean}) => Promise<{id: string} | null>},
+    source: string,
+    importer: string | undefined,
+  ) {
+    if (source.startsWith('@pack/app/')) {
+      return resolvePackAppFile(path.join(packAppSrc, source.slice('@pack/app/'.length)));
+    }
+    if (importer && source.startsWith('@/') && normalizePath(importer).startsWith(normalizePath(packAppSrc) + '/')) {
+      return resolvePackAppFile(path.join(packAppSrc, source.slice(2)));
+    }
+    const installed = fallbackInstalledPackage(source);
+    if (installed) {
+      return installed;
+    }
+    return null;
+  },
+};
 const localNodeModules = path.join(rootDir, 'node_modules');
 const resolveModuleDir = (moduleName: string): string => {
   const localModuleDir = path.join(localNodeModules, moduleName);
@@ -62,7 +185,6 @@ const packAdsVideoLabTemplatesPath = path.join(
   packAdsVideoLabProjectDir,
   'templates.json',
 );
-const packAppDir = path.join(repoRootDir, 'PackApp');
 const packAppAssetImagesDir = path.join(packAppDir, 'src', 'assets', 'images');
 const packAppLiveActivityReviewDir = path.join(
   packAppDir,
@@ -685,7 +807,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
     ? path.join(styledComponentsModuleDir, 'dist', 'styled-components.esm.js')
     : styledComponentsModuleDir;
   const resolveAliases: Record<string, string> = {
-    '@': normalizePath(srcDir),
     '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
     'react-native': 'react-native-web',
     react: normalizePath(reactModuleDir),
@@ -721,6 +842,14 @@ export default defineConfig(({ mode, ssrBuild }) => {
       pure: true,
     },
   ]);
+  const reanimatedPlugin = [
+    path.join(packAppDir, 'node_modules/react-native-reanimated/plugin/index.js'),
+    path.resolve(rootDir, '../../node_modules/react-native-reanimated/plugin/index.js'),
+    path.join(localNodeModules, 'react-native-reanimated/plugin/index.js'),
+  ].find((file) => fs.existsSync(file));
+  if (reanimatedPlugin) {
+    babelPlugins.push(reanimatedPlugin);
+  }
 
   const manualChunks = isSSR
     ? undefined
@@ -899,6 +1028,8 @@ export default defineConfig(({ mode, ssrBuild }) => {
       // nm-store dependency tree is immutable (chflags uchg), so any plugin
       // writing under node_modules fails with EPERM.
       imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
+      jsxInJsPackages,
+      packAppSourceAlias,
     ],
     cacheDir: '.vite-cache',
     // Use absolute root so assets resolve correctly for deep links (e.g., /share/*)
@@ -908,7 +1039,39 @@ export default defineConfig(({ mode, ssrBuild }) => {
     },
     resolve: {
       dedupe: ['react', 'react-dom', 'styled-components'],
-      alias: resolveAliases,
+      alias: [
+        // '@/x' is this site's src, except from PackApp source, where it is PackApp's src.
+        // The alias plugin runs before every user plugin, so the split lives here.
+        {
+          find: /^@\/(.*)$/u,
+          replacement: '$1',
+          async customResolver(
+            this: {resolve: (s: string, i?: string, o?: Record<string, unknown>) => Promise<{id: string} | null>},
+            updated: string,
+            importer?: string,
+            options?: Record<string, unknown>,
+          ) {
+            if (importer && normalizePath(importer).startsWith(normalizePath(packAppSrc) + '/')) {
+              return resolvePackAppFile(path.join(packAppSrc, updated));
+            }
+            return this.resolve(path.join(srcDir, updated), importer, {...options, skipSelf: true});
+          },
+        },
+        ...Object.entries(resolveAliases).map(([find, replacement]) => ({find, replacement})),
+      ],
+      extensions: [
+        '.web.tsx',
+        '.web.ts',
+        '.web.jsx',
+        '.web.js',
+        '.mjs',
+        '.js',
+        '.mts',
+        '.ts',
+        '.jsx',
+        '.tsx',
+        '.json',
+      ],
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod', 'react-native-web'],
@@ -960,6 +1123,19 @@ export default defineConfig(({ mode, ssrBuild }) => {
         'styled-components',
         'lucide-react',
         'react-native-web',
+        'expo-linear-gradient',
+        'expo-constants',
+        'react-native-reanimated',
+        'react-native-worklets',
+        'react-native-svg',
+        'react-native-safe-area-context',
+        '@react-navigation/native',
+        '@react-navigation/core',
+        '@react-navigation/routers',
+        'use-latest-callback',
+        'use-sync-external-store',
+        'react-is',
+        'color',
         'react-native',
         '@pack/schemas',
         '@pack/locality-catalog',
@@ -976,6 +1152,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
         allow: [
           normalizePath(rootDir),
           normalizePath(packAdsLogoLabOutputDir),
+          normalizePath(packAppSrc),
           normalizePath(packAppAssetImagesDir),
           normalizePath(packAppLiveActivityReviewDir),
           normalizePath(packUiPrimitivesDir),

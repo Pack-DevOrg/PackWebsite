@@ -48,6 +48,7 @@ jobs:
           path: PackApp
           sparse-checkout: |
             src
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc

@@ -1,34 +1,42 @@
-import React from 'react';
+import React, {useContext, useLayoutEffect, useRef} from 'react';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
+// @ts-expect-error PackApp's navigation package is resolved at build and test time.
+import {NavigationContainer, NavigationContainerRefContext} from '@react-navigation/native';
+import {LinearGradient} from 'expo-linear-gradient';
 import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  type PressableStateCallbackType,
-  type StyleProp,
-  type TextStyle,
-  type ViewStyle,
-} from 'react-native';
+  SafeAreaInsetsContext,
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+import {AppleOutlineIcon} from '@pack/app/icons/svg/AppleOutlineIcon';
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+import {GoogleOutlineIcon} from '@pack/app/icons/svg/GoogleOutlineIcon';
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+import {MicrosoftIcon} from '@pack/app/icons/svg/MicrosoftIcon';
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+import {theme} from '@pack/app/themes';
 
-import {LinearGradient} from '../shims/LinearGradient';
-import {SafeAreaView} from '../shims/SafeArea';
-import {ProviderMark} from '../shims/ProviderMark';
 import {tokens} from '../tokens';
 import {TravelGlobeBackground} from './TravelGlobeBackground';
 
-export const ONBOARDING_CTA_MAX_WIDTH = 320;
+export {
+  ONBOARDING_CTA_MAX_WIDTH,
+  OnboardingEyebrow,
+  OnboardingPrimaryButton,
+  OnboardingSecondaryButton,
+  OnboardingSubtitle,
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+} from '@pack/app/components/onboarding/OnboardingComponents';
 
-type OnboardingContainerProps = {
-  readonly children: React.ReactNode;
-  readonly currentStep?: number;
-  readonly totalSteps?: number;
-  readonly onBack?: () => void;
-  readonly showBack?: boolean;
-  readonly showGlobe?: boolean;
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+import {OnboardingContainer as AppOnboardingContainer, OnboardingContent as AppOnboardingContent, OnboardingHeader as AppOnboardingHeader, OnboardingSecondaryButton, OnboardingTitle as AppOnboardingTitle} from '@pack/app/components/onboarding/OnboardingComponents';
+
+const WEB_SAFE_AREA = {
+  insets: {top: 0, right: 0, bottom: 0, left: 0},
+  frame: {x: 0, y: 0, width: 0, height: 0},
 };
 
-type OnboardingHeaderProps = {
+type HeaderProps = {
   readonly currentStep?: number;
   readonly totalSteps?: number;
   readonly onBack?: () => void;
@@ -36,35 +44,98 @@ type OnboardingHeaderProps = {
   readonly backAccessibilityLabel?: string;
 };
 
-type OnboardingContentProps = {
-  readonly children: React.ReactNode;
-  readonly centered?: boolean;
-  readonly style?: StyleProp<ViewStyle>;
-  readonly scrollEnabled?: boolean;
-};
+// NavigationContainer publishes NavigationContainerRefContext, not NavigationContext
+// (that one appears only after a navigator screen). Checking NavigationContext made
+// every shell mount its own container, and Content + Header then nested.
+const ShellContext = React.createContext(false);
 
-type OnboardingTitleProps = {
-  readonly children: React.ReactNode;
-  readonly style?: StyleProp<TextStyle>;
-};
+function Providers({children}: {readonly children: React.ReactElement}): React.ReactElement {
+  const shell = useContext(ShellContext);
+  const navigation = useContext(NavigationContainerRefContext);
+  const insets = useContext(SafeAreaInsetsContext);
+  if (shell) {
+    return children;
+  }
+  let tree = children;
+  if (!navigation) {
+    tree = <NavigationContainer>{tree}</NavigationContainer>;
+  }
+  if (!insets) {
+    tree = (
+      <SafeAreaProvider initialMetrics={WEB_SAFE_AREA}>{tree}</SafeAreaProvider>
+    );
+  }
+  return <ShellContext.Provider value={true}>{tree}</ShellContext.Provider>;
+}
 
-type OnboardingSubtitleProps = {
-  readonly children: React.ReactNode;
-  readonly style?: StyleProp<TextStyle>;
-  readonly testID?: string;
-};
+function BackLabel({
+  label,
+  children,
+}: {
+  readonly label?: string;
+  readonly children: React.ReactElement;
+}): React.ReactElement {
+  const ref = useRef<View>(null);
+  useLayoutEffect(() => {
+    if (!label || label === 'Go back') {
+      return;
+    }
+    const root = ref.current as unknown as HTMLElement | null;
+    const button = root?.querySelector?.('[aria-label="Go back"]');
+    button?.setAttribute('aria-label', label);
+  });
+  return <View ref={ref}>{children}</View>;
+}
 
-type OnboardingPrimaryButtonProps = {
-  readonly onPress: () => void;
-  readonly loading?: boolean;
-  readonly disabled?: boolean;
-  readonly showDisabledStyle?: boolean;
-  readonly children: React.ReactNode;
-  readonly maxWidth?: number;
-  readonly fullWidth?: boolean;
-  readonly testID?: string;
-  readonly accessibilityLabel?: string;
-};
+export function OnboardingTitle(
+  props: React.ComponentProps<typeof AppOnboardingTitle>,
+): React.ReactElement {
+  return (
+    <View accessibilityRole="header">
+      <AppOnboardingTitle {...props} />
+    </View>
+  );
+}
+
+export function OnboardingContainer({
+  showGlobe = true,
+  children,
+  ...rest
+}: React.ComponentProps<typeof AppOnboardingContainer> & {
+  readonly showGlobe?: boolean;
+}): React.ReactElement {
+  return (
+    <Providers>
+      <AppOnboardingContainer {...rest}>
+        {showGlobe ? <TravelGlobeBackground /> : null}
+        {children}
+      </AppOnboardingContainer>
+    </Providers>
+  );
+}
+
+export function OnboardingContent(
+  props: React.ComponentProps<typeof AppOnboardingContent>,
+): React.ReactElement {
+  return (
+    <Providers>
+      <AppOnboardingContent {...props} />
+    </Providers>
+  );
+}
+
+export function OnboardingHeader({
+  backAccessibilityLabel,
+  ...rest
+}: HeaderProps): React.ReactElement {
+  return (
+    <Providers>
+      <BackLabel label={backAccessibilityLabel}>
+        <AppOnboardingHeader {...rest} />
+      </BackLabel>
+    </Providers>
+  );
+}
 
 type OnboardingPrimaryLinkProps = {
   readonly href: string;
@@ -73,240 +144,6 @@ type OnboardingPrimaryLinkProps = {
   readonly accessibilityLabel?: string;
 };
 
-type OnboardingSecondaryButtonProps = {
-  readonly onPress: () => void;
-  readonly children: React.ReactNode;
-  readonly fullWidth?: boolean;
-  readonly maxWidth?: number;
-  readonly style?: StyleProp<ViewStyle>;
-  readonly testID?: string;
-};
-
-type OnboardingSkipButtonProps = {
-  readonly onPress: () => void;
-  readonly testID?: string;
-  readonly accessibilityLabel?: string;
-};
-
-type ProviderKind = 'google' | 'apple';
-
-type OnboardingProviderButtonProps = {
-  readonly provider: ProviderKind;
-  readonly onPress: () => void;
-  readonly children?: React.ReactNode;
-  readonly testID?: string;
-};
-
-function defaultProviderLabel(provider: ProviderKind): string {
-  if (provider === 'google') {
-    return 'Continue with Google';
-  }
-  return 'Continue with Apple';
-}
-
-export function OnboardingContainer({
-  children,
-  currentStep,
-  totalSteps = 10,
-  onBack,
-  showBack = true,
-  showGlobe = true,
-}: OnboardingContainerProps): React.ReactElement {
-  const showHeader = showBack === true || currentStep !== undefined;
-  return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[
-          tokens.colors.black,
-          tokens.colors.darkGray1,
-          tokens.colors.darkGray2,
-        ]}
-        style={StyleSheet.absoluteFillObject}
-        start={{x: 0.1, y: 0}}
-        end={{x: 0.9, y: 1}}
-      />
-      {showGlobe ? <TravelGlobeBackground /> : null}
-      {showHeader ? (
-        <OnboardingHeader
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          onBack={onBack}
-          showBack={showBack}
-        />
-      ) : null}
-      <View style={styles.foreground}>{children}</View>
-    </SafeAreaView>
-  );
-}
-
-export function OnboardingHeader({
-  currentStep,
-  totalSteps = 10,
-  onBack,
-  showBack = true,
-  backAccessibilityLabel = 'Go back',
-}: OnboardingHeaderProps): React.ReactElement {
-  const handleBack = (): void => {
-    if (onBack !== undefined) {
-      onBack();
-    }
-  };
-
-  return (
-    <View style={styles.header}>
-      {showBack ? (
-        <Pressable
-          style={(state: PressableStateCallbackType) => [
-            styles.backButton,
-            state.pressed && styles.backButtonPressed,
-          ]}
-          onPress={handleBack}
-          accessibilityLabel={backAccessibilityLabel}
-          accessibilityRole="button">
-          <Text style={styles.backGlyph}>‹</Text>
-        </Pressable>
-      ) : (
-        <View style={styles.backButton} />
-      )}
-      {currentStep !== undefined ? (
-        <View style={styles.progressContainer}>
-          <OnboardingProgressDots
-            currentStep={currentStep}
-            totalSteps={totalSteps}
-          />
-          <Text style={styles.progressText}>
-            Step {currentStep} of {totalSteps}
-          </Text>
-        </View>
-      ) : (
-        <View style={styles.progressContainer} />
-      )}
-      <View style={styles.headerSpacer} />
-    </View>
-  );
-}
-
-export function OnboardingContent({
-  children,
-  centered = false,
-  style,
-  scrollEnabled = true,
-}: OnboardingContentProps): React.ReactElement {
-  const contentStyles = [
-    styles.content,
-    centered ? styles.contentCentered : null,
-    style,
-  ];
-  if (!scrollEnabled) {
-    return <View style={contentStyles}>{children}</View>;
-  }
-  return (
-    <ScrollView
-      style={styles.contentScroll}
-      contentContainerStyle={contentStyles}
-      bounces={false}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled">
-      {children}
-    </ScrollView>
-  );
-}
-
-export function OnboardingTitle({
-  children,
-  style,
-}: OnboardingTitleProps): React.ReactElement {
-  return (
-    <Text accessibilityRole="header" style={[styles.title, style]}>
-      {children}
-    </Text>
-  );
-}
-
-export function OnboardingSubtitle({
-  children,
-  style,
-  testID,
-}: OnboardingSubtitleProps): React.ReactElement {
-  return (
-    <Text testID={testID} style={[styles.subtitle, style]}>
-      {children}
-    </Text>
-  );
-}
-
-export function OnboardingEyebrow({
-  children,
-  style,
-  align = 'center',
-}: {
-  readonly children: React.ReactNode;
-  readonly style?: StyleProp<TextStyle>;
-  readonly align?: 'center' | 'left';
-}): React.ReactElement {
-  return (
-    <Text
-      style={[
-        styles.eyebrowText,
-        align === 'center' ? styles.eyebrowCenter : styles.eyebrowLeft,
-        style,
-      ]}>
-      {children}
-    </Text>
-  );
-}
-
-export function OnboardingPrimaryButton({
-  onPress,
-  loading = false,
-  disabled = false,
-  showDisabledStyle = true,
-  maxWidth,
-  fullWidth = false,
-  testID,
-  accessibilityLabel,
-  children,
-}: OnboardingPrimaryButtonProps): React.ReactElement {
-  const resolvedMaxWidth = fullWidth
-    ? undefined
-    : (maxWidth ?? ONBOARDING_CTA_MAX_WIDTH);
-  const isInteractionDisabled = disabled || loading;
-  const isVisuallyDisabled = isInteractionDisabled && showDisabledStyle;
-  return (
-    <Pressable
-      style={(state: PressableStateCallbackType) => [
-        styles.primaryButton,
-        state.pressed && styles.primaryButtonPressed,
-        isVisuallyDisabled && styles.primaryButtonDisabled,
-        fullWidth
-          ? styles.primaryButtonFullWidth
-          : styles.primaryButtonConstrained,
-        !fullWidth && resolvedMaxWidth !== undefined
-          ? {maxWidth: resolvedMaxWidth}
-          : null,
-      ]}
-      onPress={onPress}
-      disabled={isInteractionDisabled}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      testID={testID}>
-      <LinearGradient
-        colors={
-          isVisuallyDisabled
-            ? [tokens.colors.gray, tokens.colors.gray]
-            : [tokens.colors.primary, tokens.colors.primaryDark]
-        }
-        style={styles.primaryButtonGradient}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}>
-        <Text style={styles.primaryButtonText}>
-          {loading ? 'Loading...' : children}
-        </Text>
-      </LinearGradient>
-    </Pressable>
-  );
-}
-
 export function OnboardingPrimaryLink({
   href,
   children,
@@ -314,65 +151,46 @@ export function OnboardingPrimaryLink({
   accessibilityLabel,
 }: OnboardingPrimaryLinkProps): React.ReactElement {
   return (
-    <Text
+    <Pressable
       accessibilityRole="link"
       href={href}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
-      style={[
-        styles.primaryButton,
-        styles.primaryButtonConstrained,
-        styles.primaryLink,
-        {maxWidth: ONBOARDING_CTA_MAX_WIDTH},
-      ] as unknown as StyleProp<TextStyle>}>
-      {children}
-    </Text>
-  );
-}
-
-export function OnboardingSecondaryButton({
-  onPress,
-  children,
-  fullWidth = false,
-  maxWidth = ONBOARDING_CTA_MAX_WIDTH,
-  style,
-  testID,
-}: OnboardingSecondaryButtonProps): React.ReactElement {
-  return (
-    <Pressable
-      style={(state: PressableStateCallbackType) => [
-        styles.secondaryButton,
-        fullWidth
-          ? styles.secondaryButtonFullWidth
-          : [styles.secondaryButtonConstrained, {maxWidth}],
-        state.pressed && styles.secondaryButtonPressed,
-        style,
-      ]}
-      onPress={onPress}
-      accessibilityRole="button"
-      testID={testID}>
-      <Text style={styles.secondaryButtonText}>{children}</Text>
+      style={styles.link}>
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primaryDark]}
+        style={styles.linkGradient}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 0}}>
+        <Text style={styles.linkText}>{children}</Text>
+      </LinearGradient>
     </Pressable>
   );
 }
+
+type OnboardingSkipButtonProps = {
+  readonly onPress: () => void;
+  readonly testID?: string;
+  readonly accessibilityLabel?: string;
+};
 
 export function OnboardingSkipButton({
   onPress,
   testID = 'connected-accounts-skip-button',
   accessibilityLabel = 'Skip for now',
 }: OnboardingSkipButtonProps): React.ReactElement {
+  const ref = useRef<View>(null);
+  useLayoutEffect(() => {
+    const root = ref.current as unknown as HTMLElement | null;
+    const button = root?.querySelector?.('[role="button"]');
+    button?.setAttribute('aria-label', accessibilityLabel);
+  });
   return (
-    <Pressable
-      style={(state: PressableStateCallbackType) => [
-        styles.skipButton,
-        state.pressed && styles.skipButtonPressed,
-      ]}
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      testID={testID}>
-      <Text style={styles.skipButtonText}>Skip for now</Text>
-    </Pressable>
+    <View ref={ref} style={styles.skipSlot}>
+      <OnboardingSecondaryButton onPress={onPress} fullWidth testID={testID}>
+        Skip for now
+      </OnboardingSecondaryButton>
+    </View>
   );
 }
 
@@ -402,12 +220,44 @@ export function OnboardingProgressDots({
   );
 }
 
+type ProviderKind = 'google' | 'apple';
+
+function defaultProviderLabel(provider: ProviderKind): string {
+  if (provider === 'google') {
+    return 'Continue with Google';
+  }
+  return 'Continue with Apple';
+}
+
+export function ProviderMark({
+  provider,
+  size,
+  color,
+}: {
+  readonly provider: 'google' | 'microsoft' | 'apple';
+  readonly size: number;
+  readonly color: string;
+}): React.ReactElement {
+  if (provider === 'google') {
+    return <GoogleOutlineIcon size={size} />;
+  }
+  if (provider === 'microsoft') {
+    return <MicrosoftIcon size={size} />;
+  }
+  return <AppleOutlineIcon size={size} color={color} />;
+}
+
 export function OnboardingProviderButton({
   provider,
   onPress,
   children,
   testID,
-}: OnboardingProviderButtonProps): React.ReactElement {
+}: {
+  readonly provider: ProviderKind;
+  readonly onPress: () => void;
+  readonly children?: React.ReactNode;
+  readonly testID?: string;
+}): React.ReactElement {
   const isGoogle = provider === 'google';
   return (
     <Pressable
@@ -434,9 +284,7 @@ export function OnboardingProviderButton({
           style={[
             styles.providerButtonText,
             {
-              color: isGoogle
-                ? tokens.colors.googleText
-                : tokens.colors.appleText,
+              color: isGoogle ? tokens.colors.googleText : tokens.colors.appleText,
             },
           ]}>
           {children ?? defaultProviderLabel(provider)}
@@ -447,62 +295,29 @@ export function OnboardingProviderButton({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minHeight: 0,
-    backgroundColor: tokens.colors.black,
-  },
-  foreground: {
-    flex: 1,
-    minHeight: 0,
-    zIndex: 1,
-  },
-  eyebrowCenter: {
+  link: {
+    width: '100%',
+    maxWidth: 320,
     alignSelf: 'center',
+    borderRadius: theme.borderRadius.l,
+    overflow: 'hidden',
+    marginBottom: theme.spacing.m,
   },
-  eyebrowLeft: {
-    alignSelf: 'flex-start',
-  },
-  eyebrowText: {
-    fontSize: tokens.typography.fontSize.xs,
-    fontWeight: tokens.typography.fontWeight.semibold,
-    color: tokens.colors.textSecondary,
-  },
-  header: {
-    flexDirection: 'row',
+  linkGradient: {
+    minHeight: tokens.buttonHeightL,
+    paddingVertical: theme.spacing.m,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: tokens.spacing.m,
-    minHeight: 60,
-    zIndex: 1,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: tokens.borderRadius.r20,
-    backgroundColor: tokens.colors.backgroundTransparent,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  backButtonPressed: {
-    opacity: 0.7,
-    transform: [{scale: 0.95}],
+  linkText: {
+    fontSize: theme.typography.fontSize.l,
+    fontWeight: theme.typography.fontWeight.bold as '700',
+    color: theme.colors.textOnPrimary,
+    textAlign: 'center',
   },
-  backGlyph: {
-    color: tokens.colors.textSecondary,
-    fontSize: 28,
-    lineHeight: 32,
-    fontWeight: tokens.typography.fontWeight.semibold,
-  },
-  headerSpacer: {
-    width: 40,
-    height: 40,
-  },
-  progressContainer: {
-    flex: 1,
-    alignItems: 'center',
-    marginHorizontal: 20,
+  skipSlot: {
+    width: '100%',
+    alignSelf: 'stretch',
   },
   progressDots: {
     flexDirection: 'row',
@@ -510,11 +325,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: tokens.spacing.xs,
     marginBottom: tokens.spacing.xs,
-  },
-  progressText: {
-    fontSize: tokens.typography.fontSize.xs,
-    color: tokens.colors.textSecondary,
-    fontWeight: tokens.typography.fontWeight.medium,
   },
   dot: {
     width: tokens.spacing.s,
@@ -526,122 +336,6 @@ const styles = StyleSheet.create({
   },
   dotIdle: {
     backgroundColor: tokens.colors.borderMedium,
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: tokens.spacing.m,
-    paddingVertical: tokens.spacing.xl,
-    justifyContent: 'space-between',
-  },
-  contentScroll: {
-    flex: 1,
-  },
-  contentCentered: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: tokens.typography.fontSize.xxxl32,
-    fontWeight: tokens.typography.fontWeight.bold,
-    color: tokens.colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: tokens.spacing.m,
-    lineHeight: tokens.typography.lineHeight.title,
-  },
-  subtitle: {
-    fontSize: tokens.typography.fontSize.m,
-    color: tokens.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: tokens.typography.lineHeight.subtitle,
-    marginBottom: tokens.spacing.xl,
-  },
-  primaryButton: {
-    borderRadius: tokens.borderRadius.l,
-    overflow: 'hidden',
-    backgroundColor: tokens.colors.primary,
-    marginBottom: tokens.spacing.m,
-  },
-  primaryButtonConstrained: {
-    width: '100%',
-    alignSelf: 'center',
-  },
-  primaryButtonFullWidth: {
-    width: '100%',
-    alignSelf: 'stretch',
-  },
-  primaryButtonPressed: {
-    transform: [{scale: 0.98}],
-  },
-  primaryButtonDisabled: {
-    opacity: 0.6,
-  },
-  primaryButtonGradient: {
-    minHeight: tokens.buttonHeightL,
-    paddingVertical: tokens.spacing.m,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryButtonText: {
-    fontSize: tokens.typography.fontSize.l,
-    fontWeight: tokens.typography.fontWeight.bold,
-    color: tokens.colors.textOnPrimary,
-    textAlign: 'center',
-  },
-  primaryLink: {
-    color: tokens.colors.textOnPrimary,
-    fontSize: tokens.typography.fontSize.l,
-    fontWeight: tokens.typography.fontWeight.bold,
-    textAlign: 'center',
-    paddingVertical: tokens.spacing.m,
-    minHeight: tokens.buttonHeightL,
-  },
-  secondaryButton: {
-    paddingHorizontal: tokens.spacing.xl,
-    paddingVertical: tokens.spacing.m,
-    borderRadius: tokens.borderRadius.xl,
-    backgroundColor: tokens.colors.backgroundTransparent,
-    borderWidth: 1,
-    borderColor: tokens.colors.borderSubtle,
-    marginBottom: tokens.spacing.m,
-  },
-  secondaryButtonConstrained: {
-    width: '100%',
-    alignSelf: 'center',
-  },
-  secondaryButtonFullWidth: {
-    width: '100%',
-    alignSelf: 'stretch',
-  },
-  secondaryButtonPressed: {
-    opacity: 0.7,
-    transform: [{scale: 0.98}],
-  },
-  secondaryButtonText: {
-    fontSize: tokens.typography.fontSize.m,
-    fontWeight: tokens.typography.fontWeight.semibold,
-    color: tokens.colors.textSecondary,
-    textAlign: 'center',
-  },
-  skipButton: {
-    paddingVertical: tokens.spacing.s,
-    paddingHorizontal: tokens.spacing.m,
-    minHeight: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: tokens.borderRadius.m,
-    backgroundColor: tokens.colors.backgroundLight,
-    borderWidth: 1,
-    borderColor: tokens.colors.borderMedium,
-  },
-  skipButtonPressed: {
-    backgroundColor: tokens.colors.backgroundMedium,
-    transform: [{scale: 0.98}],
-  },
-  skipButtonText: {
-    fontSize: tokens.typography.fontSize.m15,
-    fontWeight: tokens.typography.fontWeight.semibold,
-    color: tokens.colors.textPrimary,
-    textAlign: 'center',
   },
   providerButtonRow: {
     flexDirection: 'row',
@@ -660,6 +354,7 @@ const styles = StyleSheet.create({
   },
   providerButtonText: {
     fontSize: tokens.typography.fontSize.xl,
-    fontWeight: tokens.typography.fontWeight.semibold,
+    fontWeight: tokens.typography.fontWeight.semibold as '600',
   },
 });
+

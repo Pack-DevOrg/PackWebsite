@@ -42,12 +42,13 @@ describe("published @pack packages", () => {
     }
   });
 
-  it("keeps CI and deploy off the PackServer checkout and pack-ci-read", () => {
+  it("keeps CI and deploy off the PackServer checkout; pack-ci-read reads PackApp only", () => {
     for (const workflow of [".github/workflows/ci.yml", ".github/workflows/deploy.yml"]) {
       const text = read(workflow);
-      expect(text.includes("PACK_CI_READ")).toBe(false);
       expect(text.includes("Pack-DevOrg/PackServer")).toBe(false);
-      expect(text.includes("sparse-checkout")).toBe(false);
+      expect(text).not.toMatch(/repositories: \|\n(?:\s+\w+\n)*?\s+PackServer/);
+      expect(text.match(/sparse-checkout:/g)).toHaveLength(1);
+      expect(text).toContain("repository: Pack-DevOrg/PackApp");
       expect(text).toContain("NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}");
     }
     const vite = read("vite.config.ts");

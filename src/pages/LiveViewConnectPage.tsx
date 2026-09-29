@@ -27,6 +27,9 @@ const OTP_DIGITS_RE = /^\d{4,8}$/;
 const CLOUDFLARE_LIVE_VIEW_HOST = "live.browser.run";
 const LIVE_VIEW_SIGN_IN_HEADING = "Sign in to watch Pack work";
 const LIVE_VIEW_SIGN_IN_BUTTON = "Sign in";
+const LIVE_VIEW_CLEAR_BUTTON = "Done, keep going";
+const LIVE_VIEW_CLEAR_SENT = "Pack is picking it back up.";
+const LIVE_VIEW_CLEAR_FAILED = "That didn't reach Pack. Tap again.";
 /** The private session emulates a phone (iPhone 15 CSS viewport). */
 const MOBILE_VIEWPORT_WIDTH_PX = 393;
 const MOBILE_VIEWPORT_HEIGHT_PX = 659;
@@ -110,6 +113,12 @@ const ResumeButton = styled.button`
   color: ${({ theme }) => theme.colors.background.primary};
   font-size: 1rem;
   cursor: pointer;
+`;
+
+const ClearStatus = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: 1rem;
 `;
 
 const OtpForm = styled.form`
@@ -529,6 +538,26 @@ export function resolveLiveViewHandoffBecauseApiClient(
     });
 }
 
+/**
+ * The user cleared the site check (or is handing the page back). POST
+ * /live-view is owner-checked and enqueues {jobId, userId, event:'cleared'},
+ * so the same agent session resumes. Rejects when the link is not the
+ * signed-in user's or has expired.
+ */
+export type ClearLiveViewHandoff = (query: LiveViewLinkQuery) => Promise<unknown>;
+
+export function clearLiveViewHandoffBecauseApiClient(
+  client: ApiClient,
+): ClearLiveViewHandoff {
+  return (query) =>
+    client.request<unknown>({
+      path: liveViewResolvePathBecauseLinkQuery(query),
+      method: "POST",
+    });
+}
+
+type ClearState = "idle" | "sending" | "sent" | "failed";
+
 function linkQueryBecauseTokenOrShortId(
   token: string | null,
   shortId: string | undefined,
@@ -631,8 +660,10 @@ function initialSessionViewBecauseWatchUntilPause(): SessionViewState {
 
 export function LiveViewConnectView({
   resolveHandoff,
+  clearHandoff,
 }: {
   readonly resolveHandoff: ResolveLiveViewHandoff;
+  readonly clearHandoff: ClearLiveViewHandoff;
 }) {
   const [searchParams] = useSearchParams();
   const { shortId } = useParams<{ shortId?: string }>();
@@ -652,6 +683,23 @@ export function LiveViewConnectView({
   );
   const [pollGeneration, setPollGeneration] = useState(0);
   const [otpDraft, setOtpDraft] = useState("");
+  const [clearState, setClearState] = useState<ClearState>("idle");
+
+  /** One POST per tap. The server's claim drops a duplicate resume. */
+  const sendClear = async (): Promise<boolean> => {
+    if (linkQuery === null) {
+      return false;
+    }
+    setClearState("sending");
+    try {
+      await clearHandoff(linkQuery);
+      setClearState("sent");
+      return true;
+    } catch {
+      setClearState("failed");
+      return false;
+    }
+  };
 
   useEffect(() => {
     if (linkQuery === null) {
@@ -841,15 +889,9 @@ export function LiveViewConnectView({
     if (pageState.kind !== "session") {
       return;
     }
-    const jobId = pageState.jobId;
     const run = async () => {
-      try {
-        await fetch(`${appConfig.apiBaseUrl}/live-view/${jobId}/resume`, {
-          method: "POST",
-        });
-      } catch {
-        // return to watch even if resume ack fails
-      }
+      // Back to watch either way; a failed clear shows its retry line.
+      await sendClear();
       setPollGeneration((generation) => generation + 1);
       setSessionView((prev) => ({
         mode: "watch",
@@ -905,7 +947,21 @@ export function LiveViewConnectView({
               referrerPolicy="no-referrer"
             />
           </ScreenStage>
-        ) : pageState.kind === "session" ? (
+        ) : null}
+        {cloudflareViewerUrl !== null && clearState !== "sent" ? (
+          <ResumeButton
+            type="button"
+            disabled={clearState === "sending"}
+            onClick={() => {
+              void sendClear();
+            }}
+          >
+            {LIVE_VIEW_CLEAR_BUTTON}
+          </ResumeButton>
+        ) : null}
+        {clearState === "sent" ? <ClearStatus role="status">{LIVE_VIEW_CLEAR_SENT}</ClearStatus> : null}
+        {clearState === "failed" ? <ClearStatus role="alert">{LIVE_VIEW_CLEAR_FAILED}</ClearStatus> : null}
+        {cloudflareViewerUrl !== null ? null : pageState.kind === "session" ? (
           <>
             {sessionView.mode === "take-over" ? (
               <TakeOverBar>
@@ -968,6 +1024,10 @@ function LiveViewAuthGate() {
     () => resolveLiveViewHandoffBecauseApiClient(client),
     [client],
   );
+  const clearHandoff = useMemo(
+    () => clearLiveViewHandoffBecauseApiClient(client),
+    [client],
+  );
   const hasLink =
     linkQueryBecauseTokenOrShortId(
       opaqueLiveViewTokenFromSearchParamsBecauseQueryMustNotCarryUrl(searchParams),
@@ -975,7 +1035,7 @@ function LiveViewAuthGate() {
     ) !== null;
   // No link → the expired page, without a sign-in round trip.
   if (status === "authenticated" || !hasLink) {
-    return <LiveViewConnectView resolveHandoff={resolveHandoff} />;
+    return <LiveViewConnectView resolveHandoff={resolveHandoff} clearHandoff={clearHandoff} />;
   }
   if (status === "loading") {
     return null;

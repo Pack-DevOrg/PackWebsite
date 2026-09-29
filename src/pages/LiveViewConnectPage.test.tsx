@@ -1,8 +1,13 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-import { LiveViewConnectView, type LiveViewLinkQuery } from "./LiveViewConnectPage";
+import {
+  clearLiveViewHandoffBecauseApiClient,
+  LiveViewConnectView,
+  type LiveViewLinkQuery,
+} from "./LiveViewConnectPage";
+import type { ApiClient } from "../api/client";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { ThemeProvider } from "@/styles/ThemeProvider";
 
@@ -28,13 +33,25 @@ async function fetchResolver(query: LiveViewLinkQuery, signal: AbortSignal): Pro
   return response.json();
 }
 
+/** Stands in for the authenticated POST /live-view: same URL, the test's fetch mock. */
+async function fetchClearer(query: LiveViewLinkQuery): Promise<unknown> {
+  const params = new URLSearchParams("token" in query ? { token: query.token } : { lv: query.lv });
+  const response = await fetch(`https://api.pack.test/live-view?${params.toString()}`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    throw new Error(`live-view ${response.status}`);
+  }
+  return response.json();
+}
+
 function renderPage(search: string) {
   return render(
     <HelmetProvider>
       <MemoryRouter initialEntries={[`/live-view${search}`]}>
         <I18nProvider>
           <ThemeProvider>
-            <LiveViewConnectView resolveHandoff={fetchResolver} />
+            <LiveViewConnectView resolveHandoff={fetchResolver} clearHandoff={fetchClearer} />
           </ThemeProvider>
         </I18nProvider>
       </MemoryRouter>
@@ -373,7 +390,7 @@ describe("LiveViewConnectPage", () => {
           <I18nProvider>
             <ThemeProvider>
               <Routes>
-                <Route path="/lv/:shortId" element={<LiveViewConnectView resolveHandoff={fetchResolver} />} />
+                <Route path="/lv/:shortId" element={<LiveViewConnectView resolveHandoff={fetchResolver} clearHandoff={fetchClearer} />} />
               </Routes>
             </ThemeProvider>
           </I18nProvider>
@@ -403,5 +420,79 @@ describe("LiveViewConnectPage", () => {
     const frame = await screen.findByTitle("Merchant checkout live view");
     expect(frame.tagName).toBe("IMG");
     expect(document.querySelector("iframe")).toBeNull();
+  });
+  function postCalls(): string[] {
+    return fetchMock.mock.calls
+      .filter((call) => (call[1] as RequestInit | undefined)?.method === "POST")
+      .map((call) => String(call[0]));
+  }
+
+  it("Done under the Cloudflare viewer posts the owner clear for this link, so the same agent resumes", async () => {
+    fetchMock.mockResolvedValue(
+      jsonOk({ success: true, data: okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER }), requestId: "r1" }),
+    );
+
+    renderPage("?token=tok-cf");
+
+    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent("Pack is picking it back up.");
+    expect(postCalls()).toEqual(["https://api.pack.test/live-view?token=tok-cf"]);
+    expect(screen.queryByRole("button", { name: "Done, keep going" })).toBeNull();
+  });
+
+  it("Done on the SMS short link posts the clear by short id", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    render(
+      <HelmetProvider>
+        <MemoryRouter initialEntries={["/lv/w7pIQA37"]}>
+          <I18nProvider>
+            <ThemeProvider>
+              <Routes>
+                <Route
+                  path="/lv/:shortId"
+                  element={<LiveViewConnectView resolveHandoff={fetchResolver} clearHandoff={fetchClearer} />}
+                />
+              </Routes>
+            </ThemeProvider>
+          </I18nProvider>
+        </MemoryRouter>
+      </HelmetProvider>,
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+
+    await screen.findByRole("status");
+    expect(postCalls()).toEqual(["https://api.pack.test/live-view?lv=w7pIQA37"]);
+  });
+
+  it("a clear the server refuses says so and keeps the button", async () => {
+    fetchMock.mockImplementation((_input: RequestInfo | URL, init?: RequestInit) => {
+      if (init?.method === "POST") {
+        return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) });
+      }
+      return Promise.resolve(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+    });
+
+    renderPage("?token=tok-cf");
+
+    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("That didn't reach Pack. Tap again.");
+    expect(screen.getByRole("button", { name: "Done, keep going" })).toBeEnabled();
+  });
+
+  it("the prod clear is an authenticated POST to /live-view with the link query", async () => {
+    const request = jest.fn().mockResolvedValue({ jobId: JOB_ID, event: "cleared" });
+    const clear = clearLiveViewHandoffBecauseApiClient({ request } as unknown as ApiClient);
+
+    await clear({ lv: "w7pIQA37" });
+    await clear({ token: "tok-1" });
+
+    expect(request.mock.calls).toEqual([
+      [{ path: "/live-view?lv=w7pIQA37", method: "POST" }],
+      [{ path: "/live-view?token=tok-1", method: "POST" }],
+    ]);
   });
 });

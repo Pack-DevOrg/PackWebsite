@@ -1,8 +1,10 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ChangeEvent,
+  type RefObject,
   type FormEvent,
 } from "react";
 import { Helmet } from "react-helmet-async";
@@ -30,9 +32,23 @@ const LIVE_VIEW_SIGN_IN_BUTTON = "Sign in";
 const LIVE_VIEW_CLEAR_BUTTON = "Done, keep going";
 const LIVE_VIEW_CLEAR_SENT = "Pack is picking it back up.";
 const LIVE_VIEW_CLEAR_FAILED = "That didn't reach Pack. Tap again.";
+const LIVE_VIEW_DEFAULT_INSTRUCTION = "Tap and type here to log in, then tap Done";
 /** The private session emulates a phone (iPhone 15 CSS viewport). */
 const MOBILE_VIEWPORT_WIDTH_PX = 393;
 const MOBILE_VIEWPORT_HEIGHT_PX = 659;
+/**
+ * The Cloudflare viewer never draws the remote page below 1:1 CSS px, so the
+ * iframe is laid out at the viewer's natural size (15 px padding each side,
+ * 49 px nav bar) and scaled down as one piece to fit the phone.
+ */
+const CLOUDFLARE_VIEWER_PADDING_PX = 15;
+const CLOUDFLARE_VIEWER_NAV_BAR_PX = 49;
+export const CLOUDFLARE_VIEWER_WIDTH_PX =
+  MOBILE_VIEWPORT_WIDTH_PX + 2 * CLOUDFLARE_VIEWER_PADDING_PX;
+export const CLOUDFLARE_VIEWER_HEIGHT_PX =
+  MOBILE_VIEWPORT_HEIGHT_PX +
+  2 * CLOUDFLARE_VIEWER_PADDING_PX +
+  CLOUDFLARE_VIEWER_NAV_BAR_PX;
 
 const PageContainer = styled.main`
   min-height: 80vh;
@@ -57,14 +73,57 @@ const ScreenStage = styled.div`
   max-width: 72rem;
 `;
 
+/** The whole live view is one screen: no page scroll, Done always on screen. */
+const LiveViewStage = styled.main`
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  background: ${({ theme }) => theme.colors.background.primary};
+`;
+
+const InstructionLine = styled.h1`
+  flex: none;
+  margin: 0;
+  padding: 0.625rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const ViewerFit = styled.div`
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+`;
+
 const LiveViewPhoneFrame = styled.iframe`
-  display: block;
-  width: min(100%, ${MOBILE_VIEWPORT_WIDTH_PX}px);
-  aspect-ratio: ${MOBILE_VIEWPORT_WIDTH_PX} / ${MOBILE_VIEWPORT_HEIGHT_PX};
-  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: ${CLOUDFLARE_VIEWER_WIDTH_PX}px;
+  height: ${CLOUDFLARE_VIEWER_HEIGHT_PX}px;
+  transform-origin: center center;
   border: 0;
   border-radius: 1.25rem;
   background: ${({ theme }) => theme.colors.background.secondary};
+`;
+
+const DoneBar = styled.div`
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  background: ${({ theme }) => theme.colors.background.primary};
 `;
 
 const LiveViewFrameImage = styled.img`
@@ -182,6 +241,8 @@ const LiveViewHandoffSchema = z
     merchantHost: z.string().min(1),
     jobId: z.string().min(1),
     expiresAtMs: z.number().int().positive(),
+    /** What the user should do here, e.g. "Log in, then tap Done". */
+    headline: z.string().min(1).optional(),
   })
   .refine(
     (handoff) =>
@@ -483,7 +544,11 @@ function handoffBodyBecauseApiEnvelope(body: unknown): unknown {
   return body;
 }
 
-type ResolvedLiveViewHandoff = { jobId: string; liveViewUrl: string };
+type ResolvedLiveViewHandoff = {
+  jobId: string;
+  liveViewUrl: string;
+  instruction: string;
+};
 
 function handoffBecauseServerExpiry(body: unknown): ResolvedLiveViewHandoff | null {
   const parsed = LiveViewHandoffSchema.safeParse(handoffBodyBecauseApiEnvelope(body));
@@ -493,7 +558,11 @@ function handoffBecauseServerExpiry(body: unknown): ResolvedLiveViewHandoff | nu
   if (parsed.data.expiresAtMs <= Date.now()) {
     return null;
   }
-  return { jobId: parsed.data.jobId, liveViewUrl: parsed.data.liveViewUrl };
+  return {
+    jobId: parsed.data.jobId,
+    liveViewUrl: parsed.data.liveViewUrl,
+    instruction: parsed.data.headline ?? LIVE_VIEW_DEFAULT_INSTRUCTION,
+  };
 }
 
 function cloudflareViewerBecauseHost(liveViewUrl: string): boolean {
@@ -502,6 +571,106 @@ function cloudflareViewerBecauseHost(liveViewUrl: string): boolean {
   } catch {
     return false;
   }
+}
+
+/** Largest scale (never above 1) that shows the whole viewer inside the box. */
+export function viewerScaleBecauseContainFit(boxWidth: number, boxHeight: number): number {
+  if (boxWidth <= 0 || boxHeight <= 0) {
+    return 1;
+  }
+  return Math.min(
+    1,
+    boxWidth / CLOUDFLARE_VIEWER_WIDTH_PX,
+    boxHeight / CLOUDFLARE_VIEWER_HEIGHT_PX,
+  );
+}
+
+function useContainScaleBecauseViewerIsFixedSize(
+  boxRef: RefObject<HTMLDivElement | null>,
+): number {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const box = boxRef.current;
+    if (box === null) {
+      return;
+    }
+    const measure = () => {
+      setScale(viewerScaleBecauseContainFit(box.clientWidth, box.clientHeight));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(measure);
+      observer.observe(box);
+    }
+    return () => {
+      window.removeEventListener("resize", measure);
+      observer?.disconnect();
+    };
+  }, [boxRef]);
+  return scale;
+}
+
+/** The live view owns the screen: the document under it must not scroll. */
+function useDocumentScrollLockBecauseLiveViewIsOneScreen(): void {
+  useEffect(() => {
+    const targets = [document.documentElement, document.body];
+    const previous = targets.map((el) => ({
+      overflow: el.style.overflow,
+      overscrollBehavior: el.style.overscrollBehavior,
+    }));
+    for (const el of targets) {
+      el.style.overflow = "hidden";
+      el.style.overscrollBehavior = "none";
+    }
+    return () => {
+      targets.forEach((el, index) => {
+        el.style.overflow = previous[index].overflow;
+        el.style.overscrollBehavior = previous[index].overscrollBehavior;
+      });
+    };
+  }, []);
+}
+
+function CloudflareViewerScreen({
+  viewerUrl,
+  instruction,
+  clearState,
+  onDone,
+}: {
+  readonly viewerUrl: string;
+  readonly instruction: string;
+  readonly clearState: ClearState;
+  readonly onDone: () => void;
+}) {
+  const fitRef = useRef<HTMLDivElement | null>(null);
+  const scale = useContainScaleBecauseViewerIsFixedSize(fitRef);
+  useDocumentScrollLockBecauseLiveViewIsOneScreen();
+  return (
+    <LiveViewStage data-testid="live-view-stage">
+      <InstructionLine>{instruction}</InstructionLine>
+      <ViewerFit ref={fitRef} data-testid="live-view-fit">
+        <LiveViewPhoneFrame
+          title={MERCHANT_CHECKOUT_LIVE_VIEW_ALT}
+          src={viewerUrl}
+          allow="clipboard-read; clipboard-write"
+          referrerPolicy="no-referrer"
+          style={{ transform: `translate(-50%, -50%) scale(${scale})` }}
+        />
+      </ViewerFit>
+      <DoneBar data-testid="live-view-done-bar">
+        {clearState !== "sent" ? (
+          <ResumeButton type="button" disabled={clearState === "sending"} onClick={onDone}>
+            {LIVE_VIEW_CLEAR_BUTTON}
+          </ResumeButton>
+        ) : (
+          <ClearStatus role="status">{LIVE_VIEW_CLEAR_SENT}</ClearStatus>
+        )}
+        {clearState === "failed" ? <ClearStatus role="alert">{LIVE_VIEW_CLEAR_FAILED}</ClearStatus> : null}
+      </DoneBar>
+    </LiveViewStage>
+  );
 }
 
 /** The opaque link from the text (`?token=`) or the SMS short link (`/lv/<id>`). */
@@ -636,7 +805,7 @@ export async function fetchLatestFrame(
 type LiveViewPageState =
   | { kind: "pending" }
   | { kind: "expired" }
-  | { kind: "session"; jobId: string; liveViewUrl: string };
+  | { kind: "session"; jobId: string; liveViewUrl: string; instruction: string };
 
 type SessionViewState = {
   mode: "watch" | "take-over";
@@ -928,6 +1097,24 @@ export function LiveViewConnectView({
     cloudflareViewerBecauseHost(pageState.liveViewUrl)
       ? pageState.liveViewUrl
       : null;
+
+  if (pageState.kind === "session" && cloudflareViewerUrl !== null) {
+    return (
+      <>
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <CloudflareViewerScreen
+          viewerUrl={cloudflareViewerUrl}
+          instruction={pageState.instruction}
+          clearState={clearState}
+          onDone={() => {
+            void sendClear();
+          }}
+        />
+      </>
+    );
+  }
   const showStale =
     frame !== null &&
     frameIsStaleBecauseOlderThanFiveSeconds(frame.ts, Date.now());
@@ -938,30 +1125,9 @@ export function LiveViewConnectView({
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <PageContainer>
-        {cloudflareViewerUrl !== null ? (
-          <ScreenStage>
-            <LiveViewPhoneFrame
-              title={MERCHANT_CHECKOUT_LIVE_VIEW_ALT}
-              src={cloudflareViewerUrl}
-              allow="clipboard-read; clipboard-write"
-              referrerPolicy="no-referrer"
-            />
-          </ScreenStage>
-        ) : null}
-        {cloudflareViewerUrl !== null && clearState !== "sent" ? (
-          <ResumeButton
-            type="button"
-            disabled={clearState === "sending"}
-            onClick={() => {
-              void sendClear();
-            }}
-          >
-            {LIVE_VIEW_CLEAR_BUTTON}
-          </ResumeButton>
-        ) : null}
         {clearState === "sent" ? <ClearStatus role="status">{LIVE_VIEW_CLEAR_SENT}</ClearStatus> : null}
         {clearState === "failed" ? <ClearStatus role="alert">{LIVE_VIEW_CLEAR_FAILED}</ClearStatus> : null}
-        {cloudflareViewerUrl !== null ? null : pageState.kind === "session" ? (
+        {pageState.kind === "session" ? (
           <>
             {sessionView.mode === "take-over" ? (
               <TakeOverBar>

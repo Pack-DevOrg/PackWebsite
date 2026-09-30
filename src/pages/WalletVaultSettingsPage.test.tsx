@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
 
 import { WalletVaultSettingsPage } from "./WalletVaultSettingsPage";
+import { VAULT_ADDRESSES_PATH } from "./vaultAddresses";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { ThemeProvider } from "@/styles/ThemeProvider";
 import {
@@ -119,6 +120,9 @@ describe("WalletVaultSettingsPage", () => {
       if (options.path === WALLET_CARDS_PATH) {
         return okEnvelope({ cards: [issuedCard()] });
       }
+      if (options.path === VAULT_ADDRESSES_PATH) {
+        return okEnvelope({ addresses: [] });
+      }
       throw new Error(`unexpected ${options.method} ${options.path}`);
     });
     useAuthMock.mockReturnValue({
@@ -159,6 +163,9 @@ describe("WalletVaultSettingsPage", () => {
       }
       if (options.path === WALLET_CARDS_PATH) {
         return okEnvelope({ cards: [issuedCard()] });
+      }
+      if (options.path === VAULT_ADDRESSES_PATH) {
+        return okEnvelope({ addresses: [] });
       }
       throw new Error(`unexpected ${options.method} ${options.path}`);
     });
@@ -219,6 +226,9 @@ describe("WalletVaultSettingsPage", () => {
       if (options.path === WALLET_CARDS_PATH) {
         return okEnvelope({ cards: [] });
       }
+      if (options.path === VAULT_ADDRESSES_PATH) {
+        return okEnvelope({ addresses: [] });
+      }
       throw new Error(`unexpected ${options.method} ${options.path}`);
     });
 
@@ -272,6 +282,168 @@ describe("WalletVaultSettingsPage", () => {
     ).not.toBeInTheDocument();
     expect(apiRequestMock).not.toHaveBeenCalled();
     expect(loginMock).not.toHaveBeenCalled();
+    expect(screen.queryByText("742 Evergreen Terrace")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Street")).not.toBeInTheDocument();
+  });
+
+  it("adds, edits, and deletes an address, never logs it, and shows the default only while signed in", async () => {
+    const street = "742 Evergreen Terrace";
+    const editedStreet = "744 Evergreen Terrace";
+    const gate = "gate 221B";
+    const log = jest.spyOn(console, "log").mockImplementation(() => undefined);
+    const info = jest.spyOn(console, "info").mockImplementation(() => undefined);
+    const debug = jest.spyOn(console, "debug").mockImplementation(() => undefined);
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => undefined);
+    const error = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    type StoredAddress = {
+      id: string;
+      label: "home";
+      line1: string;
+      line2?: string;
+      city: string;
+      region: string;
+      postalCode: string;
+      country: string;
+      deliveryNotes?: string;
+      isDefaultDelivery: boolean;
+    };
+    let addresses: StoredAddress[] = [];
+    apiRequestMock.mockImplementation(async (options: { path: string; method?: string; body?: Record<string, unknown> }) => {
+      if (options.path === WALLET_LINK_PATH) {
+        return okEnvelope({ connected: false });
+      }
+      if (options.path === VAULT_CREDENTIALS_PATH) {
+        return okEnvelope({ credentials: [] });
+      }
+      if (options.path === WALLET_CARDS_PATH) {
+        return okEnvelope({ cards: [] });
+      }
+      if (options.path === VAULT_ADDRESSES_PATH && options.method === "POST") {
+        const created: StoredAddress = {
+          id: "addr_owner_1",
+          label: "home",
+          line1: String(options.body?.line1),
+          city: String(options.body?.city),
+          region: String(options.body?.region),
+          postalCode: String(options.body?.postalCode),
+          country: String(options.body?.country),
+          isDefaultDelivery: options.body?.isDefaultDelivery === true,
+        };
+        if (typeof options.body?.line2 === "string") {
+          created.line2 = options.body.line2;
+        }
+        if (typeof options.body?.deliveryNotes === "string") {
+          created.deliveryNotes = options.body.deliveryNotes;
+        }
+        addresses = [created];
+        return okEnvelope(created);
+      }
+      if (options.path === `${VAULT_ADDRESSES_PATH}/addr_owner_1` && options.method === "PATCH") {
+        const current = addresses[0];
+        const next: StoredAddress = {
+          ...current,
+          line1: String(options.body?.line1),
+        };
+        addresses = [next];
+        return okEnvelope(next);
+      }
+      if (options.path === `${VAULT_ADDRESSES_PATH}/addr_owner_1` && options.method === "DELETE") {
+        addresses = [];
+        return okEnvelope({});
+      }
+      if (options.path === VAULT_ADDRESSES_PATH) {
+        return okEnvelope({ addresses });
+      }
+      throw new Error(`unexpected ${options.method} ${options.path}`);
+    });
+
+    renderPage();
+
+    expect(await screen.findByText("No addresses yet.")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Street"), { target: { value: street } });
+    fireEvent.change(screen.getByLabelText("Line 2"), { target: { value: "Unit 2" } });
+    fireEvent.change(screen.getByLabelText("City"), { target: { value: "Springfield" } });
+    fireEvent.change(screen.getByLabelText("Region"), { target: { value: "OR" } });
+    fireEvent.change(screen.getByLabelText("Postal code"), { target: { value: "97403" } });
+    fireEvent.change(screen.getByLabelText("Country"), { target: { value: "US" } });
+    fireEvent.change(screen.getByLabelText("Delivery notes"), { target: { value: gate } });
+    fireEvent.click(screen.getByLabelText("Default delivery address"));
+    fireEvent.click(screen.getByRole("button", { name: "Save address" }));
+
+    expect(await screen.findByText("home")).toBeInTheDocument();
+    expect(screen.getByText(`${street}, Unit 2, Springfield, OR 97403. Default delivery`)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(apiRequestMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: VAULT_ADDRESSES_PATH,
+          method: "POST",
+          body: {
+            label: "home",
+            line1: street,
+            line2: "Unit 2",
+            city: "Springfield",
+            region: "OR",
+            postalCode: "97403",
+            country: "US",
+            deliveryNotes: gate,
+            isDefaultDelivery: true,
+          },
+        }),
+      );
+    });
+    const logged = [log, info, debug, warn, error]
+      .flatMap((spy) => spy.mock.calls.flat().map((part) => String(part)))
+      .join("\n");
+    expect(logged).not.toContain(street);
+    expect(logged).not.toContain(gate);
+    expect(logged).not.toContain("97403");
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.change(screen.getByLabelText("Street"), { target: { value: editedStreet } });
+    fireEvent.click(screen.getByRole("button", { name: "Update address" }));
+    expect(
+      await screen.findByText(`${editedStreet}, Unit 2, Springfield, OR 97403. Default delivery`),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(`${street}, Unit 2, Springfield, OR 97403. Default delivery`)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    expect(await screen.findByText("No addresses yet.")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(apiRequestMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: `${VAULT_ADDRESSES_PATH}/addr_owner_1`,
+          method: "DELETE",
+        }),
+      );
+    });
+    const paths = apiRequestMock.mock.calls.map((call) => (call[0] as { path: string }).path);
+    expect(paths.every((path) => path.startsWith("/user/vault/") || path.startsWith("/user/wallet/"))).toBe(true);
+    expect(paths.some((path) => path.includes("user-2"))).toBe(false);
+
+    log.mockRestore();
+    info.mockRestore();
+    debug.mockRestore();
+    warn.mockRestore();
+    error.mockRestore();
+  });
+
+  it("refuses a region the shared address shape does not know and does not post it", async () => {
+    renderPage();
+    expect(await screen.findByText("No addresses yet.")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Street"), {
+      target: { value: "742 Evergreen Terrace" },
+    });
+    fireEvent.change(screen.getByLabelText("City"), { target: { value: "Springfield" } });
+    fireEvent.change(screen.getByLabelText("Region"), { target: { value: "ZZ" } });
+    fireEvent.change(screen.getByLabelText("Postal code"), { target: { value: "97403" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save address" }));
+    expect(await screen.findByText("Address was not saved.")).toBeInTheDocument();
+    const posts = apiRequestMock.mock.calls.filter((call) => {
+      const options = call[0] as { path: string; method?: string };
+      return options.path === VAULT_ADDRESSES_PATH && options.method === "POST";
+    });
+    expect(posts).toHaveLength(0);
   });
 
   it("WalletVaultSettingsPage source has no backdrop-filter and no raw hex colors", () => {

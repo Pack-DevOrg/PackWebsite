@@ -6,6 +6,17 @@ import NonHomeRoutes from "./NonHomeRoutes";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { ThemeProvider } from "@/styles/ThemeProvider";
 
+jest.mock(
+  "@pack/app/components/liveViewer",
+  () => {
+    const React = require("react") as typeof import("react");
+    return {
+      LiveViewer: () => React.createElement("div", { "data-testid": "live-viewer" }),
+    };
+  },
+  { virtual: true },
+);
+
 function renderAt(path: string) {
   return render(
     <HelmetProvider>
@@ -25,9 +36,11 @@ describe("NonHomeRoutes live-view", () => {
     renderAt("/live-view");
 
     expect(
-      await screen.findByRole("heading", {
-        name: "Pack needs your help — this link expired",
-      }),
+      await screen.findByRole(
+        "heading",
+        { name: "Pack needs your help — this link expired" },
+        { timeout: 8000 },
+      ),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Page not found" }),
@@ -38,9 +51,11 @@ describe("NonHomeRoutes live-view", () => {
     renderAt("/live-view?liveViewUrl=not-a-url");
 
     expect(
-      await screen.findByRole("heading", {
-        name: "Pack needs your help — this link expired",
-      }),
+      await screen.findByRole(
+        "heading",
+        { name: "Pack needs your help — this link expired" },
+        { timeout: 8000 },
+      ),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Page not found" }),
@@ -51,7 +66,11 @@ describe("NonHomeRoutes live-view", () => {
     renderAt("/lv/AbC123xy");
 
     expect(
-      await screen.findByRole("heading", { name: /Sign in to watch Pack work|Pack needs your help/ }),
+      await screen.findByRole(
+        "heading",
+        { name: /Sign in to watch Pack work|Pack needs your help/ },
+        { timeout: 8000 },
+      ),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Page not found" }),

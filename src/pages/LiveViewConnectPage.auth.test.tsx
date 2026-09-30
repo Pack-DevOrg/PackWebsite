@@ -19,9 +19,32 @@ jest.mock("../api/useApiClient", () => ({
   useApiClient: () => ({ request: mockRequest }),
 }));
 
+jest.mock(
+  "@pack/app/components/liveViewer",
+  () => {
+    const React = require("react") as typeof import("react");
+    return {
+      LiveViewer: (props: { relayUrl: string; ticket: string }) =>
+        React.createElement("div", {
+          "data-testid": "live-viewer",
+          "data-relay-url": props.relayUrl,
+          "data-ticket": props.ticket,
+        }),
+    };
+  },
+  { virtual: true },
+);
+
 const NOW_MS = 1_714_000_000_000;
-const VIEWER =
+const CLOUDFLARE_VIEWER =
   "https://live.browser.run/ui/view?mode=tab&wss=live.browser.run/api/devtools/browser/sess-1?jwt=SIGNED";
+const TICKET_BODY = {
+  jobId: "job-1",
+  merchantHost: "www.ubereats.com",
+  expiresAtMs: NOW_MS + 60_000,
+  ticket: "ticket-opaque",
+  relayUrl: "wss://relay.pack.test/live",
+};
 
 function renderAt(path: string) {
   return render(
@@ -42,6 +65,7 @@ describe("LiveViewConnectPage owner session", () => {
     jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
     mockLogin.mockReset();
     mockRequest.mockReset();
+    window.localStorage.clear();
   });
 
   afterEach(() => {
@@ -59,19 +83,29 @@ describe("LiveViewConnectPage owner session", () => {
     expect(document.querySelector("iframe")).toBeNull();
   });
 
-  it("signed in: GET /live-view goes through the authenticated API client, then the viewer iframes", async () => {
+  it("signed in: GET /live-view goes through the authenticated API client, then the shared viewer", async () => {
     mockStatus = "authenticated";
     mockRequest.mockResolvedValue({
       success: true,
-      data: { liveViewUrl: VIEWER, merchantHost: "www.ubereats.com", jobId: "job-1", expiresAtMs: NOW_MS + 60_000 },
+      data: TICKET_BODY,
     });
     renderAt("/live-view?token=tok-2");
 
-    const frame = await screen.findByTitle("Merchant checkout live view");
-    expect(frame).toHaveAttribute("src", VIEWER);
+    const viewer = await screen.findByTestId("live-viewer");
+    expect(viewer).toHaveAttribute("data-relay-url", "wss://relay.pack.test/live");
+    expect(viewer).toHaveAttribute("data-ticket", "ticket-opaque");
+    expect(document.querySelector("iframe")).toBeNull();
+    expect(document.body.innerHTML).not.toContain("live.browser.run");
     expect(mockRequest).toHaveBeenCalledWith(
-      expect.objectContaining({ path: "/live-view?token=tok-2", method: "GET" }),
+      expect.objectContaining({
+        path: "/live-view?token=tok-2",
+        method: "GET",
+        headers: { "x-pack-install-id": expect.any(String) },
+      }),
     );
+    const installId = mockRequest.mock.calls[0][0].headers["x-pack-install-id"] as string;
+    expect(installId.length).toBeGreaterThan(0);
+    expect(installId).not.toContain(CLOUDFLARE_VIEWER);
   });
 
   it("signed in but not the owner (404): the expired page, no iframe", async () => {

@@ -1,0 +1,84 @@
+/* BorderBeamRing rotate, saffron working palette: head #FFD9A1E6, shoulder
+   #F0C62D59, floor #8C7E6A52, bloom #F0C62D. Two heads sit 180° apart. */
+@property --live-view-beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.root {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.25rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bloom {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 14px rgba(240, 198, 45, 0.45);
+}
+
+.spin {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 3px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--live-view-beam-angle),
+    #ffd9a1e6 0deg,
+    #ffd9a1e6 20deg,
+    #f0c62d59 46deg,
+    #8c7e6a52 80deg,
+    #8c7e6a52 134deg,
+    #f0c62d59 154deg,
+    #ffd9a1e6 166deg,
+    #ffd9a1e6 194deg,
+    #f0c62d59 206deg,
+    #8c7e6a52 226deg,
+    #8c7e6a52 314deg,
+    #f0c62d59 334deg,
+    #ffd9a1e6 346deg,
+    #ffd9a1e6 360deg
+  );
+  animation: spin 2200ms linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+@keyframes spin {
+  to {
+    --live-view-beam-angle: 360deg;
+  }
+}
+
+.dim {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.25rem;
+  border: 2px solid rgba(243, 210, 122, 0.22);
+  pointer-events: none;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+    background: rgba(255, 217, 161, 0.9);
+    box-shadow: 0 0 12px rgba(240, 198, 45, 0.45);
+  }
+
+  .bloom {
+    box-shadow: 0 0 12px rgba(240, 198, 45, 0.45);
+  }
+}

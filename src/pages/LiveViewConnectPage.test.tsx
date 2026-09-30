@@ -3,6 +3,8 @@ import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import {
+  CLOUDFLARE_VIEWER_HEIGHT_PX,
+  CLOUDFLARE_VIEWER_WIDTH_PX,
   clearLiveViewHandoffBecauseApiClient,
   LiveViewConnectView,
   type LiveViewLinkQuery,
@@ -64,6 +66,7 @@ function okFetchBody(overrides: {
   merchantHost?: string;
   jobId?: string;
   expiresAtMs?: number;
+  headline?: string;
 } = {}) {
   return {
     liveViewUrl: VALID_LIVE_VIEW_URL,
@@ -379,6 +382,87 @@ describe("LiveViewConnectPage", () => {
     for (const call of fetchMock.mock.calls) {
       expect(String(call[0])).not.toContain("/latest");
     }
+  });
+
+  /** The styled-components rules that apply to this element's classes. */
+  function cssRulesFor(element: Element): string {
+    const classes = Array.from(element.classList);
+    const sheet = Array.from(document.querySelectorAll("style"))
+      .map((style) => style.textContent ?? "")
+      .join("\n");
+    const rules = sheet.match(/[^{}]+\{[^{}]*\}/g) ?? [];
+    return rules
+      .filter((rule) => classes.some((cls) => rule.split("{")[0].includes(`.${cls}`)))
+      .join("\n")
+      .replace(/\s+/g, "");
+  }
+
+  it("the Cloudflare live view is one phone screen: 100dvh stage, no page scroll", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    const { unmount } = renderPage("?token=tok-cf");
+
+    await screen.findByTitle("Merchant checkout live view");
+    const stage = screen.getByTestId("live-view-stage");
+    const css = cssRulesFor(stage);
+    expect(css).toContain("height:100dvh");
+    expect(css).toContain("overflow:hidden");
+    expect(document.body.style.overflow).toBe("hidden");
+    expect(document.documentElement.style.overflow).toBe("hidden");
+
+    unmount();
+    expect(document.body.style.overflow).toBe("");
+  });
+
+  it("tells the user what to do above the viewer, and uses the handoff's own headline when it has one", async () => {
+    fetchMock.mockResolvedValueOnce(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+    const first = renderPage("?token=tok-cf");
+    expect(
+      await screen.findByRole("heading", { name: "Tap and type here to log in, then tap Done" }),
+    ).toBeInTheDocument();
+    first.unmount();
+
+    fetchMock.mockResolvedValueOnce(
+      jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER, headline: "Enter the code Uber Eats sent, then tap Done" })),
+    );
+    renderPage("?token=tok-cf-2");
+    expect(
+      await screen.findByRole("heading", { name: "Enter the code Uber Eats sent, then tap Done" }),
+    ).toBeInTheDocument();
+  });
+
+  it("Done sits in the bar pinned under the viewer, clear of the home indicator", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    renderPage("?token=tok-cf");
+
+    const done = await screen.findByRole("button", { name: "Done, keep going" });
+    const bar = screen.getByTestId("live-view-done-bar");
+    const stage = screen.getByTestId("live-view-stage");
+    expect(bar).toContainElement(done);
+    expect(bar.parentElement).toBe(stage);
+    expect(stage.lastElementChild).toBe(bar);
+    expect(cssRulesFor(bar)).toContain("flex:none");
+    expect(cssRulesFor(bar)).toContain("env(safe-area-inset-bottom)");
+    // The viewer takes the rest and may shrink; it never pushes Done off screen.
+    const fitCss = cssRulesFor(screen.getByTestId("live-view-fit"));
+    expect(fitCss).toContain("min-height:0");
+    expect(fitCss).toContain("overflow:hidden");
+  });
+
+  it("scales the whole remote screen down to fit the space on an iPhone 15", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+    // Space between the instruction line and the Done bar on a 393x852 phone.
+    jest.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(393);
+    jest.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(560);
+
+    renderPage("?token=tok-cf");
+
+    const frame = await screen.findByTitle("Merchant checkout live view");
+    const scale = Number(/scale\(([0-9.]+)\)/.exec(frame.style.transform)?.[1]);
+    expect(scale).toBeCloseTo(Math.min(393 / CLOUDFLARE_VIEWER_WIDTH_PX, 560 / CLOUDFLARE_VIEWER_HEIGHT_PX), 5);
+    expect(CLOUDFLARE_VIEWER_HEIGHT_PX * scale).toBeLessThanOrEqual(560);
+    expect(CLOUDFLARE_VIEWER_WIDTH_PX * scale).toBeLessThanOrEqual(393);
   });
 
   it("the SMS short link /lv/<id> resolves by short id", async () => {

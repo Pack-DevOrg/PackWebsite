@@ -80,6 +80,7 @@ const SeoGuidePage = React.lazy(() => import("../pages/SeoGuidePage"));
 const NotFoundPage = React.lazy(() => import("../pages/NotFoundPage"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
 const LiveViewConnectPage = React.lazy(() => import("../pages/LiveViewConnectPage"));
+const TwoFactorCodePage = React.lazy(() => import("../pages/TwoFactorCodePage"));
 const OnboardPage = React.lazy(() => import("../pages/OnboardPage"));
 const AccountConnectCallbackPage = React.lazy(
   () => import("../pages/AccountConnectCallbackPage"),
@@ -546,6 +547,14 @@ const NonHomeRoutes: React.FC = () => {
           element={
             <Suspense fallback={null}>
               <LiveViewConnectPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/2fa/:ticket"
+          element={
+            <Suspense fallback={null}>
+              <TwoFactorCodePage />
             </Suspense>
           }
         />
@@ -1068,6 +1077,7 @@ const NonHomeRoutes: React.FC = () => {
           <Route path="unsubscribe" element={<Suspense fallback={null}><UnsubscribePage /></Suspense>} />
           <Route path="live-view" element={<Suspense fallback={null}><LiveViewConnectPage /></Suspense>} />
           <Route path="lv/:shortId" element={<Suspense fallback={null}><LiveViewConnectPage /></Suspense>} />
+          <Route path="2fa/:ticket" element={<Suspense fallback={null}><TwoFactorCodePage /></Suspense>} />
           <Route path="onboard" element={<Suspense fallback={null}><OnboardPage /></Suspense>} />
           <Route
             path="privacy-request"

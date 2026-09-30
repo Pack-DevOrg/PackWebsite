@@ -631,8 +631,8 @@ export const AppSettingsPage: React.FC<AppSettingsPageProps> = ({
                       </ServiceLink>
                     </ServiceTitle>
                     <LastSync>
-                      Connect Stripe Link, store vault credentials, and read
-                      every virtual card as typed rows.
+                      Connect Stripe Link, store vault credentials and delivery
+                      addresses, and read every virtual card as typed rows.
                     </LastSync>
                   </ServiceCopy>
                 </ServiceRow>

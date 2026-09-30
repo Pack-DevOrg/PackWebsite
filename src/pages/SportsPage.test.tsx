@@ -38,12 +38,14 @@ function sportsPayload() {
           participants: ["Seahawks", "Packers"],
           facts: [
             {
-              value: "score: SEA 14, GB 7",
+              role: "score",
+              value: "SEA 14, GB 7",
               asOf: "2026-09-30T20:00:00.000Z",
               sourceUrl: "https://example.com/live-score",
             },
             {
-              value: "odds: SEA -3",
+              role: "odds",
+              value: "SEA -3",
               asOf: "2026-09-30T18:00:00.000Z",
               sourceUrl: "https://example.com/odds",
             },
@@ -59,12 +61,14 @@ function sportsPayload() {
           participants: ["Seahawks", "49ers"],
           facts: [
             {
-              value: "score: SEA 24, SF 17",
+              role: "score",
+              value: "SEA 24, SF 17",
               asOf: "2026-09-30T19:00:00.000Z",
               sourceUrl: "https://example.com/final-score",
             },
             {
-              value: "result: Seahawks won",
+              role: "result",
+              value: "Seahawks won",
               asOf: "2026-09-30T19:05:00.000Z",
               sourceUrl: "https://example.com/result",
             },
@@ -80,7 +84,8 @@ function sportsPayload() {
           participants: ["Jets", "Bills"],
           facts: [
             {
-              value: "score: NYJ 3, BUF 10",
+              role: "score",
+              value: "NYJ 3, BUF 10",
               asOf: "2026-09-30T20:00:00.000Z",
               sourceUrl: "https://example.com/other",
             },

@@ -1,8 +1,11 @@
 import type {ApiClient} from "./client";
+import {ApiRequestError} from "./client";
 import {
   projectSportsView,
   readUserSportsView,
+  SportsViewEnvelopeError,
   USER_SPORTS_VIEW_PATH,
+  type SportsFact,
   type SportsViewSource,
 } from "./sportsView";
 
@@ -34,12 +37,14 @@ describe("readUserSportsView", () => {
             participants: ["Seahawks", "49ers"],
             facts: [
               {
-                value: "score: SEA 24, SF 17",
+                role: "score",
+                value: "SEA 24, SF 17",
                 asOf: "2026-09-30T19:00:00.000Z",
                 sourceUrl: "https://example.com/score",
               },
               {
-                value: "result: Seahawks won",
+                role: "result",
+                value: "Seahawks won",
                 asOf: "2026-09-30T19:05:00.000Z",
                 sourceUrl: "https://example.com/result",
               },
@@ -77,6 +82,63 @@ describe("readUserSportsView", () => {
     ]);
     expect(view.fantasyMatchups[0]?.opponent).toBe("Casey");
   });
+
+  it("keeps the envelope status and published error code", async () => {
+    const {client} = clientReturning({
+      success: false,
+      status: 503,
+      error: {message: "Sports view failed.", code: "SPORTS_VIEW_UNAVAILABLE"},
+    });
+
+    await expect(readUserSportsView(client)).rejects.toMatchObject({
+      name: "ApiRequestError",
+      status: 503,
+      message: "Sports view failed.",
+      details: {code: "SPORTS_VIEW_UNAVAILABLE"},
+    });
+  });
+
+  it("does not invent status 500 when the failure envelope omits status", async () => {
+    const {client} = clientReturning({
+      success: false,
+      error: {message: "Sports view failed.", code: "SPORTS_VIEW_UNAVAILABLE"},
+    });
+
+    await expect(readUserSportsView(client)).rejects.toBeInstanceOf(SportsViewEnvelopeError);
+    await expect(readUserSportsView(client)).rejects.not.toBeInstanceOf(ApiRequestError);
+  });
+
+  it("rejects a fact whose role is only a display-string prefix", async () => {
+    const {client} = clientReturning({
+      success: true,
+      data: {
+        asOf: AS_OF,
+        occasions: [
+          {
+            kind: "game",
+            identityKey: "game-ended",
+            start: "2026-09-30T16:00:00.000Z",
+            end: "2026-09-30T19:00:00.000Z",
+            participants: ["Seahawks", "49ers"],
+            facts: [
+              {
+                value: "result: Seahawks won",
+                asOf: "2026-09-30T19:05:00.000Z",
+                sourceUrl: "https://example.com/result",
+              },
+            ],
+            validFrom: "2026-09-30T16:00:00.000Z",
+            validUntil: "2026-10-01T19:00:00.000Z",
+          },
+        ],
+        interests: [{occasionId: "game-ended"}],
+        teams: [],
+        fantasyMatchups: [],
+      },
+    });
+
+    await expect(readUserSportsView(client)).rejects.toBeInstanceOf(SportsViewEnvelopeError);
+  });
 });
 
 const LIVE_START = "2026-09-30T19:00:00.000Z";
@@ -84,6 +146,16 @@ const LIVE_END = "2026-09-30T22:00:00.000Z";
 const ENDED_START = "2026-09-30T16:00:00.000Z";
 const ENDED_END = "2026-09-30T19:00:00.000Z";
 const FACT_AS_OF = "2026-09-30T19:30:00.000Z";
+const FACT_URL = "https://example.com/fact";
+const VALID_FROM = "2026-09-30T18:00:00.000Z";
+const VALID_UNTIL = "2026-09-30T23:00:00.000Z";
+
+function fact(
+  role: SportsFact["role"],
+  value: string,
+): SportsFact {
+  return {role, value, asOf: FACT_AS_OF, sourceUrl: FACT_URL};
+}
 
 function source(overrides: Partial<SportsViewSource> = {}): SportsViewSource {
   return {
@@ -103,16 +175,9 @@ function game(overrides: Record<string, unknown> = {}) {
     start: LIVE_START,
     end: LIVE_END,
     participants: ["Seahawks", "Packers"],
-    facts: [
-      {
-        value: "score: SEA 14, GB 7",
-        asOf: FACT_AS_OF,
-      },
-      {
-        value: "odds: SEA -3",
-        asOf: FACT_AS_OF,
-      },
-    ],
+    facts: [fact("score", "SEA 14, GB 7"), fact("odds", "SEA -3")],
+    validFrom: VALID_FROM,
+    validUntil: VALID_UNTIL,
     ...overrides,
   };
 }
@@ -129,10 +194,7 @@ describe("projectSportsView", () => {
             start: ENDED_START,
             end: ENDED_END,
             participants: ["Seahawks", "49ers"],
-            facts: [
-              {value: "score: SEA 24, SF 17", asOf: FACT_AS_OF},
-              {value: "result: Seahawks won", asOf: FACT_AS_OF},
-            ],
+            facts: [fact("score", "SEA 24, SF 17"), fact("result", "Seahawks won")],
           }),
           game({
             kind: "fare",
@@ -179,6 +241,27 @@ describe("projectSportsView", () => {
 
     expect(view.games).toHaveLength(1);
     expect(view.games[0]?.status).toBe("live");
+    expect(view.recaps).toEqual([]);
+  });
+
+  it("keeps a colon inside the score text and does not recap a missing result as Final", () => {
+    const view = projectSportsView(
+      source({
+        interests: [{occasionId: "game-live"}, {occasionId: "game-ended"}],
+        occasions: [
+          game({facts: [fact("score", "SEA: 14, GB: 7")]}),
+          game({
+            identityKey: "game-ended",
+            start: ENDED_START,
+            end: ENDED_END,
+            participants: ["Seahawks", "49ers"],
+            facts: [fact("odds", "SEA -3")],
+          }),
+        ],
+      }),
+    );
+
+    expect(view.games[0]?.score).toBe("SEA: 14, GB: 7");
     expect(view.recaps).toEqual([]);
   });
 });

@@ -193,6 +193,23 @@
         }
       }
     },
+    "/user/sports-view": {
+      "get": {
+        "summary": "Read the authenticated user's sports view",
+        "description": "Games, scores, odds, one recap per ended game, and fantasy matchups for the signed-in user.",
+        "responses": {
+          "200": {
+            "description": "Sports view source"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "503": {
+            "description": "Sports view unavailable"
+          }
+        }
+      }
+    },
     "/user/trips": {
       "get": {
         "summary": "Read trips for the authenticated user",

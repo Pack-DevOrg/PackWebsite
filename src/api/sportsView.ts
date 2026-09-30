@@ -1,5 +1,4 @@
 import {z} from 'zod';
-import {StandardApiResponseSchema} from '@/schemas/common';
 import {ApiRequestError, type ApiClient} from './client';
 
 /**
@@ -8,43 +7,102 @@ import {ApiRequestError, type ApiClient} from './client';
  * and fantasy matchups. Ended games leave the board as one recap.
  */
 
-export type SportsFact = {
-  readonly value: string;
-  readonly asOf: string;
-};
+export const SportsFactRoleSchema = z.enum(['score', 'odds', 'result']);
 
-export type SportsGameOccasion = {
-  readonly kind: string;
-  readonly identityKey: string;
-  readonly start: string;
-  readonly end: string;
-  readonly participants: readonly string[];
-  readonly facts: readonly SportsFact[];
-};
+/** Codes this read publishes. Anything else is a malformed envelope. */
+export const SportsViewErrorCodeSchema = z.enum([
+  'UNAUTHENTICATED',
+  'NOT_FOUND',
+  'METHOD_NOT_ALLOWED',
+  'SPORTS_VIEW_UNAVAILABLE',
+]);
 
-export type SportsInterestLink = {
-  readonly occasionId: string;
-};
+const SportsFactSchema = z
+  .object({
+    role: SportsFactRoleSchema,
+    value: z.string().min(1),
+    asOf: z.string().datetime(),
+    sourceUrl: z.string().url(),
+  })
+  .strict();
 
-export type FantasyProvider = 'espn' | 'yahoo' | 'sleeper';
+const SportsGameOccasionSchema = z
+  .object({
+    kind: z.string().min(1),
+    identityKey: z.string().min(1).max(160),
+    start: z.string().datetime(),
+    end: z.string().datetime(),
+    participants: z.array(z.string().min(1).max(80)).max(30),
+    facts: z.array(SportsFactSchema).max(40),
+    validFrom: z.string().datetime(),
+    validUntil: z.string().datetime(),
+  })
+  .strict();
 
-export type FantasyMatchup = {
-  readonly id: string;
-  readonly provider: FantasyProvider;
-  readonly leagueName: string;
-  readonly label: string;
-  readonly opponent: string;
-  readonly myScore: string;
-  readonly theirScore: string;
-};
+const SportsInterestLinkSchema = z
+  .object({
+    occasionId: z.string().min(1).max(160),
+  })
+  .strict();
 
-export type SportsViewSource = {
-  readonly asOf: string;
-  readonly occasions: readonly SportsGameOccasion[];
-  readonly interests: readonly SportsInterestLink[];
-  readonly teams: readonly string[];
-  readonly fantasyMatchups: readonly FantasyMatchup[];
-};
+const FantasyProviderSchema = z.enum(['espn', 'yahoo', 'sleeper']);
+
+const FantasyMatchupSchema = z
+  .object({
+    id: z.string().min(1),
+    provider: FantasyProviderSchema,
+    leagueName: z.string().min(1),
+    label: z.string().min(1),
+    opponent: z.string().min(1),
+    myScore: z.string().min(1),
+    theirScore: z.string().min(1),
+  })
+  .strict();
+
+export const SportsViewSourceSchema = z
+  .object({
+    asOf: z.string().datetime(),
+    occasions: z.array(SportsGameOccasionSchema),
+    interests: z.array(SportsInterestLinkSchema),
+    teams: z.array(z.string()),
+    fantasyMatchups: z.array(FantasyMatchupSchema),
+  })
+  .strict();
+
+const SportsViewErrorBodySchema = z
+  .object({
+    message: z.string().min(1),
+    code: SportsViewErrorCodeSchema,
+    details: z.unknown().optional(),
+  })
+  .strict();
+
+const SportsViewFailureSchema = z
+  .object({
+    success: z.literal(false),
+    status: z.number().int().min(400).max(599),
+    error: SportsViewErrorBodySchema,
+    requestId: z.string().optional(),
+  })
+  .strict();
+
+const SportsViewSuccessSchema = z
+  .object({
+    success: z.literal(true),
+    data: SportsViewSourceSchema,
+    requestId: z.string().optional(),
+    metadata: z.unknown().optional(),
+  })
+  .strict();
+
+export type SportsFactRole = z.infer<typeof SportsFactRoleSchema>;
+export type SportsFact = z.infer<typeof SportsFactSchema>;
+export type SportsGameOccasion = z.infer<typeof SportsGameOccasionSchema>;
+export type SportsInterestLink = z.infer<typeof SportsInterestLinkSchema>;
+export type FantasyProvider = z.infer<typeof FantasyProviderSchema>;
+export type FantasyMatchup = z.infer<typeof FantasyMatchupSchema>;
+export type SportsViewSource = z.infer<typeof SportsViewSourceSchema>;
+export type SportsViewErrorCode = z.infer<typeof SportsViewErrorCodeSchema>;
 
 export type SportsGameCard = {
   readonly identityKey: string;
@@ -67,8 +125,6 @@ export type SportsView = {
   readonly fantasyMatchups: readonly FantasyMatchup[];
 };
 
-type FactRole = 'score' | 'odds' | 'result';
-
 function foldedName(value: string): string {
   return value.trim().toLowerCase();
 }
@@ -81,29 +137,15 @@ function parsedInstant(value: string): number | null {
   return instant;
 }
 
-function factRole(value: string): {readonly role: FactRole; readonly text: string} | null {
-  const trimmed = value.trim();
-  const splitAt = trimmed.indexOf(':');
-  if (splitAt <= 0) {
-    return null;
-  }
-  const role = trimmed.slice(0, splitAt);
-  if (role !== 'score' && role !== 'odds' && role !== 'result') {
-    return null;
-  }
-  const text = trimmed.slice(splitAt + 1).trim();
-  if (text.length === 0) {
-    return null;
-  }
-  return {role, text};
-}
-
-function latestFact(facts: readonly SportsFact[], role: FactRole): string | null {
+function latestFact(facts: readonly SportsFact[], role: SportsFactRole): string | null {
   let bestText: string | null = null;
   let bestInstant = Number.NEGATIVE_INFINITY;
   for (const fact of facts) {
-    const parsed = factRole(fact.value);
-    if (parsed === null || parsed.role !== role) {
+    if (fact.role !== role) {
+      continue;
+    }
+    const text = fact.value.trim();
+    if (text.length === 0) {
       continue;
     }
     const instant = parsedInstant(fact.asOf);
@@ -111,7 +153,7 @@ function latestFact(facts: readonly SportsFact[], role: FactRole): string | null
       continue;
     }
     bestInstant = instant;
-    bestText = parsed.text;
+    bestText = text;
   }
   return bestText;
 }
@@ -143,8 +185,8 @@ function userFollowsGame(
   return false;
 }
 
-function oneRecapLine(facts: readonly SportsFact[]): string {
-  return latestFact(facts, 'result') ?? latestFact(facts, 'score') ?? 'Final';
+function oneRecapLine(facts: readonly SportsFact[]): string | null {
+  return latestFact(facts, 'result') ?? latestFact(facts, 'score');
 }
 
 export function projectSportsView(source: SportsViewSource): SportsView {
@@ -177,10 +219,14 @@ export function projectSportsView(source: SportsViewSource): SportsView {
     seen.add(occasion.identityKey);
     const title = gameTitle(occasion);
     if (asOf > end) {
+      const recap = oneRecapLine(occasion.facts);
+      if (recap === null) {
+        continue;
+      }
       recaps.push({
         identityKey: occasion.identityKey,
         title,
-        recap: oneRecapLine(occasion.facts),
+        recap,
       });
       continue;
     }
@@ -204,57 +250,8 @@ export function projectSportsView(source: SportsViewSource): SportsView {
   };
 }
 
-/** Logged-in read of the user's sports view. Server seat serves this path. */
+/** Logged-in read of the user's sports view. */
 export const USER_SPORTS_VIEW_PATH = '/user/sports-view';
-
-const SportsFactSchema = z
-  .object({
-    value: z.string().min(1),
-    asOf: z.string().datetime(),
-    sourceUrl: z.string().url(),
-  })
-  .strict();
-
-const SportsGameOccasionSchema = z
-  .object({
-    kind: z.string().min(1),
-    identityKey: z.string().min(1).max(160),
-    start: z.string().datetime(),
-    end: z.string().datetime(),
-    participants: z.array(z.string().min(1).max(80)).max(30),
-    facts: z.array(SportsFactSchema).max(40),
-    validFrom: z.string().datetime(),
-    validUntil: z.string().datetime(),
-  })
-  .strict();
-
-const SportsInterestLinkSchema = z
-  .object({
-    occasionId: z.string().min(1).max(160),
-  })
-  .strict();
-
-const FantasyMatchupSchema = z
-  .object({
-    id: z.string().min(1),
-    provider: z.enum(['espn', 'yahoo', 'sleeper']),
-    leagueName: z.string().min(1),
-    label: z.string().min(1),
-    opponent: z.string().min(1),
-    myScore: z.string().min(1),
-    theirScore: z.string().min(1),
-  })
-  .strict();
-
-const SportsViewSourceSchema = z
-  .object({
-    asOf: z.string().datetime(),
-    occasions: z.array(SportsGameOccasionSchema),
-    interests: z.array(SportsInterestLinkSchema),
-    teams: z.array(z.string()),
-    fantasyMatchups: z.array(FantasyMatchupSchema),
-  })
-  .strict();
 
 export class SportsViewEnvelopeError extends Error {
   constructor(message: string) {
@@ -263,37 +260,20 @@ export class SportsViewEnvelopeError extends Error {
   }
 }
 
-function messageFromApiError(error: {message?: string} | undefined): string {
-  if (error && typeof error.message === 'string' && error.message.length > 0) {
-    return error.message;
-  }
-  return 'Sports view failed.';
-}
-
-function parseSportsViewSource(payload: unknown): SportsViewSource {
-  const parsed = StandardApiResponseSchema.safeParse(payload);
-  if (!parsed.success) {
-    throw new SportsViewEnvelopeError('Malformed sports view envelope.');
-  }
-  if (!parsed.data.success) {
+export function parseSportsViewSource(payload: unknown): SportsViewSource {
+  const failure = SportsViewFailureSchema.safeParse(payload);
+  if (failure.success) {
     throw new ApiRequestError(
-      500,
-      messageFromApiError(parsed.data.error),
-      parsed.data.error,
+      failure.data.status,
+      failure.data.error.message,
+      failure.data.error,
     );
   }
-  const source = SportsViewSourceSchema.safeParse(parsed.data.data);
-  if (!source.success) {
+  const success = SportsViewSuccessSchema.safeParse(payload);
+  if (!success.success) {
     throw new SportsViewEnvelopeError('Malformed sports view envelope.');
   }
-  const parsedSource: SportsViewSource = {
-    asOf: source.data.asOf,
-    occasions: source.data.occasions,
-    interests: source.data.interests,
-    teams: source.data.teams,
-    fantasyMatchups: source.data.fantasyMatchups,
-  };
-  return parsedSource;
+  return success.data.data;
 }
 
 export async function readUserSportsView(client: ApiClient): Promise<SportsView> {

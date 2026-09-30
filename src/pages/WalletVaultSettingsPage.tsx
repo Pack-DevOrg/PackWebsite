@@ -3,22 +3,33 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreditCard, KeyRound, Wallet } from "lucide-react";
+import { CreditCard, KeyRound, MapPin, Wallet } from "lucide-react";
 import { useApiClient } from "@/api/useApiClient";
 import {
+  createVaultAddress,
   createVaultCredential,
   createWalletLinkSession,
+  deleteVaultAddress,
   deleteVaultCredential,
   fetchWalletLinkStatus,
+  listVaultAddresses,
   listVaultCredentials,
   listVirtualCards,
   openLinkUrlBecauseStripeSession,
+  updateVaultAddress,
   updateVaultCredential,
+  type VaultAddress,
+  type VaultAddressWrite,
   type VaultCredentialPublic,
   type VirtualCard,
   type VirtualCardUse,
   type WalletLinkStatus,
 } from "@/api/walletVault";
+import {
+  VaultAddressLabelSchema,
+  VaultAddressWriteSchema,
+  type VaultAddressLabel,
+} from "@/schemas/wallet-vault";
 import { useAuth } from "@/auth/AuthContext";
 import {
   Button,
@@ -58,6 +69,25 @@ function emptyCardsBecauseUnsigned(): VirtualCard[] {
   return [];
 }
 
+function emptyAddressesBecauseUnsigned(): VaultAddress[] {
+  return [];
+}
+
+function defaultAddressLabelBecauseHome(): VaultAddressLabel {
+  return "home";
+}
+
+function defaultCountryBecauseUs(): string {
+  return "US";
+}
+
+function blankOptionalBecauseEmpty(value: string): string | undefined {
+  if (value.length === 0) {
+    return undefined;
+  }
+  return value;
+}
+
 function assignLinkUrlBecausePropOrDefault(
   openLinkUrl: ((url: string) => void) | undefined,
 ): (url: string) => void {
@@ -73,21 +103,51 @@ function walletSnapshotBecauseQuery(
         readonly link: WalletLinkStatus;
         readonly credentials: readonly VaultCredentialPublic[];
         readonly cards: readonly VirtualCard[];
+        readonly addresses: readonly VaultAddress[];
       }
     | undefined,
 ): {
   readonly link: WalletLinkStatus;
   readonly credentials: readonly VaultCredentialPublic[];
   readonly cards: readonly VirtualCard[];
+  readonly addresses: readonly VaultAddress[];
 } {
   if (data === undefined) {
     return {
       link: disconnectedLinkStatusBecauseUnsigned(),
       credentials: emptyCredentialsBecauseUnsigned(),
       cards: emptyCardsBecauseUnsigned(),
+      addresses: emptyAddressesBecauseUnsigned(),
     };
   }
   return data;
+}
+
+function addressWriteBecauseFields(fields: {
+  readonly label: string;
+  readonly line1: string;
+  readonly line2: string;
+  readonly city: string;
+  readonly region: string;
+  readonly postalCode: string;
+  readonly country: string;
+  readonly deliveryNotes: string;
+  readonly isDefaultDelivery: boolean;
+}): VaultAddressWrite {
+  const label = VaultAddressLabelSchema.parse(fields.label);
+  const line2 = blankOptionalBecauseEmpty(fields.line2);
+  const deliveryNotes = blankOptionalBecauseEmpty(fields.deliveryNotes);
+  return {
+    label,
+    line1: fields.line1,
+    ...(line2 === undefined ? {} : { line2 }),
+    city: fields.city,
+    region: fields.region,
+    postalCode: fields.postalCode,
+    country: fields.country,
+    ...(deliveryNotes === undefined ? {} : { deliveryNotes }),
+    isDefaultDelivery: fields.isDefaultDelivery,
+  };
 }
 
 function formatAmountBecauseCents(amountCents: number, currency: string): string {
@@ -213,6 +273,25 @@ const TextInput = styled.input`
   font-size: var(--font-size-base);
 `;
 
+const ChoiceInput = styled.select`
+  min-height: 2.5rem;
+  border-radius: var(--radius-l);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+`;
+
+const CheckField = styled.label`
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+`;
+
 const TableWrap = styled.div`
   overflow-x: auto;
 `;
@@ -317,6 +396,76 @@ function CredentialRow({
   );
 }
 
+function addressSubtitleBecauseRow(address: VaultAddress): string {
+  const street =
+    address.line2 === undefined ? address.line1 : `${address.line1}, ${address.line2}`;
+  const place = `${address.city}, ${address.region} ${address.postalCode}`;
+  if (address.isDefaultDelivery) {
+    return `${street}, ${place}. Default delivery`;
+  }
+  return `${street}, ${place}`;
+}
+
+function AddressRow({
+  address,
+  editingId,
+  removeId,
+  onEdit,
+  onRemove,
+  onCancelRemove,
+  onConfirmRemove,
+}: {
+  readonly address: VaultAddress;
+  readonly editingId: string | null;
+  readonly removeId: string | null;
+  readonly onEdit: (address: VaultAddress) => void;
+  readonly onRemove: (id: string) => void;
+  readonly onCancelRemove: () => void;
+  readonly onConfirmRemove: (id: string) => void;
+}) {
+  const isEditing = editingId === address.id;
+  const isRemoving = removeId === address.id;
+  return (
+    <ServiceRow>
+      <ServiceCopy>
+        <ServiceTitle>{address.label}</ServiceTitle>
+        <LastSync>{addressSubtitleBecauseRow(address)}</LastSync>
+      </ServiceCopy>
+      <ActionRow>
+        {isRemoving ? (
+          <DisconnectConfirmPair
+            onCancel={onCancelRemove}
+            onConfirm={() => {
+              onConfirmRemove(address.id);
+            }}
+          />
+        ) : (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                onEdit(address);
+              }}
+            >
+              {isEditing ? "Editing" : "Edit"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                onRemove(address.id);
+              }}
+            >
+              Remove
+            </Button>
+          </>
+        )}
+      </ActionRow>
+    </ServiceRow>
+  );
+}
+
 function CardUseRows({ uses }: { readonly uses: readonly VirtualCardUse[] }) {
   if (uses.length === 0) {
     return (
@@ -354,17 +503,30 @@ export const WalletVaultSettingsPage: React.FC<
   const [secret, setSecret] = useState(emptyTextBecauseBlankField);
   const [editingId, setEditingId] = useState(idleEditIdBecauseNoneOpen);
   const [removeId, setRemoveId] = useState(idleRemoveIdBecauseNoneOpen);
+  const [addressLabel, setAddressLabel] = useState(defaultAddressLabelBecauseHome);
+  const [line1, setLine1] = useState(emptyTextBecauseBlankField);
+  const [line2, setLine2] = useState(emptyTextBecauseBlankField);
+  const [city, setCity] = useState(emptyTextBecauseBlankField);
+  const [region, setRegion] = useState(emptyTextBecauseBlankField);
+  const [postalCode, setPostalCode] = useState(emptyTextBecauseBlankField);
+  const [country, setCountry] = useState(defaultCountryBecauseUs);
+  const [deliveryNotes, setDeliveryNotes] = useState(emptyTextBecauseBlankField);
+  const [isDefaultDelivery, setIsDefaultDelivery] = useState(false);
+  const [editingAddressId, setEditingAddressId] = useState(idleEditIdBecauseNoneOpen);
+  const [removeAddressId, setRemoveAddressId] = useState(idleRemoveIdBecauseNoneOpen);
+  const [addressFormError, setAddressFormError] = useState(emptyTextBecauseBlankField);
 
   const walletQuery = useQuery({
     queryKey: WALLET_QUERY_KEY,
     enabled: isAuthenticated,
     queryFn: async () => {
-      const [link, credentials, cards] = await Promise.all([
+      const [link, credentials, cards, addresses] = await Promise.all([
         fetchWalletLinkStatus(apiClient),
         listVaultCredentials(apiClient),
         listVirtualCards(apiClient),
+        listVaultAddresses(apiClient),
       ]);
-      return { link, credentials, cards };
+      return { link, credentials, cards, addresses };
     },
   });
 
@@ -404,6 +566,62 @@ export const WalletVaultSettingsPage: React.FC<
     },
   });
 
+  const clearAddressForm = () => {
+    setAddressLabel(defaultAddressLabelBecauseHome());
+    setLine1(emptyTextBecauseBlankField());
+    setLine2(emptyTextBecauseBlankField());
+    setCity(emptyTextBecauseBlankField());
+    setRegion(emptyTextBecauseBlankField());
+    setPostalCode(emptyTextBecauseBlankField());
+    setCountry(defaultCountryBecauseUs());
+    setDeliveryNotes(emptyTextBecauseBlankField());
+    setIsDefaultDelivery(false);
+    setEditingAddressId(idleEditIdBecauseNoneOpen());
+    setAddressFormError(emptyTextBecauseBlankField());
+  };
+
+  const saveAddressMutation = useMutation({
+    mutationFn: async () => {
+      let payload: VaultAddressWrite;
+      try {
+        payload = VaultAddressWriteSchema.parse(
+          addressWriteBecauseFields({
+            label: addressLabel,
+            line1,
+            line2,
+            city,
+            region,
+            postalCode,
+            country,
+            deliveryNotes,
+            isDefaultDelivery,
+          }),
+        );
+      } catch {
+        throw new Error("Address was not saved.");
+      }
+      if (editingAddressId !== null) {
+        return updateVaultAddress(apiClient, editingAddressId, payload);
+      }
+      return createVaultAddress(apiClient, payload);
+    },
+    onSuccess: () => {
+      clearAddressForm();
+      invalidateWallet();
+    },
+    onError: () => {
+      setAddressFormError("Address was not saved.");
+    },
+  });
+
+  const removeAddressMutation = useMutation({
+    mutationFn: (id: string) => deleteVaultAddress(apiClient, id),
+    onSuccess: () => {
+      setRemoveAddressId(idleRemoveIdBecauseNoneOpen());
+      invalidateWallet();
+    },
+  });
+
   const linkMutation = useMutation({
     mutationFn: () => createWalletLinkSession(apiClient),
     onSuccess: (session) => {
@@ -415,6 +633,7 @@ export const WalletVaultSettingsPage: React.FC<
   const linkStatus = snapshot.link;
   const credentials = snapshot.credentials;
   const cards = snapshot.cards;
+  const addresses = snapshot.addresses;
   const uses = cards.flatMap((card) => card.uses);
 
   const onSubmitCredential = (event: FormEvent<HTMLFormElement>) => {
@@ -422,7 +641,15 @@ export const WalletVaultSettingsPage: React.FC<
     saveMutation.mutate();
   };
 
+  const onSubmitAddress = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setAddressFormError(emptyTextBecauseBlankField());
+    saveAddressMutation.mutate();
+  };
+
   const saveLabel = editingId === null ? "Save credential" : "Update credential";
+  const saveAddressLabel =
+    editingAddressId === null ? "Save address" : "Update address";
   const secretHint =
     editingId === null
       ? "Secret is stored in the vault. It never comes back to this page."
@@ -438,7 +665,7 @@ export const WalletVaultSettingsPage: React.FC<
         <MicroLabel>Account</MicroLabel>
         <PageHeader
           title="Wallet & Vault"
-          subtitle="Connect Stripe Link, keep site credentials in the vault, and read every virtual card as typed rows."
+          subtitle="Connect Stripe Link, keep site credentials and delivery addresses in the vault, and read every virtual card as typed rows."
         >
           <DiscGlyph>
             <Wallet aria-hidden="true" />
@@ -553,6 +780,162 @@ export const WalletVaultSettingsPage: React.FC<
                   <LastSync>No vault credentials yet.</LastSync>
                 ) : null}
               </Panel>
+
+              <Panel aria-label="Addresses">
+                <PageHeader title="Addresses">
+                  <DiscGlyph>
+                    <MapPin aria-hidden="true" />
+                  </DiscGlyph>
+                </PageHeader>
+                <FieldGrid onSubmit={onSubmitAddress}>
+                  <Field>
+                    Label
+                    <ChoiceInput
+                      name="label"
+                      value={addressLabel}
+                      onChange={(event) => {
+                        const next = VaultAddressLabelSchema.safeParse(event.target.value);
+                        if (next.success) {
+                          setAddressLabel(next.data);
+                        }
+                      }}
+                    >
+                      <option value="home">home</option>
+                      <option value="work">work</option>
+                      <option value="delivery">delivery</option>
+                      <option value="other">other</option>
+                    </ChoiceInput>
+                  </Field>
+                  <Field>
+                    Street
+                    <TextInput
+                      name="line1"
+                      autoComplete="address-line1"
+                      value={line1}
+                      onChange={(event) => {
+                        setLine1(event.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field>
+                    Line 2
+                    <TextInput
+                      name="line2"
+                      autoComplete="address-line2"
+                      value={line2}
+                      onChange={(event) => {
+                        setLine2(event.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field>
+                    City
+                    <TextInput
+                      name="city"
+                      autoComplete="address-level2"
+                      value={city}
+                      onChange={(event) => {
+                        setCity(event.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field>
+                    Region
+                    <TextInput
+                      name="region"
+                      autoComplete="address-level1"
+                      value={region}
+                      onChange={(event) => {
+                        setRegion(event.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field>
+                    Postal code
+                    <TextInput
+                      name="postalCode"
+                      autoComplete="postal-code"
+                      value={postalCode}
+                      onChange={(event) => {
+                        setPostalCode(event.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field>
+                    Country
+                    <TextInput
+                      name="country"
+                      autoComplete="country"
+                      value={country}
+                      onChange={(event) => {
+                        setCountry(event.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field>
+                    Delivery notes
+                    <TextInput
+                      name="deliveryNotes"
+                      value={deliveryNotes}
+                      onChange={(event) => {
+                        setDeliveryNotes(event.target.value);
+                      }}
+                    />
+                  </Field>
+                  <CheckField>
+                    <input
+                      type="checkbox"
+                      name="isDefaultDelivery"
+                      checked={isDefaultDelivery}
+                      onChange={(event) => {
+                        setIsDefaultDelivery(event.target.checked);
+                      }}
+                    />
+                    Default delivery address
+                  </CheckField>
+                  {addressFormError.length > 0 ? (
+                    <LastSync>{addressFormError}</LastSync>
+                  ) : null}
+                  <ActionRow>
+                    <Button type="submit" variant="primary">
+                      {saveAddressLabel}
+                    </Button>
+                  </ActionRow>
+                </FieldGrid>
+                {addresses.map((address) => (
+                  <AddressRow
+                    key={address.id}
+                    address={address}
+                    editingId={editingAddressId}
+                    removeId={removeAddressId}
+                    onEdit={(next) => {
+                      setEditingAddressId(next.id);
+                      setAddressLabel(next.label);
+                      setLine1(next.line1);
+                      setLine2(next.line2 ?? emptyTextBecauseBlankField());
+                      setCity(next.city);
+                      setRegion(next.region);
+                      setPostalCode(next.postalCode);
+                      setCountry(next.country);
+                      setDeliveryNotes(next.deliveryNotes ?? emptyTextBecauseBlankField());
+                      setIsDefaultDelivery(next.isDefaultDelivery);
+                      setAddressFormError(emptyTextBecauseBlankField());
+                    }}
+                    onRemove={(id) => {
+                      setRemoveAddressId(id);
+                    }}
+                    onCancelRemove={() => {
+                      setRemoveAddressId(idleRemoveIdBecauseNoneOpen());
+                    }}
+                    onConfirmRemove={(id) => {
+                      removeAddressMutation.mutate(id);
+                    }}
+                  />
+                ))}
+                {addresses.length === 0 ? (
+                  <LastSync>No addresses yet.</LastSync>
+                ) : null}
+              </Panel>
             </div>
 
             <Panel aria-label="Virtual cards">
@@ -615,7 +998,7 @@ export const WalletVaultSettingsPage: React.FC<
           <SignedOutCard>
             <PageHeader title="No account on this session" />
             <SignedOutCopy>
-              Wallet, vault credentials, and virtual cards stay hidden until you
+              Wallet, vault credentials, addresses, and virtual cards stay hidden until you
               are signed in.
             </SignedOutCopy>
           </SignedOutCard>

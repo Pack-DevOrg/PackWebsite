@@ -180,6 +180,22 @@ async function stubWalletVaultApis(page: Page): Promise<{
     });
   });
 
+  await page.route("**/user/vault/addresses", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: okEnvelope({ addresses: [] }),
+    });
+  });
+
+  await page.route("**/user/vault/addresses/*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: okEnvelope({}),
+    });
+  });
+
   await page.route("**/user/vault/credentials", async (route) => {
     const method = route.request().method();
     if (method === "POST") {

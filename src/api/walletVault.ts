@@ -1,10 +1,15 @@
 import { z } from "zod";
 import { StandardApiResponseSchema } from "@/schemas/common";
 import {
+  VAULT_ADDRESSES_PATH,
   VAULT_CREDENTIALS_PATH,
   WALLET_CARDS_PATH,
   WALLET_LINK_PATH,
   WALLET_LINK_SESSION_PATH,
+  VaultAddressListSchema,
+  VaultAddressPatchSchema,
+  VaultAddressSchema,
+  VaultAddressWriteSchema,
   VaultCredentialCreateSchema,
   VaultCredentialListSchema,
   VaultCredentialPatchSchema,
@@ -12,6 +17,9 @@ import {
   VirtualCardListSchema,
   WalletLinkSessionSchema,
   WalletLinkStatusSchema,
+  type VaultAddress,
+  type VaultAddressPatch,
+  type VaultAddressWrite,
   type VaultCredentialCreate,
   type VaultCredentialPatch,
   type VaultCredentialPublic,
@@ -22,12 +30,16 @@ import {
 import { ApiRequestError, type ApiClient } from "./client";
 
 export {
+  VAULT_ADDRESSES_PATH,
   VAULT_CREDENTIALS_PATH,
   WALLET_CARDS_PATH,
   WALLET_LINK_PATH,
   WALLET_LINK_SESSION_PATH,
 };
 export type {
+  VaultAddress,
+  VaultAddressPatch,
+  VaultAddressWrite,
   VaultCredentialCreate,
   VaultCredentialPatch,
   VaultCredentialPublic,
@@ -73,6 +85,10 @@ function parseWithSchema<T extends z.ZodTypeAny>(
 
 function credentialPathBecauseId(id: string): string {
   return `${VAULT_CREDENTIALS_PATH}/${encodeURIComponent(id)}`;
+}
+
+function addressPathBecauseId(id: string): string {
+  return `${VAULT_ADDRESSES_PATH}/${encodeURIComponent(id)}`;
 }
 
 export const listVaultCredentials = async (
@@ -127,6 +143,57 @@ export const deleteVaultCredential = async (
 ): Promise<void> => {
   const response = await client.request<unknown>({
     path: credentialPathBecauseId(id),
+    method: "DELETE",
+  });
+  parseStandardSuccessData(response);
+};
+
+export const listVaultAddresses = async (
+  client: ApiClient,
+): Promise<readonly VaultAddress[]> => {
+  const response = await client.request<unknown>({
+    path: VAULT_ADDRESSES_PATH,
+  });
+  const parsed = parseWithSchema(
+    parseStandardSuccessData(response),
+    VaultAddressListSchema,
+  );
+  return parsed.addresses;
+};
+
+export const createVaultAddress = async (
+  client: ApiClient,
+  payload: VaultAddressWrite,
+): Promise<VaultAddress> => {
+  const body = VaultAddressWriteSchema.parse(payload);
+  const response = await client.request<unknown, VaultAddressWrite>({
+    path: VAULT_ADDRESSES_PATH,
+    method: "POST",
+    body,
+  });
+  return parseWithSchema(parseStandardSuccessData(response), VaultAddressSchema);
+};
+
+export const updateVaultAddress = async (
+  client: ApiClient,
+  id: string,
+  payload: VaultAddressPatch,
+): Promise<VaultAddress> => {
+  const body = VaultAddressPatchSchema.parse(payload);
+  const response = await client.request<unknown, VaultAddressPatch>({
+    path: addressPathBecauseId(id),
+    method: "PATCH",
+    body,
+  });
+  return parseWithSchema(parseStandardSuccessData(response), VaultAddressSchema);
+};
+
+export const deleteVaultAddress = async (
+  client: ApiClient,
+  id: string,
+): Promise<void> => {
+  const response = await client.request<unknown>({
+    path: addressPathBecauseId(id),
     method: "DELETE",
   });
   parseStandardSuccessData(response);

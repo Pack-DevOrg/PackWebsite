@@ -15,6 +15,7 @@ import { z } from "zod";
 import type { ApiClient } from "../api/client";
 import { useApiClient } from "../api/useApiClient";
 import { AuthProvider, useAuth } from "../auth/AuthContext";
+import { LiveViewBeam } from "../components/LiveViewBeam";
 import { appConfig } from "../config/appConfig";
 
 const LIVE_VIEW_EXPIRED_HEADING = "Pack needs your help — this link expired";
@@ -29,7 +30,8 @@ const OTP_DIGITS_RE = /^\d{4,8}$/;
 const CLOUDFLARE_LIVE_VIEW_HOST = "live.browser.run";
 const LIVE_VIEW_SIGN_IN_HEADING = "Sign in to watch Pack work";
 const LIVE_VIEW_SIGN_IN_BUTTON = "Sign in";
-const LIVE_VIEW_CLEAR_BUTTON = "Done, keep going";
+const LIVE_VIEW_PACK_CONTROLLING = "Pack is controlling";
+const LIVE_VIEW_YOU_CONTROLLING = "You're controlling";
 const LIVE_VIEW_CLEAR_SENT = "Pack is picking it back up.";
 const LIVE_VIEW_CLEAR_FAILED = "That didn't reach Pack. Tap again.";
 const LIVE_VIEW_DEFAULT_INSTRUCTION = "Tap and type here to log in, then tap Done";
@@ -116,6 +118,18 @@ const LiveViewPhoneFrame = styled.iframe`
   background: ${({ theme }) => theme.colors.background.secondary};
 `;
 
+/** Same box as the phone iframe, so the beam rides that rim. Clicks pass through. */
+const LiveViewBeamSlot = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: ${CLOUDFLARE_VIEWER_WIDTH_PX}px;
+  height: ${CLOUDFLARE_VIEWER_HEIGHT_PX}px;
+  transform-origin: center center;
+  pointer-events: none;
+  z-index: 2;
+`;
+
 const DoneBar = styled.div`
   flex: none;
   display: flex;
@@ -144,6 +158,7 @@ const StaleBadge = styled.p`
   background: ${({ theme }) => theme.colors.error.dark};
   color: ${({ theme }) => theme.colors.text.white};
   font-size: 0.875rem;
+  z-index: 3;
 `;
 
 const ProgressList = styled.ul`
@@ -153,15 +168,6 @@ const ProgressList = styled.ul`
   padding: 0;
   list-style: none;
   color: ${({ theme }) => theme.colors.text.secondary};
-`;
-
-const TakeOverBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  max-width: 72rem;
 `;
 
 const ResumeButton = styled.button`
@@ -633,40 +639,61 @@ function useDocumentScrollLockBecauseLiveViewIsOneScreen(): void {
   }, []);
 }
 
+function ControlToggle({
+  packControlling,
+  disabled,
+  onToggle,
+}: {
+  readonly packControlling: boolean;
+  readonly disabled: boolean;
+  readonly onToggle: () => void;
+}) {
+  return (
+    <ResumeButton type="button" disabled={disabled} onClick={onToggle}>
+      {packControlling ? LIVE_VIEW_PACK_CONTROLLING : LIVE_VIEW_YOU_CONTROLLING}
+    </ResumeButton>
+  );
+}
+
 function CloudflareViewerScreen({
   viewerUrl,
   instruction,
   clearState,
-  onDone,
+  packControlling,
+  onToggle,
 }: {
   readonly viewerUrl: string;
   readonly instruction: string;
   readonly clearState: ClearState;
-  readonly onDone: () => void;
+  readonly packControlling: boolean;
+  readonly onToggle: () => void;
 }) {
   const fitRef = useRef<HTMLDivElement | null>(null);
   const scale = useContainScaleBecauseViewerIsFixedSize(fitRef);
   useDocumentScrollLockBecauseLiveViewIsOneScreen();
+  const phoneTransform = `translate(-50%, -50%) scale(${scale})`;
   return (
     <LiveViewStage data-testid="live-view-stage">
       <InstructionLine>{instruction}</InstructionLine>
       <ViewerFit ref={fitRef} data-testid="live-view-fit">
+        <LiveViewBeamSlot style={{ transform: phoneTransform }}>
+          <LiveViewBeam active={packControlling} />
+        </LiveViewBeamSlot>
         <LiveViewPhoneFrame
           title={MERCHANT_CHECKOUT_LIVE_VIEW_ALT}
           src={viewerUrl}
           allow="clipboard-read; clipboard-write"
           referrerPolicy="no-referrer"
-          style={{ transform: `translate(-50%, -50%) scale(${scale})` }}
+          style={{ transform: phoneTransform }}
         />
       </ViewerFit>
       <DoneBar data-testid="live-view-done-bar">
-        {clearState !== "sent" ? (
-          <ResumeButton type="button" disabled={clearState === "sending"} onClick={onDone}>
-            {LIVE_VIEW_CLEAR_BUTTON}
-          </ResumeButton>
-        ) : (
-          <ClearStatus role="status">{LIVE_VIEW_CLEAR_SENT}</ClearStatus>
-        )}
+        <ControlToggle
+          packControlling={packControlling}
+          disabled={clearState === "sending"}
+          onToggle={onToggle}
+        />
+        {clearState === "sent" ? <ClearStatus role="status">{LIVE_VIEW_CLEAR_SENT}</ClearStatus> : null}
         {clearState === "failed" ? <ClearStatus role="alert">{LIVE_VIEW_CLEAR_FAILED}</ClearStatus> : null}
       </DoneBar>
     </LiveViewStage>
@@ -809,6 +836,8 @@ type LiveViewPageState =
 
 type SessionViewState = {
   mode: "watch" | "take-over";
+  /** User tapped the toggle. Stays take-over until the clear, even if the poll says Pack is driving. */
+  heldByUser: boolean;
   frame: LiveViewLatestFrame | null;
   progressLabels: string[];
   otpAsk: boolean;
@@ -824,7 +853,7 @@ function initialLiveViewPageStateBecauseMissingTokenIsExpired(
 }
 
 function initialSessionViewBecauseWatchUntilPause(): SessionViewState {
-  return { mode: "watch", frame: null, progressLabels: [], otpAsk: false };
+  return { mode: "watch", heldByUser: false, frame: null, progressLabels: [], otpAsk: false };
 }
 
 export function LiveViewConnectView({
@@ -929,16 +958,20 @@ export function LiveViewConnectView({
         if (cancelled) {
           return;
         }
-        setSessionView((prev) => ({
-          mode: frame.paused === true ? "take-over" : "watch",
-          frame,
-          progressLabels: prev.progressLabels,
-          otpAsk: otpAskBecausePauseField(
-            frame.paused === true,
-            frame.field,
-            prev.otpAsk,
-          ),
-        }));
+        setSessionView((prev) => {
+          const userOrServerPaused = prev.heldByUser || frame.paused === true;
+          return {
+            mode: userOrServerPaused ? "take-over" : "watch",
+            heldByUser: prev.heldByUser,
+            frame,
+            progressLabels: prev.progressLabels,
+            otpAsk: otpAskBecausePauseField(
+              userOrServerPaused,
+              frame.field,
+              prev.otpAsk,
+            ),
+          };
+        });
       } catch {
         if (cancelled) {
           return;
@@ -973,7 +1006,8 @@ export function LiveViewConnectView({
           statusParsed.data,
         );
         setSessionView((prev) => ({
-          mode: statusPaused ? "take-over" : prev.mode,
+          mode: prev.heldByUser || statusPaused ? "take-over" : prev.mode,
+          heldByUser: prev.heldByUser,
           frame: prev.frame,
           progressLabels: labels.length > 0 ? labels : prev.progressLabels,
           otpAsk: otpAskBecauseStatus(statusParsed.data, prev.otpAsk),
@@ -1054,22 +1088,41 @@ export function LiveViewConnectView({
     };
   }, [pageState, sessionView.otpAsk]);
 
+  const onTakeControl = () => {
+    setSessionView((prev) => ({
+      ...prev,
+      mode: "take-over",
+      heldByUser: true,
+    }));
+  };
+
   const onResume = () => {
     if (pageState.kind !== "session") {
       return;
     }
     const run = async () => {
-      // Back to watch either way; a failed clear shows its retry line.
-      await sendClear();
+      const handedBack = await sendClear();
       setPollGeneration((generation) => generation + 1);
+      if (handedBack !== true) {
+        return;
+      }
       setSessionView((prev) => ({
         mode: "watch",
+        heldByUser: false,
         frame: prev.frame,
         progressLabels: prev.progressLabels,
         otpAsk: false,
       }));
     };
     void run();
+  };
+
+  const onControlToggle = () => {
+    if (sessionView.mode === "take-over") {
+      onResume();
+      return;
+    }
+    onTakeControl();
   };
 
   const onOtpChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -1108,9 +1161,8 @@ export function LiveViewConnectView({
           viewerUrl={cloudflareViewerUrl}
           instruction={pageState.instruction}
           clearState={clearState}
-          onDone={() => {
-            void sendClear();
-          }}
+          packControlling={sessionView.mode !== "take-over"}
+          onToggle={onControlToggle}
         />
       </>
     );
@@ -1129,14 +1181,6 @@ export function LiveViewConnectView({
         {clearState === "failed" ? <ClearStatus role="alert">{LIVE_VIEW_CLEAR_FAILED}</ClearStatus> : null}
         {pageState.kind === "session" ? (
           <>
-            {sessionView.mode === "take-over" ? (
-              <TakeOverBar>
-                <span>Take over</span>
-                <ResumeButton type="button" onClick={onResume}>
-                  Resume
-                </ResumeButton>
-              </TakeOverBar>
-            ) : null}
             {sessionView.mode === "take-over" && sessionView.otpAsk ? (
               <OtpForm onSubmit={onOtpSubmit}>
                 <OtpLabel htmlFor={LIVE_VIEW_OTP_INPUT_ID}>Texted code</OtpLabel>
@@ -1152,6 +1196,7 @@ export function LiveViewConnectView({
             ) : null}
             {frame !== null ? (
               <ScreenStage>
+                <LiveViewBeam active={sessionView.mode !== "take-over"} />
                 <LiveViewFrameImage
                   alt={MERCHANT_CHECKOUT_LIVE_VIEW_ALT}
                   title={MERCHANT_CHECKOUT_LIVE_VIEW_ALT}
@@ -1160,6 +1205,11 @@ export function LiveViewConnectView({
                 {showStale ? <StaleBadge>{STALE_FRAME_BADGE}</StaleBadge> : null}
               </ScreenStage>
             ) : null}
+            <ControlToggle
+              packControlling={sessionView.mode !== "take-over"}
+              disabled={clearState === "sending"}
+              onToggle={onControlToggle}
+            />
             {sessionView.progressLabels.length > 0 ? (
               <ProgressList>
                 {sessionView.progressLabels.map((label) => (

@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -436,7 +439,8 @@ describe("LiveViewConnectPage", () => {
 
     renderPage("?token=tok-cf");
 
-    const done = await screen.findByRole("button", { name: "Done, keep going" });
+    const done = await screen.findByRole("button", { name: "Pack is controlling" });
+    expect(screen.getAllByRole("button")).toHaveLength(1);
     const bar = screen.getByTestId("live-view-done-bar");
     const stage = screen.getByTestId("live-view-stage");
     expect(bar).toContainElement(done);
@@ -518,11 +522,13 @@ describe("LiveViewConnectPage", () => {
 
     renderPage("?token=tok-cf");
 
-    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    expect(postCalls()).toEqual([]);
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("Pack is picking it back up.");
     expect(postCalls()).toEqual(["https://api.pack.test/live-view?token=tok-cf"]);
-    expect(screen.queryByRole("button", { name: "Done, keep going" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Pack is controlling" })).toBeInTheDocument();
   });
 
   it("Done on the SMS short link posts the clear by short id", async () => {
@@ -545,7 +551,8 @@ describe("LiveViewConnectPage", () => {
       </HelmetProvider>,
     );
 
-    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
 
     await screen.findByRole("status");
     expect(postCalls()).toEqual(["https://api.pack.test/live-view?lv=w7pIQA37"]);
@@ -561,10 +568,12 @@ describe("LiveViewConnectPage", () => {
 
     renderPage("?token=tok-cf");
 
-    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("That didn't reach Pack. Tap again.");
-    expect(screen.getByRole("button", { name: "Done, keep going" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "You're controlling" })).toBeEnabled();
+    expect(screen.getAllByRole("button")).toHaveLength(1);
   });
 
   it("the prod clear is an authenticated POST to /live-view with the link query", async () => {
@@ -578,5 +587,83 @@ describe("LiveViewConnectPage", () => {
       [{ path: "/live-view?lv=w7pIQA37", method: "POST" }],
       [{ path: "/live-view?token=tok-1", method: "POST" }],
     ]);
+  });
+
+  it("one toggle button exists, and its label is only Pack is controlling or You're controlling", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    renderPage("?token=tok-cf");
+
+    const toggle = await screen.findByRole("button", { name: "Pack is controlling" });
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: "Done, keep going" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Resume" })).toBeNull();
+    expect(screen.queryByText("Take over")).toBeNull();
+
+    fireEvent.click(toggle);
+
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "You're controlling" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Pack is controlling" })).toBeNull();
+  });
+
+  it("the first tap pauses for the user and the second tap posts the owner clear", async () => {
+    fetchMock.mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/hitl")) {
+        return Promise.resolve(jsonOk({ ok: true }));
+      }
+      if (url.includes("/latest")) {
+        return Promise.resolve(jsonOk({ seq: 1, ts: NOW_MS, url: VALID_LIVE_VIEW_URL, paused: false }));
+      }
+      if (url.includes("/status")) {
+        return Promise.resolve(jsonOk({ progressItems: [] }));
+      }
+      if (init?.method === "POST") {
+        return Promise.resolve(jsonOk({ jobId: JOB_ID, event: "cleared" }));
+      }
+      return Promise.resolve(jsonOk(okFetchBody()));
+    });
+
+    renderPage("?token=tok-toggle");
+
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    expect(screen.getByRole("button", { name: "You're controlling" })).toBeInTheDocument();
+    expect(postCalls().some((url) => url.includes("/live-view?"))).toBe(false);
+
+    fireEvent.pointerDown(window, { clientX: 4, clientY: 8 });
+    await waitFor(() => {
+      expect(hitlBodies().some((body) => body.includes('"pointer"'))).toBe(true);
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
+    await waitFor(() => {
+      expect(postCalls()).toContain("https://api.pack.test/live-view?token=tok-toggle");
+    });
+    expect(await screen.findByRole("button", { name: "Pack is controlling" })).toBeEnabled();
+    expect(screen.queryByRole("button", { name: "You're controlling" })).toBeNull();
+  });
+
+  it("the beam class is present only while Pack is controlling", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    renderPage("?token=tok-beam");
+
+    await screen.findByRole("button", { name: "Pack is controlling" });
+    expect(document.querySelector(".live-view-beam")).not.toBeNull();
+    expect(document.querySelector(".live-view-beam-dim")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Pack is controlling" }));
+
+    expect(document.querySelector(".live-view-beam")).toBeNull();
+    expect(document.querySelector(".live-view-beam-dim")).not.toBeNull();
+  });
+
+  it("the beam stylesheet orbits two stops with a conic-gradient angle and a static glow when motion is reduced", () => {
+    const css = readFileSync(join(process.cwd(), "src/components/LiveViewBeam.module.css"), "utf8");
+    expect(css).toContain("@property --live-view-beam-angle");
+    expect(css).toContain("conic-gradient");
+    expect(css).toContain("prefers-reduced-motion: reduce");
+    expect(css).toContain("animation: none");
   });
 });

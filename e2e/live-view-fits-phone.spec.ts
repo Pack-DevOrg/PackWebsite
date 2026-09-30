@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 
 /**
  * The SMS live-view link on an iPhone 15 (393x852): the whole remote screen
- * and "Done, keep going" are on screen together, and the page never scrolls.
+ * and "Pack is controlling" are on screen together, and the page never scrolls.
  * The API and the Cloudflare viewer are stubbed; the viewer stub has the real
  * viewer's shape (49 px nav bar, 15 px padding, 393x659 remote page).
  */
@@ -33,7 +33,7 @@ test.use({
   hasTouch: true,
 });
 
-test("the /lv link fits an iPhone 15: whole remote screen and Done visible, no page scroll", async ({ page }) => {
+test("the /lv link fits an iPhone 15: whole remote screen and the control toggle visible, no page scroll", async ({ page }) => {
   await page.addInitScript(
     ({ shortId, viewerUrl }) => {
       window.localStorage.setItem("tracking-consent", "granted");
@@ -83,7 +83,7 @@ test("the /lv link fits an iPhone 15: whole remote screen and Done visible, no p
   await page.goto(`/lv/${SHORT_ID}`);
 
   const instruction = page.getByRole("heading", { name: "Tap and type here to log in, then tap Done" });
-  const done = page.getByRole("button", { name: "Done, keep going" });
+  const done = page.getByRole("button", { name: "Pack is controlling" });
   const viewer = page.getByTitle("Merchant checkout live view");
   await expect(instruction).toBeInViewport({ ratio: 1 });
   await expect(done).toBeInViewport({ ratio: 1 });

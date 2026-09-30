@@ -940,8 +940,7 @@ test.describe("LIVE=1 trypackai live-view phone-hop", () => {
       )
       .toBeGreaterThan(1);
 
-    const takeOver = page.getByText("Take over");
-    const resume = page.getByRole("button", { name: "Resume" });
+    const takeOver = page.getByRole("button", { name: "You're controlling" });
     const hitlVisible = await takeOver
       .waitFor({ state: "visible", timeout: 90_000 })
       .then(() => true)
@@ -954,7 +953,6 @@ test.describe("LIVE=1 trypackai live-view phone-hop", () => {
       return;
     }
     await expect(takeOver).toBeVisible();
-    await expect(resume).toBeVisible();
 
     const framesShot = path.join(SHOT_DIR, "live-frames-visible.png");
     const takeOverShot = path.join(SHOT_DIR, "take-over-visible.png");

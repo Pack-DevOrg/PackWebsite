@@ -2,7 +2,7 @@ import React from "react";
 import {StyleSheet, Text, View} from "react-native";
 
 import {tokens} from "../../../packages/ui-primitives/src/tokens";
-import type {FantasyMatchup, SportsView} from "./projectSportsView";
+import type {FantasyMatchup, SportsView} from "@/api/sportsView";
 
 function providerLabel(provider: FantasyMatchup["provider"]): string {
   if (provider === "espn") {

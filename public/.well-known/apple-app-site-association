@@ -11,6 +11,14 @@
           {
             "/": "/trip/*",
             "comment": "Handle linked trip invite links"
+          },
+          {
+            "/": "/i/*",
+            "comment": "Handle short invite links"
+          },
+          {
+            "/": "/lv/*",
+            "comment": "Handle live view links"
           }
         ]
       }
@@ -20,6 +28,6 @@
     "apps": ["GW8YNJQZCK.com.packai.app"]
   },
   "appclips": {
-    "apps": []
+    "apps": ["GW8YNJQZCK.com.packai.app.Clip"]
   }
 }

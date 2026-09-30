@@ -1,0 +1,73 @@
+@property --live-view-beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Two hot heads, 180 degrees apart, ported from BorderBeamRing rotate.
+   Yellow is the working saffron the app spins on an active box. */
+.orbit {
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  padding: 3px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--live-view-beam-angle),
+    #ffd9a1e6 0deg,
+    #ffd9a1e6 18deg,
+    #f0c62d59 36deg,
+    #8c7e6a52 72deg,
+    #8c7e6a52 108deg,
+    #f0c62d59 144deg,
+    #ffd9a1e6 162deg,
+    #ffd9a1e6 198deg,
+    #f0c62d59 216deg,
+    #8c7e6a52 252deg,
+    #8c7e6a52 288deg,
+    #f0c62d59 324deg,
+    #ffd9a1e6 342deg,
+    #ffd9a1e6 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 14px #f0c62d);
+  animation: live-view-beam-spin 2200ms linear infinite;
+}
+
+.dim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: rgba(243, 210, 122, 0.28);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+@keyframes live-view-beam-spin {
+  to {
+    --live-view-beam-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit {
+    animation: none;
+    background: rgba(240, 198, 45, 0.9);
+    filter: drop-shadow(0 0 14px #f0c62d);
+  }
+}

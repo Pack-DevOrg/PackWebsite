@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
+import { LIVE_VIEW_BEAM_CLASS } from "../components/LiveViewBeam";
 import {
   CLOUDFLARE_VIEWER_HEIGHT_PX,
   CLOUDFLARE_VIEWER_WIDTH_PX,
@@ -431,12 +432,12 @@ describe("LiveViewConnectPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("Done sits in the bar pinned under the viewer, clear of the home indicator", async () => {
+  it("the control toggle sits in the bar pinned under the viewer, clear of the home indicator", async () => {
     fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
 
     renderPage("?token=tok-cf");
 
-    const done = await screen.findByRole("button", { name: "Done, keep going" });
+    const done = await screen.findByRole("button", { name: "Pack is controlling" });
     const bar = screen.getByTestId("live-view-done-bar");
     const stage = screen.getByTestId("live-view-stage");
     expect(bar).toContainElement(done);
@@ -459,7 +460,7 @@ describe("LiveViewConnectPage", () => {
     renderPage("?token=tok-cf");
 
     const frame = await screen.findByTitle("Merchant checkout live view");
-    const scale = Number(/scale\(([0-9.]+)\)/.exec(frame.style.transform)?.[1]);
+    const scale = Number(/scale\(([0-9.]+)\)/.exec(frame.parentElement?.style.transform ?? "")?.[1]);
     expect(scale).toBeCloseTo(Math.min(393 / CLOUDFLARE_VIEWER_WIDTH_PX, 560 / CLOUDFLARE_VIEWER_HEIGHT_PX), 5);
     expect(CLOUDFLARE_VIEWER_HEIGHT_PX * scale).toBeLessThanOrEqual(560);
     expect(CLOUDFLARE_VIEWER_WIDTH_PX * scale).toBeLessThanOrEqual(393);
@@ -511,18 +512,22 @@ describe("LiveViewConnectPage", () => {
       .map((call) => String(call[0]));
   }
 
-  it("Done under the Cloudflare viewer posts the owner clear for this link, so the same agent resumes", async () => {
+  it("handing the Cloudflare viewer back to Pack posts the owner clear for this link, so the same agent resumes", async () => {
     fetchMock.mockResolvedValue(
       jsonOk({ success: true, data: okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER }), requestId: "r1" }),
     );
 
     renderPage("?token=tok-cf");
 
-    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    expect(screen.getByRole("button", { name: "You're controlling" })).toBeInTheDocument();
+    expect(postCalls()).toEqual([]);
+
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("Pack is picking it back up.");
     expect(postCalls()).toEqual(["https://api.pack.test/live-view?token=tok-cf"]);
-    expect(screen.queryByRole("button", { name: "Done, keep going" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Pack is controlling" })).toBeInTheDocument();
   });
 
   it("Done on the SMS short link posts the clear by short id", async () => {
@@ -545,7 +550,8 @@ describe("LiveViewConnectPage", () => {
       </HelmetProvider>,
     );
 
-    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
 
     await screen.findByRole("status");
     expect(postCalls()).toEqual(["https://api.pack.test/live-view?lv=w7pIQA37"]);
@@ -561,10 +567,11 @@ describe("LiveViewConnectPage", () => {
 
     renderPage("?token=tok-cf");
 
-    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("That didn't reach Pack. Tap again.");
-    expect(screen.getByRole("button", { name: "Done, keep going" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "You're controlling" })).toBeEnabled();
   });
 
   it("the prod clear is an authenticated POST to /live-view with the link query", async () => {
@@ -578,5 +585,75 @@ describe("LiveViewConnectPage", () => {
       [{ path: "/live-view?lv=w7pIQA37", method: "POST" }],
       [{ path: "/live-view?token=tok-1", method: "POST" }],
     ]);
+  });
+
+  it("has one control toggle, and its label is only Pack is controlling or You're controlling", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    renderPage("?token=tok-toggle");
+
+    const pack = await screen.findByRole("button", { name: "Pack is controlling" });
+    expect(screen.getAllByRole("button")).toEqual([pack]);
+    expect(screen.queryByRole("button", { name: "Done, keep going" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Resume" })).toBeNull();
+    expect(screen.queryByText("Take over")).toBeNull();
+
+    fireEvent.click(pack);
+
+    const you = screen.getByRole("button", { name: "You're controlling" });
+    expect(screen.getAllByRole("button")).toEqual([you]);
+    expect(screen.queryByRole("button", { name: "Pack is controlling" })).toBeNull();
+  });
+
+  it("a tap while Pack is controlling pauses for the user, and the next tap posts the existing clear", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    renderPage("?token=tok-handlers");
+
+    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
+    expect(postCalls()).toEqual([]);
+    expect(screen.getByRole("button", { name: "You're controlling" })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
+
+    await screen.findByRole("status");
+    expect(postCalls()).toEqual(["https://api.pack.test/live-view?token=tok-handlers"]);
+    expect(screen.getByRole("button", { name: "Pack is controlling" })).toBeInTheDocument();
+  });
+
+  it("shows the yellow beam class only while Pack is controlling", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+
+    renderPage("?token=tok-beam");
+
+    await screen.findByRole("button", { name: "Pack is controlling" });
+    expect(document.querySelector(`.${LIVE_VIEW_BEAM_CLASS}`)).not.toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Pack is controlling" }));
+
+    expect(screen.getByRole("button", { name: "You're controlling" })).toBeInTheDocument();
+    expect(document.querySelector(`.${LIVE_VIEW_BEAM_CLASS}`)).toBeNull();
+  });
+
+  it("a server pause is You're controlling with no beam, and the tap posts the clear", async () => {
+    fetchMock.mockImplementation((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/latest")) {
+        return Promise.resolve(jsonOk({ seq: 1, ts: NOW_MS, url: VALID_LIVE_VIEW_URL, paused: true }));
+      }
+      if (url.includes("/status")) {
+        return Promise.resolve(jsonOk({ paused: true, progressItems: [] }));
+      }
+      return Promise.resolve(jsonOk(okFetchBody()));
+    });
+
+    renderPage("?token=tok-paused");
+
+    await screen.findByRole("button", { name: "You're controlling" });
+    expect(document.querySelector(`.${LIVE_VIEW_BEAM_CLASS}`)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
+
+    await screen.findByRole("status");
+    expect(postCalls()).toEqual(["https://api.pack.test/live-view?token=tok-paused"]);
   });
 });

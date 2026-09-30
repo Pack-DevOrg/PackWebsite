@@ -142,6 +142,11 @@ const FriendsPage = lazyImportWithRetry(async () => {
   return { default: module.FriendsPage };
 }, "friends-page");
 
+const SportsPage = lazyImportWithRetry(async () => {
+  const module = await import("../pages/SportsPage");
+  return { default: module.SportsPage };
+}, "sports-page");
+
 const TravelStatsPage = lazyImportWithRetry(async () => {
   const module = await import("../components/app/TravelStatsOverview");
   function TravelStatsRoute() {
@@ -972,6 +977,21 @@ const NonHomeRoutes: React.FC = () => {
           }
         />
         <Route
+          path="/sports"
+          element={
+            <Suspense fallback={<LocalizedLoadingPage />}>
+              {typeof window !== "undefined" &&
+              !isAppOriginHost(window.location.hostname) ? (
+                <AppOriginRedirect />
+              ) : (
+                <ProtectedAppShell />
+              )}
+            </Suspense>
+          }
+        >
+          <Route index element={<SportsPage />} />
+        </Route>
+        <Route
           path="/app"
           element={
             <>
@@ -1312,6 +1332,21 @@ const NonHomeRoutes: React.FC = () => {
               </Suspense>
             }
           />
+          <Route
+            path="sports"
+            element={
+              <Suspense fallback={<LocalizedLoadingPage />}>
+                {typeof window !== "undefined" &&
+                !isAppOriginHost(window.location.hostname) ? (
+                  <AppOriginRedirect />
+                ) : (
+                  <ProtectedAppShell />
+                )}
+              </Suspense>
+            }
+          >
+            <Route index element={<SportsPage />} />
+          </Route>
           <Route
             path="app"
             element={

@@ -136,7 +136,15 @@ const packAppSourceAlias = {
     importer: string | undefined,
   ) {
     if (source.startsWith('@pack/app/')) {
-      return resolvePackAppFile(path.join(packAppSrc, source.slice('@pack/app/'.length)));
+      const fromPack = resolvePackAppFile(path.join(packAppSrc, source.slice('@pack/app/'.length)));
+      if (
+        fromPack === null &&
+        (source === '@pack/app/components/liveViewer' || source.startsWith('@pack/app/components/liveViewer/'))
+      ) {
+        const rest = source.slice('@pack/app/components/liveViewer'.length);
+        return resolvePackAppFile(path.join(srcDir, 'components', 'liveViewer', rest));
+      }
+      return fromPack;
     }
     if (importer && source.startsWith('@/') && normalizePath(importer).startsWith(normalizePath(packAppSrc) + '/')) {
       return resolvePackAppFile(path.join(packAppSrc, source.slice(2)));

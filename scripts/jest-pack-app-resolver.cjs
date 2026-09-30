@@ -18,6 +18,9 @@ const PACK_APP_DIR = packAppCheckout([
 ]);
 const PACK_APP_SRC = path.join(PACK_APP_DIR, 'src');
 const WEBSITE_SRC = path.resolve(__dirname, '../src');
+// The app seat lands this module on PackApp. Until that checkout has it, the
+// website snapshot is the same component (theme import retargeted).
+const LIVE_VIEWER_SNAPSHOT = path.join(WEBSITE_SRC, 'components', 'liveViewer');
 const SITE_NODE_MODULES = path.resolve(__dirname, '../node_modules');
 const FALLBACK_NODE_MODULES = [
   path.join(PACK_APP_DIR, 'node_modules'),
@@ -87,6 +90,14 @@ module.exports = function resolvePackApp(request, options) {
   const fromPackApp = inPackApp(options.basedir || '');
   if (request.startsWith('@pack/app/')) {
     next = path.join(PACK_APP_SRC, request.slice('@pack/app/'.length));
+    if (request === '@pack/app/components/liveViewer' || request.startsWith('@pack/app/components/liveViewer/')) {
+      const rest = request.slice('@pack/app/components/liveViewer'.length);
+      const snapshot = path.join(LIVE_VIEWER_SNAPSHOT, rest);
+      const packHit = webBuild(next) || (fs.existsSync(next) ? next : null);
+      if (!packHit) {
+        next = snapshot;
+      }
+    }
   } else if (fromPackApp && request.startsWith('@/')) {
     next = path.join(PACK_APP_SRC, request.slice(2));
   } else if (fromPackApp && (request === WEBSITE_SRC || request.startsWith(WEBSITE_SRC + path.sep))) {

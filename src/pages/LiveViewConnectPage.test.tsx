@@ -6,8 +6,6 @@ import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import {
-  CLOUDFLARE_VIEWER_HEIGHT_PX,
-  CLOUDFLARE_VIEWER_WIDTH_PX,
   clearLiveViewHandoffBecauseApiClient,
   LiveViewConnectView,
   type LiveViewLinkQuery,
@@ -17,13 +15,37 @@ import { I18nProvider } from "@/i18n/I18nProvider";
 import { ThemeProvider } from "@/styles/ThemeProvider";
 
 const NOW_MS = 1_714_000_000_000;
-const VALID_LIVE_VIEW_URL = "https://live.pack.test/view";
 const MERCHANT_HOST = "shop.example.test";
 const JOB_ID = "job-synthetic-1";
+const TICKET = "ticket-opaque";
+const RELAY_URL = "wss://relay.pack.test/live";
+const INSTALL_ID = "install-web-1";
 const EXPIRED_HEADING = "Pack needs your help — this link expired";
+const CLOUDFLARE_VIEWER =
+  "https://live.browser.run/ui/view?mode=tab&wss=live.browser.run/api/devtools/browser/sess-1?jwt=SIGNED";
 
 const originalFetch = global.fetch;
 let fetchMock: jest.Mock;
+const socketUrls: string[] = [];
+
+class FakeSocket {
+  url: string;
+  onopen: (() => void) | null = null;
+  onmessage: ((event: { data: string }) => void) | null = null;
+  onclose: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+  readyState = 0;
+  constructor(url: string) {
+    this.url = url;
+    socketUrls.push(url);
+  }
+  send(): void {}
+  close(): void {
+    this.readyState = 3;
+  }
+  addEventListener(): void {}
+  removeEventListener(): void {}
+}
 
 /** Stands in for the authenticated API client: same URL, the test's fetch mock. */
 async function fetchResolver(query: LiveViewLinkQuery, signal: AbortSignal): Promise<unknown> {
@@ -38,7 +60,6 @@ async function fetchResolver(query: LiveViewLinkQuery, signal: AbortSignal): Pro
   return response.json();
 }
 
-/** Stands in for the authenticated POST /live-view: same URL, the test's fetch mock. */
 async function fetchClearer(query: LiveViewLinkQuery): Promise<unknown> {
   const params = new URLSearchParams("token" in query ? { token: query.token } : { lv: query.lv });
   const response = await fetch(`https://api.pack.test/live-view?${params.toString()}`, {
@@ -56,7 +77,11 @@ function renderPage(search: string) {
       <MemoryRouter initialEntries={[`/live-view${search}`]}>
         <I18nProvider>
           <ThemeProvider>
-            <LiveViewConnectView resolveHandoff={fetchResolver} clearHandoff={fetchClearer} />
+            <LiveViewConnectView
+              resolveHandoff={fetchResolver}
+              clearHandoff={fetchClearer}
+              installId={INSTALL_ID}
+            />
           </ThemeProvider>
         </I18nProvider>
       </MemoryRouter>
@@ -64,19 +89,22 @@ function renderPage(search: string) {
   );
 }
 
-function okFetchBody(overrides: {
-  liveViewUrl?: string;
-  merchantHost?: string;
-  jobId?: string;
-  expiresAtMs?: number;
-  headline?: string;
-} = {}) {
+function okTicket(overrides: Record<string, unknown> = {}) {
   return {
-    liveViewUrl: VALID_LIVE_VIEW_URL,
-    merchantHost: MERCHANT_HOST,
     jobId: JOB_ID,
+    merchantHost: MERCHANT_HOST,
     expiresAtMs: NOW_MS + 60_000,
+    ticket: TICKET,
+    relayUrl: RELAY_URL,
     ...overrides,
+  };
+}
+
+function jsonOk(body: unknown) {
+  return {
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(body),
   };
 }
 
@@ -85,6 +113,9 @@ describe("LiveViewConnectPage", () => {
     jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
     fetchMock = jest.fn();
     global.fetch = fetchMock;
+    socketUrls.length = 0;
+    // @ts-expect-error test double for the viewer's relay socket
+    global.WebSocket = FakeSocket;
   });
 
   afterEach(() => {
@@ -92,385 +123,115 @@ describe("LiveViewConnectPage", () => {
     global.fetch = originalFetch;
   });
 
-  it("shows the checkout frame after a token GET returns a valid https cross-host unexpired handoff", async () => {
-    fetchMock.mockImplementation((input: RequestInfo | URL) => {
-      const url = String(input);
-      if (url.includes("/latest")) {
-        return Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () =>
-            Promise.resolve({
-              seq: 1,
-              ts: NOW_MS,
-              url: VALID_LIVE_VIEW_URL,
-              paused: false,
-            }),
-        });
-      }
-      if (url.includes("/status")) {
-        return Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () => Promise.resolve({ progressItems: [] }),
-        });
-      }
-      return Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve(okFetchBody()),
-      });
-    });
+  it("mounts the shared viewer for a ticket and does not iframe Cloudflare", async () => {
+    const source = readFileSync(join(process.cwd(), "src/pages/LiveViewConnectPage.tsx"), "utf8");
+    expect(source).toContain('from "@pack/app/components/liveViewer"');
+    expect(source).not.toContain("<iframe");
+    expect(source).not.toContain("styled.iframe");
+
+    fetchMock.mockResolvedValue(
+      jsonOk({
+        success: true,
+        data: {
+          ...okTicket(),
+          liveViewUrl: CLOUDFLARE_VIEWER,
+        },
+        requestId: "r1",
+      }),
+    );
 
     renderPage("?token=tok-ok");
 
-    const frame = await screen.findByTitle("Merchant checkout live view");
-    expect(frame.tagName).toBe("IMG");
-    expect(frame).toHaveAttribute("src", VALID_LIVE_VIEW_URL);
+    expect(await screen.findByTestId("live-viewer")).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
+    expect(document.body.innerHTML).not.toContain("live.browser.run");
+    expect(document.body.innerHTML).not.toContain(CLOUDFLARE_VIEWER);
+    await waitFor(() => {
+      expect(socketUrls.some((url) => url.includes(`ticket=${encodeURIComponent(TICKET)}`))).toBe(true);
+    });
+    expect(socketUrls.some((url) => url.startsWith(RELAY_URL))).toBe(true);
     expect(
       screen.queryByRole("heading", { name: EXPIRED_HEADING }),
     ).not.toBeInTheDocument();
-    expect(document.querySelector("input")).toBeNull();
-
-    expect(fetchMock).toHaveBeenCalled();
-    const calledUrl = String(fetchMock.mock.calls[0][0]);
-    expect(calledUrl).toContain("token=tok-ok");
-    expect(calledUrl).not.toContain("liveViewUrl=");
   });
 
   it("renders the expired heading and does not fetch when the token query is missing", async () => {
     renderPage("");
 
-    expect(
-      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("live-viewer")).toBeNull();
   });
 
   it("renders the expired heading and no iframe when the token GET is 404", async () => {
-    fetchMock.mockResolvedValue({
-      ok: false,
-      status: 404,
-    });
+    fetchMock.mockResolvedValue({ ok: false, status: 404 });
 
     renderPage("?token=tok-missing");
 
-    expect(
-      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
   });
 
-  it("renders no iframe when the server body expiresAtMs is at the mocked now", async () => {
-    expect(Date.now()).toBe(NOW_MS);
-
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve(okFetchBody({ expiresAtMs: NOW_MS })),
-    });
+  it("renders no viewer when the server body expiresAtMs is at the mocked now", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okTicket({ expiresAtMs: NOW_MS })));
 
     renderPage("?token=tok-expired");
 
-    expect(
-      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
+    expect(screen.queryByTestId("live-viewer")).toBeNull();
+  });
+
+  it("refuses a ticket that lasts longer than 10 minutes", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okTicket({ expiresAtMs: NOW_MS + 10 * 60 * 1000 + 1 })));
+
+    renderPage("?token=tok-long");
+
+    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
+    expect(screen.queryByTestId("live-viewer")).toBeNull();
     expect(document.querySelector("iframe")).toBeNull();
   });
 
   it("ignores liveViewUrl query params: expired heading, no iframe, no fetch", async () => {
-    renderPage(
-      `?liveViewUrl=${encodeURIComponent(VALID_LIVE_VIEW_URL)}&merchantHost=${encodeURIComponent(MERCHANT_HOST)}&jobId=${encodeURIComponent(JOB_ID)}&expiresAtMs=${NOW_MS + 60_000}`,
-    );
+    renderPage(`?liveViewUrl=${encodeURIComponent(CLOUDFLARE_VIEWER)}`);
 
-    expect(
-      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
+    expect(document.querySelector(`iframe[src="${CLOUDFLARE_VIEWER}"]`)).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(document.querySelector(`iframe[src="${VALID_LIVE_VIEW_URL}"]`)).toBeNull();
   });
 
-  it("renders no iframe when the server liveViewUrl hostname equals merchantHost", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () =>
-        Promise.resolve(
-          okFetchBody({
-            liveViewUrl: "https://shop.example.test/checkout",
-            merchantHost: "shop.example.test",
-          }),
-        ),
-    });
-
-    renderPage("?token=tok-same-host");
-
-    expect(
-      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
-    ).toBeInTheDocument();
-    expect(document.querySelector("iframe")).toBeNull();
-    expect(screen.queryByText(JOB_ID)).not.toBeInTheDocument();
-  });
-
-  it("renders no iframe when the server liveViewUrl is http", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () =>
-        Promise.resolve(
-          okFetchBody({ liveViewUrl: "http://live.pack.test/view" }),
-        ),
-    });
-
-    renderPage("?token=tok-http");
-
-    expect(
-      await screen.findByRole("heading", { name: EXPIRED_HEADING }),
-    ).toBeInTheDocument();
-    expect(document.querySelector("iframe")).toBeNull();
-  });
-
-  const TEXT_CODE = "482913";
-
-  function jsonOk(body: unknown) {
-    return {
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve(body),
-    };
-  }
-
-  function routeOtpPause(field: { autocomplete?: string; name?: string; id?: string }) {
-    fetchMock.mockImplementation((input: RequestInfo | URL) => {
-      const url = String(input);
-      if (url.includes("/hitl")) {
-        return Promise.resolve(jsonOk({ ok: true }));
-      }
-      if (url.includes("/latest")) {
-        return Promise.resolve(
-          jsonOk({
-            seq: 1,
-            ts: NOW_MS,
-            url: "https://live.pack.test/frame.png",
-            paused: true,
-            pauseForHelp: true,
-            field,
-          }),
-        );
-      }
-      if (url.includes("/status")) {
-        return Promise.resolve(
-          jsonOk({
-            paused: true,
-            pauseForHelp: true,
-            progressItems: [{ label: "Code" }],
-          }),
-        );
-      }
-      if (url.includes("/live-view")) {
-        return Promise.resolve(jsonOk(okFetchBody()));
-      }
-      return Promise.resolve(jsonOk({}));
-    });
-  }
-
-  function installWebOtp(get: jest.Mock) {
-    Object.defineProperty(navigator, "credentials", {
-      configurable: true,
-      value: { get },
-    });
-  }
-
-  function hitlBodies(): string[] {
-    const bodies: string[] = [];
-    for (const call of fetchMock.mock.calls) {
-      const url = String(call[0]);
-      if (!url.includes("/hitl")) {
-        continue;
-      }
-      const init = call[1] as RequestInit | undefined;
-      bodies.push(String(init?.body ?? ""));
-    }
-    return bodies;
-  }
-
-  it("OTP-kind pause renders one input with autocomplete=one-time-code; merchant codes use the platform suggestion because Pack does not write merchant SMS", async () => {
-    installWebOtp(jest.fn().mockReturnValue(new Promise(() => undefined)));
-    routeOtpPause({ autocomplete: "one-time-code" });
-
-    renderPage("?token=tok-otp");
-
-    const input = await screen.findByLabelText("Texted code");
-    expect(document.querySelectorAll("input")).toHaveLength(1);
-    expect(input).toHaveAttribute("autocomplete", "one-time-code");
-    expect(input).toHaveAttribute("inputmode", "numeric");
-  });
-
-  it("WebOTP resolve fills and submits a Pack-sent code when the SMS last line is @www.trypackai.com #code; merchant codes are not WebOTP", async () => {
-    const get = jest.fn().mockResolvedValue({ code: TEXT_CODE });
-    installWebOtp(get);
-    routeOtpPause({ autocomplete: "one-time-code", name: "otp", id: "otp" });
-
-    renderPage("?token=tok-webotp");
-
-    const input = await screen.findByLabelText("Texted code");
-    await waitFor(() => {
-      expect(input).toHaveValue(TEXT_CODE);
-    });
-    expect(get).toHaveBeenCalled();
-    const request = get.mock.calls[0][0] as { otp: { transport: string[] } };
-    expect(request.otp).toEqual({ transport: ["sms"] });
-    await waitFor(() => {
-      const bodies = hitlBodies();
-      expect(bodies.some((body) => body.includes(TEXT_CODE))).toBe(true);
-    });
-    const posted = hitlBodies().find((body) => body.includes(TEXT_CODE));
-    expect(posted).toBeDefined();
-    const payload = JSON.parse(String(posted)) as {
-      type: string;
-      key: string;
-    };
-    expect(payload.type).toBe("key");
-    expect(payload.key).toBe(TEXT_CODE);
-    for (const call of fetchMock.mock.calls) {
-      expect(String(call[0])).not.toContain(TEXT_CODE);
-    }
-  });
-
-  it("the texted code is not in any log or storage write", async () => {
-    const get = jest.fn().mockResolvedValue({ code: TEXT_CODE });
-    installWebOtp(get);
-    routeOtpPause({ id: "otp-code" });
-    const log = jest.spyOn(console, "log");
-    const info = jest.spyOn(console, "info");
-    const debug = jest.spyOn(console, "debug");
-    const warn = jest.spyOn(console, "warn");
-    const error = jest.spyOn(console, "error");
-    const setItem = jest.spyOn(Storage.prototype, "setItem");
-
-    renderPage("?token=tok-quiet");
-
-    await waitFor(() => {
-      expect(hitlBodies().some((body) => body.includes(TEXT_CODE))).toBe(true);
-    });
-
-    const written = JSON.stringify([
-      log.mock.calls,
-      info.mock.calls,
-      debug.mock.calls,
-      warn.mock.calls,
-      error.mock.calls,
-      setItem.mock.calls,
-    ]);
-    expect(written).not.toContain(TEXT_CODE);
-  });
-
-  const CLOUDFLARE_VIEWER =
-    "https://live.browser.run/ui/view?mode=tab&wss=live.browser.run/api/devtools/browser/sess-1?jwt=SIGNED";
-
-  it("iframes the Cloudflare viewer for take-over, sized to the phone viewport, and polls no frames", async () => {
+  it("does not iframe a Cloudflare URL when the body has no relay ticket", async () => {
     fetchMock.mockResolvedValue(
-      jsonOk({ success: true, data: okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER }), requestId: "r1" }),
+      jsonOk({
+        liveViewUrl: CLOUDFLARE_VIEWER,
+        merchantHost: MERCHANT_HOST,
+        jobId: JOB_ID,
+        expiresAtMs: NOW_MS + 60_000,
+      }),
     );
 
     renderPage("?token=tok-cf");
 
-    const frame = await screen.findByTitle("Merchant checkout live view");
-    expect(frame.tagName).toBe("IFRAME");
-    expect(frame).toHaveAttribute("src", CLOUDFLARE_VIEWER);
-    expect(frame).toHaveAttribute("referrerpolicy", "no-referrer");
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    for (const call of fetchMock.mock.calls) {
-      expect(String(call[0])).not.toContain("/latest");
-    }
+    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
+    expect(document.body.innerHTML).not.toContain("live.browser.run");
   });
 
-  /** The styled-components rules that apply to this element's classes. */
-  function cssRulesFor(element: Element): string {
-    const classes = Array.from(element.classList);
-    const sheet = Array.from(document.querySelectorAll("style"))
-      .map((style) => style.textContent ?? "")
-      .join("\n");
-    const rules = sheet.match(/[^{}]+\{[^{}]*\}/g) ?? [];
-    return rules
-      .filter((rule) => classes.some((cls) => rule.split("{")[0].includes(`.${cls}`)))
-      .join("\n")
-      .replace(/\s+/g, "");
-  }
-
-  it("the Cloudflare live view is one phone screen: 100dvh stage, no page scroll", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
-
-    const { unmount } = renderPage("?token=tok-cf");
-
-    await screen.findByTitle("Merchant checkout live view");
-    const stage = screen.getByTestId("live-view-stage");
-    const css = cssRulesFor(stage);
-    expect(css).toContain("height:100dvh");
-    expect(css).toContain("overflow:hidden");
-    expect(document.body.style.overflow).toBe("hidden");
-    expect(document.documentElement.style.overflow).toBe("hidden");
-
-    unmount();
-    expect(document.body.style.overflow).toBe("");
-  });
-
-  it("tells the user what to do above the viewer, and uses the handoff's own headline when it has one", async () => {
-    fetchMock.mockResolvedValueOnce(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
-    const first = renderPage("?token=tok-cf");
-    expect(
-      await screen.findByRole("heading", { name: "Tap and type here to log in, then tap Done" }),
-    ).toBeInTheDocument();
-    first.unmount();
-
-    fetchMock.mockResolvedValueOnce(
-      jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER, headline: "Enter the code Uber Eats sent, then tap Done" })),
+  it("does not iframe a relay URL on the Cloudflare host", async () => {
+    fetchMock.mockResolvedValue(
+      jsonOk(okTicket({ relayUrl: "wss://live.browser.run/api/devtools/browser/sess-1" })),
     );
-    renderPage("?token=tok-cf-2");
-    expect(
-      await screen.findByRole("heading", { name: "Enter the code Uber Eats sent, then tap Done" }),
-    ).toBeInTheDocument();
+
+    renderPage("?token=tok-cf-relay");
+
+    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
   });
 
-  it("Done sits in the bar pinned under the viewer, clear of the home indicator", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
-
-    renderPage("?token=tok-cf");
-
-    const done = await screen.findByRole("button", { name: "Pack is controlling" });
-    expect(screen.getAllByRole("button")).toHaveLength(1);
-    const bar = screen.getByTestId("live-view-done-bar");
-    const stage = screen.getByTestId("live-view-stage");
-    expect(bar).toContainElement(done);
-    expect(bar.parentElement).toBe(stage);
-    expect(stage.lastElementChild).toBe(bar);
-    expect(cssRulesFor(bar)).toContain("flex:none");
-    expect(cssRulesFor(bar)).toContain("env(safe-area-inset-bottom)");
-    // The viewer takes the rest and may shrink; it never pushes Done off screen.
-    const fitCss = cssRulesFor(screen.getByTestId("live-view-fit"));
-    expect(fitCss).toContain("min-height:0");
-    expect(fitCss).toContain("overflow:hidden");
-  });
-
-  it("scales the whole remote screen down to fit the space on an iPhone 15", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
-    // Space between the instruction line and the Done bar on a 393x852 phone.
-    jest.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(393);
-    jest.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(560);
-
-    renderPage("?token=tok-cf");
-
-    const frame = await screen.findByTitle("Merchant checkout live view");
-    const scale = Number(/scale\(([0-9.]+)\)/.exec(frame.style.transform)?.[1]);
-    expect(scale).toBeCloseTo(Math.min(393 / CLOUDFLARE_VIEWER_WIDTH_PX, 560 / CLOUDFLARE_VIEWER_HEIGHT_PX), 5);
-    expect(CLOUDFLARE_VIEWER_HEIGHT_PX * scale).toBeLessThanOrEqual(560);
-    expect(CLOUDFLARE_VIEWER_WIDTH_PX * scale).toBeLessThanOrEqual(393);
-  });
-
-  it("the SMS short link /lv/<id> resolves by short id", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+  it("the SMS short link /lv/<id> resolves by short id and mounts the viewer", async () => {
+    fetchMock.mockResolvedValue(jsonOk(okTicket()));
 
     render(
       <HelmetProvider>
@@ -478,71 +239,15 @@ describe("LiveViewConnectPage", () => {
           <I18nProvider>
             <ThemeProvider>
               <Routes>
-                <Route path="/lv/:shortId" element={<LiveViewConnectView resolveHandoff={fetchResolver} clearHandoff={fetchClearer} />} />
-              </Routes>
-            </ThemeProvider>
-          </I18nProvider>
-        </MemoryRouter>
-      </HelmetProvider>,
-    );
-
-    expect(await screen.findByTitle("Merchant checkout live view")).toHaveAttribute("src", CLOUDFLARE_VIEWER);
-    expect(String(fetchMock.mock.calls[0][0])).toContain("lv=AbC123xy");
-    expect(String(fetchMock.mock.calls[0][0])).not.toContain("token=");
-  });
-
-  it("a non-Cloudflare viewer keeps the frames fallback", async () => {
-    fetchMock.mockImplementation((input: RequestInfo | URL) => {
-      const url = String(input);
-      if (url.includes("/latest")) {
-        return Promise.resolve(jsonOk({ seq: 1, ts: NOW_MS, url: VALID_LIVE_VIEW_URL, paused: false }));
-      }
-      if (url.includes("/status")) {
-        return Promise.resolve(jsonOk({ progressItems: [] }));
-      }
-      return Promise.resolve(jsonOk({ success: true, data: okFetchBody() }));
-    });
-
-    renderPage("?token=tok-frames");
-
-    const frame = await screen.findByTitle("Merchant checkout live view");
-    expect(frame.tagName).toBe("IMG");
-    expect(document.querySelector("iframe")).toBeNull();
-  });
-  function postCalls(): string[] {
-    return fetchMock.mock.calls
-      .filter((call) => (call[1] as RequestInit | undefined)?.method === "POST")
-      .map((call) => String(call[0]));
-  }
-
-  it("Done under the Cloudflare viewer posts the owner clear for this link, so the same agent resumes", async () => {
-    fetchMock.mockResolvedValue(
-      jsonOk({ success: true, data: okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER }), requestId: "r1" }),
-    );
-
-    renderPage("?token=tok-cf");
-
-    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
-    expect(postCalls()).toEqual([]);
-    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
-
-    expect(await screen.findByRole("status")).toHaveTextContent("Pack is picking it back up.");
-    expect(postCalls()).toEqual(["https://api.pack.test/live-view?token=tok-cf"]);
-    expect(screen.getByRole("button", { name: "Pack is controlling" })).toBeInTheDocument();
-  });
-
-  it("Done on the SMS short link posts the clear by short id", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
-
-    render(
-      <HelmetProvider>
-        <MemoryRouter initialEntries={["/lv/w7pIQA37"]}>
-          <I18nProvider>
-            <ThemeProvider>
-              <Routes>
                 <Route
                   path="/lv/:shortId"
-                  element={<LiveViewConnectView resolveHandoff={fetchResolver} clearHandoff={fetchClearer} />}
+                  element={
+                    <LiveViewConnectView
+                      resolveHandoff={fetchResolver}
+                      clearHandoff={fetchClearer}
+                      installId={INSTALL_ID}
+                    />
+                  }
                 />
               </Routes>
             </ThemeProvider>
@@ -551,11 +256,26 @@ describe("LiveViewConnectPage", () => {
       </HelmetProvider>,
     );
 
-    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
-    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
+    expect(await screen.findByTestId("live-viewer")).toBeInTheDocument();
+    expect(String(fetchMock.mock.calls[0][0])).toContain("lv=AbC123xy");
+    expect(String(fetchMock.mock.calls[0][0])).not.toContain("token=");
+    expect(document.querySelector("iframe")).toBeNull();
+  });
 
-    await screen.findByRole("status");
-    expect(postCalls()).toEqual(["https://api.pack.test/live-view?lv=w7pIQA37"]);
+  it("Done posts the owner clear for this link, so the same agent resumes", async () => {
+    fetchMock.mockResolvedValue(jsonOk({ success: true, data: okTicket(), requestId: "r1" }));
+
+    renderPage("?token=tok-cf");
+
+    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent("Pack is picking it back up.");
+    const posts = fetchMock.mock.calls
+      .filter((call) => (call[1] as RequestInit | undefined)?.method === "POST")
+      .map((call) => String(call[0]));
+    expect(posts).toEqual(["https://api.pack.test/live-view?token=tok-cf"]);
+    expect(screen.queryByRole("button", { name: "Done, keep going" })).toBeNull();
+    expect(document.querySelector("iframe")).toBeNull();
   });
 
   it("a clear the server refuses says so and keeps the button", async () => {
@@ -563,17 +283,15 @@ describe("LiveViewConnectPage", () => {
       if (init?.method === "POST") {
         return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) });
       }
-      return Promise.resolve(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
+      return Promise.resolve(jsonOk(okTicket()));
     });
 
     renderPage("?token=tok-cf");
 
-    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
-    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Done, keep going" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("That didn't reach Pack. Tap again.");
-    expect(screen.getByRole("button", { name: "You're controlling" })).toBeEnabled();
-    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "Done, keep going" })).toBeEnabled();
   });
 
   it("the prod clear is an authenticated POST to /live-view with the link query", async () => {
@@ -587,83 +305,5 @@ describe("LiveViewConnectPage", () => {
       [{ path: "/live-view?lv=w7pIQA37", method: "POST" }],
       [{ path: "/live-view?token=tok-1", method: "POST" }],
     ]);
-  });
-
-  it("one toggle button exists, and its label is only Pack is controlling or You're controlling", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
-
-    renderPage("?token=tok-cf");
-
-    const toggle = await screen.findByRole("button", { name: "Pack is controlling" });
-    expect(screen.getAllByRole("button")).toHaveLength(1);
-    expect(screen.queryByRole("button", { name: "Done, keep going" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Resume" })).toBeNull();
-    expect(screen.queryByText("Take over")).toBeNull();
-
-    fireEvent.click(toggle);
-
-    expect(screen.getAllByRole("button")).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "You're controlling" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Pack is controlling" })).toBeNull();
-  });
-
-  it("the first tap pauses for the user and the second tap posts the owner clear", async () => {
-    fetchMock.mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-      if (url.includes("/hitl")) {
-        return Promise.resolve(jsonOk({ ok: true }));
-      }
-      if (url.includes("/latest")) {
-        return Promise.resolve(jsonOk({ seq: 1, ts: NOW_MS, url: VALID_LIVE_VIEW_URL, paused: false }));
-      }
-      if (url.includes("/status")) {
-        return Promise.resolve(jsonOk({ progressItems: [] }));
-      }
-      if (init?.method === "POST") {
-        return Promise.resolve(jsonOk({ jobId: JOB_ID, event: "cleared" }));
-      }
-      return Promise.resolve(jsonOk(okFetchBody()));
-    });
-
-    renderPage("?token=tok-toggle");
-
-    fireEvent.click(await screen.findByRole("button", { name: "Pack is controlling" }));
-    expect(screen.getByRole("button", { name: "You're controlling" })).toBeInTheDocument();
-    expect(postCalls().some((url) => url.includes("/live-view?"))).toBe(false);
-
-    fireEvent.pointerDown(window, { clientX: 4, clientY: 8 });
-    await waitFor(() => {
-      expect(hitlBodies().some((body) => body.includes('"pointer"'))).toBe(true);
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: "You're controlling" }));
-    await waitFor(() => {
-      expect(postCalls()).toContain("https://api.pack.test/live-view?token=tok-toggle");
-    });
-    expect(await screen.findByRole("button", { name: "Pack is controlling" })).toBeEnabled();
-    expect(screen.queryByRole("button", { name: "You're controlling" })).toBeNull();
-  });
-
-  it("the beam class is present only while Pack is controlling", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okFetchBody({ liveViewUrl: CLOUDFLARE_VIEWER })));
-
-    renderPage("?token=tok-beam");
-
-    await screen.findByRole("button", { name: "Pack is controlling" });
-    expect(document.querySelector(".live-view-beam")).not.toBeNull();
-    expect(document.querySelector(".live-view-beam-dim")).toBeNull();
-
-    fireEvent.click(screen.getByRole("button", { name: "Pack is controlling" }));
-
-    expect(document.querySelector(".live-view-beam")).toBeNull();
-    expect(document.querySelector(".live-view-beam-dim")).not.toBeNull();
-  });
-
-  it("the beam stylesheet orbits two stops with a conic-gradient angle and a static glow when motion is reduced", () => {
-    const css = readFileSync(join(process.cwd(), "src/components/LiveViewBeam.module.css"), "utf8");
-    expect(css).toContain("@property --live-view-beam-angle");
-    expect(css).toContain("conic-gradient");
-    expect(css).toContain("prefers-reduced-motion: reduce");
-    expect(css).toContain("animation: none");
   });
 });

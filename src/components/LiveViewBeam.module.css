@@ -28,8 +28,9 @@
   border-radius: inherit;
   padding: 3px;
   pointer-events: none;
+  /* Escaped hyphen: this clock is local (@property above), not an index.css token. */
   background: conic-gradient(
-    from var(--live-view-beam-angle),
+    from var(\--live-view-beam-angle),
     #ffd9a1e6 0deg,
     #ffd9a1e6 20deg,
     #f0c62d59 46deg,

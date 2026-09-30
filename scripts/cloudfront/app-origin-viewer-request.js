@@ -29,6 +29,10 @@ function isWellKnownRoute(uri) {
   return uri === '/.well-known' || uri.indexOf('/.well-known/') === 0;
 }
 
+function isAppleAppSiteAssociation(uri) {
+  return uri === '/.well-known/apple-app-site-association';
+}
+
 function canonicalizeUri(uri) {
   if (uri === '/') {
     return '/';
@@ -118,6 +122,10 @@ function handler(event) {
   var uri = request.uri || '/';
   var querySuffix = serializeQueryString(request.querystring || {});
   var canonicalUri = canonicalizeUri(uri);
+
+  if (isAppleAppSiteAssociation(uri)) {
+    return request;
+  }
 
   if (host === 'trypackai.com') {
     return redirect(

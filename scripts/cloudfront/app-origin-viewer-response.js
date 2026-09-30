@@ -74,7 +74,11 @@ function handler(event) {
   headers['cross-origin-opener-policy'] = { value: 'same-origin' };
   // Linq / iMessage fetch this URI off-origin. Global CORP same-origin
   // fail-closes those clients even when S3 serves a real PNG.
-  if (route === '/contact-card.png') {
+  if (route === '/.well-known/apple-app-site-association') {
+    headers['content-type'] = { value: 'application/json' };
+    headers['cache-control'] = { value: 'public, max-age=3600' };
+    headers['cross-origin-resource-policy'] = { value: 'cross-origin' };
+  } else if (route === '/contact-card.png') {
     headers['content-type'] = { value: 'image/png' };
     headers['cache-control'] = { value: 'public, max-age=86400' };
     headers['cross-origin-resource-policy'] = { value: 'cross-origin' };

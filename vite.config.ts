@@ -964,8 +964,43 @@ export default defineConfig(({ mode, ssrBuild }) => {
     },
   };
 
+  const appleAppSiteAssociation = path.join(
+    rootDir,
+    'public/.well-known/apple-app-site-association',
+  );
+  const serveAppleAppSiteAssociation = (
+    request: IncomingMessage,
+    response: ServerResponse,
+    next: () => void,
+  ) => {
+    const url = (request.url ?? '').split('?')[0];
+    if (url !== '/.well-known/apple-app-site-association') {
+      next();
+      return;
+    }
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      response.statusCode = 405;
+      response.end();
+      return;
+    }
+    const body = fs.readFileSync(appleAppSiteAssociation);
+    response.statusCode = 200;
+    response.setHeader('Content-Type', 'application/json');
+    response.setHeader('Cache-Control', 'public, max-age=3600');
+    response.end(request.method === 'HEAD' ? undefined : body);
+  };
+
   return {
     plugins: [
+      {
+        name: 'apple-app-site-association',
+        configureServer(server) {
+          server.middlewares.use(serveAppleAppSiteAssociation);
+        },
+        configurePreviewServer(server) {
+          server.middlewares.use(serveAppleAppSiteAssociation);
+        },
+      },
       {
         name: 'logo-lab-dev-api',
         configureServer(server) {

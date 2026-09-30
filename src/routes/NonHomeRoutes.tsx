@@ -96,6 +96,9 @@ const LinkedTripInviteLanding = React.lazy(async () => {
   const module = await import("../pages/LinkedTripInviteLanding");
   return { default: module.LinkedTripInviteLanding };
 });
+const TripDraftArtifactPage = React.lazy(
+  () => import("../components/TripDraftArtifact"),
+);
 const VoiceSearchOptimization = React.lazy(
   () => import("../components/VoiceSearchOptimization")
 );
@@ -655,6 +658,14 @@ const NonHomeRoutes: React.FC = () => {
           }
         />
         <Route
+          path="/i/:token"
+          element={
+            <Suspense fallback={null}>
+              <TripDraftArtifactPage />
+            </Suspense>
+          }
+        />
+        <Route
           path="/trip/:linkedTripId"
           element={
             <Suspense fallback={null}>
@@ -1137,6 +1148,7 @@ const NonHomeRoutes: React.FC = () => {
           />
           <Route path="share" element={<Suspense fallback={null}><SharedTravelPlan /></Suspense>} />
           <Route path="share/:shareId" element={<Suspense fallback={null}><SharedTravelPlan /></Suspense>} />
+          <Route path="i/:token" element={<Suspense fallback={null}><TripDraftArtifactPage /></Suspense>} />
           <Route path="trip/:linkedTripId" element={<Suspense fallback={null}><LinkedTripInviteLanding /></Suspense>} />
           <Route
             path="faq"

@@ -1,13 +1,22 @@
+import {appConfig} from "@/config/appConfig";
 import type {ApiClient} from "./client";
-import {ApiRequestError} from "./client";
+import {ApiRequestError, createApiClient} from "./client";
 import {
   projectSportsView,
   readUserSportsView,
   SportsViewEnvelopeError,
-  USER_SPORTS_VIEW_PATH,
+  TRIP_RECOMMENDATIONS_PATH,
   type SportsFact,
   type SportsViewSource,
 } from "./sportsView";
+
+jest.mock("@/config/appConfig", () => ({
+  appConfig: {
+    apiBaseUrl: "https://api.example.com/dev",
+    environment: "prod",
+    apiKey: undefined,
+  },
+}));
 
 const AS_OF = "2026-09-30T20:00:00.000Z";
 
@@ -23,64 +32,83 @@ function clientReturning(payload: unknown): {client: ApiClient; paths: string[]}
 }
 
 describe("readUserSportsView", () => {
-  it("reads GET /user/sports-view and drops an ended game to one recap", async () => {
+  it("reads the deployed recommendations route and rolls each occasion recap into one line", async () => {
     const {client, paths} = clientReturning({
       success: true,
       data: {
-        asOf: AS_OF,
-        occasions: [
+        generatedAt: AS_OF,
+        occasionRecaps: [
           {
-            kind: "game",
-            identityKey: "game-ended",
-            start: "2026-09-30T16:00:00.000Z",
-            end: "2026-09-30T19:00:00.000Z",
-            participants: ["Seahawks", "49ers"],
-            facts: [
-              {
-                role: "score",
-                value: "SEA 24, SF 17",
-                asOf: "2026-09-30T19:00:00.000Z",
-                sourceUrl: "https://example.com/score",
-              },
-              {
-                role: "result",
-                value: "Seahawks won",
-                asOf: "2026-09-30T19:05:00.000Z",
-                sourceUrl: "https://example.com/result",
-              },
-            ],
-            validFrom: "2026-09-30T16:00:00.000Z",
-            validUntil: "2026-10-01T19:00:00.000Z",
+            occasionId: "seahawks-49ers|2026-09-30",
+            fact: {
+              value: "Seahawks won",
+              asOf: "2026-09-30T19:05:00.000Z",
+              sourceUrl: "https://example.com/result",
+            },
           },
         ],
-        interests: [{occasionId: "game-ended"}],
-        teams: [],
-        fantasyMatchups: [
-          {
-            id: "matchup-1",
-            provider: "sleeper",
-            leagueName: "Work League",
-            label: "Week 4",
-            opponent: "Casey",
-            myScore: "112",
-            theirScore: "98",
-          },
-        ],
+        recommendations: [],
       },
     });
 
     const view = await readUserSportsView(client);
 
-    expect(paths).toEqual([USER_SPORTS_VIEW_PATH]);
+    expect(paths).toEqual([TRIP_RECOMMENDATIONS_PATH]);
     expect(view.games).toEqual([]);
+    expect(view.fantasyMatchups).toEqual([]);
     expect(view.recaps).toEqual([
       {
-        identityKey: "game-ended",
-        title: "Seahawks vs 49ers",
+        identityKey: "seahawks-49ers|2026-09-30",
+        title: "seahawks-49ers|2026-09-30",
         recap: "Seahawks won",
       },
     ]);
-    expect(view.fantasyMatchups[0]?.opponent).toBe("Casey");
+  });
+
+  it("sends the Cognito bearer token to GET /user/trips/recommendations", async () => {
+    appConfig.environment = "prod";
+    appConfig.apiBaseUrl = "https://api.example.com/dev";
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          success: true,
+          data: {
+            generatedAt: AS_OF,
+            occasionRecaps: [
+              {
+                occasionId: "seahawks-49ers|2026-09-30",
+                fact: {
+                  value: "Seahawks won",
+                  asOf: "2026-09-30T19:05:00.000Z",
+                  sourceUrl: "https://example.com/result",
+                },
+              },
+            ],
+          },
+        }),
+    });
+
+    const client = createApiClient(
+      async () => "access-token",
+      () => "Bearer",
+    );
+    const view = await readUserSportsView(client);
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://api.example.com/dev/user/trips/recommendations",
+      expect.objectContaining({
+        method: "GET",
+        headers: expect.objectContaining({
+          Authorization: "Bearer access-token",
+        }),
+      }),
+    );
+    const init = (global.fetch as jest.Mock).mock.calls[0][1] as RequestInit;
+    expect(init.headers).not.toHaveProperty("x-pack-user");
+    expect(view.recaps.map((card) => card.recap)).toEqual(["Seahawks won"]);
+    expect(view.games).toEqual([]);
   });
 
   it("keeps the envelope status and published error code", async () => {
@@ -108,36 +136,38 @@ describe("readUserSportsView", () => {
     await expect(readUserSportsView(client)).rejects.not.toBeInstanceOf(ApiRequestError);
   });
 
-  it("rejects a fact whose role is only a display-string prefix", async () => {
+  it("rejects an occasion recap whose fact has no source url", async () => {
     const {client} = clientReturning({
       success: true,
       data: {
-        asOf: AS_OF,
-        occasions: [
+        generatedAt: AS_OF,
+        occasionRecaps: [
           {
-            kind: "game",
-            identityKey: "game-ended",
-            start: "2026-09-30T16:00:00.000Z",
-            end: "2026-09-30T19:00:00.000Z",
-            participants: ["Seahawks", "49ers"],
-            facts: [
-              {
-                value: "result: Seahawks won",
-                asOf: "2026-09-30T19:05:00.000Z",
-                sourceUrl: "https://example.com/result",
-              },
-            ],
-            validFrom: "2026-09-30T16:00:00.000Z",
-            validUntil: "2026-10-01T19:00:00.000Z",
+            occasionId: "seahawks-49ers|2026-09-30",
+            fact: {
+              value: "result: Seahawks won",
+              asOf: "2026-09-30T19:05:00.000Z",
+            },
           },
         ],
-        interests: [{occasionId: "game-ended"}],
-        teams: [],
-        fantasyMatchups: [],
       },
     });
 
     await expect(readUserSportsView(client)).rejects.toBeInstanceOf(SportsViewEnvelopeError);
+  });
+
+  it("does not invent a Final recap when the recommendations payload has no occasion recaps", async () => {
+    const {client} = clientReturning({
+      success: true,
+      data: {
+        generatedAt: AS_OF,
+        recommendations: [],
+      },
+    });
+
+    const view = await readUserSportsView(client);
+
+    expect(view).toEqual({games: [], recaps: [], fantasyMatchups: []});
   });
 });
 

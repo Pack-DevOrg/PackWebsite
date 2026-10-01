@@ -3,8 +3,10 @@ import {ApiRequestError, type ApiClient} from './client';
 
 /**
  * Logged-in sports read.
- * Public game occasions plus the user's private interest links, team names,
- * and fantasy matchups. Ended games leave the board as one recap.
+ * Ended games this user follows are the occasion recaps on
+ * GET /user/trips/recommendations (Cognito bearer, same ApiClient as other
+ * user reads). The projection turns each of those into one recap. That route
+ * does not carry live scores, odds, or fantasy matchups.
  */
 
 export const SportsFactRoleSchema = z.enum(['score', 'odds', 'result']);
@@ -83,15 +85,6 @@ const SportsViewFailureSchema = z
     status: z.number().int().min(400).max(599),
     error: SportsViewErrorBodySchema,
     requestId: z.string().optional(),
-  })
-  .strict();
-
-const SportsViewSuccessSchema = z
-  .object({
-    success: z.literal(true),
-    data: SportsViewSourceSchema,
-    requestId: z.string().optional(),
-    metadata: z.unknown().optional(),
   })
   .strict();
 
@@ -250,8 +243,43 @@ export function projectSportsView(source: SportsViewSource): SportsView {
   };
 }
 
-/** Logged-in read of the user's sports view. */
-export const USER_SPORTS_VIEW_PATH = '/user/sports-view';
+/**
+ * Deployed read that already joins public occasions to this user's
+ * occasion-interest rows and returns one fact for each ended occasion.
+ * Auth is the ApiClient bearer token, not a custom user header.
+ */
+export const TRIP_RECOMMENDATIONS_PATH = '/user/trips/recommendations';
+
+const OccasionRecapWireSchema = z
+  .object({
+    occasionId: z.string().min(1).max(160),
+    fact: z
+      .object({
+        value: z.string().min(1),
+        asOf: z.string().datetime(),
+        sourceUrl: z.string().url(),
+      })
+      .strict(),
+  })
+  .strict();
+
+const RecommendationsDataSchema = z
+  .object({
+    generatedAt: z.string().datetime(),
+    occasionRecaps: z.array(OccasionRecapWireSchema).max(20).optional(),
+  })
+  .passthrough();
+
+const RecommendationsSuccessSchema = z
+  .object({
+    success: z.literal(true),
+    data: RecommendationsDataSchema,
+    requestId: z.string().optional(),
+    metadata: z.unknown().optional(),
+  })
+  .strict();
+
+export type OccasionRecapWire = z.infer<typeof OccasionRecapWireSchema>;
 
 export class SportsViewEnvelopeError extends Error {
   constructor(message: string) {
@@ -260,7 +288,65 @@ export class SportsViewEnvelopeError extends Error {
   }
 }
 
-export function parseSportsViewSource(payload: unknown): SportsViewSource {
+function endedWindow(asOf: string): {readonly start: string; readonly end: string} | null {
+  const asOfMs = Date.parse(asOf);
+  if (!Number.isFinite(asOfMs) || asOfMs < 1) {
+    return null;
+  }
+  const end = new Date(asOfMs - 1).toISOString();
+  return {start: end, end};
+}
+
+/**
+ * Build the projection source from the deployed recap rows.
+ * Each row is already this user's interest in an ended public occasion.
+ * Fantasy matchups are not on this route, so that list stays empty.
+ */
+export function sportsSourceFromOccasionRecaps(
+  asOf: string,
+  recaps: readonly OccasionRecapWire[],
+): SportsViewSource | null {
+  const window = endedWindow(asOf);
+  if (window === null) {
+    return null;
+  }
+  const occasions: SportsGameOccasion[] = [];
+  const interests: SportsInterestLink[] = [];
+  const seen = new Set<string>();
+  for (const recap of recaps) {
+    if (seen.has(recap.occasionId)) {
+      continue;
+    }
+    seen.add(recap.occasionId);
+    occasions.push({
+      kind: 'game',
+      identityKey: recap.occasionId,
+      start: window.start,
+      end: window.end,
+      participants: [],
+      facts: [
+        {
+          role: 'result',
+          value: recap.fact.value,
+          asOf: recap.fact.asOf,
+          sourceUrl: recap.fact.sourceUrl,
+        },
+      ],
+      validFrom: window.start,
+      validUntil: window.end,
+    });
+    interests.push({occasionId: recap.occasionId});
+  }
+  return {
+    asOf,
+    occasions,
+    interests,
+    teams: [],
+    fantasyMatchups: [],
+  };
+}
+
+export function parseRecommendationsSportsView(payload: unknown): SportsView {
   const failure = SportsViewFailureSchema.safeParse(payload);
   if (failure.success) {
     throw new ApiRequestError(
@@ -269,17 +355,24 @@ export function parseSportsViewSource(payload: unknown): SportsViewSource {
       failure.data.error,
     );
   }
-  const success = SportsViewSuccessSchema.safeParse(payload);
+  const success = RecommendationsSuccessSchema.safeParse(payload);
   if (!success.success) {
     throw new SportsViewEnvelopeError('Malformed sports view envelope.');
   }
-  return success.data.data;
+  const source = sportsSourceFromOccasionRecaps(
+    success.data.data.generatedAt,
+    success.data.data.occasionRecaps ?? [],
+  );
+  if (source === null) {
+    throw new SportsViewEnvelopeError('Malformed sports view envelope.');
+  }
+  return projectSportsView(source);
 }
 
 export async function readUserSportsView(client: ApiClient): Promise<SportsView> {
   const payload = await client.request<unknown>({
-    path: USER_SPORTS_VIEW_PATH,
+    path: TRIP_RECOMMENDATIONS_PATH,
     method: 'GET',
   });
-  return projectSportsView(parseSportsViewSource(payload));
+  return parseRecommendationsSportsView(payload);
 }

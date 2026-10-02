@@ -19,6 +19,18 @@
           {
             "/": "/lv/*",
             "comment": "Handle live view links"
+          },
+          {
+            "/": "/a/*",
+            "comment": "Handle App Clip artifact links (trip pages, results, confirms)"
+          },
+          {
+            "/": "/sports/*",
+            "comment": "Handle sports links"
+          },
+          {
+            "/": "/stats/*",
+            "comment": "Handle stats links"
           }
         ]
       }

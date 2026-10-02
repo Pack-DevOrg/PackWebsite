@@ -1,13 +1,14 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+jest.mock("@playwright/test", () => ({
+  chromium: {},
+}));
 
 import { storageStateIsSeeded } from "./global-setup.ts";
 
 const EMPTY_FALLBACK = '{"cookies":[],"origins":[]}\n';
 
 test("the 37-byte empty storage file is not a seed", () => {
-  assert.equal(storageStateIsSeeded(EMPTY_FALLBACK), false);
-  assert.equal(storageStateIsSeeded("{not json"), false);
+  expect(storageStateIsSeeded(EMPTY_FALLBACK)).toBe(false);
+  expect(storageStateIsSeeded("{not json")).toBe(false);
 });
 
 test("cookies count as a seed for tests@trypackai.com", () => {
@@ -15,7 +16,7 @@ test("cookies count as a seed for tests@trypackai.com", () => {
     cookies: [{ name: "pack-auth-hint", value: "1" }],
     origins: [],
   });
-  assert.equal(storageStateIsSeeded(raw), true);
+  expect(storageStateIsSeeded(raw)).toBe(true);
 });
 
 test("origin localStorage counts as a seed when cookies are empty", () => {
@@ -23,5 +24,5 @@ test("origin localStorage counts as a seed when cookies are empty", () => {
     cookies: [],
     origins: [{ origin: "https://www.trypackai.com", localStorage: [{ name: "k", value: "v" }] }],
   });
-  assert.equal(storageStateIsSeeded(raw), true);
+  expect(storageStateIsSeeded(raw)).toBe(true);
 });

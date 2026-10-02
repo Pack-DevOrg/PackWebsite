@@ -117,7 +117,7 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expect(loginMock).not.toHaveBeenCalled();
   });
 
-  it("walks Signup → What Pack does → Verify → Connections → Complete without internal identifiers", () => {
+  it("walks Signup → What Pack does → Verify → Connections → Complete without internal identifiers", async () => {
     const view = renderAt(ONBOARD_PATH);
     const pageText = () => view.container.textContent ?? "";
 
@@ -148,8 +148,12 @@ describe("OnboardPage /onboard five-step app flow", () => {
       screen.getByRole("heading", { name: "Verify your number" }),
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Skip" }));
-    expect(screen.getByRole("heading", { name: "Connections" }))
-      .toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Connections" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "You're on the waitlist" }),
+    ).not.toBeInTheDocument();
     expectNoInternalIdentifiers(view.container);
     fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
 

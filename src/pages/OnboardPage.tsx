@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   consumeOnboardConnectionsReturn,
@@ -14,6 +14,10 @@ import {
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { createApiClient } from "@/api/client";
 import { env } from "@/utils/env";
+import {
+  AccessGateStep,
+  type AccessGateKind,
+} from "@/components/onboard/AccessGateStep";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import {
@@ -24,6 +28,7 @@ import { OnboardingContainer } from "@pack/ui-primitives";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
 import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
+import { readPackAccessBecauseSession } from "@/components/onboard/readPackAccess";
 import { DEFAULT_SHARE_IMAGE_URL, SITE_ORIGIN } from "@/seo/pageSeo";
 
 // iOS HEAD-probes this URL instead of missing *-precomposed.png paths that 200 as /error HTML.
@@ -35,12 +40,15 @@ export const ONBOARD_PATH = "/onboard";
  * Website `/onboard` is the app onboarding 1:1 minus device-only steps
  * (photos, notification permission), plus phone verification after the
  * info screen (Noah 2026-09-11): Signup → What Pack does → Verify phone
- * (Text Pack on mobile, QR on desktop, skippable) → Connections → Complete.
+ * (Text Pack on mobile, QR on desktop, skippable) → access gate →
+ * Connections → Complete. Waitlisted users stop on the gate. Active
+ * users skip it.
  */
 export const ONBOARDING_SEQUENCE = [
   "signup",
   "what-pack-does",
   "verify-phone",
+  "access",
   "connections",
   "complete",
 ] as const;
@@ -48,6 +56,7 @@ export const ONBOARDING_SEQUENCE = [
 export type OnboardingScreenName = (typeof ONBOARDING_SEQUENCE)[number];
 
 const SIGNUP_INDEX = 0;
+const ACCESS_INDEX = ONBOARDING_SEQUENCE.indexOf("access");
 const CONNECTIONS_INDEX = ONBOARDING_SEQUENCE.indexOf("connections");
 const LAST_STEP_INDEX = ONBOARDING_SEQUENCE.length - 1;
 
@@ -90,6 +99,8 @@ function shouldAdvanceSignupBecauseAuthenticated(
 function OnboardFlow() {
   const { status, getAccessToken, tokens } = useAuth();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
+  const [gate, setGate] = useState<AccessGateKind | null>(null);
+  const sawWaitlistRef = useRef(false);
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
     readConnectedMailboxSnapshot,
   );
@@ -110,7 +121,8 @@ function OnboardFlow() {
     if (!consumeOnboardConnectionsReturn()) {
       return;
     }
-    setStepIndex(CONNECTIONS_INDEX);
+    // Same gate as a fresh sign-up. Active reads skip ahead to Connections.
+    setStepIndex(ACCESS_INDEX);
   }, [status]);
 
   useEffect(() => {
@@ -139,6 +151,53 @@ function OnboardFlow() {
       .catch(() => undefined);
     return () => {
       cancelled = true;
+    };
+  }, [getAccessToken, status, step, tokens?.tokenType]);
+
+  useEffect(() => {
+    if (step !== "access" || status !== "authenticated") {
+      return;
+    }
+    let cancelled = false;
+    const pull = (): void => {
+      void readPackAccessBecauseSession({
+        getAccessToken,
+        tokenType: tokens?.tokenType ?? "Bearer",
+      })
+        .then((access) => {
+          if (cancelled) {
+            return;
+          }
+          if (access === "waitlisted") {
+            sawWaitlistRef.current = true;
+            setGate("waitlist");
+            return;
+          }
+          if (sawWaitlistRef.current) {
+            setGate("youre-in");
+            return;
+          }
+          setGate(null);
+          setStepIndex(CONNECTIONS_INDEX);
+        })
+        .catch(() => {
+          if (cancelled) {
+            return;
+          }
+          sawWaitlistRef.current = true;
+          setGate("waitlist");
+        });
+    };
+    pull();
+    const onFocus = (): void => {
+      pull();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
     };
   }, [getAccessToken, status, step, tokens?.tokenType]);
 
@@ -235,6 +294,9 @@ function OnboardFlow() {
         ) : null}
         {step === "verify-phone" ? (
           <VerifyPhoneStep onVerified={goNext} onSkip={goNext} />
+        ) : null}
+        {step === "access" && gate !== null ? (
+          <AccessGateStep kind={gate} onContinue={goNext} />
         ) : null}
         {step === "connections" ? (
           <ConnectionsStep

@@ -35,6 +35,17 @@ describe('apple-app-site-association', () => {
     );
   });
 
+  it('declares applinks for the clip prefixes and keeps the SPA fallback', () => {
+    const body = JSON.parse(readFileSync(file, 'utf8')) as {
+      applinks: {details: Array<{components: Array<{'/': string}>}>};
+    };
+    expect(body.applinks.details[0]?.components.map((component) => component['/'])).toEqual(
+      expect.arrayContaining(['/a/*', '/i/*', '/sports/*', '/stats/*']),
+    );
+    const netlify = readFileSync(join(process.cwd(), 'netlify.toml'), 'utf8');
+    expect(netlify).toMatch(/from = "\/\*"\s+to = "\/index\.html"\s+status = 200/);
+  });
+
   it('keeps the existing application/json header for the extensionless path', () => {
     const netlify = readFileSync(join(process.cwd(), 'netlify.toml'), 'utf8');
     expect(netlifyContentType(netlify, AASA_URL_PATH)).toBe('application/json');

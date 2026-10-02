@@ -73,6 +73,7 @@ const denyTrackingConsent = async (
 };
 
 type WaitlistPayload = {
+  email?: string;
   marketingConsent?: boolean;
   marketingEmailConsent?: boolean;
   eventId?: string;
@@ -84,12 +85,27 @@ const mockWaitlistSubscribe = async (
   let payload: WaitlistPayload | null = null;
 
   await page.route("**/*subscribe*", async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.fulfill({
+        status: 204,
+        headers: {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "POST, OPTIONS",
+          "access-control-allow-headers": "content-type",
+        },
+      });
+      return;
+    }
+
     const raw = route.request().postData() ?? "{}";
     payload = JSON.parse(raw) as WaitlistPayload;
 
     await route.fulfill({
       status: 200,
       contentType: "application/json",
+      headers: {
+        "access-control-allow-origin": "*",
+      },
       body: JSON.stringify({
         success: true,
         message: "Successfully joined waitlist",
@@ -122,7 +138,8 @@ test.describe("Waitlist subscribe", () => {
       .getByRole("textbox", { name: /email address/i })
       .first();
     await expect(emailInput).toBeVisible();
-    await emailInput.fill(makeE2EEmail());
+    const email = makeE2EEmail();
+    await emailInput.fill(email);
 
     await expect(
       page.getByRole("link", { name: /terms of service/i }).first()
@@ -137,7 +154,7 @@ test.describe("Waitlist subscribe", () => {
       .first();
     await marketingEmailCheckbox.check();
 
-    await page.getByRole("button", { name: /^done\.$/i }).first().click();
+    await page.getByRole("button", { name: /^Pack it\.$/i }).first().click();
 
     await expect
       .poll(() => waitlistMock.getPayload(), {
@@ -146,12 +163,13 @@ test.describe("Waitlist subscribe", () => {
       .not.toBeNull();
 
     const payload = waitlistMock.getPayload() as WaitlistPayload;
+    expect(payload.email).toBe(email);
     expect(payload.marketingConsent).toBe(true);
     expect(payload.marketingEmailConsent).toBe(true);
     expect(typeof payload.eventId).toBe("string");
 
     await expect(
-      page.getByRole("heading", { name: "You're on the list!" })
+      page.getByRole("heading", { name: /one more step — check your inbox/i })
     ).toBeVisible();
   });
 
@@ -167,7 +185,8 @@ test.describe("Waitlist subscribe", () => {
     const emailInput = page
       .getByRole("textbox", { name: /email address/i })
       .first();
-    await emailInput.fill(makeE2EEmail());
+    const email = makeE2EEmail();
+    await emailInput.fill(email);
 
     await expect(
       page.getByRole("link", { name: /terms of service/i }).first()
@@ -182,7 +201,7 @@ test.describe("Waitlist subscribe", () => {
       .first();
     await marketingEmailCheckbox.check();
 
-    await page.getByRole("button", { name: /^done\.$/i }).first().click();
+    await page.getByRole("button", { name: /^Pack it\.$/i }).first().click();
 
     await expect
       .poll(() => waitlistMock.getPayload(), {
@@ -191,6 +210,7 @@ test.describe("Waitlist subscribe", () => {
       .not.toBeNull();
 
     const payload = waitlistMock.getPayload() as WaitlistPayload;
+    expect(payload.email).toBe(email);
     expect(payload.marketingConsent).toBe(false);
     expect(payload.marketingEmailConsent).toBe(true);
     expect(payload.eventId).toBeUndefined();

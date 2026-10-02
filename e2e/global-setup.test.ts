@@ -2,7 +2,12 @@ jest.mock("@playwright/test", () => ({
   chromium: {},
 }));
 
-import { storageStateIsSeeded } from "./global-setup.ts";
+import { idTokenIdentifiesE2EUser, storageStateIsSeeded } from "./global-setup.ts";
+
+function idToken(claims: Record<string, string>): string {
+  const payload = Buffer.from(JSON.stringify(claims)).toString("base64url");
+  return `header.${payload}.sig`;
+}
 
 const EMPTY_FALLBACK = '{"cookies":[],"origins":[]}\n';
 
@@ -17,6 +22,29 @@ test("cookies count as a seed for tests@trypackai.com", () => {
     origins: [],
   });
   expect(storageStateIsSeeded(raw)).toBe(true);
+});
+
+test("mailbox test@trypackai.com counts even when cognito:username is a sub", () => {
+  const token = idToken({
+    email: "test@trypackai.com",
+    "cognito:username": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  });
+  expect(idTokenIdentifiesE2EUser(token)).toBe(true);
+});
+
+test("the sign-in alias tests@trypackai.com still counts", () => {
+  const token = idToken({
+    "cognito:username": "tests@trypackai.com",
+  });
+  expect(idTokenIdentifiesE2EUser(token)).toBe(true);
+});
+
+test("a different mailbox still fails the e2e identity check", () => {
+  const token = idToken({
+    email: "other@trypackai.com",
+    "cognito:username": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  });
+  expect(idTokenIdentifiesE2EUser(token)).toBe(false);
 });
 
 test("origin localStorage counts as a seed when cookies are empty", () => {

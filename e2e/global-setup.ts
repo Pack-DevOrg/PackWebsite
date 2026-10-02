@@ -5,6 +5,8 @@ import path from "node:path";
 import { chromium, type Page } from "@playwright/test";
 
 const E2E_USER = "tests@trypackai.com";
+// Sign-in alias has an s. The Cognito email attribute on that account does not.
+const E2E_MAILBOX = "test@trypackai.com";
 const AUTH_DIR = path.join(process.cwd(), "test-results", "e2e-auth");
 const BASE_URL = process.env.E2E_BASE_URL ?? "https://www.trypackai.com";
 // pack-web's hosted UI returns "Login pages unavailable". The iOS client still
@@ -75,7 +77,7 @@ function assertSeededAuthFile(projectName: string): void {
   }
 }
 
-function idTokenIdentifiesE2EUser(idToken: string): boolean {
+export function idTokenIdentifiesE2EUser(idToken: string): boolean {
   const payload = idToken.split(".")[1] ?? "";
   if (payload.length === 0) {
     return false;
@@ -83,17 +85,18 @@ function idTokenIdentifiesE2EUser(idToken: string): boolean {
   const claims = JSON.parse(
     Buffer.from(payload, "base64url").toString("utf8"),
   ) as { email?: string; "cognito:username"?: string; username?: string };
+  const accepted = new Set([E2E_USER, E2E_MAILBOX]);
   const names = [claims.email, claims["cognito:username"], claims.username]
     .filter((value): value is string => typeof value === "string")
     .map((value) => value.trim().toLowerCase());
-  return names.includes(E2E_USER);
+  return names.some((name) => accepted.has(name));
 }
 
 function assertSessionForE2EUser(session: Record<string, string>): void {
   const raw = session[SESSION_STORAGE_KEY] ?? "";
   const parsed = JSON.parse(raw) as { tokens?: { idToken?: string } };
   if (!idTokenIdentifiesE2EUser(parsed.tokens?.idToken ?? "")) {
-    throw new Error(`e2e auth session is not ${E2E_USER}`);
+    throw new Error(`e2e auth session is not ${E2E_USER} or ${E2E_MAILBOX}`);
   }
 }
 

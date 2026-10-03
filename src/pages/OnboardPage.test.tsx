@@ -43,6 +43,22 @@ function mockAuthenticatedSession(): void {
   });
 }
 
+function accountsResponse(access: string) {
+  return {
+    ok: true,
+    status: 200,
+    text: async () =>
+      JSON.stringify({ success: true, data: { accounts: [], access } }),
+    clone() {
+      return this;
+    },
+  };
+}
+
+function accountsFetch(access: string): typeof fetch {
+  return jest.fn(async () => accountsResponse(access)) as unknown as typeof fetch;
+}
+
 function tree(path: string) {
   return (
     <HelmetProvider>
@@ -117,7 +133,8 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expect(loginMock).not.toHaveBeenCalled();
   });
 
-  it("walks Signup → What Pack does → Verify → Connections → Complete without internal identifiers", () => {
+  it("walks Signup → What Pack does → Verify → Connections → Complete without internal identifiers", async () => {
+    global.fetch = accountsFetch("active");
     const view = renderAt(ONBOARD_PATH);
     const pageText = () => view.container.textContent ?? "";
 
@@ -153,30 +170,50 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expectNoInternalIdentifiers(view.container);
     fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
 
-    expect(pageText()).toContain("You're all set!");
+    await waitFor(() => expect(pageText()).toContain("You're all set!"));
     expectNoInternalIdentifiers(view.container);
   });
 
-  it("waitlisted user lands on the waitlist screen, not You're all set", async () => {
-    global.fetch = jest.fn(async () => ({
-      ok: true,
-      status: 200,
-      text: async () =>
-        JSON.stringify({ success: true, data: { accounts: [], access: "waitlisted" } }),
-      clone() {
-        return this;
-      },
-    })) as unknown as typeof fetch;
+  async function reachComplete(): Promise<HTMLElement> {
     mockAuthenticatedSession();
     const view = renderAt(ONBOARD_PATH);
-    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
     await screen.findByRole("heading", { name: "Past" });
     fireEvent.click(screen.getByRole("button", { name: "Skip" }));
     fireEvent.click(screen.getByRole("button", { name: "Skip" }));
     fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
+    return view.container;
+  }
+
+  it("waitlisted user lands on the waitlist screen, not You're all set", async () => {
+    global.fetch = accountsFetch("waitlisted");
+    const container = await reachComplete();
 
     expect(await screen.findByText("You're on the waitlist")).toBeInTheDocument();
-    expect(view.container.textContent).not.toContain("You're all set!");
+    expect(container.textContent).not.toContain("You're all set!");
+  });
+
+  it("approval flips the same route from the waitlist to You're all set", async () => {
+    let access = "waitlisted";
+    global.fetch = jest.fn(async () => accountsResponse(access)) as unknown as typeof fetch;
+    const container = await reachComplete();
+    expect(await screen.findByText("You're on the waitlist")).toBeInTheDocument();
+
+    access = "active";
+    fireEvent.focus(window);
+    await waitFor(() => expect(container.textContent).toContain("You're all set!"));
+    expect(container.textContent).not.toContain("You're on the waitlist");
+  });
+
+  it("failed access fetch never shows You're all set", async () => {
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => undefined);
+    global.fetch = jest.fn(async () => {
+      throw new Error("network down");
+    }) as unknown as typeof fetch;
+    const container = await reachComplete();
+
+    await waitFor(() => expect(warn).toHaveBeenCalled());
+    expect(container.textContent).not.toContain("You're all set!");
+    warn.mockRestore();
   });
 
   it("auth step has no progress dots and no phone field even with a phone query", () => {

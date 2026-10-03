@@ -52,6 +52,7 @@ export const ONBOARDING_SEQUENCE = [
 
 export type OnboardingScreenName = (typeof ONBOARDING_SEQUENCE)[number];
 
+const ACCESS_POLL_MS = 5000;
 const SIGNUP_INDEX = 0;
 const CONNECTIONS_INDEX = ONBOARDING_SEQUENCE.indexOf("connections");
 const LAST_STEP_INDEX = ONBOARDING_SEQUENCE.length - 1;
@@ -98,10 +99,12 @@ function OnboardFlow() {
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
     readConnectedMailboxSnapshot,
   );
-  const [access, setAccess] = useState<OnboardAccess>("active");
+  const [access, setAccess] = useState<OnboardAccess | null>(null);
   const step = ONBOARDING_SEQUENCE[stepIndex];
 
   // Waitlisted users stop before "You're in"; approval flips the same route.
+  // Unknown access (not yet fetched, or fetch failed) never shows "You're in":
+  // the gate fails closed and the poll/focus refetch below retries.
   useEffect(() => {
     if (status !== "authenticated") {
       return;
@@ -111,16 +114,30 @@ function OnboardFlow() {
       getAccessToken,
       () => tokens?.tokenType ?? "Bearer",
     );
-    void client
-      .request<unknown>({ path: USER_ACCOUNTS_PATH, method: "GET" })
-      .then((payload) => {
-        if (!cancelled) {
-          setAccess(accessFromPayload(payload));
-        }
-      })
-      .catch(() => undefined);
+    const refresh = () => {
+      void client
+        .request<unknown>({ path: USER_ACCOUNTS_PATH, method: "GET" })
+        .then((payload) => {
+          if (!cancelled) {
+            setAccess(accessFromPayload(payload));
+          }
+        })
+        .catch((error: unknown) => {
+          console.warn("onboard: access fetch failed", error);
+        });
+    };
+    refresh();
+    if (step !== "complete") {
+      return () => {
+        cancelled = true;
+      };
+    }
+    const timer = window.setInterval(refresh, ACCESS_POLL_MS);
+    window.addEventListener("focus", refresh);
     return () => {
       cancelled = true;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
     };
   }, [getAccessToken, status, step, tokens?.tokenType]);
 
@@ -278,7 +295,9 @@ function OnboardFlow() {
           />
         ) : null}
         {step === "complete" && access === "waitlisted" ? <WaitlistStep /> : null}
-        {step === "complete" && access !== "waitlisted" ? <CompleteStep /> : null}
+        {step === "complete" && access !== null && access !== "waitlisted" ? (
+          <CompleteStep />
+        ) : null}
       </OnboardingContainer>
     </OnboardViewport>
   );

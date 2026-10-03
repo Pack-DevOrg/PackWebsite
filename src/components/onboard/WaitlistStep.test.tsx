@@ -16,7 +16,7 @@ describe("WaitlistStep", () => {
   it("shows the waitlist copy and never the 'You're all set' screen or an SMS CTA", () => {
     const { container } = render(<WaitlistStep />);
 
-    expect(screen.getByText("You're on the list!")).toBeInTheDocument();
+    expect(screen.getByText("You're on the waitlist")).toBeInTheDocument();
     expect(
       screen.getByText("We'll let you know the moment you're in.")
     ).toBeInTheDocument();

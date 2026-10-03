@@ -5,7 +5,7 @@ import {
   OnboardingTitle,
 } from '@pack/ui-primitives';
 
-export const WAITLIST_TITLE = "You're on the list!";
+export const WAITLIST_TITLE = "You're on the waitlist";
 export const WAITLIST_SUBTITLE =
   "We'll let you know the moment you're in.";
 

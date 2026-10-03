@@ -15,6 +15,11 @@ import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { createApiClient } from "@/api/client";
 import { env } from "@/utils/env";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
+import {
+  accessFromPayload,
+  WaitlistStep,
+  type OnboardAccess,
+} from "@/components/onboard/WaitlistStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import {
   OnboardViewport,
@@ -93,7 +98,31 @@ function OnboardFlow() {
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
     readConnectedMailboxSnapshot,
   );
+  const [access, setAccess] = useState<OnboardAccess>("active");
   const step = ONBOARDING_SEQUENCE[stepIndex];
+
+  // Waitlisted users stop before "You're in"; approval flips the same route.
+  useEffect(() => {
+    if (status !== "authenticated") {
+      return;
+    }
+    let cancelled = false;
+    const client = createApiClient(
+      getAccessToken,
+      () => tokens?.tokenType ?? "Bearer",
+    );
+    void client
+      .request<unknown>({ path: USER_ACCOUNTS_PATH, method: "GET" })
+      .then((payload) => {
+        if (!cancelled) {
+          setAccess(accessFromPayload(payload));
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [getAccessToken, status, step, tokens?.tokenType]);
 
   useEffect(() => {
     if (shouldAdvanceSignupBecauseAuthenticated(status, stepIndex)) {
@@ -248,7 +277,8 @@ function OnboardFlow() {
             microsoftEmail={mailboxes.microsoftEmail}
           />
         ) : null}
-        {step === "complete" ? <CompleteStep /> : null}
+        {step === "complete" && access === "waitlisted" ? <WaitlistStep /> : null}
+        {step === "complete" && access !== "waitlisted" ? <CompleteStep /> : null}
       </OnboardingContainer>
     </OnboardViewport>
   );

@@ -157,6 +157,28 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expectNoInternalIdentifiers(view.container);
   });
 
+  it("waitlisted user lands on the waitlist screen, not You're all set", async () => {
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({ success: true, data: { accounts: [], access: "waitlisted" } }),
+      clone() {
+        return this;
+      },
+    })) as unknown as typeof fetch;
+    mockAuthenticatedSession();
+    const view = renderAt(ONBOARD_PATH);
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+    await screen.findByRole("heading", { name: "Past" });
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+    fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
+
+    expect(await screen.findByText("You're on the waitlist")).toBeInTheDocument();
+    expect(view.container.textContent).not.toContain("You're all set!");
+  });
+
   it("auth step has no progress dots and no phone field even with a phone query", () => {
     const view = renderAt("/onboard?phone=+15551212");
 

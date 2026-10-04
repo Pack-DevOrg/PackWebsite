@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   consumeOnboardConnectionsReturn,
@@ -20,7 +20,15 @@ import {
   OnboardViewport,
   OnboardViewportLock,
 } from "@/components/onboard/OnboardPrimitives";
-import { OnboardingContainer } from "@pack/ui-primitives";
+import {
+  OnboardingContainer,
+  OnboardingContent,
+  OnboardingPrimaryButton,
+  OnboardingSubtitle,
+  OnboardingTitle,
+} from "@pack/ui-primitives";
+import { WaitlistStep } from "@/components/onboard/WaitlistStep";
+import { readPackAccessBecauseSession } from "@/components/onboard/readPackAccess";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
 import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
@@ -35,12 +43,14 @@ export const ONBOARD_PATH = "/onboard";
  * Website `/onboard` is the app onboarding 1:1 minus device-only steps
  * (photos, notification permission), plus phone verification after the
  * info screen (Noah 2026-09-11): Signup → What Pack does → Verify phone
- * (Text Pack on mobile, QR on desktop, skippable) → Connections → Complete.
+ * (Text Pack on mobile, QR on desktop, skippable) → access gate →
+ * Connections → Complete.
  */
 export const ONBOARDING_SEQUENCE = [
   "signup",
   "what-pack-does",
   "verify-phone",
+  "access",
   "connections",
   "complete",
 ] as const;
@@ -90,6 +100,8 @@ function shouldAdvanceSignupBecauseAuthenticated(
 function OnboardFlow() {
   const { status, getAccessToken, tokens } = useAuth();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
+  const [gate, setGate] = useState<"waitlist" | "youre-in" | null>(null);
+  const sawWaitlistRef = useRef(false);
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
     readConnectedMailboxSnapshot,
   );
@@ -139,6 +151,48 @@ function OnboardFlow() {
       .catch(() => undefined);
     return () => {
       cancelled = true;
+    };
+  }, [getAccessToken, status, step, tokens?.tokenType]);
+
+  // Waitlisted users stop here and re-poll on focus. A read error fails closed.
+  useEffect(() => {
+    if (step !== "access" || status !== "authenticated") {
+      return;
+    }
+    let cancelled = false;
+    const pull = (): void => {
+      void readPackAccessBecauseSession({
+        getAccessToken,
+        tokenType: tokens?.tokenType ?? "Bearer",
+      })
+        .then((access) => {
+          if (cancelled) {
+            return;
+          }
+          if (access === "waitlisted") {
+            sawWaitlistRef.current = true;
+            setGate("waitlist");
+            return;
+          }
+          if (sawWaitlistRef.current) {
+            setGate("youre-in");
+            return;
+          }
+          setStepIndex(CONNECTIONS_INDEX);
+        })
+        .catch(() => {
+          if (cancelled) {
+            return;
+          }
+          sawWaitlistRef.current = true;
+          setGate("waitlist");
+        });
+    };
+    pull();
+    window.addEventListener("focus", pull);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", pull);
     };
   }, [getAccessToken, status, step, tokens?.tokenType]);
 
@@ -235,6 +289,18 @@ function OnboardFlow() {
         ) : null}
         {step === "verify-phone" ? (
           <VerifyPhoneStep onVerified={goNext} onSkip={goNext} />
+        ) : null}
+        {step === "access" && gate === "waitlist" ? <WaitlistStep /> : null}
+        {step === "access" && gate === "youre-in" ? (
+          <OnboardingContent scrollEnabled={false}>
+            <OnboardingTitle>You are in</OnboardingTitle>
+            <OnboardingSubtitle>
+              Your spot is open. Let&apos;s finish setting up.
+            </OnboardingSubtitle>
+            <OnboardingPrimaryButton onPress={goNext}>
+              Continue
+            </OnboardingPrimaryButton>
+          </OnboardingContent>
         ) : null}
         {step === "connections" ? (
           <ConnectionsStep

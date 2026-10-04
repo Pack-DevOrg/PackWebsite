@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   consumeOnboardConnectionsReturn,
@@ -14,13 +14,21 @@ import {
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { createApiClient } from "@/api/client";
 import { env } from "@/utils/env";
+import { readPackAccessBecauseSession } from "@/components/onboard/readPackAccess";
+import { WaitlistStep } from "@/components/onboard/WaitlistStep";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import {
   OnboardViewport,
   OnboardViewportLock,
 } from "@/components/onboard/OnboardPrimitives";
-import { OnboardingContainer } from "@pack/ui-primitives";
+import {
+  OnboardingContainer,
+  OnboardingContent,
+  OnboardingPrimaryButton,
+  OnboardingSubtitle,
+  OnboardingTitle,
+} from "@pack/ui-primitives";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
 import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
@@ -41,6 +49,7 @@ export const ONBOARDING_SEQUENCE = [
   "signup",
   "what-pack-does",
   "verify-phone",
+  "access",
   "connections",
   "complete",
 ] as const;
@@ -79,7 +88,7 @@ function nextStepIndexBecauseSequence(index: number): number {
 
 function shouldAdvanceSignupBecauseAuthenticated(
   status: ReturnType<typeof useAuth>["status"],
-  stepIndex: number,
+  stepIndex: number
 ): boolean {
   if (status !== "authenticated") {
     return false;
@@ -87,13 +96,17 @@ function shouldAdvanceSignupBecauseAuthenticated(
   return stepIndex === SIGNUP_INDEX;
 }
 
+type AccessPhase = "checking" | "waitlisted" | "joined";
+
 function OnboardFlow() {
   const { status, getAccessToken, tokens } = useAuth();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
-    readConnectedMailboxSnapshot,
+    readConnectedMailboxSnapshot
   );
   const step = ONBOARDING_SEQUENCE[stepIndex];
+  const [access, setAccess] = useState<AccessPhase>("checking");
+  const waitedRef = useRef(false);
 
   useEffect(() => {
     if (shouldAdvanceSignupBecauseAuthenticated(status, stepIndex)) {
@@ -120,7 +133,7 @@ function OnboardFlow() {
     let cancelled = false;
     const client = createApiClient(
       getAccessToken,
-      () => tokens?.tokenType ?? "Bearer",
+      () => tokens?.tokenType ?? "Bearer"
     );
     void client
       .request<unknown>({ path: USER_ACCOUNTS_PATH, method: "GET" })
@@ -146,15 +159,53 @@ function OnboardFlow() {
     setStepIndex((current) => nextStepIndexBecauseSequence(current));
   };
 
+  // Waitlisted users stay here and re-read access whenever the tab regains
+  // focus; active users who never waited skip straight to Connections.
+  useEffect(() => {
+    if (step !== "access" || status !== "authenticated") {
+      return;
+    }
+    let cancelled = false;
+    const settle = (read: "waitlisted" | "active") => {
+      if (cancelled) {
+        return;
+      }
+      if (read === "waitlisted") {
+        waitedRef.current = true;
+        setAccess("waitlisted");
+        return;
+      }
+      if (waitedRef.current) {
+        setAccess("joined");
+        return;
+      }
+      setStepIndex((index) => nextStepIndexBecauseSequence(index));
+    };
+    const check = () => {
+      void readPackAccessBecauseSession({
+        getAccessToken,
+        tokenType: tokens?.tokenType ?? "Bearer",
+      })
+        .then(settle)
+        .catch(() => (waitedRef.current ? undefined : settle("active")));
+    };
+    check();
+    window.addEventListener("focus", check);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", check);
+    };
+  }, [getAccessToken, status, step, tokens?.tokenType]);
+
   const connectGoogle = () => {
     accountConnectWindow.assign(
-      startGoogleAccountConnect(optionalEnv(env.VITE_GOOGLE_WEB_CLIENT_ID)),
+      startGoogleAccountConnect(optionalEnv(env.VITE_GOOGLE_WEB_CLIENT_ID))
     );
   };
 
   const connectMicrosoft = () => {
     void startMicrosoftAccountConnect(
-      optionalEnv(env.VITE_MICROSOFT_CLIENT_ID),
+      optionalEnv(env.VITE_MICROSOFT_CLIENT_ID)
     ).then((url) => {
       accountConnectWindow.assign(url);
     });
@@ -227,14 +278,22 @@ function OnboardFlow() {
             OnboardPage.test). Dropped in the sequence rewrite → every website
             land went red on SMOKE-FAIL route=/onboard (2026-09-12). */}
         <div data-testid="onboard-step" />
-        {step === "signup" ? (
-          <SignupLoginStep />
-        ) : null}
+        {step === "signup" ? <SignupLoginStep /> : null}
         {step === "what-pack-does" ? (
           <WhatPackDoesStep onNext={goNext} onSkip={goNext} />
         ) : null}
         {step === "verify-phone" ? (
           <VerifyPhoneStep onVerified={goNext} onSkip={goNext} />
+        ) : null}
+        {step === "access" && access === "waitlisted" ? <WaitlistStep /> : null}
+        {step === "access" && access === "joined" ? (
+          <OnboardingContent scrollEnabled={false}>
+            <OnboardingTitle>You are in</OnboardingTitle>
+            <OnboardingSubtitle>Your spot opened up.</OnboardingSubtitle>
+            <OnboardingPrimaryButton onPress={goNext}>
+              Continue
+            </OnboardingPrimaryButton>
+          </OnboardingContent>
         ) : null}
         {step === "connections" ? (
           <ConnectionsStep

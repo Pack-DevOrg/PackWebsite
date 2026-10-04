@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   consumeOnboardConnectionsReturn,
@@ -20,7 +20,14 @@ import {
   OnboardViewport,
   OnboardViewportLock,
 } from "@/components/onboard/OnboardPrimitives";
-import { OnboardingContainer } from "@pack/ui-primitives";
+import {
+  OnboardingContainer,
+  OnboardingContent,
+  OnboardingPrimaryButton,
+  OnboardingTitle,
+} from "@pack/ui-primitives";
+import { WaitlistStep } from "@/components/onboard/WaitlistStep";
+import { readPackAccessBecauseSession } from "@/components/onboard/readPackAccess";
 import { SignupLoginStep } from "@/components/onboard/SignupLoginStep";
 import { WhatPackDoesStep } from "@/components/onboard/WhatPackDoesStep";
 import { VerifyPhoneStep } from "@/components/VerifyPhoneStep";
@@ -41,6 +48,7 @@ export const ONBOARDING_SEQUENCE = [
   "signup",
   "what-pack-does",
   "verify-phone",
+  "access",
   "connections",
   "complete",
 ] as const;
@@ -50,6 +58,10 @@ export type OnboardingScreenName = (typeof ONBOARDING_SEQUENCE)[number];
 const SIGNUP_INDEX = 0;
 const CONNECTIONS_INDEX = ONBOARDING_SEQUENCE.indexOf("connections");
 const LAST_STEP_INDEX = ONBOARDING_SEQUENCE.length - 1;
+
+export const ACCESS_ACTIVE_TITLE = "You're in";
+
+type AccessView = "checking" | "waitlisted" | "in";
 
 function optionalEnv(value: unknown): string | undefined {
   if (typeof value !== "string") {
@@ -93,6 +105,8 @@ function OnboardFlow() {
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
     readConnectedMailboxSnapshot,
   );
+  const [accessView, setAccessView] = useState<AccessView>("checking");
+  const wasWaitlisted = useRef(false);
   const step = ONBOARDING_SEQUENCE[stepIndex];
 
   useEffect(() => {
@@ -139,6 +153,47 @@ function OnboardFlow() {
       .catch(() => undefined);
     return () => {
       cancelled = true;
+    };
+  }, [getAccessToken, status, step, tokens?.tokenType]);
+
+  // Waitlisted users stay on the access step and re-read on window focus.
+  // A never-waitlisted active user skips straight to Connections.
+  useEffect(() => {
+    if (step !== "access" || status !== "authenticated") {
+      return;
+    }
+    let cancelled = false;
+    const check = () => {
+      void readPackAccessBecauseSession({
+        getAccessToken,
+        tokenType: tokens?.tokenType ?? "Bearer",
+      })
+        .then((access) => {
+          if (cancelled) {
+            return;
+          }
+          if (access === "waitlisted") {
+            wasWaitlisted.current = true;
+            setAccessView("waitlisted");
+            return;
+          }
+          if (wasWaitlisted.current) {
+            setAccessView("in");
+            return;
+          }
+          setStepIndex((current) => nextStepIndexBecauseSequence(current));
+        })
+        .catch(() => {
+          if (!cancelled && !wasWaitlisted.current) {
+            setStepIndex((current) => nextStepIndexBecauseSequence(current));
+          }
+        });
+    };
+    check();
+    window.addEventListener("focus", check);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", check);
     };
   }, [getAccessToken, status, step, tokens?.tokenType]);
 
@@ -235,6 +290,17 @@ function OnboardFlow() {
         ) : null}
         {step === "verify-phone" ? (
           <VerifyPhoneStep onVerified={goNext} onSkip={goNext} />
+        ) : null}
+        {step === "access" && accessView === "waitlisted" ? (
+          <WaitlistStep />
+        ) : null}
+        {step === "access" && accessView === "in" ? (
+          <OnboardingContent scrollEnabled={false}>
+            <OnboardingTitle>{ACCESS_ACTIVE_TITLE}</OnboardingTitle>
+            <OnboardingPrimaryButton onPress={goNext}>
+              Continue
+            </OnboardingPrimaryButton>
+          </OnboardingContent>
         ) : null}
         {step === "connections" ? (
           <ConnectionsStep

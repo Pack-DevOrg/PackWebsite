@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import {
   Outlet,
   Route,
@@ -8,7 +8,14 @@ import {
   useParams,
 } from "react-router-dom";
 import styled from "styled-components";
-import { AuthProvider } from "@/auth/AuthContext";
+import { AuthProvider, useAuth } from "@/auth/AuthContext";
+import {
+  SportsBoard,
+  projectSportsBoard,
+  type FantasyMatchup,
+  type SportsBoardModel,
+  type SportsGame,
+} from "@/components/sports/SportsBoard";
 import Layout from "@/components/Layout";
 import PrefetchLink from "@/components/PrefetchLink";
 import {
@@ -427,6 +434,61 @@ const SeoGuideRoute: React.FC = () => {
   return <SeoGuidePage slug={guideSlug} />;
 };
 
+const EMPTY_SPORTS_BOARD: SportsBoardModel = { games: [], fantasyMatchups: [] };
+
+async function fetchSportsJson<T>(path: string, token: string | null): Promise<T | null> {
+  const response = await fetch(`${appConfig.apiBaseUrl}${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return response.ok ? ((await response.json()) as T) : null;
+}
+
+/** Public occasion entities for everyone; interest/fantasy rows only when logged in. */
+const SportsRoute: React.FC = () => {
+  const { status, getAccessToken } = useAuth();
+  const [model, setModel] = useState<SportsBoardModel>(EMPTY_SPORTS_BOARD);
+
+  useEffect(() => {
+    if (status === "loading") {
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      try {
+        const token = status === "authenticated" ? await getAccessToken() : null;
+        const [pub, mine] = await Promise.all([
+          fetchSportsJson<{ games: SportsGame[] }>("/occasions/entities?kind=sports", null),
+          token
+            ? fetchSportsJson<{
+                interestOccasionIds: string[];
+                fantasyMatchups: FantasyMatchup[];
+              }>("/user/sports", token)
+            : Promise.resolve(null),
+        ]);
+        const interests = mine?.interestOccasionIds ?? [];
+        const games = (pub?.games ?? []).filter(
+          (game) => interests.length === 0 || interests.includes(game.occasionId),
+        );
+        const next = projectSportsBoard({
+          asOf: new Date().toISOString(),
+          games,
+          fantasyMatchups: mine?.fantasyMatchups ?? [],
+        });
+        if (!cancelled) {
+          setModel(next);
+        }
+      } catch (error) {
+        console.warn("sports board load failed", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [status, getAccessToken]);
+
+  return <SportsBoard model={model} />;
+};
+
 const NonHomeRoutes: React.FC = () => {
   const {pathFor} = useI18n();
   const tsaEnabled = shouldExposeTsaForCurrentHost();
@@ -538,6 +600,16 @@ const NonHomeRoutes: React.FC = () => {
             <Suspense fallback={null}>
               <TwoFactorCodePage />
             </Suspense>
+          }
+        />
+        <Route
+          path="/sports"
+          element={
+            <Layout>
+              <AuthProvider>
+                <SportsRoute />
+              </AuthProvider>
+            </Layout>
           }
         />
         <Route

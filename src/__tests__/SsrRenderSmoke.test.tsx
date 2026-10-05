@@ -115,6 +115,37 @@ describe("SSR-like render smoke", () => {
     );
     expect(await findByText(/not found|404/i)).toBeTruthy();
   });
+
+  it("mounts the sports board at /sports for a logged-out visitor", async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        games: [
+          {
+            occasionId: "sea-sf",
+            title: "Seahawks vs 49ers",
+            startsAt: "2020-01-01T00:00:00.000Z",
+            endsAt: "2020-01-01T03:00:00.000Z",
+            facts: [],
+          },
+        ],
+      }),
+    });
+    const original = global.fetch;
+    global.fetch = fetchMock as unknown as typeof fetch;
+    try {
+      const { findByText } = render(renderShell(<NonHomeRoutes />, ["/sports"]));
+      expect(await findByText("Seahawks vs 49ers")).toBeTruthy();
+      expect(
+        fetchMock.mock.calls.some(([url]) => String(url).includes("/occasions/entities")),
+      ).toBe(true);
+      expect(
+        fetchMock.mock.calls.some(([url]) => String(url).includes("/user/sports")),
+      ).toBe(false);
+    } finally {
+      global.fetch = original;
+    }
+  });
 });
 
 describe("hero ambient still", () => {

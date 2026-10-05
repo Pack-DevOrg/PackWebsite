@@ -1,0 +1,64 @@
+name: Onboarding golden parity
+
+# Screenshots the website onboarding against the app goldens (e2e/onboard-golden-parity.spec.ts).
+# Same PackApp sparse checkout as ci.yml (pack-ci-read App). Diff images upload on failure.
+on:
+  pull_request:
+    paths:
+      - src/components/onboard/**
+      - src/pages/OnboardPage*
+      - e2e/onboard-golden-parity.spec.ts
+      - e2e/onboard-golden-parity.manifest.json
+      - e2e/onboard-golden-parity.spec.ts-snapshots/**
+      - .github/workflows/onboarding-golden-parity.yml
+  merge_group:
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: onboarding-golden-parity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  onboarding-golden-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - id: packapp-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PACK_CI_READ_APP_ID }}
+          private-key: ${{ secrets.PACK_CI_READ_APP_KEY }}
+          owner: Pack-DevOrg
+          repositories: |
+            PackApp
+      - uses: actions/checkout@v4
+        with:
+          repository: Pack-DevOrg/PackApp
+          token: ${{ steps.packapp-token.outputs.token }}
+          persist-credentials: false
+          path: PackApp
+          sparse-checkout: |
+            src
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci --no-audit --no-fund
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- e2e/onboard-golden-parity.spec.ts
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onboarding-golden-parity-diffs
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore

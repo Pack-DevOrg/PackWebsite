@@ -182,7 +182,21 @@ const SharedTravelChunkSchema = z.union([
 // must never blank the whole trip over a field it does not display strictly.
 // Shape drift against the backend contract is caught at compile time by the
 // assignability guard below (see @pack/schemas shared-travel).
+// Place-list payload (mirrors the server place-list schema fields; not imported).
+const SharedPlaceSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  lat: z.number(),
+  lng: z.number(),
+  distanceMeters: z.number().optional(),
+  openNow: z.boolean().optional(),
+  hours: z.string().optional(),
+  why: z.string().optional(),
+});
+type SharedPlace = z.infer<typeof SharedPlaceSchema>;
+
 const SharedTravelDataSchema = z.object({
+  placeList: z.array(SharedPlaceSchema).optional(),
   version: z.string(),
   title: z.string(),
   description: z.string().optional(),
@@ -661,6 +675,101 @@ const StayBand: React.FC<{
   </div>
 );
 
+const MAP_W = 640;
+const MAP_H = 320;
+
+function mercator(lat: number, lng: number, zoom: number): { x: number; y: number } {
+  const scale = 256 * 2 ** zoom;
+  const sin = Math.sin((lat * Math.PI) / 180);
+  return {
+    x: ((lng + 180) / 360) * scale,
+    y: (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale,
+  };
+}
+
+/** Center + zoom that fits every pin inside the map with padding. */
+function fitPlaces(places: readonly SharedPlace[]): { lat: number; lng: number; zoom: number } {
+  const lats = places.map((p) => p.lat);
+  const lngs = places.map((p) => p.lng);
+  const lat = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const lng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+  let zoom = 16;
+  while (zoom > 1) {
+    const a = mercator(Math.max(...lats), Math.min(...lngs), zoom);
+    const b = mercator(Math.min(...lats), Math.max(...lngs), zoom);
+    if (Math.abs(b.x - a.x) <= MAP_W * 0.8 && Math.abs(b.y - a.y) <= MAP_H * 0.7) break;
+    zoom -= 1;
+  }
+  return { lat, lng, zoom };
+}
+
+const appleDirectionsUrl = (p: SharedPlace): string =>
+  `https://maps.apple.com/?daddr=${p.lat},${p.lng}&q=${encodeURIComponent(p.name)}`;
+const googleDirectionsUrl = (p: SharedPlace): string =>
+  `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
+
+function formatDistance(meters: number): string {
+  return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`;
+}
+
+const PlaceListSection: React.FC<{ readonly places: readonly SharedPlace[] }> = ({ places }) => {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const fit = useMemo(() => fitPlaces(places), [places]);
+  const center = mercator(fit.lat, fit.lng, fit.zoom);
+  const mapUrl =
+    `https://staticmap.openstreetmap.de/staticmap.php?center=${fit.lat},${fit.lng}` +
+    `&zoom=${fit.zoom}&size=${MAP_W}x${MAP_H}`;
+  return (
+    <section className="stp-places" data-testid="place-list">
+      <div className="stp-places-map" data-testid="place-map" style={{ position: 'relative' }}>
+        <img src={mapUrl} alt="Map of places" style={{ width: '100%', display: 'block' }} />
+        {places.map((place, index) => {
+          const pt = mercator(place.lat, place.lng, fit.zoom);
+          return (
+            <button
+              key={place.id}
+              type="button"
+              data-testid="place-pin"
+              aria-label={place.name}
+              onClick={() => setSelectedId(place.id)}
+              style={{
+                position: 'absolute',
+                left: `${50 + ((pt.x - center.x) / MAP_W) * 100}%`,
+                top: `${50 + ((pt.y - center.y) / MAP_H) * 100}%`,
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              {index + 1}
+            </button>
+          );
+        })}
+      </div>
+      <ol className="stp-places-list">
+        {places.map((place) => {
+          const open = selectedId === place.id;
+          return (
+            <li key={place.id} data-testid="place-row">
+              <button type="button" onClick={() => setSelectedId(open ? null : place.id)} aria-expanded={open}>
+                <strong>{place.name}</strong>
+                {place.distanceMeters !== undefined && <span> · {formatDistance(place.distanceMeters)}</span>}
+                {place.openNow !== undefined && <span> · {place.openNow ? 'Open now' : 'Closed'}</span>}
+              </button>
+              {place.why && <p>{place.why}</p>}
+              {open && place.hours && <p data-testid="place-details">{place.hours}</p>}
+              <a href={appleDirectionsUrl(place)} data-testid="place-directions" target="_blank" rel="noopener noreferrer">
+                Directions
+              </a>{' '}
+              <a href={googleDirectionsUrl(place)} data-testid="place-directions-google" target="_blank" rel="noopener noreferrer">
+                Google Maps
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+};
+
 export const SharedTravelPlan: React.FC = () => {
   const { locale } = useI18n();
   const location = useLocation();
@@ -1081,6 +1190,10 @@ export const SharedTravelPlan: React.FC = () => {
               </div>
             </div>
 
+            {travelPlan.placeList && travelPlan.placeList.length > 0 && (
+              <PlaceListSection places={travelPlan.placeList} />
+            )}
+
             <section className="stp-timeline">
               <header className="stp-section-head">
                 <IconDisc>
@@ -1346,6 +1459,9 @@ const SharedTravelPlanLoader: React.FC<{
             SharedTravelOutlineChunkSchema,
             envelope.data.outlineChunks,
           ),
+          ...(Array.isArray(envelope.data.placeList)
+            ? { placeList: keepValidChunks(SharedPlaceSchema, envelope.data.placeList) }
+            : {}),
         });
 
         setTravelPlan(plan);

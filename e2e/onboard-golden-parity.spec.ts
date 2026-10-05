@@ -10,8 +10,23 @@ import {
 
 import { dismissConsentBannerIfVisible } from "./helpers";
 
+type Box = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+};
+
+type StepBounds = {
+  readonly title: Box;
+  readonly body: Box;
+  readonly cta: Box;
+  readonly progress: Box;
+};
+
 type SharedStep = {
   readonly step: string;
+  readonly bounds?: Record<string, StepBounds>;
   readonly golden?: string;
   readonly title?: string;
   readonly cta?: string;
@@ -35,12 +50,12 @@ type GoldenManifest = {
 const MANIFEST_PATH = path.join(
   process.cwd(),
   "e2e",
-  "onboard-golden-parity.manifest.json",
+  "onboard-golden-parity.manifest.json"
 );
 const PACK_VERIFY_E164 = "+13054392989";
 
 const MANIFEST = JSON.parse(
-  readFileSync(MANIFEST_PATH, "utf8"),
+  readFileSync(MANIFEST_PATH, "utf8")
 ) as GoldenManifest;
 
 function sharedStep(name: string): SharedStep {
@@ -53,10 +68,10 @@ function sharedStep(name: string): SharedStep {
 
 function e2eJwt(): string {
   const header = Buffer.from(
-    JSON.stringify({ alg: "none", typ: "JWT" }),
+    JSON.stringify({ alg: "none", typ: "JWT" })
   ).toString("base64url");
   const payload = Buffer.from(
-    JSON.stringify({ sub: "e2e-user", exp: 9999999999 }),
+    JSON.stringify({ sub: "e2e-user", exp: 9999999999 })
   ).toString("base64url");
   return `${header}.${payload}.e2e`;
 }
@@ -78,7 +93,7 @@ function e2eSessionJson(): string {
 
 async function injectAuthenticatedSession(
   target: Page | BrowserContext,
-  sessionJson = e2eSessionJson(),
+  sessionJson = e2eSessionJson()
 ): Promise<void> {
   await target.addInitScript((raw: string) => {
     window.sessionStorage.setItem("pack.auth.session.v1", raw);
@@ -99,7 +114,7 @@ async function stubPhoneVerificationMint(page: Page): Promise<void> {
         contentType: "application/json",
         body: JSON.stringify(mintBody),
       });
-    },
+    }
   );
   await page.route(
     "**/user/information/phone-verification/check",
@@ -109,13 +124,13 @@ async function stubPhoneVerificationMint(page: Page): Promise<void> {
         contentType: "application/json",
         body: JSON.stringify({ status: "pending" }),
       });
-    },
+    }
   );
 }
 
 async function pinPhoneViewportIfMobile(
   page: Page,
-  testInfo: TestInfo,
+  testInfo: TestInfo
 ): Promise<void> {
   if (testInfo.project.name !== "chromium-mobile") {
     return;
@@ -134,7 +149,7 @@ async function openOnboard(page: Page, testInfo: TestInfo): Promise<void> {
 async function assertManifestCopy(
   page: Page,
   title: string,
-  cta: string,
+  cta: string
 ): Promise<void> {
   await expect(page.getByRole("heading", { name: title })).toBeVisible({
     timeout: 45_000,
@@ -156,12 +171,52 @@ async function hideDevOverlays(page: Page): Promise<void> {
  * (e2e/fixtures/onboarding-goldens, derived from PackApp
  * build-artifacts/maestro-debug/.../Full onboarding E2E/screenshots).
  * Desktop 1440×900 and phone 390×844. Native status-bar / font raster
- * will not pixel-match; 0.12 is the documented viewport-fit budget.
+ * will not pixel-match natively; the web render is held to 0.02.
  */
-const GOLDEN_MAX_DIFF_PIXEL_RATIO = 0.12;
+const GOLDEN_MAX_DIFF_PIXEL_RATIO = 0.02;
 
-async function snapshotStep(page: Page, step: string): Promise<void> {
+const BOX_TOLERANCE_PX = 4;
+const BOX_PARTS = ["title", "body", "cta", "progress"] as const;
+
+/**
+ * Title, body, CTA and progress boxes must sit within 4 px of the manifest
+ * bounds for this step and project. Missing bounds fail loudly.
+ */
+async function assertStepBoxes(
+  page: Page,
+  step: string,
+  projectName: string
+): Promise<void> {
+  const base = step.replace(/-\d+$/, "");
+  const entry = MANIFEST.shared.find((e) => e.step === base);
+  const expected = entry?.bounds?.[`${step}:${projectName}`];
+  if (expected === undefined) {
+    throw new Error(`manifest has no bounds for ${step} on ${projectName}`);
+  }
+  for (const part of BOX_PARTS) {
+    const box = await page
+      .locator(`[data-onboard-part="${part}"]`)
+      .first()
+      .boundingBox();
+    if (box === null) {
+      throw new Error(`${step}: ${part} box not found`);
+    }
+    for (const key of ["x", "y", "width", "height"] as const) {
+      expect(
+        Math.abs(box[key] - expected[part][key]),
+        `${step} ${part}.${key}`
+      ).toBeLessThanOrEqual(BOX_TOLERANCE_PX);
+    }
+  }
+}
+
+async function snapshotStep(
+  page: Page,
+  step: string,
+  projectName: string
+): Promise<void> {
   await hideDevOverlays(page);
+  await assertStepBoxes(page, step, projectName);
   await expect(page).toHaveScreenshot(`${step}.png`, {
     fullPage: false,
     animations: "disabled",
@@ -179,10 +234,15 @@ async function headingVisible(page: Page, name: string): Promise<boolean> {
 
 async function clickIfVisible(
   page: Page,
-  name: RegExp | string,
+  name: RegExp | string
 ): Promise<boolean> {
   const button = page.getByRole("button", { name });
-  if (await button.first().isVisible().catch(() => false)) {
+  if (
+    await button
+      .first()
+      .isVisible()
+      .catch(() => false)
+  ) {
     await button.first().click();
     return true;
   }
@@ -192,20 +252,19 @@ async function clickIfVisible(
 async function assertVerifyIfOnScreen(
   page: Page,
   isMobile: boolean,
+  projectName: string
 ): Promise<void> {
   const verify = MANIFEST.verify;
   if (!(await headingVisible(page, verify.title))) {
     return;
   }
-  await expect(
-    page.getByRole("heading", { name: verify.title }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: verify.title })).toBeVisible();
   if (isMobile) {
     const sms = page.getByRole("link", { name: verify.ctaMobile });
     await expect(sms.first()).toBeVisible();
     await expect(sms.first()).toHaveAttribute(
       "href",
-      new RegExp(`sms:.*${PACK_VERIFY_E164.replace("+", "\\+")}`),
+      new RegExp(`sms:.*${PACK_VERIFY_E164.replace("+", "\\+")}`)
     );
   } else {
     const qr = page
@@ -213,12 +272,15 @@ async function assertVerifyIfOnScreen(
       .or(page.getByRole("img", { name: verify.ctaDesktop }));
     await expect(qr.first()).toBeVisible();
   }
-  await snapshotStep(page, "verify");
+  await snapshotStep(page, "verify", projectName);
   await clickIfVisible(page, /^Skip for now$/);
   await clickIfVisible(page, /^Skip$/);
 }
 
-async function assertWhatPackDoesIfOnScreen(page: Page): Promise<void> {
+async function assertWhatPackDoesIfOnScreen(
+  page: Page,
+  projectName: string
+): Promise<void> {
   const whatPackDoes = sharedStep("what-pack-does");
   const pages = whatPackDoes.pages ?? [];
   if (pages.length === 0) {
@@ -229,14 +291,14 @@ async function assertWhatPackDoesIfOnScreen(page: Page): Promise<void> {
   }
   for (const [index, packPage] of pages.entries()) {
     await assertManifestCopy(page, packPage.title, packPage.cta);
-    await snapshotStep(page, `what-pack-does-${index + 1}`);
+    await snapshotStep(page, `what-pack-does-${index + 1}`, projectName);
     await page.getByRole("button", { name: packPage.cta }).click();
   }
 }
 
 async function skipNonSharedTowardWelcome(
   page: Page,
-  welcomeTitle: string,
+  welcomeTitle: string
 ): Promise<void> {
   for (let attempt = 0; attempt < 8; attempt += 1) {
     if (await headingVisible(page, welcomeTitle)) {
@@ -244,7 +306,7 @@ async function skipNonSharedTowardWelcome(
     }
     const skippedPhotos = await clickIfVisible(
       page,
-      "Skip connecting Photos for now",
+      "Skip connecting Photos for now"
     );
     if (skippedPhotos) {
       continue;
@@ -279,7 +341,7 @@ test.describe("Onboard golden parity logged-out signup", () => {
     await openOnboard(page, testInfo);
     const signup = sharedStep("signup");
     await assertManifestCopy(page, signup.title ?? "", signup.cta ?? "");
-    await snapshotStep(page, "signup");
+    await snapshotStep(page, "signup", testInfo.project.name);
   });
 });
 
@@ -312,9 +374,17 @@ test.describe("Onboard golden parity authenticated G order", () => {
     const googleCta = page.getByRole("button", { name: signup.cta ?? "" });
     const stillOnSignup = async (): Promise<boolean> =>
       (await headingVisible(page, signup.title ?? "")) &&
-      (await googleCta.first().isVisible().catch(() => false));
+      (await googleCta
+        .first()
+        .isVisible()
+        .catch(() => false));
 
-    if (!(await postAuthLanding.first().isVisible().catch(() => false))) {
+    if (
+      !(await postAuthLanding
+        .first()
+        .isVisible()
+        .catch(() => false))
+    ) {
       await page.evaluate((raw: string) => {
         window.sessionStorage.setItem("pack.auth.session.v1", raw);
       }, sessionJson);
@@ -328,12 +398,12 @@ test.describe("Onboard golden parity authenticated G order", () => {
     if (await stillOnSignup()) {
       expect(
         false,
-        "authenticated walk still on signup; reuse B JWT session inject",
+        "authenticated walk still on signup; reuse B JWT session inject"
       ).toBe(true);
     }
 
-    await assertWhatPackDoesIfOnScreen(page);
-    await assertVerifyIfOnScreen(page, isMobile);
+    await assertWhatPackDoesIfOnScreen(page, testInfo.project.name);
+    await assertVerifyIfOnScreen(page, isMobile, testInfo.project.name);
 
     await page
       .getByRole("heading", { name: connections.title ?? "Connections" })
@@ -346,9 +416,9 @@ test.describe("Onboard golden parity authenticated G order", () => {
       await assertManifestCopy(
         page,
         connections.title ?? "",
-        connections.cta ?? "",
+        connections.cta ?? ""
       );
-      await snapshotStep(page, "connections");
+      await snapshotStep(page, "connections", testInfo.project.name);
       await clickIfVisible(page, connections.cta ?? "Skip for now");
     }
 
@@ -356,7 +426,7 @@ test.describe("Onboard golden parity authenticated G order", () => {
 
     if (await headingVisible(page, welcome.title ?? "")) {
       await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
-      await snapshotStep(page, "welcome");
+      await snapshotStep(page, "welcome", testInfo.project.name);
     }
   });
 });

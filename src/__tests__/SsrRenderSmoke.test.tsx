@@ -14,7 +14,7 @@ import Footer from "../components/Footer";
 import Features from "../pages/Features";
 import FAQ from "../pages/FAQ";
 import HowItWorks from "../pages/HowItWorks";
-import TravelContextBenchmark from "../pages/TravelContextBenchmark";
+import NonHomeRoutes from "../routes/NonHomeRoutes";
 import AmbientVideoBackdrop from "../components/AmbientVideoBackdrop";
 
 const renderShell = (ui: React.ReactNode, initialEntries: string[]) => (
@@ -109,17 +109,11 @@ describe("SSR-like render smoke", () => {
     ).not.toThrow();
   });
 
-  it("renders Pack DeeperBench for SSR", () => {
-    expect(() =>
-      renderToString(
-        renderShell(
-          <Layout>
-            <TravelContextBenchmark />
-          </Layout>,
-          ["/pack-deeperbench"],
-        )
-      )
-    ).not.toThrow();
+  it("renders not-found for the unpublished DeeperBench path", async () => {
+    const { findByText } = render(
+      renderShell(<NonHomeRoutes />, ["/pack-deeperbench"]),
+    );
+    expect(await findByText(/not found|404/i)).toBeTruthy();
   });
 });
 

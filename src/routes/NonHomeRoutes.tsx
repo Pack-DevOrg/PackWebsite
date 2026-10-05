@@ -73,9 +73,6 @@ const PrivacyRequestVerificationPage = React.lazy(
 const AccessibilityPage = React.lazy(() => import("../pages/Accessibility"));
 const AboutPage = React.lazy(() => import("../pages/About"));
 const SupportPage = React.lazy(() => import("../pages/Support"));
-const TravelContextBenchmarkPage = React.lazy(
-  () => import("../pages/TravelContextBenchmark")
-);
 const SeoGuidePage = React.lazy(() => import("../pages/SeoGuidePage"));
 const NotFoundPage = React.lazy(() => import("../pages/NotFoundPage"));
 const UnsubscribePage = React.lazy(() => import("../pages/UnsubscribePage"));
@@ -489,24 +486,6 @@ const NonHomeRoutes: React.FC = () => {
             <Layout>
               <Suspense fallback={null}>
                 <AccessibilityPage />
-              </Suspense>
-              <Suspense fallback={null}>
-                <Footer />
-                <ScrollToTop />
-              </Suspense>
-            </Layout>
-          }
-        />
-        <Route
-          path="/benchmark/travel-context"
-          element={<ClientReplace to="/pack-deeperbench" />}
-        />
-        <Route
-          path="/pack-deeperbench"
-          element={
-            <Layout>
-              <Suspense fallback={null}>
-                <TravelContextBenchmarkPage />
               </Suspense>
               <Suspense fallback={null}>
                 <Footer />
@@ -1045,24 +1024,6 @@ const NonHomeRoutes: React.FC = () => {
               <Layout>
                 <Suspense fallback={null}>
                   <AccessibilityPage />
-                </Suspense>
-                <Suspense fallback={null}>
-                  <Footer />
-                  <ScrollToTop />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="benchmark/travel-context"
-            element={<ClientReplace to="/pack-deeperbench" />}
-          />
-          <Route
-            path="pack-deeperbench"
-            element={
-              <Layout>
-                <Suspense fallback={null}>
-                  <TravelContextBenchmarkPage />
                 </Suspense>
                 <Suspense fallback={null}>
                   <Footer />

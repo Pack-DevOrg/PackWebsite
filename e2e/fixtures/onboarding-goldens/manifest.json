@@ -1,0 +1,299 @@
+{
+  "steps": [
+    {
+      "step": "demo-first",
+      "png": "demo-first.png",
+      "title": "Past",
+      "body": "Trips that log themselves — every flight, hotel, and mile.",
+      "cta": {
+        "id": "onboarding-accounts-demo-continue",
+        "text": "Continue",
+        "bounds": {
+          "x": 52.66666793823242,
+          "y": 724.3333129882812,
+          "width": 288,
+          "height": 53.66668701171875
+        }
+      },
+      "progress": {
+        "id": "",
+        "text": "Step 2 of 5",
+        "bounds": {
+          "x": 164.66666412353516,
+          "y": 93,
+          "width": 63.666656494140625,
+          "height": 14.333332061767578
+        }
+      },
+      "titleBounds": {
+        "x": 153.6666717529297,
+        "y": 155,
+        "width": 85.66665649414062,
+        "height": 51
+      },
+      "bodyBounds": {
+        "x": 46.33333396911621,
+        "y": 210,
+        "width": 300,
+        "height": 40
+      }
+    },
+    {
+      "step": "demo-present",
+      "png": "demo-present.png",
+      "title": "Present",
+      "body": "Leave-by alerts, TSA waits, and countdowns on your lock screen.",
+      "cta": {
+        "id": "onboarding-accounts-demo-continue",
+        "text": "Continue",
+        "bounds": {
+          "x": 52.66666793823242,
+          "y": 724.3333129882812,
+          "width": 288,
+          "height": 53.66668701171875
+        }
+      },
+      "progress": {
+        "id": "",
+        "text": "Step 2 of 5",
+        "bounds": {
+          "x": 164.66666412353516,
+          "y": 93,
+          "width": 63.666656494140625,
+          "height": 14.333332061767578
+        }
+      },
+      "titleBounds": {
+        "x": 121,
+        "y": 155,
+        "width": 150.66668701171875,
+        "height": 51
+      },
+      "bodyBounds": {
+        "x": 46.33333396911621,
+        "y": 210,
+        "width": 299.9999694824219,
+        "height": 40
+      }
+    },
+    {
+      "step": "demo-message-stage",
+      "png": "demo-message-stage.png",
+      "title": "Future",
+      "body": "Describe the trip like you would to a friend. The busywork plans itself away.",
+      "cta": {
+        "id": "onboarding-accounts-demo-continue",
+        "text": "Continue",
+        "bounds": {
+          "x": 52.66666793823242,
+          "y": 724.3333129882812,
+          "width": 288,
+          "height": 53.66668701171875
+        }
+      },
+      "progress": {
+        "id": "",
+        "text": "Step 2 of 5",
+        "bounds": {
+          "x": 164.66666412353516,
+          "y": 93,
+          "width": 63.666656494140625,
+          "height": 14.333332061767578
+        }
+      },
+      "titleBounds": {
+        "x": 133.33333587646484,
+        "y": 155,
+        "width": 126.33331298828125,
+        "height": 51
+      },
+      "bodyBounds": {
+        "x": 46.33333396911621,
+        "y": 210,
+        "width": 300.00006103515625,
+        "height": 40
+      }
+    },
+    {
+      "step": "verify-phone",
+      "png": "verify-phone.png",
+      "title": "Verify your number",
+      "body": "Text Pack from this phone so Pack can text you about trips.",
+      "cta": {
+        "id": "verify-phone-text-pack",
+        "text": "Text Pack",
+        "bounds": {
+          "x": 36.66666603088379,
+          "y": 481.3333435058594,
+          "width": 320,
+          "height": 53.66668701171875
+        }
+      },
+      "progress": {
+        "id": "",
+        "text": "Step 3 of 5",
+        "bounds": {
+          "x": 164.33333587646484,
+          "y": 93,
+          "width": 64,
+          "height": 14.333335876464844
+        }
+      },
+      "titleBounds": {
+        "x": 32,
+        "y": 313.3333282470703,
+        "width": 329,
+        "height": 40
+      },
+      "bodyBounds": {
+        "x": 32,
+        "y": 377.3333282470703,
+        "width": 329,
+        "height": 48
+      }
+    },
+    {
+      "step": "connected-accounts",
+      "png": "connected-accounts.png",
+      "title": "Connections",
+      "body": "Straight from your inbox and calendar.",
+      "cta": {
+        "id": "connected-accounts-skip-button",
+        "text": "Skip for now",
+        "bounds": {
+          "x": 135.33333015441895,
+          "y": 765.9999771118164,
+          "width": 122.66667175292969,
+          "height": 36
+        }
+      },
+      "progress": {
+        "id": "",
+        "text": "Step 3 of 5",
+        "bounds": {
+          "x": 164.33333587646484,
+          "y": 93,
+          "width": 64,
+          "height": 14.333332061767578
+        }
+      },
+      "titleBounds": {
+        "x": 95.33333587646484,
+        "y": 131,
+        "width": 202,
+        "height": 42
+      },
+      "bodyBounds": {
+        "x": 58.33333206176758,
+        "y": 181,
+        "width": 276.33331298828125,
+        "height": 24
+      }
+    },
+    {
+      "step": "photos",
+      "png": "photos.png",
+      "title": "Let's see the places you've been",
+      "body": "Pack matches photos to find things you've visited.",
+      "cta": {
+        "id": "onboarding-photos-primary",
+        "text": "Continue",
+        "bounds": {
+          "x": 36.66666603088379,
+          "y": 696.3333129882812,
+          "width": 320,
+          "height": 53.66668701171875
+        }
+      },
+      "progress": {
+        "id": "",
+        "text": "Step 4 of 5",
+        "bounds": {
+          "x": 164.33333587646484,
+          "y": 93,
+          "width": 64,
+          "height": 14.333335876464844
+        }
+      },
+      "titleBounds": {
+        "x": 16,
+        "y": 131,
+        "width": 361,
+        "height": 84
+      },
+      "bodyBounds": {
+        "x": 21,
+        "y": 223,
+        "width": 350.6666564941406,
+        "height": 22
+      }
+    },
+    {
+      "step": "notifications",
+      "png": "notifications.png",
+      "title": "Turn on trip alerts",
+      "body": "Travel tips & product updates",
+      "cta": {
+        "id": "onboarding-notifications-primary",
+        "text": "Turn on notifications",
+        "bounds": {
+          "x": 36.66666650772095,
+          "y": 734.6666870117188,
+          "width": 320,
+          "height": 53.66668701171875
+        }
+      },
+      "progress": null,
+      "titleBounds": {
+        "x": 32,
+        "y": 75.33333587646484,
+        "width": 329,
+        "height": 39.999996185302734
+      },
+      "bodyBounds": {
+        "x": 36,
+        "y": 628.6666564941406,
+        "width": 240,
+        "height": 18
+      }
+    },
+    {
+      "step": "complete",
+      "png": "complete.png",
+      "title": "You're all set!",
+      "body": "Relax, we've got you covered.",
+      "cta": {
+        "id": "onboarding-complete-get-started",
+        "text": "Let us handle the rest",
+        "bounds": {
+          "x": 35.32221603393555,
+          "y": 690.040614519472,
+          "width": 322.68890380859375,
+          "height": 54.11763875890756
+        }
+      },
+      "progress": {
+        "id": "",
+        "text": "Step 5 of 5",
+        "bounds": {
+          "x": 164.66666412353516,
+          "y": 93,
+          "width": 63.666656494140625,
+          "height": 14.333335876464844
+        }
+      },
+      "titleBounds": {
+        "x": 125.33333587646484,
+        "y": 424.6666564941406,
+        "width": 142.33331298828125,
+        "height": 30
+      },
+      "bodyBounds": {
+        "x": 88.66666507720947,
+        "y": 531.6666564941406,
+        "width": 215.33334350585938,
+        "height": 24
+      }
+    }
+  ]
+}

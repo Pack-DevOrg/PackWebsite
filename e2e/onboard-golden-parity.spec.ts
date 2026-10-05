@@ -160,8 +160,13 @@ async function hideDevOverlays(page: Page): Promise<void> {
  */
 const GOLDEN_MAX_DIFF_PIXEL_RATIO = 0.12;
 
-async function snapshotStep(page: Page, step: string): Promise<void> {
+async function snapshotStep(
+  page: Page,
+  step: string,
+  shots?: string[],
+): Promise<void> {
   await hideDevOverlays(page);
+  shots?.push(step);
   await expect(page).toHaveScreenshot(`${step}.png`, {
     fullPage: false,
     animations: "disabled",
@@ -192,8 +197,14 @@ async function clickIfVisible(
 async function assertVerifyIfOnScreen(
   page: Page,
   isMobile: boolean,
+  shots: string[],
 ): Promise<void> {
   const verify = MANIFEST.verify;
+  await page
+    .getByRole("heading", { name: verify.title })
+    .first()
+    .waitFor({ state: "visible", timeout: 15_000 })
+    .catch(() => undefined);
   if (!(await headingVisible(page, verify.title))) {
     return;
   }
@@ -213,12 +224,16 @@ async function assertVerifyIfOnScreen(
       .or(page.getByRole("img", { name: verify.ctaDesktop }));
     await expect(qr.first()).toBeVisible();
   }
-  await snapshotStep(page, "verify");
-  await clickIfVisible(page, /^Skip for now$/);
-  await clickIfVisible(page, /^Skip$/);
+  await snapshotStep(page, "verify", shots);
+  if (!(await clickIfVisible(page, /^Skip for now$/))) {
+    await clickIfVisible(page, /^Skip$/);
+  }
 }
 
-async function assertWhatPackDoesIfOnScreen(page: Page): Promise<void> {
+async function assertWhatPackDoesIfOnScreen(
+  page: Page,
+  shots: string[],
+): Promise<void> {
   const whatPackDoes = sharedStep("what-pack-does");
   const pages = whatPackDoes.pages ?? [];
   if (pages.length === 0) {
@@ -229,7 +244,7 @@ async function assertWhatPackDoesIfOnScreen(page: Page): Promise<void> {
   }
   for (const [index, packPage] of pages.entries()) {
     await assertManifestCopy(page, packPage.title, packPage.cta);
-    await snapshotStep(page, `what-pack-does-${index + 1}`);
+    await snapshotStep(page, `what-pack-does-${index + 1}`, shots);
     await page.getByRole("button", { name: packPage.cta }).click();
   }
 }
@@ -332,8 +347,9 @@ test.describe("Onboard golden parity authenticated G order", () => {
       ).toBe(true);
     }
 
-    await assertWhatPackDoesIfOnScreen(page);
-    await assertVerifyIfOnScreen(page, isMobile);
+    const shots: string[] = [];
+    await assertWhatPackDoesIfOnScreen(page, shots);
+    await assertVerifyIfOnScreen(page, isMobile, shots);
 
     await page
       .getByRole("heading", { name: connections.title ?? "Connections" })
@@ -348,15 +364,25 @@ test.describe("Onboard golden parity authenticated G order", () => {
         connections.title ?? "",
         connections.cta ?? "",
       );
-      await snapshotStep(page, "connections");
+      await snapshotStep(page, "connections", shots);
       await clickIfVisible(page, connections.cta ?? "Skip for now");
     }
 
     await skipNonSharedTowardWelcome(page, welcome.title ?? "");
 
-    if (await headingVisible(page, welcome.title ?? "")) {
-      await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
-      await snapshotStep(page, "welcome");
-    }
+    await expect(
+      page.getByRole("heading", { name: welcome.title ?? "" }),
+      "walk must reach welcome by real UI clicks",
+    ).toBeVisible({ timeout: 45_000 });
+    await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
+    await snapshotStep(page, "welcome", shots);
+
+    const expectedShots = [
+      ...(whatPackDoes.pages ?? []).map((_, i) => `what-pack-does-${i + 1}`),
+      MANIFEST.verify.step,
+      connections.step,
+      welcome.step,
+    ];
+    expect(shots).toEqual(expectedShots);
   });
 });

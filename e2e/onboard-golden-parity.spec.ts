@@ -280,11 +280,14 @@ async function assertBoxesMatchApp(
   }
 }
 
+const walkedShots: string[] = [];
+
 async function snapshotStep(
   page: Page,
   step: string,
   testInfo: TestInfo,
 ): Promise<void> {
+  walkedShots.push(step);
   await hideDevOverlays(page);
   await assertBoxesMatchApp(page, step, testInfo);
   await expect(page).toHaveScreenshot(`${step}.png`, {
@@ -461,32 +464,36 @@ test.describe("Onboard golden parity authenticated G order", () => {
       ).toBe(true);
     }
 
+    walkedShots.length = 0;
     await assertWhatPackDoesIfOnScreen(page, testInfo);
     await assertVerifyIfOnScreen(page, isMobile, testInfo);
 
+    // connections: reached by the Skip on verify, left by its own CTA.
+    await assertManifestCopy(
+      page,
+      connections.title ?? "",
+      connections.cta ?? "",
+    );
+    await snapshotStep(page, "connections", testInfo);
     await page
-      .getByRole("heading", { name: connections.title ?? "Connections" })
-      .or(page.getByRole("heading", { name: welcome.title ?? "" }))
+      .getByRole("button", { name: connections.cta ?? "" })
       .first()
-      .waitFor({ state: "visible", timeout: 15_000 })
-      .catch(() => undefined);
+      .click();
 
-    if (await headingVisible(page, connections.title ?? "Connections")) {
-      await assertManifestCopy(
-        page,
-        connections.title ?? "",
-        connections.cta ?? "",
-      );
-      await snapshotStep(page, "connections", testInfo);
-      await clickIfVisible(page, connections.cta ?? "Skip for now");
-    }
-
+    // welcome: optional steps between (photos, notifications) are skipped by
+    // their own buttons until the complete step shows.
     await skipNonSharedTowardWelcome(page, welcome.title ?? "");
+    await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
+    await snapshotStep(page, "welcome", testInfo);
 
-    if (await headingVisible(page, welcome.title ?? "")) {
-      await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
-      await snapshotStep(page, "welcome", testInfo);
-    }
+    expect(walkedShots).toEqual([
+      "what-pack-does-1",
+      "what-pack-does-2",
+      "what-pack-does-3",
+      "verify",
+      "connections",
+      "welcome",
+    ]);
   });
 });
 

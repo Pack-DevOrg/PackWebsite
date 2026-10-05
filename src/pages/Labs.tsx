@@ -3418,14 +3418,6 @@ const labsContent = {
           href: "/labs/planner-corpus-review",
           kicker: "Planner QA",
         },
-        {
-          slug: "pack-deeperbench-report",
-          title: "Pack DeeperBench Report",
-          description:
-            "Open the canonical Pack DeeperBench benchmark page with the latest hard-100 and hardest-10 comparison results.",
-          href: "/pack-deeperbench",
-          kicker: "Benchmark QA",
-        },
       ],
     },
     videos: {
@@ -3685,14 +3677,6 @@ const labsContent = {
             "Revisa resultados completos del planner, choices de needs-input, evidencia de contexto y filas de itinerario desde un aggregate local.",
           href: "/labs/planner-corpus-review",
           kicker: "QA del planner",
-        },
-        {
-          slug: "pack-deeperbench-report",
-          title: "Pack DeeperBench Report",
-          description:
-            "Abre la página canónica de Pack DeeperBench con los últimos resultados del hard-100 y la comparación hardest-10.",
-          href: "/pack-deeperbench",
-          kicker: "QA de benchmark",
         },
       ],
     },

@@ -152,16 +152,141 @@ async function hideDevOverlays(page: Page): Promise<void> {
 }
 
 /**
- * Viewport-fit golden tolerance vs the app Maestro reference set
+ * Golden tolerance vs the app Maestro reference set
  * (e2e/fixtures/onboarding-goldens, derived from PackApp
  * build-artifacts/maestro-debug/.../Full onboarding E2E/screenshots).
- * Desktop 1440×900 and phone 390×844. Native status-bar / font raster
- * will not pixel-match; 0.12 is the documented viewport-fit budget.
+ * At most 2% of pixels may differ, and the title, body, CTA and progress
+ * boxes must sit within 4 px of the manifest bounds (phone project only;
+ * the manifest bounds are phone coordinates).
  */
-const GOLDEN_MAX_DIFF_PIXEL_RATIO = 0.12;
+const GOLDEN_MAX_DIFF_PIXEL_RATIO = 0.02;
+const BOX_TOLERANCE_PX = 4;
 
-async function snapshotStep(page: Page, step: string): Promise<void> {
+type Bounds = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+};
+
+type AppGoldenStep = {
+  readonly step: string;
+  readonly title: string;
+  readonly body?: string;
+  readonly cta: { readonly text: string; readonly bounds: Bounds };
+  readonly progress?: { readonly text: string; readonly bounds: Bounds };
+  readonly titleBounds: Bounds;
+  readonly bodyBounds: Bounds;
+};
+
+const APP_GOLDENS = (
+  JSON.parse(
+    readFileSync(
+      path.join(
+        process.cwd(),
+        "e2e",
+        "fixtures",
+        "onboarding-goldens",
+        "manifest.json",
+      ),
+      "utf8",
+    ),
+  ) as { readonly steps: readonly AppGoldenStep[] }
+).steps;
+
+/** Website snapshot step name -> app golden step name. */
+const APP_STEP_FOR: Readonly<Record<string, string>> = {
+  "what-pack-does-1": "demo-first",
+  "what-pack-does-2": "demo-present",
+  "what-pack-does-3": "demo-message-stage",
+  verify: "verify-phone",
+  connections: "connected-accounts",
+  welcome: "complete",
+};
+
+function boxDeviation(actual: Bounds, expected: Bounds): number {
+  return Math.max(
+    Math.abs(actual.x - expected.x),
+    Math.abs(actual.y - expected.y),
+    Math.abs(actual.width - expected.width),
+    Math.abs(actual.height - expected.height),
+  );
+}
+
+function assertBoxWithin(
+  label: string,
+  actual: Bounds,
+  expected: Bounds,
+  tolerance = BOX_TOLERANCE_PX,
+): void {
+  const deviation = boxDeviation(actual, expected);
+  if (deviation > tolerance) {
+    throw new Error(
+      `${label} box off by ${deviation.toFixed(1)}px (max ${tolerance}px): ` +
+        `got ${JSON.stringify(actual)} want ${JSON.stringify(expected)}`,
+    );
+  }
+}
+
+async function boxOf(
+  locator: ReturnType<Page["locator"]>,
+): Promise<Bounds> {
+  const box = await locator.first().boundingBox();
+  if (box === null) {
+    throw new Error("element has no bounding box");
+  }
+  return box;
+}
+
+async function assertBoxesMatchApp(
+  page: Page,
+  step: string,
+  testInfo: TestInfo,
+): Promise<void> {
+  if (testInfo.project.name !== "chromium-mobile") {
+    return;
+  }
+  const appStep = APP_GOLDENS.find((entry) => entry.step === APP_STEP_FOR[step]);
+  if (appStep === undefined) {
+    return;
+  }
+  assertBoxWithin(
+    `${step} title`,
+    await boxOf(page.getByRole("heading", { name: appStep.title })),
+    appStep.titleBounds,
+  );
+  if (appStep.body !== undefined) {
+    assertBoxWithin(
+      `${step} body`,
+      await boxOf(page.getByText(appStep.body, { exact: true })),
+      appStep.bodyBounds,
+    );
+  }
+  assertBoxWithin(
+    `${step} cta`,
+    await boxOf(
+      page
+        .getByRole("button", { name: appStep.cta.text })
+        .or(page.getByRole("link", { name: appStep.cta.text })),
+    ),
+    appStep.cta.bounds,
+  );
+  if (appStep.progress !== undefined) {
+    assertBoxWithin(
+      `${step} progress`,
+      await boxOf(page.getByText(/^Step \d+ of \d+$/)),
+      appStep.progress.bounds,
+    );
+  }
+}
+
+async function snapshotStep(
+  page: Page,
+  step: string,
+  testInfo: TestInfo,
+): Promise<void> {
   await hideDevOverlays(page);
+  await assertBoxesMatchApp(page, step, testInfo);
   await expect(page).toHaveScreenshot(`${step}.png`, {
     fullPage: false,
     animations: "disabled",
@@ -192,6 +317,7 @@ async function clickIfVisible(
 async function assertVerifyIfOnScreen(
   page: Page,
   isMobile: boolean,
+  testInfo: TestInfo,
 ): Promise<void> {
   const verify = MANIFEST.verify;
   if (!(await headingVisible(page, verify.title))) {
@@ -213,12 +339,15 @@ async function assertVerifyIfOnScreen(
       .or(page.getByRole("img", { name: verify.ctaDesktop }));
     await expect(qr.first()).toBeVisible();
   }
-  await snapshotStep(page, "verify");
+  await snapshotStep(page, "verify", testInfo);
   await clickIfVisible(page, /^Skip for now$/);
   await clickIfVisible(page, /^Skip$/);
 }
 
-async function assertWhatPackDoesIfOnScreen(page: Page): Promise<void> {
+async function assertWhatPackDoesIfOnScreen(
+  page: Page,
+  testInfo: TestInfo,
+): Promise<void> {
   const whatPackDoes = sharedStep("what-pack-does");
   const pages = whatPackDoes.pages ?? [];
   if (pages.length === 0) {
@@ -229,7 +358,7 @@ async function assertWhatPackDoesIfOnScreen(page: Page): Promise<void> {
   }
   for (const [index, packPage] of pages.entries()) {
     await assertManifestCopy(page, packPage.title, packPage.cta);
-    await snapshotStep(page, `what-pack-does-${index + 1}`);
+    await snapshotStep(page, `what-pack-does-${index + 1}`, testInfo);
     await page.getByRole("button", { name: packPage.cta }).click();
   }
 }
@@ -279,7 +408,7 @@ test.describe("Onboard golden parity logged-out signup", () => {
     await openOnboard(page, testInfo);
     const signup = sharedStep("signup");
     await assertManifestCopy(page, signup.title ?? "", signup.cta ?? "");
-    await snapshotStep(page, "signup");
+    await snapshotStep(page, "signup", testInfo);
   });
 });
 
@@ -332,8 +461,8 @@ test.describe("Onboard golden parity authenticated G order", () => {
       ).toBe(true);
     }
 
-    await assertWhatPackDoesIfOnScreen(page);
-    await assertVerifyIfOnScreen(page, isMobile);
+    await assertWhatPackDoesIfOnScreen(page, testInfo);
+    await assertVerifyIfOnScreen(page, isMobile, testInfo);
 
     await page
       .getByRole("heading", { name: connections.title ?? "Connections" })
@@ -348,7 +477,7 @@ test.describe("Onboard golden parity authenticated G order", () => {
         connections.title ?? "",
         connections.cta ?? "",
       );
-      await snapshotStep(page, "connections");
+      await snapshotStep(page, "connections", testInfo);
       await clickIfVisible(page, connections.cta ?? "Skip for now");
     }
 
@@ -356,7 +485,25 @@ test.describe("Onboard golden parity authenticated G order", () => {
 
     if (await headingVisible(page, welcome.title ?? "")) {
       await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
-      await snapshotStep(page, "welcome");
+      await snapshotStep(page, "welcome", testInfo);
     }
+  });
+});
+
+test.describe("Onboard golden parity box check", () => {
+  const expected = APP_GOLDENS[0].cta.bounds;
+
+  test("box within 4 px of the manifest passes", () => {
+    const nudged = { ...expected, x: expected.x + 4, y: expected.y - 4 };
+    expect(() => assertBoxWithin("cta", nudged, expected)).not.toThrow();
+  });
+
+  test("box off by more than 4 px goes red", () => {
+    const off = { ...expected, y: expected.y + 4.5 };
+    expect(() => assertBoxWithin("cta", off, expected)).toThrow(/off by 4\.5px/);
+  });
+
+  test("pixel budget is 2%", () => {
+    expect(GOLDEN_MAX_DIFF_PIXEL_RATIO).toBeLessThanOrEqual(0.02);
   });
 });

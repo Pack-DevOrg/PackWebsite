@@ -29,6 +29,18 @@ function isWellKnownRoute(uri) {
   return uri === '/.well-known' || uri.indexOf('/.well-known/') === 0;
 }
 
+var linkPreviewUserAgentPattern =
+  /facebookexternalhit|facebot|twitterbot|slackbot|slack-imgproxy|discordbot|applebot|iMessage|com\.apple\.|CFNetwork|WhatsApp|LinkedInBot|Googlebot-Image/i;
+
+function isAppClipTokenRoute(uri) {
+  return /^\/a\/[^/]+$/.test(uri);
+}
+
+function isLinkPreviewFetcher(headers) {
+  var userAgent = headers['user-agent'];
+  return !!(userAgent && userAgent.value && linkPreviewUserAgentPattern.test(userAgent.value));
+}
+
 function canonicalizeUri(uri) {
   if (uri === '/') {
     return '/';
@@ -217,6 +229,12 @@ function handler(event) {
 
   if (acceptsMarkdown(headers) && markdownRouteMap[canonicalUri]) {
     request.uri = markdownRouteMap[canonicalUri];
+    return request;
+  }
+
+  if (isAppClipTokenRoute(uri) && isLinkPreviewFetcher(headers)) {
+    // The /link-preview/* cache behavior targets the link-preview origin.
+    request.uri = '/link-preview' + uri;
     return request;
   }
 

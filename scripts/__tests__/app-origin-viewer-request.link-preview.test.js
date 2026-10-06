@@ -11,10 +11,12 @@ const source = fs.readFileSync(
   path.join(__dirname, '../cloudfront/app-origin-viewer-request.js'),
   'utf8'
 );
-const sandbox = {};
+const origins = [];
+const sandbox = { require: (name) => (name === 'cloudfront' ? { updateRequestOrigin: (o) => origins.push(o) } : null) };
 vm.runInNewContext(source, sandbox);
 
 function run(uri, userAgent) {
+  origins.length = 0;
   const headers = { host: { value: 'www.trypackai.com' } };
   if (userAgent) headers['user-agent'] = { value: userAgent };
   return sandbox.handler({ request: { uri, headers, querystring: {} } });
@@ -26,26 +28,28 @@ const SAFARI =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
 
 describe('app-origin-viewer-request link-preview routing', () => {
-  it('routes an Apple link-preview UA on /a/abc to the preview origin', () => {
-    assert.equal(run('/a/abc', APPLE).uri, '/link-preview/a/abc');
-  });
-
-  for (const ua of ['Slackbot-LinkExpanding 1.0', 'facebookexternalhit/1.1', 'Twitterbot/1.0', 'Discordbot/2.0']) {
-    it('routes ' + ua, () => {
-      assert.equal(run('/a/abc', ua).uri, '/link-preview/a/abc');
+  for (const ua of [APPLE, 'Slackbot-LinkExpanding 1.0', 'facebookexternalhit/1.1', 'Twitterbot/1.0', 'Discordbot/2.0']) {
+    it('swaps the origin to the preview origin for ' + ua, () => {
+      const request = run('/a/abc', ua);
+      assert.equal(origins.length, 1);
+      assert.equal(origins[0].domainName, 'link-preview.trypackai.com');
+      assert.equal(request.uri, '/a/abc');
     });
   }
 
-  it('leaves a Safari UA on /a/abc unchanged', () => {
+  it('leaves a Safari UA on /a/abc on the SPA origin', () => {
     assert.equal(run('/a/abc', SAFARI).uri, '/a/abc/index.html');
+    assert.equal(origins.length, 0);
   });
 
   it('falls through for a missing UA', () => {
     assert.equal(run('/a/abc').uri, '/a/abc/index.html');
+    assert.equal(origins.length, 0);
   });
 
   it('never reroutes /app', () => {
     assert.equal(run('/app', APPLE).uri, '/app');
     assert.equal(run('/app', SAFARI).uri, '/app');
+    assert.equal(origins.length, 0);
   });
 });

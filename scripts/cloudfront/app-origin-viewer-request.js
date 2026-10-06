@@ -1,3 +1,4 @@
+var linkPreviewOriginDomain = 'link-preview.trypackai.com';
 function serializeQueryString(querystring) {
   var pairs = [];
   for (var key in querystring) {
@@ -233,8 +234,18 @@ function handler(event) {
   }
 
   if (isAppClipTokenRoute(uri) && isLinkPreviewFetcher(headers)) {
-    // The /link-preview/* cache behavior targets the link-preview origin.
-    request.uri = '/link-preview' + uri;
+    // A viewer-request rewrite cannot change the matched cache behavior, so swap the origin itself
+    // (cloudfront-js 2.0). The path stays /a/<token>; the preview Lambda renders the card tags.
+    require('cloudfront').updateRequestOrigin({
+      domainName: linkPreviewOriginDomain,
+      originAccessControlConfig: { enabled: false },
+      customOriginConfig: {
+        port: 443,
+        protocol: 'https',
+        sslProtocols: ['TLSv1.2'],
+      },
+      timeouts: { readTimeout: 10, connectionTimeout: 5 },
+    });
     return request;
   }
 

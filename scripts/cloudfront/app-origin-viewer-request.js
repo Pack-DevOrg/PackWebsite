@@ -1,3 +1,7 @@
+var cf = require('cloudfront');
+
+var linkPreviewOriginDomain = 'link-preview.trypackai.com';
+
 function serializeQueryString(querystring) {
   var pairs = [];
   for (var key in querystring) {
@@ -27,6 +31,18 @@ function isAppShellRoute(uri) {
 
 function isWellKnownRoute(uri) {
   return uri === '/.well-known' || uri.indexOf('/.well-known/') === 0;
+}
+
+var linkPreviewUserAgentPattern =
+  /facebookexternalhit|facebot|twitterbot|slackbot|slack-imgproxy|discordbot|applebot|iMessage|com\.apple\.|CFNetwork|WhatsApp|LinkedInBot|Googlebot-Image/i;
+
+function isAppClipTokenRoute(uri) {
+  return /^\/a\/[^/]+$/.test(uri);
+}
+
+function isLinkPreviewFetcher(headers) {
+  var userAgent = headers['user-agent'];
+  return !!(userAgent && userAgent.value && linkPreviewUserAgentPattern.test(userAgent.value));
 }
 
 function canonicalizeUri(uri) {
@@ -217,6 +233,21 @@ function handler(event) {
 
   if (acceptsMarkdown(headers) && markdownRouteMap[canonicalUri]) {
     request.uri = markdownRouteMap[canonicalUri];
+    return request;
+  }
+
+  if (isAppClipTokenRoute(uri) && isLinkPreviewFetcher(headers)) {
+    // CloudFront picks the cache behavior from the original path, so the
+    // origin is swapped here; the URI stays /a/<token> for the preview Lambda.
+    cf.updateRequestOrigin({
+      domainName: linkPreviewOriginDomain,
+      originAccessControlConfig: { enabled: false },
+      customOriginConfig: {
+        port: 443,
+        protocol: 'https',
+        sslProtocols: ['TLSv1.2'],
+      },
+    });
     return request;
   }
 

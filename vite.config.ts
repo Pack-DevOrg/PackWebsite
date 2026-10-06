@@ -127,6 +127,23 @@ const jsxInJsPackages = {
   },
 };
 
+// react-native-web has no Libraries/ or src/ internals, and the real react-native sources are Flow. Native-only
+// packages deep-import them (codegenNativeComponent, animated helpers), so every such import gets a stub.
+const RN_NATIVE_STUB_ID = '\0rn-native-internals-stub';
+const RN_NATIVE_STUB_CODE =
+  'export const TurboModuleRegistry = {get: () => null, getEnforcing: () => ({})};' +
+  'export default function codegenNativeComponent() {return null;}';
+const rnNativeInternalsStub = {
+  name: 'rn-native-internals-stub',
+  enforce: 'pre' as const,
+  resolveId(source: string) {
+    return /^react-native\/(Libraries|src)\//u.test(source) ? RN_NATIVE_STUB_ID : null;
+  },
+  load(id: string) {
+    return id === RN_NATIVE_STUB_ID ? RN_NATIVE_STUB_CODE : null;
+  },
+};
+
 const packAppSourceAlias = {
   name: 'pack-app-source',
   enforce: 'pre' as const,
@@ -168,6 +185,7 @@ const reactDomServerEntry = path.join(reactDomModuleDir, 'server');
 const reactJsxRuntimeEntry = path.join(reactModuleDir, 'jsx-runtime.js');
 const reactJsxDevRuntimeEntry = path.join(reactModuleDir, 'jsx-dev-runtime.js');
 const zodModuleDir = resolveModuleDir('zod');
+const reactNativeWebModuleDir = resolveModuleDir('react-native-web');
 const AWS_REGION = 'us-east-1';
 const LEGACY_SERVER_STACK_PREFIX = 'doneaiserver-';
 const TSA_BOARD_STACK_OUTPUT_KEY = 'AirportWaitTimePublicBoardUrl';
@@ -808,7 +826,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
     : styledComponentsModuleDir;
   const resolveAliases: Record<string, string> = {
     '@pack/ui-primitives': normalizePath(path.join(packUiPrimitivesDir, 'index.ts')),
-    'react-native': 'react-native-web',
+    'react-native': normalizePath(reactNativeWebModuleDir),
     react: normalizePath(reactModuleDir),
     'react/jsx-runtime': normalizePath(reactJsxRuntimeEntry),
     'react/jsx-dev-runtime': normalizePath(reactJsxDevRuntimeEntry),
@@ -1029,6 +1047,7 @@ export default defineConfig(({ mode, ssrBuild }) => {
       // writing under node_modules fails with EPERM.
       imagetools({ cache: { dir: '.vite-cache/imagetools' } }),
       jsxInJsPackages,
+      rnNativeInternalsStub,
       packAppSourceAlias,
     ],
     cacheDir: '.vite-cache',
@@ -1057,7 +1076,10 @@ export default defineConfig(({ mode, ssrBuild }) => {
             return this.resolve(path.join(srcDir, updated), importer, {...options, skipSelf: true});
           },
         },
-        ...Object.entries(resolveAliases).map(([find, replacement]) => ({find, replacement})),
+        ...Object.entries(resolveAliases).map(([find, replacement]) => ({
+          find: find === 'react-native' ? /^react-native$/ : find,
+          replacement,
+        })),
       ],
       extensions: [
         '.web.tsx',
@@ -1076,6 +1098,31 @@ export default defineConfig(({ mode, ssrBuild }) => {
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod', 'react-native-web'],
       exclude: ['react-google-recaptcha', 'react-markdown'], // Load these dynamically
+      esbuildOptions: {
+        loader: {'.js': 'jsx'},
+        // Native-only deep imports (Flow sources) have no web build; bundle a stub instead of parsing them.
+        plugins: [
+          {
+            name: 'externalize-react-native-internals',
+            setup(build) {
+              build.onResolve({filter: /^react-native\/(Libraries|src)\//}, () => ({
+                path: 'rn-native-spec-stub',
+                namespace: 'rn-native-spec-stub',
+              }));
+              // Fabric spec files import TurboModuleRegistry, which react-native-web does not export.
+              build.onResolve({filter: /^react-native$/}, args =>
+                /[\\/](specs|fabric)[\\/]Native/.test(args.importer)
+                  ? {path: 'rn-native-spec-stub', namespace: 'rn-native-spec-stub'}
+                  : undefined,
+              );
+              build.onLoad({filter: /.*/, namespace: 'rn-native-spec-stub'}, () => ({
+                contents: RN_NATIVE_STUB_CODE,
+                loader: 'js',
+              }));
+            },
+          },
+        ],
+      },
     },
     define: {
       __DEV__: mode === 'development',

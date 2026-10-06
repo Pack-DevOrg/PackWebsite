@@ -280,11 +280,14 @@ async function assertBoxesMatchApp(
   }
 }
 
+const walkShots: string[] = [];
+
 async function snapshotStep(
   page: Page,
   step: string,
   testInfo: TestInfo,
 ): Promise<void> {
+  walkShots.push(step);
   await hideDevOverlays(page);
   await assertBoxesMatchApp(page, step, testInfo);
   await expect(page).toHaveScreenshot(`${step}.png`, {
@@ -420,6 +423,7 @@ test.describe("Onboard golden parity authenticated G order", () => {
     context,
   }, testInfo) => {
     const isMobile = testInfo.project.name === "chromium-mobile";
+    walkShots.length = 0;
     const sessionJson = e2eSessionJson();
     await injectAuthenticatedSession(context, sessionJson);
     await injectAuthenticatedSession(page, sessionJson);
@@ -471,22 +475,33 @@ test.describe("Onboard golden parity authenticated G order", () => {
       .waitFor({ state: "visible", timeout: 15_000 })
       .catch(() => undefined);
 
-    if (await headingVisible(page, connections.title ?? "Connections")) {
-      await assertManifestCopy(
-        page,
-        connections.title ?? "",
-        connections.cta ?? "",
-      );
-      await snapshotStep(page, "connections", testInfo);
-      await clickIfVisible(page, connections.cta ?? "Skip for now");
-    }
+    // Connections and welcome are required steps, reached by clicking
+    // through the real UI. A step that never appears fails the walk.
+    await expect(
+      page.getByRole("heading", { name: connections.title ?? "Connections" }),
+      "walk never reached connections",
+    ).toBeVisible({ timeout: 15_000 });
+    await assertManifestCopy(
+      page,
+      connections.title ?? "",
+      connections.cta ?? "",
+    );
+    await snapshotStep(page, "connections", testInfo);
+    await page
+      .getByRole("button", { name: connections.cta ?? "Skip for now" })
+      .first()
+      .click();
 
     await skipNonSharedTowardWelcome(page, welcome.title ?? "");
 
-    if (await headingVisible(page, welcome.title ?? "")) {
-      await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
-      await snapshotStep(page, "welcome", testInfo);
-    }
+    await expect(
+      page.getByRole("heading", { name: welcome.title ?? "" }),
+      "walk never reached welcome",
+    ).toBeVisible({ timeout: 15_000 });
+    await assertManifestCopy(page, welcome.title ?? "", welcome.cta ?? "");
+    await snapshotStep(page, "welcome", testInfo);
+
+    expect(walkShots.slice(-2)).toEqual(["connections", "welcome"]);
   });
 });
 

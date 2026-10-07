@@ -1,4 +1,4 @@
-var linkPreviewOriginDomain = 'link-preview.trypackai.com';
+var linkPreviewOriginDomain = 'api.trypackai.com';
 function serializeQueryString(querystring) {
   var pairs = [];
   for (var key in querystring) {
@@ -132,7 +132,8 @@ function handler(event) {
   var querySuffix = serializeQueryString(request.querystring || {});
   var canonicalUri = canonicalizeUri(uri);
 
-  if (host === 'trypackai.com') {
+  // Apple fetches the AASA file from the bare host and does not follow redirects.
+  if (host === 'trypackai.com' && !isWellKnownRoute(uri)) {
     return redirect(
       'https://www.trypackai.com' + canonicalUri + querySuffix,
       301,
@@ -246,6 +247,12 @@ function handler(event) {
       },
       timeouts: { readTimeout: 10, connectionTimeout: 5 },
     });
+    return request;
+  }
+
+  if (isAppClipTokenRoute(uri)) {
+    // Browsers get a static page that carries the Smart App Banner / App Clip meta.
+    request.uri = '/a/index.html';
     return request;
   }
 

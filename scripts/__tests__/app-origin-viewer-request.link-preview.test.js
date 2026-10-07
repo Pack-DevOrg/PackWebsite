@@ -32,25 +32,25 @@ describe('app-origin-viewer-request link-preview routing', () => {
     it('swaps the origin to the preview origin for ' + ua, () => {
       const request = run('/a/abc', ua);
       assert.equal(origins.length, 1);
-      assert.equal(origins[0].domainName, 'link-preview.trypackai.com');
+      assert.equal(origins[0].domainName, 'api.trypackai.com');
       assert.equal(request.uri, '/a/abc');
     });
   }
 
   it('leaves a Safari UA on /a/abc on the SPA origin', () => {
-    assert.equal(run('/a/abc', SAFARI).uri, '/a/abc/index.html');
+    assert.equal(run('/a/abc', SAFARI).uri, '/a/index.html');
     assert.equal(origins.length, 0);
   });
 
   it('keeps CFNetwork and com.apple in-app fetches on the SPA', () => {
     for (const ua of ['Pack/1 CFNetwork/1494.0.7 Darwin/23.4.0', 'com.apple.WebKit.Networking/8618', 'iMessage-Client/1']) {
-      assert.equal(run('/a/abc', ua).uri, '/a/abc/index.html');
+      assert.equal(run('/a/abc', ua).uri, '/a/index.html');
       assert.equal(origins.length, 0);
     }
   });
 
   it('falls through for a missing UA', () => {
-    assert.equal(run('/a/abc').uri, '/a/abc/index.html');
+    assert.equal(run('/a/abc').uri, '/a/index.html');
     assert.equal(origins.length, 0);
   });
 
@@ -58,5 +58,20 @@ describe('app-origin-viewer-request link-preview routing', () => {
     assert.equal(run('/app', APPLE).uri, '/app');
     assert.equal(run('/app', SAFARI).uri, '/app');
     assert.equal(origins.length, 0);
+  });
+});
+
+describe('app-origin-viewer-request apex AASA', () => {
+  const apex = (uri) =>
+    sandbox.handler({ request: { uri, headers: { host: { value: 'trypackai.com' } }, querystring: {} } });
+
+  it('serves the bare-host AASA without a redirect', () => {
+    const request = apex('/.well-known/apple-app-site-association');
+    assert.equal(request.statusCode, undefined);
+    assert.equal(request.uri, '/.well-known/apple-app-site-association');
+  });
+
+  it('still redirects other bare-host paths', () => {
+    assert.equal(apex('/about').statusCode, 301);
   });
 });

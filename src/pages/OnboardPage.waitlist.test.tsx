@@ -70,10 +70,10 @@ function mockInformation(): void {
   }) as unknown as typeof fetch;
 }
 
-async function reachAccessStep(): Promise<void> {
+async function reachAccessStep(url = "/onboard"): Promise<void> {
   render(
     <HelmetProvider>
-      <MemoryRouter initialEntries={["/onboard"]}>
+      <MemoryRouter initialEntries={[url]}>
         <I18nProvider>
           <ThemeProvider>
             <SafeAreaProvider initialMetrics={initialMetrics}>
@@ -112,6 +112,56 @@ describe("OnboardPage access step", () => {
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(await screen.findByRole("heading", { name: "Connections" }))
       .toBeInTheDocument();
+  });
+
+  it("shows an invite code field, redeems a valid code and advances", async () => {
+    access = "waitlisted";
+    mockInformation();
+    await reachAccessStep();
+    const field = await screen.findByLabelText("Invite code");
+    fireEvent.change(field, { target: { value: "ABCD2345" } });
+    fireEvent.click(screen.getByRole("button", { name: "Redeem" }));
+    expect(await screen.findByRole("heading", { name: "Connections" }))
+      .toBeInTheDocument();
+    const posted = (global.fetch as jest.Mock).mock.calls.find(([u]) =>
+      String(u).includes("/access/redeem"),
+    );
+    expect(posted?.[1]?.method).toBe("POST");
+    expect(String(posted?.[1]?.body)).toContain("ABCD2345");
+  });
+
+  it("shows the reason for an invalid code and stays on the step", async () => {
+    access = "waitlisted";
+    mockInformation();
+    const base = global.fetch as jest.Mock;
+    global.fetch = jest.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input).includes("/access/redeem")) {
+        return {
+          ok: false,
+          status: 400,
+          text: async () =>
+            JSON.stringify({ success: false, error: { code: "X", message: "Code expired" } }),
+          clone() {
+            return this;
+          },
+        };
+      }
+      return base(input, init);
+    }) as unknown as typeof fetch;
+    await reachAccessStep();
+    fireEvent.change(await screen.findByLabelText("Invite code"), {
+      target: { value: "BAD" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Redeem" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Code expired");
+    expect(screen.getByLabelText("Invite code")).toBeInTheDocument();
+  });
+
+  it("pre-fills the field from ?code=", async () => {
+    access = "waitlisted";
+    mockInformation();
+    await reachAccessStep("/onboard?code=ABCD2345");
+    expect(await screen.findByLabelText("Invite code")).toHaveValue("ABCD2345");
   });
 
   it("skips straight to Connections for a never-waitlisted active user", async () => {

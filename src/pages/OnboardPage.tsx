@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components -- sequence constants are the /onboard contract */
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import {
   consumeOnboardConnectionsReturn,
   mailboxesFromAccountsPayload,
@@ -12,7 +13,11 @@ import {
   type ConnectedMailboxSnapshot,
 } from "@/auth/accountConnect";
 import { AuthProvider, useAuth } from "@/auth/AuthContext";
-import { createApiClient } from "@/api/client";
+import {
+  ApiRequestError,
+  createApiClient,
+  typedApiRefusalReason,
+} from "@/api/client";
 import { env } from "@/utils/env";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
@@ -99,7 +104,66 @@ function shouldAdvanceSignupBecauseAuthenticated(
   return stepIndex === SIGNUP_INDEX;
 }
 
+export const ACCESS_REDEEM_PATH = "/access/redeem";
+
+function redeemRefusalLine(error: unknown): string {
+  if (error instanceof ApiRequestError) {
+    const reason = typedApiRefusalReason(error.details);
+    if (reason !== undefined) {
+      return reason;
+    }
+  }
+  return "That code did not work. Check it and try again.";
+}
+
+function InviteCodeForm(props: {
+  readonly initialCode: string;
+  readonly onRedeem: (code: string) => Promise<void>;
+}) {
+  const [code, setCode] = useState(props.initialCode);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const trimmed = code.trim();
+    if (trimmed.length === 0 || busy) {
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    props
+      .onRedeem(trimmed)
+      .catch((cause: unknown) => {
+        setError(redeemRefusalLine(cause));
+      })
+      .finally(() => {
+        setBusy(false);
+      });
+  };
+  return (
+    <form onSubmit={submit} style={{ padding: "0 24px" }}>
+      <label htmlFor="invite-code">Invite code</label>
+      <input
+        id="invite-code"
+        name="invite-code"
+        value={code}
+        autoCapitalize="characters"
+        autoComplete="off"
+        onChange={(event) => {
+          setCode(event.target.value);
+        }}
+      />
+      <button type="submit" disabled={busy}>
+        Redeem
+      </button>
+      {error !== null ? <p role="alert">{error}</p> : null}
+    </form>
+  );
+}
+
 function OnboardFlow() {
+  const location = useLocation();
+  const urlCode = new URLSearchParams(location.search).get("code") ?? "";
   const { status, getAccessToken, tokens } = useAuth();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
@@ -197,6 +261,20 @@ function OnboardFlow() {
     };
   }, [getAccessToken, status, step, tokens?.tokenType]);
 
+  const redeemCode = async (code: string) => {
+    const client = createApiClient(
+      getAccessToken,
+      () => tokens?.tokenType ?? "Bearer",
+    );
+    await client.request({
+      path: ACCESS_REDEEM_PATH,
+      method: "POST",
+      body: { code },
+    });
+    wasWaitlisted.current = false;
+    setStepIndex((current) => nextStepIndexBecauseSequence(current));
+  };
+
   const goNext = () => {
     setStepIndex((current) => nextStepIndexBecauseSequence(current));
   };
@@ -292,7 +370,10 @@ function OnboardFlow() {
           <VerifyPhoneStep onVerified={goNext} onSkip={goNext} />
         ) : null}
         {step === "access" && accessView === "waitlisted" ? (
-          <WaitlistStep />
+          <>
+            <WaitlistStep />
+            <InviteCodeForm initialCode={urlCode} onRedeem={redeemCode} />
+          </>
         ) : null}
         {step === "access" && accessView === "in" ? (
           <OnboardingContent scrollEnabled={false}>

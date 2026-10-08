@@ -118,9 +118,9 @@ describe("OnboardPage access step", () => {
     access = "waitlisted";
     mockInformation();
     await reachAccessStep();
-    const field = await screen.findByLabelText("Invite code");
+    const field = await screen.findByLabelText("Access code");
     fireEvent.change(field, { target: { value: "ABCD2345" } });
-    fireEvent.click(screen.getByRole("button", { name: "Redeem" }));
+    fireEvent.click(screen.getByRole("button", { name: "Redeem code" }));
     expect(await screen.findByRole("heading", { name: "Connections" }))
       .toBeInTheDocument();
     const posted = (global.fetch as jest.Mock).mock.calls.find(([u]) =>
@@ -149,19 +149,19 @@ describe("OnboardPage access step", () => {
       return base(input, init);
     }) as unknown as typeof fetch;
     await reachAccessStep();
-    fireEvent.change(await screen.findByLabelText("Invite code"), {
+    fireEvent.change(await screen.findByLabelText("Access code"), {
       target: { value: "BAD" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Redeem" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("Code expired");
-    expect(screen.getByLabelText("Invite code")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Redeem code" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("That code has expired.");
+    expect(screen.getByLabelText("Access code")).toBeInTheDocument();
   });
 
   it("pre-fills the field from ?code=", async () => {
     access = "waitlisted";
     mockInformation();
     await reachAccessStep("/onboard?code=ABCD2345");
-    expect(await screen.findByLabelText("Invite code")).toHaveValue("ABCD2345");
+    expect(await screen.findByLabelText("Access code")).toHaveValue("ABCD2345");
   });
 
   it("skips straight to Connections for a never-waitlisted active user", async () => {

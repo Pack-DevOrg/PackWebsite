@@ -19,6 +19,10 @@ import {
   typedApiRefusalReason,
 } from "@/api/client";
 import { env } from "@/utils/env";
+import {
+  AccessCodeField,
+  accessCodeFromSearch,
+} from "@/components/onboard/AccessCodeField";
 import { CompleteStep } from "@/components/onboard/CompleteStep";
 import { ConnectionsStep } from "@/components/onboard/ConnectionsStep";
 import {
@@ -106,64 +110,49 @@ function shouldAdvanceSignupBecauseAuthenticated(
 
 export const ACCESS_REDEEM_PATH = "/access/redeem";
 
-function redeemRefusalLine(error: unknown): string {
+/** Maps the server's refusal text to an AccessCodeField error reason. */
+export function accessCodeReasonBecauseRefusal(error: unknown): string {
   if (error instanceof ApiRequestError) {
-    const reason = typedApiRefusalReason(error.details);
-    if (reason !== undefined) {
-      return reason;
-    }
+    const text = (typedApiRefusalReason(error.details) ?? "").toLowerCase();
+    if (text.includes("expired")) return "expired";
+    if (/\b(used|redeemed)\b/.test(text)) return "used";
+    if (text.length > 0) return "invalid";
   }
-  return "That code did not work. Check it and try again.";
+  return "unknown";
 }
 
 function InviteCodeForm(props: {
   readonly initialCode: string;
   readonly onRedeem: (code: string) => Promise<void>;
 }) {
-  const [code, setCode] = useState(props.initialCode);
-  const [error, setError] = useState<string | null>(null);
+  const [reason, setReason] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault();
-    const trimmed = code.trim();
-    if (trimmed.length === 0 || busy) {
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    props
-      .onRedeem(trimmed)
-      .catch((cause: unknown) => {
-        setError(redeemRefusalLine(cause));
-      })
-      .finally(() => {
-        setBusy(false);
-      });
-  };
   return (
-    <form onSubmit={submit} style={{ padding: "0 24px" }}>
-      <label htmlFor="invite-code">Invite code</label>
-      <input
-        id="invite-code"
-        name="invite-code"
-        value={code}
-        autoCapitalize="characters"
-        autoComplete="off"
-        onChange={(event) => {
-          setCode(event.target.value);
+    <div style={{ padding: "0 24px" }}>
+      <AccessCodeField
+        initialCode={props.initialCode}
+        errorReason={reason}
+        submitting={busy}
+        onSubmit={(code) => {
+          setBusy(true);
+          setReason(null);
+          props
+            .onRedeem(code)
+            .catch((cause: unknown) => {
+              setReason(accessCodeReasonBecauseRefusal(cause));
+            })
+            .finally(() => {
+              setBusy(false);
+            });
         }}
       />
-      <button type="submit" disabled={busy}>
-        Redeem
-      </button>
-      {error !== null ? <p role="alert">{error}</p> : null}
-    </form>
+    </div>
   );
 }
 
 function OnboardFlow() {
   const location = useLocation();
-  const urlCode = new URLSearchParams(location.search).get("code") ?? "";
+  const urlCode = accessCodeFromSearch(location.search);
   const { status, getAccessToken, tokens } = useAuth();
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
   const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(

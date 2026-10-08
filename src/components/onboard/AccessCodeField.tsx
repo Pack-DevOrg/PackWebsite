@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { OnboardingPrimaryButton } from "@pack/ui-primitives";
 
 export const ACCESS_CODE_LABEL = "Access code";
 export const ACCESS_CODE_SUBMIT = "Redeem code";
@@ -60,9 +61,14 @@ export function AccessCodeField({
         onChange={(event) => setCode(normalizeAccessCode(event.target.value))}
       />
       {errorLine ? <p role="alert">{errorLine}</p> : null}
-      <button type="submit" disabled={!canSubmit}>
+      <OnboardingPrimaryButton
+        onPress={() => {
+          if (canSubmit) onSubmit(code);
+        }}
+        disabled={!canSubmit}
+      >
         {ACCESS_CODE_SUBMIT}
-      </button>
+      </OnboardingPrimaryButton>
     </form>
   );
 }

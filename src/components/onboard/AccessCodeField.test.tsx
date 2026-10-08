@@ -24,6 +24,10 @@ describe("accessCodeErrorLine", () => {
   });
 });
 
+function submitButton(): HTMLElement {
+  return screen.getByRole("button", { name: ACCESS_CODE_SUBMIT });
+}
+
 describe("AccessCodeField", () => {
   it("prefills from initialCode and submits the normalized code", () => {
     const onSubmit = jest.fn();
@@ -37,9 +41,9 @@ describe("AccessCodeField", () => {
   it("disables submit when empty or submitting", () => {
     const onSubmit = jest.fn();
     const { rerender } = render(<AccessCodeField onSubmit={onSubmit} />);
-    expect(screen.getByText(ACCESS_CODE_SUBMIT)).toBeDisabled();
+    expect(submitButton()).toHaveAttribute("aria-disabled", "true");
     rerender(<AccessCodeField initialCode="A" submitting onSubmit={onSubmit} />);
-    expect(screen.getByText(ACCESS_CODE_SUBMIT)).toBeDisabled();
+    expect(submitButton()).toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows the error line", () => {

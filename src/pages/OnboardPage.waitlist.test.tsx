@@ -118,9 +118,9 @@ describe("OnboardPage access step", () => {
     access = "waitlisted";
     mockInformation();
     await reachAccessStep();
-    const field = await screen.findByLabelText("Invite code");
+    const field = await screen.findByLabelText("Access code");
     fireEvent.change(field, { target: { value: "ABCD2345" } });
-    fireEvent.click(screen.getByRole("button", { name: "Redeem" }));
+    fireEvent.click(screen.getByRole("button", { name: "Redeem code" }));
     expect(await screen.findByRole("heading", { name: "Connections" }))
       .toBeInTheDocument();
     const posted = (global.fetch as jest.Mock).mock.calls.find(([u]) =>
@@ -130,7 +130,13 @@ describe("OnboardPage access step", () => {
     expect(String(posted?.[1]?.body)).toContain("ABCD2345");
   });
 
-  it("shows the reason for an invalid code and stays on the step", async () => {
+  it.each([
+    ["CODE_UNKNOWN", 404, "That code isn't valid. Check it and try again."],
+    ["CODE_EXPIRED", 410, "That code has expired."],
+    ["CODE_USED_UP", 409, "That code has already been used."],
+    ["INVALID_REQUEST", 400, "We couldn't redeem that code. Try again."],
+    ["RATE_LIMITED", 429, "We couldn't redeem that code. Try again."],
+  ])("maps redeem envelope code %s to its line", async (code, status, line) => {
     access = "waitlisted";
     mockInformation();
     const base = global.fetch as jest.Mock;
@@ -138,9 +144,9 @@ describe("OnboardPage access step", () => {
       if (String(input).includes("/access/redeem")) {
         return {
           ok: false,
-          status: 400,
+          status,
           text: async () =>
-            JSON.stringify({ success: false, error: { code: "X", message: "Code expired" } }),
+            JSON.stringify({ success: false, error: { code, message: "Code expired used invalid" } }),
           clone() {
             return this;
           },
@@ -149,19 +155,19 @@ describe("OnboardPage access step", () => {
       return base(input, init);
     }) as unknown as typeof fetch;
     await reachAccessStep();
-    fireEvent.change(await screen.findByLabelText("Invite code"), {
+    fireEvent.change(await screen.findByLabelText("Access code"), {
       target: { value: "BAD" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Redeem" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("Code expired");
-    expect(screen.getByLabelText("Invite code")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Redeem code" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(line);
+    expect(screen.getByLabelText("Access code")).toBeInTheDocument();
   });
 
   it("pre-fills the field from ?code=", async () => {
     access = "waitlisted";
     mockInformation();
     await reachAccessStep("/onboard?code=ABCD2345");
-    expect(await screen.findByLabelText("Invite code")).toHaveValue("ABCD2345");
+    expect(await screen.findByLabelText("Access code")).toHaveValue("ABCD2345");
   });
 
   it("skips straight to Connections for a never-waitlisted active user", async () => {

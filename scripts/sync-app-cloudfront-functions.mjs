@@ -56,7 +56,8 @@ for (const target of functions) {
     "--if-match",
     eTag,
     "--function-config",
-    `Comment=${describe.FunctionSummary.FunctionConfig.Comment},Runtime=${describe.FunctionSummary.FunctionConfig.Runtime}`,
+    // JSON keeps the function's KeyValueStore associations (the Pack Test Store key lives in one).
+    JSON.stringify(describe.FunctionSummary.FunctionConfig),
     "--function-code",
     `fileb://${target.sourcePath}`,
   ]);

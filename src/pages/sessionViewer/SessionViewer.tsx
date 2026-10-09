@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-import type { FetchFrameBatch, FrameBatch, SendTouch } from "./sessionFrames";
+import { framesOfTrack, TimelineScrubber } from "./TimelineScrubber";
+import type {
+  FetchFrameBatch,
+  FetchTimelineFrame,
+  FetchTimelineIndex,
+  FrameBatch,
+  SendTouch,
+  TimelineIndex,
+} from "./sessionFrames";
 
 export const STALE_AFTER_MS = 5000;
 const LOST_AFTER_FAILURES = 3;
@@ -14,6 +22,8 @@ export const VIEWER_COPY = {
   done: "Done, keep going",
 } as const;
 
+export const TIMELINE_POLL_MS = 5000;
+export type TimelineSource = { readonly fetchIndex: FetchTimelineIndex; readonly fetchFrame: FetchTimelineFrame };
 export type ViewerHealth = "live" | "stale" | "lost";
 export type ViewerStats = { framesPerSecond: number; batchMs: number };
 
@@ -89,17 +99,74 @@ export function SessionViewer({
   onDone,
   doneBusy,
   onStats,
+  timeline,
 }: {
   readonly fetchBatch: FetchFrameBatch;
   readonly sendTouch: SendTouch;
   readonly onDone: () => void;
   readonly doneBusy: boolean;
   readonly onStats?: (stats: ViewerStats) => void;
+  /** Scrub back through the recorded frames (live while the job runs, replay after). */
+  readonly timeline?: TimelineSource;
 }) {
   const [src, setSrc] = useState<string | null>(null);
   const [health, setHealth] = useState<ViewerHealth>("live");
   const [text, setText] = useState("");
   const lastFrameAt = useRef(Date.now());
+  const [index, setIndex] = useState<TimelineIndex | null>(null);
+  const [trackId, setTrackId] = useState<string | null>(null);
+  const [position, setPosition] = useState(0);
+  const [scrubbing, setScrubbing] = useState(false);
+  const [scrubSrc, setScrubSrc] = useState<string | null>(null);
+  const frameCache = useRef(new Map<string, string>());
+
+  useEffect(() => {
+    if (timeline === undefined) return undefined;
+    const abort = new AbortController();
+    const poll = async (): Promise<void> => {
+      try {
+        const next = await timeline.fetchIndex(abort.signal);
+        if (!abort.signal.aborted) setIndex(next);
+      } catch {
+        // The live view keeps working without the timeline.
+      }
+    };
+    void poll();
+    const timer = setInterval(() => void poll(), TIMELINE_POLL_MS);
+    return () => {
+      abort.abort();
+      clearInterval(timer);
+    };
+  }, [timeline]);
+
+  const activeTrack = trackId ?? index?.tracks[0]?.trackId ?? null;
+  // The session is gone (lost) but frames were recorded: show the replay.
+  const replaying = health === "lost" && index !== null && index.frames.length > 0;
+  const showScrub = scrubbing || replaying;
+  const trackFrames = index !== null && activeTrack !== null ? framesOfTrack(index, activeTrack) : [];
+  const shownPosition = scrubbing || !replaying ? position : Math.max(trackFrames.length - 1, 0);
+  const shownFrame = trackFrames[Math.min(shownPosition, trackFrames.length - 1)];
+
+  useEffect(() => {
+    if (!showScrub || timeline === undefined || activeTrack === null || shownFrame === undefined) return undefined;
+    const key = `${activeTrack}/${shownFrame.seq}`;
+    const cached = frameCache.current.get(key);
+    if (cached !== undefined) {
+      setScrubSrc(cached);
+      return undefined;
+    }
+    const abort = new AbortController();
+    void timeline.fetchFrame(activeTrack, shownFrame.seq, abort.signal).then(
+      (url) => {
+        if (url !== null && !abort.signal.aborted) {
+          frameCache.current.set(key, url);
+          setScrubSrc(url);
+        }
+      },
+      () => undefined,
+    );
+    return () => abort.abort();
+  }, [showScrub, timeline, activeTrack, shownFrame]);
 
   useEffect(() => {
     const abort = new AbortController();
@@ -176,11 +243,33 @@ export function SessionViewer({
   return (
     <>
       <Stage data-testid="session-viewer" data-health={health}>
-        {src !== null ? <Picture alt="Pack's browser" src={src} onClick={onPicture} /> : null}
-        {health !== "live" ? (
+        {showScrub && scrubSrc !== null ? (
+          <Picture alt="Pack's browser, earlier" src={scrubSrc} />
+        ) : src !== null ? (
+          <Picture alt="Pack's browser" src={src} onClick={onPicture} />
+        ) : null}
+        {health !== "live" && !replaying ? (
           <Badge role="status">{health === "lost" ? VIEWER_COPY.lost : VIEWER_COPY.stale}</Badge>
         ) : null}
       </Stage>
+      {index !== null && activeTrack !== null ? (
+        <TimelineScrubber
+          index={index}
+          trackId={activeTrack}
+          position={shownPosition}
+          scrubbing={showScrub}
+          onTrack={(next) => {
+            setTrackId(next);
+            setPosition(0);
+            setScrubbing(true);
+          }}
+          onPosition={(next) => {
+            setPosition(next);
+            setScrubbing(true);
+          }}
+          onLive={() => setScrubbing(false)}
+        />
+      ) : null}
       <Bar onSubmit={submitText}>
         <TextField
           aria-label={VIEWER_COPY.type}

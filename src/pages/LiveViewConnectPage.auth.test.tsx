@@ -26,8 +26,6 @@ const TICKET_BODY = {
   jobId: "job-1",
   merchantHost: "www.ubereats.com",
   expiresAtMs: NOW_MS + 60_000,
-  ticket: "ticket-opaque",
-  relayUrl: "wss://relay.pack.test/live",
 };
 
 function renderAt(path: string) {
@@ -87,7 +85,7 @@ describe("LiveViewConnectPage owner session", () => {
     });
     renderAt("/live-view?token=tok-2");
 
-    expect(await screen.findByTestId("live-viewer")).toBeInTheDocument();
+    expect(await screen.findByTestId("session-viewer")).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
     expect(document.body.innerHTML).not.toContain("live.browser.run");
     expect(mockRequest).toHaveBeenCalledWith(

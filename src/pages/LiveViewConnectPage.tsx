@@ -8,9 +8,12 @@ import { SessionViewer } from "./sessionViewer/SessionViewer";
 import {
   fetchFrameBatchBecauseApiClient,
   sendTouchBecauseApiClient,
+  fetchTimelineFrameBecauseApiClient,
+  fetchTimelineIndexBecauseApiClient,
   type FetchFrameBatch,
   type SendTouch,
 } from "./sessionViewer/sessionFrames";
+import type { TimelineSource } from "./sessionViewer/SessionViewer";
 
 import type { ApiClient } from "../api/client";
 import { useApiClient } from "../api/useApiClient";
@@ -209,6 +212,7 @@ function initialLiveViewPageStateBecauseMissingTokenIsExpired(
 export type SessionPorts = (jobId: string) => {
   readonly fetchBatch: FetchFrameBatch;
   readonly sendTouch: SendTouch;
+  readonly timeline?: TimelineSource;
 };
 
 export function LiveViewConnectView({
@@ -348,6 +352,7 @@ function ConnectedViewer({
     <SessionViewer
       fetchBatch={ports.fetchBatch}
       sendTouch={ports.sendTouch}
+      timeline={ports.timeline}
       onDone={onDone}
       doneBusy={doneBusy}
     />
@@ -373,6 +378,10 @@ function LiveViewAuthGate() {
     () => (jobId) => ({
       fetchBatch: fetchFrameBatchBecauseApiClient(client, jobId),
       sendTouch: sendTouchBecauseApiClient(client, jobId),
+      timeline: {
+        fetchIndex: fetchTimelineIndexBecauseApiClient(client, jobId),
+        fetchFrame: fetchTimelineFrameBecauseApiClient(client, jobId),
+      },
     }),
     [client],
   );

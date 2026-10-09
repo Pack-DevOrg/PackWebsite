@@ -46,6 +46,16 @@ describe('apple-app-site-association', () => {
     expect(netlify).toMatch(/from = "\/\*"\s+to = "\/index\.html"\s+status = 200/);
   });
 
+  it('keeps /a/* clip-first: excluded from the app, first in order, with /app/* claimed', () => {
+    const body = JSON.parse(readFileSync(file, 'utf8')) as {
+      applinks: {details: Array<{components: Array<{'/': string; exclude?: boolean}>}>};
+    };
+    const components = body.applinks.details[0]?.components ?? [];
+    expect(components[0]).toMatchObject({'/': '/a/*', exclude: true});
+    expect(components.filter((component) => component['/'] === '/a/*')).toHaveLength(1);
+    expect(components.find((component) => component['/'] === '/app/*')?.exclude).toBeUndefined();
+  });
+
   it('keeps the existing application/json header for the extensionless path', () => {
     const netlify = readFileSync(join(process.cwd(), 'netlify.toml'), 'utf8');
     expect(netlifyContentType(netlify, AASA_URL_PATH)).toBe('application/json');

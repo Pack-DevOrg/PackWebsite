@@ -2,8 +2,19 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["GW8YNJQZCK.com.packai.app"],
+        "appIDs": [
+          "GW8YNJQZCK.com.packai.app"
+        ],
         "components": [
+          {
+            "/": "/a/*",
+            "exclude": true,
+            "comment": "Clip-first card links: the full app never claims these, so the App Clip card opens even when Pack is installed"
+          },
+          {
+            "/": "/app/*",
+            "comment": "Open in Pack: deep links the App Clip hands to the full app"
+          },
           {
             "/": "/share/*",
             "comment": "Handle all shared travel plan links"
@@ -21,10 +32,6 @@
             "comment": "Handle live view links"
           },
           {
-            "/": "/a/*",
-            "comment": "Handle App Clip artifact links (trip pages, results, confirms)"
-          },
-          {
             "/": "/sports/*",
             "comment": "Handle sports links"
           },
@@ -37,9 +44,13 @@
     ]
   },
   "webcredentials": {
-    "apps": ["GW8YNJQZCK.com.packai.app"]
+    "apps": [
+      "GW8YNJQZCK.com.packai.app"
+    ]
   },
   "appclips": {
-    "apps": ["GW8YNJQZCK.com.packai.app.Clip"]
+    "apps": [
+      "GW8YNJQZCK.com.packai.app.Clip"
+    ]
   }
 }

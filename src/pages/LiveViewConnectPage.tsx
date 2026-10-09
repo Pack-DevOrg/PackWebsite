@@ -4,7 +4,13 @@ import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { z } from "zod";
 
-import { LiveViewer, type LiveViewTicket } from "./liveViewer";
+import { SessionViewer } from "./sessionViewer/SessionViewer";
+import {
+  fetchFrameBatchBecauseApiClient,
+  sendTouchBecauseApiClient,
+  type FetchFrameBatch,
+  type SendTouch,
+} from "./sessionViewer/sessionFrames";
 
 import type { ApiClient } from "../api/client";
 import { useApiClient } from "../api/useApiClient";
@@ -15,11 +21,7 @@ const LIVE_VIEW_SIGN_IN_HEADING = "Sign in to watch Pack work";
 const LIVE_VIEW_SIGN_IN_BUTTON = "Sign in";
 const LIVE_VIEW_CLEAR_SENT = "Pack is picking it back up.";
 const LIVE_VIEW_CLEAR_FAILED = "That didn't reach Pack. Tap again.";
-/** Cloudflare Browser Run host. The page never iframes it; the relay keeps that URL. */
-const CLOUDFLARE_LIVE_VIEW_HOST = "live.browser.run";
 const INSTALL_STORAGE_KEY = "pack-live-view-install-id";
-/** Matches the relay ticket cap. A longer expiry is not a phone ticket. */
-const MAX_TICKET_TTL_MS = 10 * 60 * 1000;
 
 const PageContainer = styled.main`
   height: 100dvh;
@@ -75,25 +77,16 @@ const ApiDataEnvelopeSchema = z.object({
   data: z.unknown(),
 });
 
-const ViewerTicketSchema = z.object({
+/** What GET /live-view tells the owner. Any vendor viewer URL in the body is ignored. */
+const HandoffSchema = z.object({
   jobId: z.string().min(1),
   merchantHost: z.string().min(1),
   expiresAtMs: z.number().int().positive(),
-  ticket: z.string().min(1),
-  relayUrl: z.string().min(1),
-  ticketExpiresAtMs: z.number().int().positive().optional(),
-  driver: z.enum(["agent", "user"]).optional(),
-  headline: z.string().min(1).optional(),
 });
 
 type ResolvedViewer = {
   jobId: string;
   merchantHost: string;
-  relayUrl: string;
-  ticket: string;
-  ticketExpiresAtMs: number;
-  driver: "agent" | "user";
-  headline: string;
 };
 
 /** GET /live-view answers `{success, data}`; tests and older fixtures send the bare body. */
@@ -105,50 +98,12 @@ function handoffBodyBecauseApiEnvelope(body: unknown): unknown {
   return body;
 }
 
-function relayUrlBecauseTicket(relayUrl: string): URL | null {
-  try {
-    return new URL(relayUrl);
-  } catch {
+export function viewerBecauseHandoff(body: unknown, nowMs: number): ResolvedViewer | null {
+  const parsed = HandoffSchema.safeParse(handoffBodyBecauseApiEnvelope(body));
+  if (!parsed.success || parsed.data.expiresAtMs <= nowMs) {
     return null;
   }
-}
-
-/**
- * The phone ticket. A Cloudflare viewer URL in the body is ignored: this page
- * never embeds it.
- */
-export function viewerBecauseServerTicket(
-  body: unknown,
-  nowMs: number,
-): ResolvedViewer | null {
-  const parsed = ViewerTicketSchema.safeParse(handoffBodyBecauseApiEnvelope(body));
-  if (!parsed.success) {
-    return null;
-  }
-  const ticketExpiresAtMs = parsed.data.ticketExpiresAtMs ?? parsed.data.expiresAtMs;
-  const ttlMs = ticketExpiresAtMs - nowMs;
-  if (ttlMs <= 0 || ttlMs > MAX_TICKET_TTL_MS) {
-    return null;
-  }
-  const relay = relayUrlBecauseTicket(parsed.data.relayUrl);
-  if (relay === null) {
-    return null;
-  }
-  if (relay.protocol !== "wss:" && relay.protocol !== "https:") {
-    return null;
-  }
-  if (relay.hostname === CLOUDFLARE_LIVE_VIEW_HOST) {
-    return null;
-  }
-  return {
-    jobId: parsed.data.jobId,
-    merchantHost: parsed.data.merchantHost,
-    relayUrl: parsed.data.relayUrl,
-    ticket: parsed.data.ticket,
-    ticketExpiresAtMs,
-    driver: parsed.data.driver ?? "user",
-    headline: parsed.data.headline ?? parsed.data.merchantHost,
-  };
+  return { jobId: parsed.data.jobId, merchantHost: parsed.data.merchantHost };
 }
 
 /** Stable install id. The relay ticket is bound to it. */
@@ -251,14 +206,21 @@ function initialLiveViewPageStateBecauseMissingTokenIsExpired(
   return { kind: "pending" };
 }
 
+export type SessionPorts = (jobId: string) => {
+  readonly fetchBatch: FetchFrameBatch;
+  readonly sendTouch: SendTouch;
+};
+
 export function LiveViewConnectView({
   resolveHandoff,
   clearHandoff,
   installId,
+  sessionPorts,
 }: {
   readonly resolveHandoff: ResolveLiveViewHandoff;
   readonly clearHandoff: ClearLiveViewHandoff;
   readonly installId: string;
+  readonly sessionPorts: SessionPorts;
 }) {
   const [searchParams] = useSearchParams();
   const { shortId } = useParams<{ shortId?: string }>();
@@ -304,7 +266,7 @@ export function LiveViewConnectView({
         if (abortController.signal.aborted) {
           return;
         }
-        const viewer = viewerBecauseServerTicket(body, Date.now());
+        const viewer = viewerBecauseHandoff(body, Date.now());
         if (viewer === null) {
           setPageState({ kind: "expired" });
           return;
@@ -324,25 +286,6 @@ export function LiveViewConnectView({
       abortController.abort();
     };
   }, [installId, linkQuery, resolveHandoff]);
-
-  const refreshTicket = useMemo(() => {
-    if (linkQuery === null) {
-      return undefined;
-    }
-    const query = linkQuery;
-    return async (): Promise<LiveViewTicket> => {
-      const body = await resolveHandoff(query, new AbortController().signal);
-      const next = viewerBecauseServerTicket(body, Date.now());
-      if (next === null) {
-        throw new Error("live view expired");
-      }
-      return {
-        relayUrl: next.relayUrl,
-        ticket: next.ticket,
-        ticketExpiresAtMs: next.ticketExpiresAtMs,
-      };
-    };
-  }, [linkQuery, resolveHandoff]);
 
   const onDone = () => {
     const run = async () => {
@@ -367,15 +310,9 @@ export function LiveViewConnectView({
             {clearState === "failed" ? (
               <ClearStatus role="alert">{LIVE_VIEW_CLEAR_FAILED}</ClearStatus>
             ) : null}
-            <LiveViewer
-              relayUrl={viewer.relayUrl}
-              ticket={viewer.ticket}
-              ticketExpiresAtMs={viewer.ticketExpiresAtMs}
-              installId={installId}
-              driver={viewer.driver}
-              headline={viewer.headline}
-              merchantHost={viewer.merchantHost}
-              refreshTicket={refreshTicket}
+            <ConnectedViewer
+              jobId={viewer.jobId}
+              sessionPorts={sessionPorts}
               onDone={onDone}
               doneBusy={clearState === "sending"}
             />
@@ -395,6 +332,28 @@ export function LiveViewConnectView({
   );
 }
 
+function ConnectedViewer({
+  jobId,
+  sessionPorts,
+  onDone,
+  doneBusy,
+}: {
+  readonly jobId: string;
+  readonly sessionPorts: SessionPorts;
+  readonly onDone: () => void;
+  readonly doneBusy: boolean;
+}) {
+  const ports = useMemo(() => sessionPorts(jobId), [jobId, sessionPorts]);
+  return (
+    <SessionViewer
+      fetchBatch={ports.fetchBatch}
+      sendTouch={ports.sendTouch}
+      onDone={onDone}
+      doneBusy={doneBusy}
+    />
+  );
+}
+
 function LiveViewAuthGate() {
   const { status, login } = useAuth();
   const client = useApiClient();
@@ -410,6 +369,13 @@ function LiveViewAuthGate() {
     () => clearLiveViewHandoffBecauseApiClient(client),
     [client],
   );
+  const sessionPorts = useMemo<SessionPorts>(
+    () => (jobId) => ({
+      fetchBatch: fetchFrameBatchBecauseApiClient(client, jobId),
+      sendTouch: sendTouchBecauseApiClient(client, jobId),
+    }),
+    [client],
+  );
   const hasLink =
     linkQueryBecauseTokenOrShortId(
       opaqueLiveViewTokenFromSearchParamsBecauseQueryMustNotCarryUrl(searchParams),
@@ -421,6 +387,7 @@ function LiveViewAuthGate() {
         resolveHandoff={resolveHandoff}
         clearHandoff={clearHandoff}
         installId={installId}
+        sessionPorts={sessionPorts}
       />
     );
   }

@@ -17,8 +17,6 @@ import { ThemeProvider } from "@/styles/ThemeProvider";
 const NOW_MS = 1_714_000_000_000;
 const MERCHANT_HOST = "shop.example.test";
 const JOB_ID = "job-synthetic-1";
-const TICKET = "ticket-opaque";
-const RELAY_URL = "wss://relay.pack.test/live";
 const INSTALL_ID = "install-web-1";
 const EXPIRED_HEADING = "Pack needs your help — this link expired";
 const CLOUDFLARE_VIEWER =
@@ -26,26 +24,18 @@ const CLOUDFLARE_VIEWER =
 
 const originalFetch = global.fetch;
 let fetchMock: jest.Mock;
-const socketUrls: string[] = [];
+const frames = jest.fn();
+const touches = jest.fn();
 
-class FakeSocket {
-  url: string;
-  onopen: (() => void) | null = null;
-  onmessage: ((event: { data: string }) => void) | null = null;
-  onclose: (() => void) | null = null;
-  onerror: (() => void) | null = null;
-  readyState = 0;
-  constructor(url: string) {
-    this.url = url;
-    socketUrls.push(url);
-  }
-  send(): void {}
-  close(): void {
-    this.readyState = 3;
-  }
-  addEventListener(): void {}
-  removeEventListener(): void {}
-}
+const sessionPorts = (jobId: string) => ({
+  fetchBatch: (signal: AbortSignal) => {
+    frames(jobId);
+    return new Promise<null>((resolve) => signal.addEventListener("abort", () => resolve(null)));
+  },
+  sendTouch: async (event: unknown) => {
+    touches(jobId, event);
+  },
+});
 
 /** Stands in for the authenticated API client: same URL, the test's fetch mock. */
 async function fetchResolver(query: LiveViewLinkQuery, signal: AbortSignal): Promise<unknown> {
@@ -81,6 +71,7 @@ function renderPage(search: string) {
               resolveHandoff={fetchResolver}
               clearHandoff={fetchClearer}
               installId={INSTALL_ID}
+              sessionPorts={sessionPorts}
             />
           </ThemeProvider>
         </I18nProvider>
@@ -94,8 +85,6 @@ function okTicket(overrides: Record<string, unknown> = {}) {
     jobId: JOB_ID,
     merchantHost: MERCHANT_HOST,
     expiresAtMs: NOW_MS + 60_000,
-    ticket: TICKET,
-    relayUrl: RELAY_URL,
     ...overrides,
   };
 }
@@ -113,9 +102,8 @@ describe("LiveViewConnectPage", () => {
     jest.spyOn(Date, "now").mockReturnValue(NOW_MS);
     fetchMock = jest.fn();
     global.fetch = fetchMock;
-    socketUrls.length = 0;
-    // @ts-expect-error test double for the viewer's relay socket
-    global.WebSocket = FakeSocket;
+    frames.mockClear();
+    touches.mockClear();
   });
 
   afterEach(() => {
@@ -123,36 +111,27 @@ describe("LiveViewConnectPage", () => {
     global.fetch = originalFetch;
   });
 
-  it("mounts the shared viewer for a ticket and does not iframe Cloudflare", async () => {
+  it("mounts the frame viewer for the owner handoff and never embeds the vendor url", async () => {
     const source = readFileSync(join(process.cwd(), "src/pages/LiveViewConnectPage.tsx"), "utf8");
-    expect(source).toContain('from "./liveViewer"');
+    expect(source).toContain("./sessionViewer/SessionViewer");
     expect(source).not.toContain("<iframe");
     expect(source).not.toContain("styled.iframe");
 
     fetchMock.mockResolvedValue(
       jsonOk({
         success: true,
-        data: {
-          ...okTicket(),
-          liveViewUrl: CLOUDFLARE_VIEWER,
-        },
+        data: { ...okTicket(), liveViewUrl: CLOUDFLARE_VIEWER },
         requestId: "r1",
       }),
     );
 
     renderPage("?token=tok-ok");
 
-    expect(await screen.findByTestId("live-viewer")).toBeInTheDocument();
+    expect(await screen.findByTestId("session-viewer")).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
     expect(document.body.innerHTML).not.toContain("live.browser.run");
-    expect(document.body.innerHTML).not.toContain(CLOUDFLARE_VIEWER);
-    await waitFor(() => {
-      expect(socketUrls.some((url) => url.includes(`ticket=${encodeURIComponent(TICKET)}`))).toBe(true);
-    });
-    expect(socketUrls.some((url) => url.startsWith(RELAY_URL))).toBe(true);
-    expect(
-      screen.queryByRole("heading", { name: EXPIRED_HEADING }),
-    ).not.toBeInTheDocument();
+    await waitFor(() => expect(frames).toHaveBeenCalledWith(JOB_ID));
+    expect(screen.queryByRole("heading", { name: EXPIRED_HEADING })).not.toBeInTheDocument();
   });
 
   it("renders the expired heading and does not fetch when the token query is missing", async () => {
@@ -161,7 +140,7 @@ describe("LiveViewConnectPage", () => {
     expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(screen.queryByTestId("live-viewer")).toBeNull();
+    expect(screen.queryByTestId("session-viewer")).toBeNull();
   });
 
   it("renders the expired heading and no iframe when the token GET is 404", async () => {
@@ -180,17 +159,7 @@ describe("LiveViewConnectPage", () => {
 
     expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
-    expect(screen.queryByTestId("live-viewer")).toBeNull();
-  });
-
-  it("refuses a ticket that lasts longer than 10 minutes", async () => {
-    fetchMock.mockResolvedValue(jsonOk(okTicket({ expiresAtMs: NOW_MS + 10 * 60 * 1000 + 1 })));
-
-    renderPage("?token=tok-long");
-
-    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
-    expect(screen.queryByTestId("live-viewer")).toBeNull();
-    expect(document.querySelector("iframe")).toBeNull();
+    expect(screen.queryByTestId("session-viewer")).toBeNull();
   });
 
   it("ignores liveViewUrl query params: expired heading, no iframe, no fetch", async () => {
@@ -200,34 +169,6 @@ describe("LiveViewConnectPage", () => {
     expect(document.querySelector("iframe")).toBeNull();
     expect(document.querySelector(`iframe[src="${CLOUDFLARE_VIEWER}"]`)).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it("does not iframe a Cloudflare URL when the body has no relay ticket", async () => {
-    fetchMock.mockResolvedValue(
-      jsonOk({
-        liveViewUrl: CLOUDFLARE_VIEWER,
-        merchantHost: MERCHANT_HOST,
-        jobId: JOB_ID,
-        expiresAtMs: NOW_MS + 60_000,
-      }),
-    );
-
-    renderPage("?token=tok-cf");
-
-    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
-    expect(document.querySelector("iframe")).toBeNull();
-    expect(document.body.innerHTML).not.toContain("live.browser.run");
-  });
-
-  it("does not iframe a relay URL on the Cloudflare host", async () => {
-    fetchMock.mockResolvedValue(
-      jsonOk(okTicket({ relayUrl: "wss://live.browser.run/api/devtools/browser/sess-1" })),
-    );
-
-    renderPage("?token=tok-cf-relay");
-
-    expect(await screen.findByRole("heading", { name: EXPIRED_HEADING })).toBeInTheDocument();
-    expect(document.querySelector("iframe")).toBeNull();
   });
 
   it("the SMS short link /lv/<id> resolves by short id and mounts the viewer", async () => {
@@ -246,6 +187,7 @@ describe("LiveViewConnectPage", () => {
                       resolveHandoff={fetchResolver}
                       clearHandoff={fetchClearer}
                       installId={INSTALL_ID}
+                      sessionPorts={sessionPorts}
                     />
                   }
                 />
@@ -256,7 +198,7 @@ describe("LiveViewConnectPage", () => {
       </HelmetProvider>,
     );
 
-    expect(await screen.findByTestId("live-viewer")).toBeInTheDocument();
+    expect(await screen.findByTestId("session-viewer")).toBeInTheDocument();
     expect(String(fetchMock.mock.calls[0][0])).toContain("lv=AbC123xy");
     expect(String(fetchMock.mock.calls[0][0])).not.toContain("token=");
     expect(document.querySelector("iframe")).toBeNull();

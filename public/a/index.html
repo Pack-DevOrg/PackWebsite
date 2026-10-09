@@ -6,8 +6,44 @@
 <title>Pack</title>
 <meta name="robots" content="noindex" />
 <meta name="apple-itunes-app" content="app-id=6761626050, app-clip-bundle-id=com.packai.app.Clip, app-clip-display=card" />
+<meta name="color-scheme" content="light dark" />
+<style>
+:root { --bg: #f6f4f1; --card: #fff; --ink: #201f1e; --muted: #6b6a68; --line: #e4e1dd; --accent: #e72340; --saffron: #f0c62d; }
+@media (prefers-color-scheme: dark) { :root { --bg: #151413; --card: #201f1e; --ink: #f4f2ef; --muted: #a8a5a1; --line: #353535; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 560px; margin: 0 auto; padding: 24px 16px 40px; }
+#card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px 20px; min-height: 120px; }
+.kind { margin: 0 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.title { margin: 0 0 16px; font-size: 26px; line-height: 1.2; }
+.section { margin: 0 0 14px; }
+.sectionTitle { margin: 18px 0 6px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.row { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-top: 1px solid var(--line); }
+.row:first-of-type { border-top: 0; }
+.label { color: var(--muted); }
+.value { font-weight: 600; text-align: right; }
+.steps { list-style: none; margin: 8px 0 0; padding: 0; }
+.step { padding: 12px 0; border-top: 1px solid var(--line); }
+.step.done .stepText { text-decoration: line-through; opacity: .5; }
+.stepLabel { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.stepLabel input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
+.progress { margin: 0; color: var(--muted); font-size: 14px; }
+.action { display: inline-block; margin: 10px 0 0 34px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; }
+.places { list-style: none; margin: 0; padding: 0; }
+.place { display: flex; flex-direction: column; padding: 10px 0; border-top: 1px solid var(--line); }
+.placeDetail { color: var(--muted); font-size: 14px; }
+.source { margin: 18px 0 0; color: var(--muted); font-size: 13px; }
+.source a { color: inherit; }
+.cta { display: block; margin-top: 18px; padding: 14px; border-radius: 14px; background: var(--ink); color: var(--bg); text-align: center; font-weight: 600; text-decoration: none; }
+noscript { display: block; padding: 16px 0; }
+</style>
 </head>
 <body>
-<p><a href="https://apps.apple.com/app/id6761626050">Open Pack</a></p>
+<main>
+<div id="card" aria-live="polite">Loading...</div>
+<a class="cta" href="https://apps.apple.com/app/id6761626050">Get the App Clip / Open in Pack</a>
+<noscript>This card needs JavaScript. <a href="https://apps.apple.com/app/id6761626050">Open Pack</a></noscript>
+</main>
+<script src="/a/card.v1.js"></script>
 </body>
 </html>

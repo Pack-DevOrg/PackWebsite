@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const sandbox = { module: { exports: {} }, URL };
-vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a/card.v1.js'), 'utf8'), sandbox);
+vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a-card.v1.js'), 'utf8'), sandbox);
 const raw = sandbox.module.exports;
 const plain = (x) => JSON.parse(JSON.stringify(x));
 const card = { ...raw, viewModelBecausePayload: (p) => plain(raw.viewModelBecausePayload(p)) };
@@ -93,7 +93,7 @@ describe('web card renders into the page', () => {
       calls.push(String(url));
       return { ok: status === 200, status, json: async () => payload };
     };
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a/card.v1.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v1.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     return { dom, calls, text: dom.window.document.getElementById('card').textContent };
   }
@@ -122,5 +122,18 @@ describe('web card renders into the page', () => {
     assert.equal(doc.querySelector('a.action').href, 'https://calendar.google.com/calendar/u/0/r/settings/addbyurl');
     const gone = await load({}, 404);
     assert.match(gone.text, /expired/);
+  });
+});
+
+describe('the card script is reachable', () => {
+  it('its path is not swallowed by the /a/<token> rewrite (which would serve the page HTML as JS)', () => {
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8');
+    const src = /<script src="([^"]+)"><\/script>/.exec(html)?.[1];
+    assert.ok(src, 'index.html loads a script');
+    const sandbox2 = { require: () => ({ updateRequestOrigin() {} }) };
+    vm.runInNewContext(fs.readFileSync(path.join(here, '../cloudfront/app-origin-viewer-request.js'), 'utf8'), sandbox2);
+    const out = sandbox2.handler({ request: { uri: src, headers: { host: { value: 'www.trypackai.com' } }, querystring: {} } });
+    assert.equal(out.uri, src);
+    assert.ok(fs.existsSync(path.join(here, '../../public', src)), `${src} exists in public/`);
   });
 });

@@ -1,5 +1,5 @@
 /* Web fallback for /a/<token>: the same typed artifact the App Clip renders, from GET /api/artifact/<token>.
-   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a/card.v1.js)); render() only touches the DOM
+   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a-card.v1.js)); render() only touches the DOM
    with textContent, so card text is never parsed as HTML. */
 (function (root) {
   'use strict';

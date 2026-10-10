@@ -417,6 +417,12 @@ export async function runDeployAppOrigin(options = {}) {
 
   run("npm", ["run", "legal:check"]);
   run("node", ["scripts/sync-app-cloudfront-functions.mjs"]);
+  try {
+    // The Pack Test Store key (SSM -> CloudFront KeyValueStore). A failure keeps the old key and never blocks a deploy.
+    run("node", ["scripts/test-store/sync-test-store-key.mjs"]);
+  } catch {
+    console.warn("[deploy] test-store key sync failed; the previous key stays in the KeyValueStore.");
+  }
 
   const changedFiles = changedFilesForLand({ env, cwd, execFileSync: exec });
   for (const suite of suitesForChangedFiles(changedFiles)) {

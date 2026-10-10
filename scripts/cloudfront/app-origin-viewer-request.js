@@ -124,6 +124,91 @@ for (var markdownRoute in markdownRouteMap) {
   markdownObjectUris[markdownRouteMap[markdownRoute]] = true;
 }
 
+// Pack Test Store lock. /test-store/* answers only with the shared key: header
+// x-pack-test-key, or cookie pack_test_key (set by a one-time ?k=<key> entry). Anything else is
+// a plain 404 so nothing signals the shop exists. The key lives in the CloudFront KeyValueStore
+// pack-test-store-key (entry test-store-key); an unreadable store fails closed.
+var TEST_STORE_KVS_ENTRY = 'test-store-key';
+var TEST_STORE_COOKIE = 'pack_test_key';
+
+function isTestStoreRoute(uri) {
+  return uri === '/test-store' || uri.indexOf('/test-store/') === 0;
+}
+
+function sameKey(candidate, key) {
+  if (typeof candidate !== 'string' || typeof key !== 'string' || key.length < 32) {
+    return false;
+  }
+  var diff = candidate.length ^ key.length;
+  for (var i = 0; i < key.length; i++) {
+    diff |= (candidate.charCodeAt(i % (candidate.length || 1)) || 0) ^ key.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+function testStoreNotFound() {
+  return {
+    statusCode: 404,
+    statusDescription: 'Not Found',
+    headers: {
+      'content-type': { value: 'text/plain; charset=utf-8' },
+      'cache-control': { value: 'no-store' },
+    },
+    body: 'Not Found',
+  };
+}
+
+function testStoreOrigin(request) {
+  var uri = request.uri;
+  if (hasFileExtension(uri)) {
+    return request;
+  }
+  request.uri = (uri.charAt(uri.length - 1) === '/' ? uri.slice(0, -1) : uri) + '/index.html';
+  return request;
+}
+
+async function testStoreGate(event) {
+  var request = event.request;
+  var key;
+  try {
+    key = await require('cloudfront').kvs().get(TEST_STORE_KVS_ENTRY);
+  } catch (error) {
+    return testStoreNotFound();
+  }
+  var headers = request.headers || {};
+  var cookies = request.cookies || {};
+  var query = request.querystring || {};
+  if (headers['x-pack-test-key'] && sameKey(headers['x-pack-test-key'].value, key)) {
+    return testStoreOrigin(request);
+  }
+  if (cookies[TEST_STORE_COOKIE] && sameKey(cookies[TEST_STORE_COOKIE].value, key)) {
+    return testStoreOrigin(request);
+  }
+  if (query.k && sameKey(query.k.value, key)) {
+    var rest = [];
+    for (var name in query) {
+      if (Object.prototype.hasOwnProperty.call(query, name) && name !== 'k') {
+        rest.push(query[name].value ? name + '=' + query[name].value : name);
+      }
+    }
+    return {
+      statusCode: 302,
+      statusDescription: 'Found',
+      headers: {
+        location: { value: request.uri + (rest.length > 0 ? '?' + rest.join('&') : '') },
+        'cache-control': { value: 'no-store' },
+      },
+      cookies: {
+        pack_test_key: {
+          value: key,
+          attributes: 'Path=/test-store; Secure; HttpOnly; SameSite=Lax; Max-Age=86400',
+        },
+      },
+    };
+  }
+  return testStoreNotFound();
+}
+
 function handler(event) {
   var request = event.request;
   var headers = request.headers || {};
@@ -132,6 +217,10 @@ function handler(event) {
   var uri = request.uri || '/';
   var querySuffix = serializeQueryString(request.querystring || {});
   var canonicalUri = canonicalizeUri(uri);
+
+  if (isTestStoreRoute(uri)) {
+    return testStoreGate(event);
+  }
 
   // Apple fetches the AASA file from the bare host and does not follow redirects.
   if (host === 'trypackai.com' && !isWellKnownRoute(uri)) {

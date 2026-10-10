@@ -5,64 +5,83 @@
 # Allow all search engines and AI crawlers
 User-agent: *
 Allow: /
+Disallow: /test-store/
 Content-Signal: ai-train=no, search=yes, ai-input=yes
 
 # Specific rules for AI training crawlers
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /test-store/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /test-store/
 
 User-agent: GPTBot
 Allow: /
+Disallow: /test-store/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /test-store/
 
 User-agent: Claude-User
 Allow: /
+Disallow: /test-store/
 
 User-agent: Claude-SearchBot
 Allow: /
+Disallow: /test-store/
 
 User-agent: Claude-Web
 Allow: /
+Disallow: /test-store/
 
 User-agent: anthropic-ai
 Allow: /
+Disallow: /test-store/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /test-store/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /test-store/
 
 User-agent: Applebot-Extended
 Allow: /
+Disallow: /test-store/
 
 User-agent: Amazonbot
 Allow: /
+Disallow: /test-store/
 
 User-agent: FacebookExternalHit
 Allow: /
+Disallow: /test-store/
 
 User-agent: Bytespider
 Allow: /
+Disallow: /test-store/
 
 User-agent: CCBot
 Allow: /
+Disallow: /test-store/
 
 # Google-specific
 User-agent: Googlebot
 Allow: /
+Disallow: /test-store/
 
 User-agent: Googlebot-Image
 Allow: /
+Disallow: /test-store/
 
 # Bing
 User-agent: bingbot
 Allow: /
+Disallow: /test-store/
 
 # Block sensitive areas (none currently)
 # Disallow: /admin/

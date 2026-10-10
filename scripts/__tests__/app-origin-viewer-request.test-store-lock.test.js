@@ -100,3 +100,20 @@ describe('app-origin-viewer-request test-store lock', () => {
     assert.equal(res.uri, '/features/index.html');
   });
 });
+
+describe('shipped (minified) function code', () => {
+  it('fits the CloudFront function limit and still gates the shop', async () => {
+    const { shippedCodeBecauseSource, FUNCTION_CODE_LIMIT_BYTES } = await import('../cloudfront-function-code.mjs');
+    const code = shippedCodeBecauseSource(path.join(__dirname, '../cloudfront/app-origin-viewer-request.js'));
+    assert.ok(Buffer.byteLength(code) <= FUNCTION_CODE_LIMIT_BYTES);
+    for (const name of ['app-origin-viewer-request.js', 'app-origin-viewer-response.js']) {
+      assert.ok(Buffer.byteLength(shippedCodeBecauseSource(path.join(__dirname, '../cloudfront', name))) <= 10240);
+    }
+    const sandbox = { require: () => ({ updateRequestOrigin: () => undefined, kvs: () => ({ get: async () => KEY }) }) };
+    vm.runInNewContext(code, sandbox);
+    const res = await sandbox.handler({ request: { uri: '/test-store/p/x', headers: { host: { value: 'www.trypackai.com' } }, cookies: {}, querystring: {} } });
+    assert.equal(res.statusCode, 404);
+    const ok = await sandbox.handler({ request: { uri: '/test-store/p/x', headers: { host: { value: 'www.trypackai.com' }, 'x-pack-test-key': { value: KEY } }, cookies: {}, querystring: {} } });
+    assert.equal(ok.uri, '/test-store/p/x/index.html');
+  });
+});

@@ -63,8 +63,8 @@ describe('web card for /a/<token>', () => {
       { name: 'Alma', category: 'coffee', distanceM: 41.2, url: 'https://alma.example' }, { name: 'Odd', url: 'javascript:1' },
     ] } });
     assert.deepEqual(p.places, [
-      { rank: 1, name: 'Alma', detail: 'coffee · 41 m', why: '', url: 'https://alma.example', photo: '' },
-      { rank: 2, name: 'Odd', detail: '', why: '', url: '', photo: '' },
+      { rank: 1, name: 'Alma', detail: 'coffee · 41 m', category: 'coffee', away: '41 m', hours: '', open: false, why: '', url: 'https://alma.example', photo: '' },
+      { rank: 2, name: 'Odd', detail: '', category: '', away: '', hours: '', open: false, why: '', url: '', photo: '' },
     ]);
     const t = card.viewModelBecausePayload({ kind: 'trip', version: 1, data: { title: 'Lisbon', items: [{ type: 'flight', title: 'SFO to LIS', date: '2026-11-01' }] } });
     assert.deepEqual(t.items, [{ title: 'SFO to LIS', detail: '2026-11-01' }]);
@@ -140,7 +140,7 @@ describe('place_list card', () => {
     assert.equal(m.places[0].url, 'https://maps.apple.com/?daddr=37.7881,-122.4072&dirflg=w');
     assert.equal(m.places[1].url, 'https://encore.example');
     assert.equal(m.pins.length, 2);
-    for (const p of m.pins) assert.ok(p.x > 0 && p.x < 360 && p.y > 0 && p.y < 200);
+    for (const p of m.pins) assert.ok(p.x > 0 && p.x < 358 && p.y > 0 && p.y < 276);
     assert.ok(m.pins[1].x < m.pins[0].x && m.pins[1].y < m.pins[0].y);
   });
 
@@ -154,8 +154,67 @@ describe('place_list card', () => {
     const doc = dom.window.document;
     assert.equal(doc.querySelectorAll('li.place').length, 2);
     assert.equal(doc.querySelectorAll('svg.map circle').length, 2);
+    // one screen: title, map, then a 2-up grid of cards with away, hours and why on their own lines
+    const kids = [...doc.getElementById('card').children].map((n) => n.getAttribute('class'));
+    assert.deepEqual(kids.slice(0, 3), ['title', 'map', 'places grid']);
+    assert.ok(doc.getElementById('card').classList.contains('dense'));
+    const first = doc.querySelector('li.place .placeCard');
+    assert.deepEqual([...first.querySelectorAll('span')].map((n) => n.textContent).slice(-4), ['Cafe La Tazita', '43 m, 1 min walk', 'Open until 18:00', 'close, open now']);
     assert.ok(doc.getElementById('card').textContent.includes('Cafe La Tazita'));
     assert.ok(doc.getElementById('card').textContent.includes('close, open now'));
+  });
+});
+
+describe('sports_team card is one dense screen', () => {
+  const ROWS = [
+    { label: 'Record', value: '98-64' }, { label: 'Place', value: '1' }, { label: 'Games (incl. postseason)', value: '170' },
+    { label: 'Runs for (incl. postseason)', value: '842' }, { label: 'Runs against (incl. postseason)', value: '671' },
+    ...Array.from({ length: 10 }, (_, i) => ({ label: `Hitter ${i} (hitter)`, value: '.300 AVG, 20 HR' })),
+    ...Array.from({ length: 9 }, (_, i) => ({ label: `Pitcher ${i} (pitcher)`, value: '10-5, 3.00 ERA' })),
+    { label: 'Player stats', value: 'MLB Stats API, 2026-10-09' },
+  ];
+  const DODGERS = { kind: 'sports_team', version: 1, title: 'Los Angeles Dodgers 2026', rows: ROWS, imageUrl: 'https://www.trypackai.com/og/logos/a.png', accent: '#005a9c', source: 'https://api-sports.io', asOf: '2026-10-09T08:00:00.000Z' };
+
+  it('builds the header, stat tiles and capped player columns; ignores an unsafe logo or accent', () => {
+    const t = plain(raw.teamBecausePayload(DODGERS));
+    assert.equal(t.name, 'Los Angeles Dodgers');
+    assert.equal(t.season, '2026');
+    assert.equal(t.record, '98-64');
+    assert.deepEqual(t.tiles.map((x) => x.label), ['Record', 'Place', 'Games', 'Runs for', 'Runs against']);
+    assert.equal(t.tiles[1].value, '1st');
+    assert.equal(t.hitters.length, 7);
+    assert.equal(t.pitchers.length, 7);
+    assert.equal(t.logo, DODGERS.imageUrl);
+    const bad = plain(raw.teamBecausePayload({ ...DODGERS, imageUrl: 'javascript:1', accent: 'red' }));
+    assert.equal(bad.logo, '');
+    assert.equal(bad.accent, '');
+  });
+
+  it('renders logo at the right of the header, a tile grid, two player columns and one source line', async () => {
+    const { JSDOM } = await import('jsdom');
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
+    const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
+    dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => DODGERS });
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    await new Promise((r) => setTimeout(r, 20));
+    const doc = dom.window.document;
+    const card = doc.getElementById('card');
+    assert.ok(card.classList.contains('dense'));
+    assert.deepEqual([...card.children].map((n) => n.getAttribute('class')), ['teamHead', 'tiles', 'players', 'source']);
+    const head = doc.querySelector('.teamHead');
+    assert.equal(head.style.background !== '', true);
+    assert.equal(head.lastElementChild.tagName, 'IMG');
+    assert.equal(doc.querySelectorAll('.tile').length, 5);
+    const cols = doc.querySelectorAll('.playerCol');
+    assert.deepEqual([...cols].map((c) => c.querySelector('.colHead').textContent), ['Hitters', 'Pitchers']);
+    assert.equal(cols[0].querySelectorAll('.player').length, 7);
+    assert.ok(doc.querySelector('.source').textContent.includes('MLB Stats API, 2026-10-09'));
+    assert.ok(!card.querySelector('.row'), 'no plain row list');
+    // one screen: fixed heights add up under the 390x844 viewport
+    const css = html.match(/<style>[\s\S]*<\/style>/)[0];
+    const px = (re) => Number(re.exec(css)[1]);
+    const total = 2 * 14 + px(/\.teamHead \{[^}]*height: (\d+)px/) + px(/\.tile \{[^}]*height: (\d+)px/) * 2 + 8 + 12 + 12 + px(/\.colHead \{[^}]*height: (\d+)px/) + px(/\.player \{[^}]*height: (\d+)px/) * 7 + 12 + 14;
+    assert.ok(total <= 844 - 150, `team card ${total}px fits one screen`);
   });
 });
 

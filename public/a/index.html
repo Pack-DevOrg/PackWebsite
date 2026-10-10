@@ -42,6 +42,36 @@ main { max-width: 560px; margin: 0 auto; padding: 24px 16px 40px; }
 .source { margin: 18px 0 0; color: var(--muted); font-size: 13px; }
 .source a { color: inherit; }
 .cta { display: block; margin-top: 18px; padding: 14px; border-radius: 14px; background: var(--ink); color: var(--bg); text-align: center; font-weight: 600; text-decoration: none; }
+#card.dense { padding: 14px; border-radius: 16px; }
+.placesCard .title { margin: 0 0 8px; font-size: 18px; }
+.teamHead { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 72px; padding: 0 14px; border-radius: 16px; background: var(--line); color: #fff; }
+.teamText { flex: 1; min-width: 0; }
+.teamName { margin: 0; font-size: 18px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.teamRecord { margin: 2px 0 0; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.teamLogo { width: 56px; height: 56px; object-fit: contain; flex: none; }
+.tiles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.tile { flex: 1 1 31%; height: 56px; border-radius: 8px; background: rgba(127,127,127,.14); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.tileValue { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tileLabel { font-size: 11px; color: var(--muted); }
+.players { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; margin-top: 12px; }
+.playerCol { min-width: 0; }
+.colHead { margin: 0; height: 22px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.player { height: 50px; display: flex; flex-direction: column; justify-content: center; border-top: 1px solid var(--line); overflow: hidden; }
+.playerName { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.playerLine { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#card.dense .source { margin-top: 12px; font-size: 10px; height: 14px; overflow: hidden; white-space: nowrap; }
+.placesCard .map { display: block; width: 100%; height: 40vh; max-height: 276px; margin: 0 0 12px; }
+.places.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.places.grid .place { padding: 0; border: 0; }
+.placeCard { display: flex; flex-direction: column; height: 104px; padding: 6px; border-radius: 8px; background: rgba(127,127,127,.14); color: inherit; text-decoration: none; overflow: hidden; }
+.band { position: relative; display: flex; align-items: center; gap: 4px; height: 28px; margin-bottom: 3px; padding: 0 4px; border-radius: 4px; background: var(--saffron); overflow: hidden; }
+.band .placePhoto { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 0; }
+.band .rank { position: relative; width: 20px; height: 20px; border-radius: 10px; background: #000; color: #fff; font-size: 11px; }
+.bandCategory { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #1e1e1e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.placeCard .placeName { font-size: 14px; line-height: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.placeCard .placeDetail, .placeCard .placeWhy { font-size: 11px; line-height: 13px; height: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.placeCard .placeDetail { color: var(--muted); }
+.placeCard .placeDetail.open { color: #4caf50; }
 noscript { display: block; padding: 16px 0; }
 </style>
 </head>

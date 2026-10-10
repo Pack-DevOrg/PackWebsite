@@ -127,13 +127,17 @@
     var stats = [];
     var groups = {};
     var order = [];
+    // Typed groups are the contract; only cards with no typed group anywhere read the old "(tag)" suffix.
+    var typed = (payload.rows || []).some(function (r) { return typeof r.group === 'string' && r.group; });
     (payload.rows || []).forEach(function (row) {
       if (row.label === 'Player stats') { team.provenance = row.value; return; }
-      var pm = SCOPE_SUFFIX.test(row.label || '') ? null : TEAM_PLAYER_ROW.exec(row.label || '');
-      if (pm) {
-        var key = pm[2].toLowerCase();
+      var pm = typed || SCOPE_SUFFIX.test(row.label || '') ? null : TEAM_PLAYER_ROW.exec(row.label || '');
+      var group = typeof row.group === 'string' && row.group ? row.group : pm ? pm[2] : '';
+      if (group) {
+        var key = group.toLowerCase();
+        var name = pm ? pm[1] : String(row.label).replace(' (' + row.group + ')', '');
         if (!groups[key]) { groups[key] = []; order.push(key); }
-        groups[key].push({ name: pm[1], line: compactStatLine(row.value) });
+        groups[key].push({ name: name, line: compactStatLine(row.value) });
         return;
       }
       var label = String(row.label || '').replace(SCOPE_SUFFIX, '');

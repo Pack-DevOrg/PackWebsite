@@ -74,8 +74,20 @@
   }
 
   /** One-screen caps: the card never scrolls on a 390x844 phone. */
-  var MAX_PLAYER_ROWS = 7;
+  var MAX_PLAYER_ROWS = 9;
+  var LINE_MAX_CHARS = 28;
   var MAX_PLACES = 6;
+
+  /** One-row stat lines: past LINE_MAX_CHARS, drop OPS, then WHIP. */
+  function compactStatLine(line) {
+    var parts = String(line || '').split(', ');
+    [/\bOPS$/, /\bWHIP$/].forEach(function (drop) {
+      if (parts.join(', ').length <= LINE_MAX_CHARS) return;
+      var kept = parts.filter(function (p) { return !drop.test(p); });
+      if (kept.length) parts = kept;
+    });
+    return parts.join(', ');
+  }
 
   function ordinal(v) {
     var n = Number(v);
@@ -95,11 +107,11 @@
       if (row.label === 'Player stats') { team.provenance = row.value; return; }
       var pm = PLAYER_ROW.exec(row.label || '');
       if (pm) {
-        (pm[2] === 'pitcher' || pm[2] === 'goalie' ? team.pitchers : team.hitters).push({ name: pm[1], line: row.value });
+        (pm[2] === 'pitcher' || pm[2] === 'goalie' ? team.pitchers : team.hitters).push({ name: pm[1], line: compactStatLine(row.value) });
         return;
       }
       var label = String(row.label || '').replace(/\s*\(incl\. postseason\)$/, '');
-      if (label === 'Record') team.record = row.value;
+      if (label === 'Record') { team.record = row.value; return; }
       team.tiles.push({ label: label, value: label === 'Place' ? ordinal(row.value) : row.value });
     });
     team.hitters = team.hitters.slice(0, MAX_PLAYER_ROWS);
@@ -141,7 +153,7 @@
 
   function viewModelBecausePayload(payload) {
     var kind = payload && payload.kind ? String(payload.kind) : '';
-    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
+    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, mapImage: '', sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
     if (!payload) return model;
     if (kind === 'trip' && payload.data) {
       model.title = payload.data.title || 'Trip';
@@ -162,6 +174,8 @@
         return { rank: p.rank || i + 1, name: p.name, detail: placeLine(p), category: p.category || '', away: awayLine(p), hours: hoursLine(p), open: p.openState === 'open', why: p.why || '', url: url, photo: typeof p.photoUrl === 'string' && /^https:\/\//i.test(p.photoUrl) ? p.photoUrl : '' };
       });
       model.pins = pinsBecauseItems(items.slice(0, MAX_PLACES), list.center);
+      var mapUrl = list.mapImageUrl || payload.mapImageUrl;
+      model.mapImage = typeof mapUrl === 'string' && /^https:\/\//i.test(mapUrl) ? mapUrl : '';
     } else if (kind === 'sports_team') {
       model.team = teamBecausePayload(payload);
       model.sections = sectionsBecauseRows(payload.rows);
@@ -324,7 +338,16 @@
       card.appendChild(list);
     }
     if (model.places.length) {
-      if (model.pins.length) card.appendChild(renderMap(doc, model.pins));
+      if (model.mapImage) {
+        var mapImg = doc.createElement('img');
+        mapImg.className = 'map mapImage';
+        mapImg.src = model.mapImage;
+        mapImg.alt = 'Map of the places';
+        mapImg.addEventListener('error', function () {
+          if (model.pins.length && mapImg.parentNode) mapImg.parentNode.replaceChild(renderMap(doc, model.pins), mapImg);
+        });
+        card.appendChild(mapImg);
+      } else if (model.pins.length) card.appendChild(renderMap(doc, model.pins));
       var ul = el('ul', 'places grid');
       model.places.forEach(function (p) {
         var li = el('li', 'place');
@@ -372,7 +395,7 @@
       .catch(function () { card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
+  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

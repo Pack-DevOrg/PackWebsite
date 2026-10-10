@@ -182,8 +182,7 @@ describe('sports_team card is one dense screen', () => {
     assert.equal(t.record, '98-64');
     assert.deepEqual(t.tiles.map((x) => x.label), ['Place', 'Games', 'Runs for', 'Runs against']);
     assert.equal(t.tiles[0].value, '1st');
-    assert.equal(t.hitters.length, 9);
-    assert.equal(t.pitchers.length, 9);
+    assert.deepEqual(t.columns.map((c) => c.players.length), [9, 9]);
     assert.equal(t.logo, DODGERS.imageUrl);
     const bad = plain(raw.teamBecausePayload({ ...DODGERS, imageUrl: 'javascript:1', accent: 'red' }));
     assert.equal(bad.logo, '');
@@ -242,6 +241,41 @@ describe('sports_team polish and the static map', () => {
     img.dispatchEvent(new dom.window.Event('error'));
     assert.equal(doc.querySelectorAll('svg.map circle').length, 2);
     assert.equal(doc.querySelector('img.mapImage'), null);
+  });
+});
+
+describe('sports_team is league-agnostic and follows the layout spec', () => {
+  const rows = (groups) => [
+    { label: 'Record', value: '58-24' }, { label: 'Place', value: '1' }, { label: 'Games (incl. postseason)', value: '82' },
+    { label: 'Points for (incl. postseason)', value: '9712' }, { label: 'Points against (incl. postseason)', value: '9120' }, { label: 'Last 10', value: '8-2' },
+    ...Object.entries(groups).flatMap(([g, n]) => Array.from({ length: n }, (_, i) => ({ label: `Player ${g}${i} (${g})`, value: '4120 YDS, 31 TD, 9 INT, 98.2 RTG' }))),
+    { label: 'Player stats', value: 'Provider, 2026-10-09' },
+  ];
+  it('any group becomes a column; one group splits across two; a long stat line keeps its leading stats', () => {
+    const nfl = plain(raw.teamBecausePayload({ title: 'Washington Commanders 2026', rows: rows({ passer: 3, rusher: 5, receiver: 6 }) }));
+    assert.deepEqual(nfl.columns.map((c) => c.title), ['Passers', 'Rushers']);
+    assert.ok(nfl.columns[0].players[0].line.length <= 28);
+    assert.equal(nfl.columns[0].players[0].line, '4120 YDS, 31 TD, 9 INT');
+    const nba = plain(raw.teamBecausePayload({ title: 'Oklahoma City Thunder 2025-26', rows: rows({ player: 10 }) }));
+    assert.equal(nba.season, '2025-26');
+    assert.deepEqual(nba.columns.map((c) => [c.title, c.players.length]), [['Players', 5], ['', 5]]);
+    assert.deepEqual(nba.tiles.map((t) => t.label), ['Place', 'Games', 'Points for', 'Points against', 'Last 10']);
+  });
+  it('the layout picks tiles and the leading group; missing names fall back; plain hides the record line', () => {
+    const t = plain(raw.teamBecausePayload({ title: 'Athletics 2026', rows: rows({ hitter: 2, pitcher: 2 }), layout: { header: 'plain', featured: ['Last 10', 'Place'], emphasis: 'pitcher' } }));
+    assert.deepEqual(t.tiles.map((x) => x.label), ['Last 10', 'Place']);
+    assert.deepEqual(t.columns.map((c) => c.group), ['pitcher', 'hitter']);
+    assert.equal(t.subline, '');
+    const f = plain(raw.teamBecausePayload({ title: 'Athletics 2026', rows: rows({ hitter: 2 }), layout: { header: 'record', featured: ['Nope', 'Nada'] } }));
+    assert.ok(f.tiles.length >= 2);
+    assert.equal(f.subline, '58-24');
+  });
+  it('every team name fits a header of two lines at most with a readable font', () => {
+    const teams = ['Arizona Diamondbacks 2026', 'Oklahoma City Thunder 2025-26', 'Portland Trail Blazers 2025-26', 'Los Angeles Angels 2026', 'Toronto Maple Leafs 2025-26', 'Athletics 2026'];
+    for (const title of teams) {
+      const fit = raw.headerTitleFit(title);
+      assert.ok(fit.fontSize >= 14 && fit.lines <= 2, title);
+    }
   });
 });
 

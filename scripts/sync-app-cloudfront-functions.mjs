@@ -66,6 +66,35 @@ for (const target of functions) {
     `fileb://${shippedPath}`,
   ]);
 
+  // Run the shipped code once in CloudFront's own sandbox before it goes live. A syntax or runtime
+  // error here aborts the deploy; a role without cloudfront:TestFunction only warns.
+  {
+    const probe = path.join(path.dirname(shippedPath), "event.json");
+    fs.writeFileSync(
+      probe,
+      JSON.stringify({
+        version: "1.0",
+        context: { eventType: target.name.includes("headers") ? "viewer-response" : "viewer-request" },
+        viewer: { ip: "203.0.113.9" },
+        request: { method: "GET", uri: "/features", querystring: {}, headers: { host: { value: "www.trypackai.com" } }, cookies: {} },
+        ...(target.name.includes("headers") ? { response: { statusCode: 200, statusDescription: "OK", headers: {}, cookies: {} } } : {}),
+      }),
+    );
+    try {
+      const result = JSON.parse(
+        run("aws", ["cloudfront", "test-function", "--name", target.name, "--if-match", JSON.parse(run("aws", ["cloudfront", "describe-function", "--name", target.name, "--stage", "DEVELOPMENT", "--output", "json"])).ETag, "--stage", "DEVELOPMENT", "--event-object", `fileb://${probe}`, "--output", "json"]),
+      );
+      if (result.TestResult?.FunctionErrorMessage) {
+        throw new Error(`CloudFront test-function failed for ${target.name}: ${result.TestResult.FunctionErrorMessage}`);
+      }
+    } catch (error) {
+      if (!/AccessDenied/.test(String(error?.stderr ?? error?.message))) {
+        throw error;
+      }
+      console.warn(`test-function skipped for ${target.name}: role lacks cloudfront:TestFunction`);
+    }
+  }
+
   const updated = JSON.parse(
     run("aws", [
       "cloudfront",

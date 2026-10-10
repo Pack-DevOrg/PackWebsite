@@ -54,5 +54,5 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npx jest --ci --bail=0
-      - run: node --test scripts/web-signin-smoke.test.mjs scripts/__tests__/a-card.test.js
+      - run: node --test scripts/web-signin-smoke.test.mjs scripts/__tests__/a-card.test.js scripts/__tests__/deploy-keeps-og-images.test.js
       - run: npm run build

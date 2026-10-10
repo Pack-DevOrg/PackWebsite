@@ -448,6 +448,9 @@ export async function runDeployAppOrigin(options = {}) {
     "assets/*",
     "--exclude",
     "videos/*",
+    // Per-card link-preview images are written by the link-preview lambda (PackServer), never part of a build.
+    "--exclude",
+    "og/*",
   ]);
   run("aws", [
     "s3",

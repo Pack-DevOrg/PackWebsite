@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const sandbox = { module: { exports: {} }, URL };
-vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a-card.v1.js'), 'utf8'), sandbox);
+vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'), sandbox);
 const raw = sandbox.module.exports;
 const plain = (x) => JSON.parse(JSON.stringify(x));
 const card = { ...raw, viewModelBecausePayload: (p) => plain(raw.viewModelBecausePayload(p)) };
@@ -63,8 +63,8 @@ describe('web card for /a/<token>', () => {
       { name: 'Alma', category: 'coffee', distanceM: 41.2, url: 'https://alma.example' }, { name: 'Odd', url: 'javascript:1' },
     ] } });
     assert.deepEqual(p.places, [
-      { name: 'Alma', detail: 'coffee · 41 m', url: 'https://alma.example' },
-      { name: 'Odd', detail: '', url: '' },
+      { rank: 1, name: 'Alma', detail: 'coffee · 41 m', why: '', url: 'https://alma.example', photo: '' },
+      { rank: 2, name: 'Odd', detail: '', why: '', url: '', photo: '' },
     ]);
     const t = card.viewModelBecausePayload({ kind: 'trip', version: 1, data: { title: 'Lisbon', items: [{ type: 'flight', title: 'SFO to LIS', date: '2026-11-01' }] } });
     assert.deepEqual(t.items, [{ title: 'SFO to LIS', detail: '2026-11-01' }]);
@@ -93,7 +93,7 @@ describe('web card renders into the page', () => {
       calls.push(String(url));
       return { ok: status === 200, status, json: async () => payload };
     };
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v1.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     return { dom, calls, text: dom.window.document.getElementById('card').textContent };
   }
@@ -122,6 +122,40 @@ describe('web card renders into the page', () => {
     assert.equal(doc.querySelector('a.action').href, 'https://calendar.google.com/calendar/u/0/r/settings/addbyurl');
     const gone = await load({}, 404);
     assert.match(gone.text, /expired/);
+  });
+});
+
+describe('place_list card', () => {
+  const list = { kind: 'place_list', title: 'Coffee shop near Union Square', blocks: [{ kind: 'place_list', center: { lat: 37.788, lon: -122.4075 }, source: 'Pack place data', asOf: '2026-10-10T00:00:00.000Z', items: [
+    { rank: 1, name: 'Cafe La Tazita', lat: 37.7881, lon: -122.4072, category: 'Coffee shop', distanceM: 43, etaMin: 1, etaMode: 'walk', openState: 'open', closesAtLocal: '18:00', why: 'close, open now' },
+    { rank: 2, name: 'Cafe Encore', lat: 37.7886, lon: -122.4082, distanceM: 56, openState: 'closed', opensAtLocal: '07:00', url: 'https://encore.example' },
+  ] }], source: 'Pack place data', asOf: '2026-10-10T00:00:00.000Z' };
+
+  it('rows carry rank, distance, walk time, hours and why; links go to the place or walking directions; pins stay in the box', () => {
+    const m = card.viewModelBecausePayload(list);
+    assert.deepEqual(m.places.map((p) => [p.rank, p.name, p.detail, p.why]), [
+      [1, 'Cafe La Tazita', 'Coffee shop · 43 m, 1 min walk · Open until 18:00', 'close, open now'],
+      [2, 'Cafe Encore', '56 m · Opens 07:00', ''],
+    ]);
+    assert.equal(m.places[0].url, 'https://maps.apple.com/?daddr=37.7881,-122.4072&dirflg=w');
+    assert.equal(m.places[1].url, 'https://encore.example');
+    assert.equal(m.pins.length, 2);
+    for (const p of m.pins) assert.ok(p.x > 0 && p.x < 360 && p.y > 0 && p.y < 200);
+    assert.ok(m.pins[1].x < m.pins[0].x && m.pins[1].y < m.pins[0].y);
+  });
+
+  it('renders the list, the pins and the source line', async () => {
+    const { JSDOM } = await import('jsdom');
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
+    const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
+    dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => list });
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    await new Promise((r) => setTimeout(r, 20));
+    const doc = dom.window.document;
+    assert.equal(doc.querySelectorAll('li.place').length, 2);
+    assert.equal(doc.querySelectorAll('svg.map circle').length, 2);
+    assert.ok(doc.getElementById('card').textContent.includes('Cafe La Tazita'));
+    assert.ok(doc.getElementById('card').textContent.includes('close, open now'));
   });
 });
 

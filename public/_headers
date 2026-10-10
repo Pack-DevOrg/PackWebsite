@@ -136,3 +136,7 @@
 /*.md
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=3600
+
+# App Clip logos served from the CDN instead of the clip bundle (hotel logos, 1.2 MB)
+/clip-assets/*
+  Cache-Control: public, max-age=31536000, immutable

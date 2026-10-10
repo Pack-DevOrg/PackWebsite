@@ -3,6 +3,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import os from "node:os";
+import { shippedCodeBecauseSource } from "./cloudfront-function-code.mjs";
 
 const rootDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const sourceDir = path.join(rootDir, "scripts", "cloudfront");
@@ -27,6 +29,8 @@ function run(command, args) {
 }
 
 for (const target of functions) {
+  const shippedPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "cf-fn-")), path.basename(target.sourcePath));
+  fs.writeFileSync(shippedPath, shippedCodeBecauseSource(target.sourcePath));
   const describe = JSON.parse(
     run("aws", [
       "cloudfront",
@@ -59,7 +63,7 @@ for (const target of functions) {
     // JSON keeps the function's KeyValueStore associations (the Pack Test Store key lives in one).
     JSON.stringify(describe.FunctionSummary.FunctionConfig),
     "--function-code",
-    `fileb://${target.sourcePath}`,
+    `fileb://${shippedPath}`,
   ]);
 
   const updated = JSON.parse(

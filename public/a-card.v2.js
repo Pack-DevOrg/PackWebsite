@@ -46,9 +46,56 @@
     return sections;
   }
 
+  var MAP_W = 360;
+  var MAP_H = 200;
+  var PAD = 26;
+
+  function block(payload, kind) {
+    var blocks = payload && payload.blocks;
+    if (!blocks) return null;
+    for (var i = 0; i < blocks.length; i++) if (blocks[i] && blocks[i].kind === kind) return blocks[i];
+    return null;
+  }
+
+  function directionsUrl(p) {
+    return typeof p.lat === 'number' && typeof p.lon === 'number' ? 'https://maps.apple.com/?daddr=' + p.lat + ',' + p.lon + '&dirflg=w' : '';
+  }
+
+  /** "Coffee shop · 43 m, 1 min walk · Open until 18:00 · $$ · 4.5": only what the row carries. */
+  function placeLine(p) {
+    var away = [
+      typeof p.distanceM === 'number' ? Math.round(p.distanceM) + ' m' : '',
+      typeof p.etaMin === 'number' ? Math.max(1, Math.round(p.etaMin)) + ' min ' + (p.etaMode === 'drive' ? 'drive' : 'walk') : ''
+    ].filter(Boolean).join(', ');
+    var hours = p.openState === 'open' ? (p.closesAtLocal ? 'Open until ' + p.closesAtLocal : 'Open now')
+      : p.openState === 'closed' ? (p.opensAtLocal ? 'Opens ' + p.opensAtLocal : 'Closed') : '';
+    var price = p.priceLevel ? new Array(p.priceLevel + 1).join('$') : '';
+    var rating = typeof p.rating === 'number' ? p.rating.toFixed(1) : '';
+    return [p.category || '', away, hours, price, rating].filter(Boolean).join(' · ');
+  }
+
+  /** Pin positions in a 360x200 box: the items' bounds (plus the center), longitude scaled by latitude. */
+  function pinsBecauseItems(items, center) {
+    var pts = items.filter(function (i) { return typeof i.lat === 'number' && typeof i.lon === 'number'; });
+    if (!pts.length) return [];
+    var lats = pts.map(function (i) { return i.lat; });
+    var lons = pts.map(function (i) { return i.lon; });
+    if (center) { lats.push(center.lat); lons.push(center.lon); }
+    var minLat = Math.min.apply(null, lats), maxLat = Math.max.apply(null, lats);
+    var minLon = Math.min.apply(null, lons), maxLon = Math.max.apply(null, lons);
+    var midLat = (minLat + maxLat) / 2, midLon = (minLon + maxLon) / 2;
+    var k = Math.cos(midLat * Math.PI / 180);
+    var spanLat = (maxLat - minLat) || 0.001;
+    var spanLon = ((maxLon - minLon) || 0.001) * k;
+    var scale = Math.min((MAP_W - 2 * PAD) / spanLon, (MAP_H - 2 * PAD) / spanLat);
+    return pts.map(function (i, idx) {
+      return { n: i.rank || idx + 1, x: MAP_W / 2 + (i.lon - midLon) * k * scale, y: MAP_H / 2 - (i.lat - midLat) * scale };
+    });
+  }
+
   function viewModelBecausePayload(payload) {
     var kind = payload && payload.kind ? String(payload.kind) : '';
-    var model = { kind: kind, label: kindLabel(kind), title: '', sections: [], steps: [], places: [], items: [], source: '', host: '', asOf: '' };
+    var model = { kind: kind, label: kindLabel(kind), title: '', sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
     if (!payload) return model;
     if (kind === 'trip' && payload.data) {
       model.title = payload.data.title || 'Trip';
@@ -61,11 +108,14 @@
     if (kind === 'guide' && payload.guide) {
       model.title = payload.guide.title || model.title;
       model.steps = (payload.guide.steps || []).map(function (s) { return { n: s.n, text: s.text, action: s.action || null }; });
-    } else if (kind === 'place_list' && payload.placeList && payload.placeList.items) {
-      model.places = payload.placeList.items.map(function (p) {
-        var url = typeof p.url === 'string' && /^https:\/\//i.test(p.url) ? p.url : '';
-        return { name: p.name, detail: [p.category, typeof p.distanceM === 'number' ? Math.round(p.distanceM) + ' m' : ''].filter(Boolean).join(' · '), url: url };
+    } else if (kind === 'place_list' && (payload.placeList || block(payload, 'place_list'))) {
+      var list = block(payload, 'place_list') || payload.placeList;
+      var items = list.items || [];
+      model.places = items.map(function (p, i) {
+        var url = typeof p.url === 'string' && /^https:\/\//i.test(p.url) ? p.url : directionsUrl(p);
+        return { rank: p.rank || i + 1, name: p.name, detail: placeLine(p), why: p.why || '', url: url, photo: typeof p.photoUrl === 'string' && /^https:\/\//i.test(p.photoUrl) ? p.photoUrl : '' };
       });
+      model.pins = pinsBecauseItems(items, list.center);
     } else {
       model.sections = sectionsBecauseRows(payload.rows);
     }
@@ -150,12 +200,37 @@
       var ul = el('ul', 'places');
       model.places.forEach(function (p) {
         var li = el('li', 'place');
-        if (p.url) { var a = el('a', 'placeName', p.name); a.href = p.url; a.rel = 'noopener noreferrer'; li.appendChild(a); }
-        else li.appendChild(el('span', 'placeName', p.name));
-        if (p.detail) li.appendChild(el('span', 'placeDetail', p.detail));
+        var head = el('div', 'placeHead');
+        if (p.rank) head.appendChild(el('span', 'rank', String(p.rank)));
+        var body = el('div', 'placeBody');
+        if (p.url) { var a = el('a', 'placeName', p.name); a.href = p.url; a.rel = 'noopener noreferrer'; body.appendChild(a); }
+        else body.appendChild(el('span', 'placeName', p.name));
+        if (p.detail) body.appendChild(el('span', 'placeDetail', p.detail));
+        if (p.why) body.appendChild(el('span', 'placeWhy', p.why));
+        head.appendChild(body);
+        if (p.photo) { var img = doc.createElement('img'); img.className = 'placePhoto'; img.src = p.photo; img.alt = ''; img.loading = 'lazy'; head.appendChild(img); }
+        li.appendChild(head);
         ul.appendChild(li);
       });
       card.appendChild(ul);
+      if (model.pins.length) {
+        var NS = 'http://www.w3.org/2000/svg';
+        var svg = doc.createElementNS(NS, 'svg');
+        svg.setAttribute('viewBox', '0 0 ' + MAP_W + ' ' + MAP_H);
+        svg.setAttribute('class', 'map');
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', 'Map of the places');
+        model.pins.forEach(function (pin) {
+          var c = doc.createElementNS(NS, 'circle');
+          c.setAttribute('cx', String(pin.x)); c.setAttribute('cy', String(pin.y)); c.setAttribute('r', '12'); c.setAttribute('fill', '#f0c62d');
+          var t = doc.createElementNS(NS, 'text');
+          t.setAttribute('x', String(pin.x)); t.setAttribute('y', String(pin.y + 4)); t.setAttribute('text-anchor', 'middle');
+          t.setAttribute('font-size', '12'); t.setAttribute('font-weight', '700'); t.setAttribute('fill', '#1e1e1e');
+          t.textContent = String(pin.n);
+          svg.appendChild(c); svg.appendChild(t);
+        });
+        card.appendChild(svg);
+      }
     }
     if (model.items.length) {
       var il = el('ul', 'places');
@@ -193,7 +268,7 @@
       .catch(function () { card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
+  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

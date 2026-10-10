@@ -75,3 +75,25 @@ describe('app-origin-viewer-request apex AASA', () => {
     assert.equal(apex('/about').statusCode, 301);
   });
 });
+
+
+describe('app-origin-viewer-request category paths', () => {
+  it('a browser on /a/<domain>/<object>/<id> gets the static card page', () => {
+    assert.equal(run('/a/sports/team/abc', SAFARI).uri, '/a/index.html');
+    assert.equal(run('/a/local/places/abc', SAFARI).uri, '/a/index.html');
+    assert.equal(run('/a/abc', SAFARI).uri, '/a/index.html');
+  });
+
+  it('a link-preview fetcher on a category path swaps to the preview origin and keeps the path', () => {
+    const request = run('/a/knowledge/guide/abc', APPLE);
+    assert.equal(origins.length, 1);
+    assert.equal(origins[0].domainName, 'api.trypackai.com');
+    assert.equal(request.uri, '/a/knowledge/guide/abc');
+  });
+
+  it('the static page and unrelated /a-prefixed files are not tokens', () => {
+    assert.equal(run('/a/index.html', SAFARI).uri, '/a/index.html');
+    assert.equal(run('/a-card.v2.js', SAFARI).uri, '/a-card.v2.js');
+    assert.equal(run('/a/x/y/z/w', SAFARI).uri, '/a/x/y/z/w/index.html');
+  });
+});

@@ -34,7 +34,8 @@ var linkPreviewUserAgentPattern =
   /facebookexternalhit|facebot|twitterbot|slackbot|slack-imgproxy|discordbot|applebot|WhatsApp|LinkedInBot|Googlebot-Image/i;
 
 function isAppClipTokenRoute(uri) {
-  return /^\/a\/[^/]+$/.test(uri);
+  // /a/<id> or the registry's category path /a/<domain>/<object>/<id>; the static page itself is not a token.
+  return /^\/a\/(?:[a-z-]+\/[a-z_]+\/)?[^/]+$/.test(uri) && uri !== '/a/index.html';
 }
 
 function isLinkPreviewFetcher(headers) {

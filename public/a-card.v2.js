@@ -47,7 +47,7 @@
   }
 
   var MAP_W = 358;
-  var MAP_H = 276;
+  var MAP_H = 300;
   var PAD = 26;
 
   function block(payload, kind) {
@@ -59,6 +59,21 @@
 
   function directionsUrl(p) {
     return typeof p.lat === 'number' && typeof p.lon === 'number' ? 'https://maps.apple.com/?daddr=' + p.lat + ',' + p.lon + '&dirflg=w' : '';
+  }
+
+  function clock12(hhmm) {
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm));
+    if (!m) return String(hhmm);
+    var h = Number(m[1]);
+    return (h % 12 === 0 ? 12 : h % 12) + ':' + m[2] + ' ' + (h >= 12 ? 'PM' : 'AM');
+  }
+
+  /** Category -> header art on the CDN (closed registry; anything else is local.places). */
+  var PLACE_ART = [[/restaurant|cafe|coffee|bar\b|pub|bakery|diner|eatery|food/i, 'dining.restaurant'], [/gym|fitness|yoga|pilates|studio/i, 'health.fitness'], [/barber|salon|spa|laundry|repair|service/i, 'local.services']];
+  function placeArtUrl(category) {
+    var id = 'local.places';
+    for (var i = 0; i < PLACE_ART.length; i++) if (PLACE_ART[i][0].test(category || '')) { id = PLACE_ART[i][1]; break; }
+    return '/assets/clip-headers/' + id + '.jpg';
   }
 
   function awayLine(p) {
@@ -200,7 +215,7 @@
 
   function viewModelBecausePayload(payload) {
     var kind = payload && payload.kind ? String(payload.kind) : '';
-    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, mapImage: '', sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
+    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, mapImage: '', mapPins: [], sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
     if (!payload) return model;
     if (kind === 'trip' && payload.data) {
       model.title = payload.data.title || 'Trip';
@@ -218,9 +233,10 @@
       var items = list.items || [];
       model.places = items.slice(0, MAX_PLACES).map(function (p, i) {
         var url = typeof p.url === 'string' && /^https:\/\//i.test(p.url) ? p.url : directionsUrl(p);
-        return { rank: p.rank || i + 1, name: p.name, detail: placeLine(p), category: p.category || '', away: awayLine(p), hours: hoursLine(p), open: p.openState === 'open', why: p.why || '', url: url, photo: typeof p.photoUrl === 'string' && /^https:\/\//i.test(p.photoUrl) ? p.photoUrl : '' };
+        return { rank: p.rank || i + 1, name: p.name, detail: placeLine(p), category: p.category || '', away: awayLine(p), hours: hoursLine(p), open: p.openState === 'open', hoursState: p.openState === 'open' ? 'Open' : p.openState === 'closed' ? 'Closed' : '', hoursDetail: p.openState === 'open' && p.closesAtLocal ? 'Closes at ' + clock12(p.closesAtLocal) : p.openState === 'closed' && p.opensAtLocal ? 'Opens at ' + clock12(p.opensAtLocal) : '', rating: typeof p.rating === 'number' ? p.rating.toFixed(1) : '', price: p.priceLevel ? new Array(p.priceLevel + 1).join('$') : '', art: placeArtUrl(p.category), why: p.why || '', url: url, photo: typeof p.photoUrl === 'string' && /^https:\/\//i.test(p.photoUrl) ? p.photoUrl : '' };
       });
       model.pins = pinsBecauseItems(items.slice(0, MAX_PLACES), list.center);
+      model.mapPins = Array.isArray(list.mapPins) ? list.mapPins.filter(function (q) { return q && typeof q.x === 'number' && typeof q.y === 'number'; }) : [];
       var mapUrl = list.mapImageUrl || payload.mapImageUrl;
       model.mapImage = typeof mapUrl === 'string' && /^https:\/\//i.test(mapUrl) ? mapUrl : '';
     } else if (kind === 'sports_team') {
@@ -249,6 +265,85 @@
     return 'This card could not be loaded right now.';
   }
 
+  /** place_list: a dark map frame (server tiles or pin plot) with photo pins and a swipeable card floating over it. Swiping selects the pin. */
+  function renderPlaceFrame(doc, model, el) {
+    var frame = el('div', 'placeFrame');
+    var mapArea = el('div', 'mapArea');
+    var pinEls = [];
+    function drawPlot() {
+      var NS = 'http://www.w3.org/2000/svg';
+      var svg = renderMap(doc, model.pins.map(function (p) { return { n: p.n, x: p.x, y: p.y }; }), true);
+      mapArea.appendChild(svg);
+    }
+    if (model.mapImage) {
+      var img = doc.createElement('img');
+      img.className = 'mapImage';
+      img.src = model.mapImage;
+      img.alt = 'Map of the places';
+      img.addEventListener('error', function () {
+        if (img.parentNode) img.parentNode.removeChild(img);
+        pinEls.forEach(function (p) { p.remove ? p.remove() : p.parentNode && p.parentNode.removeChild(p); });
+        pinEls = [];
+        drawPlot();
+      });
+      mapArea.appendChild(img);
+      model.places.forEach(function (p, i) {
+        var q = model.mapPins[i];
+        if (!q) return;
+        var pin = el('button', 'pin');
+        pin.type = 'button';
+        pin.setAttribute('aria-label', 'Show ' + p.name);
+        pin.style.left = (q.x * 100) + '%';
+        pin.style.top = (q.y * 100) + '%';
+        if (p.photo) { var pi = doc.createElement('img'); pi.src = p.photo; pi.alt = ''; pin.appendChild(pi); } else pin.textContent = String(p.rank);
+        pin.addEventListener('click', function () { select(i, true); });
+        mapArea.appendChild(pin);
+        pinEls.push(pin);
+      });
+    } else if (model.pins.length) drawPlot();
+    frame.appendChild(mapArea);
+    var rail = el('div', 'rail');
+    var cards = [];
+    model.places.forEach(function (p, i) {
+      var c = p.url ? el('a', 'placeCard') : el('div', 'placeCard');
+      if (p.url) { c.href = p.url; c.rel = 'noopener noreferrer'; }
+      var ph = el('div', 'placePhotoWrap');
+      var im = doc.createElement('img');
+      im.src = p.photo || p.art;
+      im.alt = '';
+      im.loading = 'lazy';
+      ph.appendChild(im);
+      ph.appendChild(el('span', 'rank', String(p.rank)));
+      if (p.rating) ph.appendChild(el('span', 'ratingBadge', '\u2605 ' + p.rating));
+      var dots = el('div', 'dots');
+      model.places.forEach(function (_, d) { dots.appendChild(el('i', d === i ? 'on' : '')); });
+      ph.appendChild(dots);
+      c.appendChild(ph);
+      c.appendChild(el('span', 'placeName', p.name));
+      c.appendChild(el('span', 'placeMeta', [p.category, p.away, p.price].filter(Boolean).join(' \u00B7 ')));
+      if (p.hoursState) {
+        var hr = el('span', 'placeMeta');
+        hr.appendChild(el('b', p.open ? 'open' : 'closed', p.hoursState));
+        if (p.hoursDetail) hr.appendChild(doc.createTextNode(' \u00B7 ' + p.hoursDetail));
+        c.appendChild(hr);
+      }
+      if (p.why) c.appendChild(el('span', 'chip', p.why));
+      rail.appendChild(c);
+      cards.push(c);
+    });
+    function select(i, scroll) {
+      pinEls.forEach(function (p, j) { p.className = j === i ? 'pin on' : 'pin'; });
+      if (scroll && cards[i] && rail.scrollTo) rail.scrollTo({ left: cards[i].offsetLeft - 12, behavior: 'smooth' });
+    }
+    rail.addEventListener('scroll', function () {
+      var w = cards[0] ? cards[0].offsetWidth + 8 : 1;
+      select(Math.max(0, Math.min(cards.length - 1, Math.round(rail.scrollLeft / w))), false);
+    });
+    select(0, false);
+    frame.appendChild(rail);
+    return frame;
+  }
+
   function renderSource(doc, card, model, el) {
     var line = model.team && model.team.provenance ? model.team.provenance : '';
     if (!model.source && !line) return;
@@ -264,7 +359,7 @@
     card.appendChild(src);
   }
 
-  function renderMap(doc, pins) {
+  function renderMap(doc, pins, plot) {
     var NS = 'http://www.w3.org/2000/svg';
     var svg = doc.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', '0 0 ' + MAP_W + ' ' + MAP_H);
@@ -389,34 +484,7 @@
       card.appendChild(list);
     }
     if (model.places.length) {
-      if (model.mapImage) {
-        var mapImg = doc.createElement('img');
-        mapImg.className = 'map mapImage';
-        mapImg.src = model.mapImage;
-        mapImg.alt = 'Map of the places';
-        mapImg.addEventListener('error', function () {
-          if (model.pins.length && mapImg.parentNode) mapImg.parentNode.replaceChild(renderMap(doc, model.pins), mapImg);
-        });
-        card.appendChild(mapImg);
-      } else if (model.pins.length) card.appendChild(renderMap(doc, model.pins));
-      var ul = el('ul', 'places grid');
-      model.places.forEach(function (p) {
-        var li = el('li', 'place');
-        var inner = p.url ? el('a', 'placeCard') : el('div', 'placeCard');
-        if (p.url) { inner.href = p.url; inner.rel = 'noopener noreferrer'; }
-        var band = el('div', 'band');
-        if (p.photo) { var img = doc.createElement('img'); img.className = 'placePhoto'; img.src = p.photo; img.alt = ''; img.loading = 'lazy'; band.appendChild(img); }
-        band.appendChild(el('span', 'rank', String(p.rank)));
-        if (!p.photo && p.category) band.appendChild(el('span', 'bandCategory', p.category));
-        inner.appendChild(band);
-        inner.appendChild(el('span', 'placeName', p.name));
-        inner.appendChild(el('span', 'placeDetail', p.away));
-        inner.appendChild(el('span', p.open ? 'placeDetail open' : 'placeDetail', p.hours));
-        inner.appendChild(el('span', 'placeWhy', p.why));
-        li.appendChild(inner);
-        ul.appendChild(li);
-      });
-      card.appendChild(ul);
+      card.appendChild(renderPlaceFrame(doc, model, el));
     }
     if (model.items.length) {
       var il = el('ul', 'places');
@@ -446,7 +514,7 @@
       .catch(function () { card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
+  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

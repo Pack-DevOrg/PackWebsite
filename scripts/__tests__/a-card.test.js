@@ -62,9 +62,9 @@ describe('web card for /a/<token>', () => {
     const p = card.viewModelBecausePayload({ kind: 'place_list', title: 'Coffee', placeList: { items: [
       { name: 'Alma', category: 'coffee', distanceM: 41.2, url: 'https://alma.example' }, { name: 'Odd', url: 'javascript:1' },
     ] } });
-    assert.deepEqual(p.places, [
-      { rank: 1, name: 'Alma', detail: 'coffee · 41 m', category: 'coffee', away: '41 m', hours: '', open: false, why: '', url: 'https://alma.example', photo: '' },
-      { rank: 2, name: 'Odd', detail: '', category: '', away: '', hours: '', open: false, why: '', url: '', photo: '' },
+    assert.deepEqual(p.places.map((x) => [x.rank, x.name, x.detail, x.category, x.away, x.url, x.photo]), [
+      [1, 'Alma', 'coffee · 41 m', 'coffee', '41 m', 'https://alma.example', ''],
+      [2, 'Odd', '', '', '', '', ''],
     ]);
     const t = card.viewModelBecausePayload({ kind: 'trip', version: 1, data: { title: 'Lisbon', items: [{ type: 'flight', title: 'SFO to LIS', date: '2026-11-01' }] } });
     assert.deepEqual(t.items, [{ title: 'SFO to LIS', detail: '2026-11-01' }]);
@@ -140,7 +140,7 @@ describe('place_list card', () => {
     assert.equal(m.places[0].url, 'https://maps.apple.com/?daddr=37.7881,-122.4072&dirflg=w');
     assert.equal(m.places[1].url, 'https://encore.example');
     assert.equal(m.pins.length, 2);
-    for (const p of m.pins) assert.ok(p.x > 0 && p.x < 358 && p.y > 0 && p.y < 276);
+    for (const p of m.pins) assert.ok(p.x > 0 && p.x < 358 && p.y > 0 && p.y < 300);
     assert.ok(m.pins[1].x < m.pins[0].x && m.pins[1].y < m.pins[0].y);
   });
 
@@ -152,14 +152,14 @@ describe('place_list card', () => {
     dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
-    assert.equal(doc.querySelectorAll('li.place').length, 2);
+    // no server map: the dark frame holds the pin plot and one swipeable card per place
+    assert.equal(doc.querySelectorAll('.placeFrame .placeCard').length, 2);
     assert.equal(doc.querySelectorAll('svg.map circle').length, 2);
-    // one screen: title, map, then a 2-up grid of cards with away, hours and why on their own lines
-    const kids = [...doc.getElementById('card').children].map((n) => n.getAttribute('class'));
-    assert.deepEqual(kids.slice(0, 3), ['title', 'map', 'places grid']);
     assert.ok(doc.getElementById('card').classList.contains('dense'));
-    const first = doc.querySelector('li.place .placeCard');
-    assert.deepEqual([...first.querySelectorAll('span')].map((n) => n.textContent).slice(-4), ['Cafe La Tazita', '43 m, 1 min walk', 'Open until 18:00', 'close, open now']);
+    const first = doc.querySelector('.placeCard');
+    assert.deepEqual([...first.querySelectorAll('.placeName, .placeMeta, .chip')].map((n) => n.textContent), ['Cafe La Tazita', 'Coffee shop · 43 m, 1 min walk', 'Open · Closes at 6:00 PM', 'close, open now']);
+    assert.ok(first.querySelector('.ratingBadge') === null);
+    assert.equal(first.querySelectorAll('.dots i').length, 2);
     assert.ok(doc.getElementById('card').textContent.includes('Cafe La Tazita'));
     assert.ok(doc.getElementById('card').textContent.includes('close, open now'));
   });
@@ -238,6 +238,7 @@ describe('sports_team polish and the static map', () => {
     const img = doc.querySelector('img.mapImage');
     assert.equal(img.src, 'https://www.trypackai.com/og/maps/abc.png');
     assert.equal(doc.querySelectorAll('svg.map').length, 0);
+    assert.equal(doc.querySelectorAll('button.pin').length, 0); // no server pin fractions: none drawn over the image
     img.dispatchEvent(new dom.window.Event('error'));
     assert.equal(doc.querySelectorAll('svg.map circle').length, 2);
     assert.equal(doc.querySelector('img.mapImage'), null);
@@ -276,6 +277,42 @@ describe('sports_team is league-agnostic and follows the layout spec', () => {
       const fit = raw.headerTitleFit(title);
       assert.ok(fit.fontSize >= 14 && fit.lines <= 2, title);
     }
+  });
+});
+
+describe('place_list carousel', () => {
+  it('draws photo pins at the server fractions over the map image and selects the pin on a pin click', async () => {
+    const { JSDOM } = await import('jsdom');
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
+    const payload = { kind: 'place_list', title: 'Coffee', blocks: [{ kind: 'place_list', mapImageUrl: 'https://www.trypackai.com/og/maps/abc.png', mapPins: [{ n: 1, x: 0.4, y: 0.3 }, { n: 2, x: 0.6, y: 0.5 }], items: [
+      { rank: 1, name: 'Alma', lat: 37.7881, lon: -122.4072, category: 'Coffee shop', photoUrl: 'https://www.trypackai.com/p/a.jpg', rating: 4.6, priceLevel: 2, openState: 'open', closesAtLocal: '21:30', why: 'closest' },
+      { rank: 2, name: 'Encore', lat: 37.7886, lon: -122.4082 },
+    ] }] };
+    const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
+    dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    await new Promise((r) => setTimeout(r, 20));
+    const doc = dom.window.document;
+    const pins = [...doc.querySelectorAll('button.pin')];
+    assert.equal(pins.length, 2);
+    assert.equal(pins[0].style.left, '40%');
+    assert.equal(pins[0].querySelector('img').src, 'https://www.trypackai.com/p/a.jpg');
+    assert.equal(pins[1].textContent, '2');
+    assert.ok(pins[0].classList.contains('on'));
+    pins[1].dispatchEvent(new dom.window.Event('click'));
+    assert.ok(pins[1].classList.contains('on') && !pins[0].classList.contains('on'));
+    const card = doc.querySelector('.placeCard');
+    assert.equal(card.querySelector('.ratingBadge').textContent, '\u2605 4.6');
+    assert.equal(card.querySelector('img').src, 'https://www.trypackai.com/p/a.jpg');
+    assert.match(doc.querySelectorAll('.placeCard')[1].querySelector('img').src, /clip-headers\/dining\.restaurant\.jpg$|clip-headers\/local\.places\.jpg$/);
+  });
+  it('category art registry and 12-hour clocks', () => {
+    assert.match(raw.placeArtUrl('Coffee shop'), /dining\.restaurant\.jpg$/);
+    assert.match(raw.placeArtUrl('Gym'), /health\.fitness\.jpg$/);
+    assert.match(raw.placeArtUrl('Barber'), /local\.services\.jpg$/);
+    assert.match(raw.placeArtUrl('Museum'), /local\.places\.jpg$/);
+    assert.equal(raw.clock12('21:30'), '9:30 PM');
+    assert.equal(raw.clock12('00:05'), '12:05 AM');
   });
 });
 

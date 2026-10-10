@@ -75,6 +75,7 @@
 
   /** One-screen caps: the card never scrolls on a 390x844 phone. */
   var MAX_PLAYER_ROWS = 9;
+  var MAX_TILES = 6;
   var LINE_MAX_CHARS = 28;
   var MAX_PLACES = 6;
 
@@ -86,6 +87,7 @@
       var kept = parts.filter(function (p) { return !drop.test(p); });
       if (kept.length) parts = kept;
     });
+    while (parts.length > 2 && parts.join(', ').length > LINE_MAX_CHARS) parts = parts.slice(0, -1);
     return parts.join(', ');
   }
 
@@ -98,24 +100,65 @@
   }
 
   /** sports_team: header (name, season, record, logo, accent), stat tiles, hitters/pitchers columns. */
+  var SCOPE_SUFFIX = /\s*\(incl\. postseason\)$/;
+  var TEAM_PLAYER_ROW = /^(.*) \(([^)]+)\)$/;
+  var PLACE_LABEL = /^(place|rank|seed|standing)$/i;
+
+  function groupTitle(group) {
+    var t = String(group).trim();
+    var cap = t.charAt(0).toUpperCase() + t.slice(1);
+    return /s$/i.test(cap) ? cap : cap + 's';
+  }
+
+  /** Header title font: shrinks to a floor so any team name plus season fits two lines at most (same rule as the clip). */
+  function headerTitleFit(text) {
+    var avail = 358 - 32 - 56 - 8;
+    var oneLine = avail / (String(text).length * 0.56);
+    return oneLine >= 15 ? { fontSize: Math.min(18, Math.floor(oneLine)), lines: 1 } : { fontSize: 14, lines: 2 };
+  }
+
+  /** sports_team: league-agnostic. Groups, tile labels, units and seasons come from the rows; layout (Anvil) picks tiles, lead group, header. */
   function teamBecausePayload(payload) {
-    var m = /^(.*\S)\s+(\d{4})$/.exec(payload.title || '');
-    var team = { name: m ? m[1] : payload.title || '', season: m ? m[2] : '', record: '', tiles: [], hitters: [], pitchers: [],
+    var m = /^(.*\S)\s+(\d{4}(?:[-\u2013/]\d{2,4})?)$/.exec(payload.title || '');
+    var layout = payload.layout && typeof payload.layout === 'object' ? payload.layout : {};
+    var team = { name: m ? m[1] : payload.title || '', season: m ? m[2] : '', record: '', subline: '', tiles: [], columns: [],
       logo: typeof payload.imageUrl === 'string' && /^https:\/\//i.test(payload.imageUrl) ? payload.imageUrl : '',
       accent: typeof payload.accent === 'string' && /^#[0-9a-fA-F]{6}$/.test(payload.accent) ? payload.accent : '', provenance: '' };
+    var stats = [];
+    var groups = {};
+    var order = [];
     (payload.rows || []).forEach(function (row) {
       if (row.label === 'Player stats') { team.provenance = row.value; return; }
-      var pm = PLAYER_ROW.exec(row.label || '');
+      var pm = SCOPE_SUFFIX.test(row.label || '') ? null : TEAM_PLAYER_ROW.exec(row.label || '');
       if (pm) {
-        (pm[2] === 'pitcher' || pm[2] === 'goalie' ? team.pitchers : team.hitters).push({ name: pm[1], line: compactStatLine(row.value) });
+        var key = pm[2].toLowerCase();
+        if (!groups[key]) { groups[key] = []; order.push(key); }
+        groups[key].push({ name: pm[1], line: compactStatLine(row.value) });
         return;
       }
-      var label = String(row.label || '').replace(/\s*\(incl\. postseason\)$/, '');
+      var label = String(row.label || '').replace(SCOPE_SUFFIX, '');
       if (label === 'Record') { team.record = row.value; return; }
-      team.tiles.push({ label: label, value: label === 'Place' ? ordinal(row.value) : row.value });
+      stats.push({ label: label, value: PLACE_LABEL.test(label) ? ordinal(row.value) : row.value });
     });
-    team.hitters = team.hitters.slice(0, MAX_PLAYER_ROWS);
-    team.pitchers = team.pitchers.slice(0, MAX_PLAYER_ROWS);
+    var featured = Array.isArray(layout.featured) ? layout.featured : [];
+    var picked = featured.map(function (f) { return stats.filter(function (x) { return x.label === f; })[0]; }).filter(Boolean);
+    team.tiles = (picked.length >= 2 ? picked : stats).slice(0, MAX_TILES);
+    var emphasis = typeof layout.emphasis === 'string' ? layout.emphasis.toLowerCase() : '';
+    order.sort(function (a, b) { return (b === emphasis ? 1 : 0) - (a === emphasis ? 1 : 0); });
+    if (order.length === 1) {
+      var only = groups[order[0]].slice(0, MAX_PLAYER_ROWS * 2);
+      var half = Math.ceil(only.length / 2);
+      team.columns = [{ group: order[0], title: groupTitle(order[0]), players: only.slice(0, half) }, { group: order[0], title: '', players: only.slice(half) }];
+    } else {
+      team.columns = order.slice(0, 2).map(function (g) { return { group: g, title: groupTitle(g), players: groups[g].slice(0, MAX_PLAYER_ROWS) }; });
+    }
+    var variant = layout.header === 'plain' || layout.header === 'matchup' ? layout.header : 'record';
+    if (variant === 'matchup') {
+      var next = stats.filter(function (x) { return /^(next|opponent|vs\b)/i.test(x.label); })[0];
+      team.subline = next ? next.label + ': ' + next.value : team.record;
+    } else if (variant === 'record') {
+      team.subline = team.record;
+    }
     return team;
   }
 
@@ -241,8 +284,12 @@
     var head = el('header', 'teamHead');
     if (team.accent) head.style.background = team.accent;
     var text = el('div', 'teamText');
-    text.appendChild(el('h1', 'teamName', team.season ? team.name + ' ' + team.season : team.name));
-    if (team.record) text.appendChild(el('p', 'teamRecord', team.record));
+    var fullTitle = team.season ? team.name + ' ' + team.season : team.name;
+    var fit = headerTitleFit(fullTitle);
+    var h1 = el('h1', fit.lines === 2 ? 'teamName two' : 'teamName', fullTitle);
+    h1.style.fontSize = fit.fontSize + 'px';
+    text.appendChild(h1);
+    if (team.subline) text.appendChild(el('p', 'teamRecord', team.subline));
     head.appendChild(text);
     if (team.logo) { var logo = doc.createElement('img'); logo.className = 'teamLogo'; logo.src = team.logo; logo.alt = team.name + ' logo'; head.appendChild(logo); }
     card.appendChild(head);
@@ -256,12 +303,12 @@
       });
       card.appendChild(tiles);
     }
-    if (team.hitters.length || team.pitchers.length) {
+    if (team.columns.some(function (c) { return c.players.length; })) {
       var cols = el('div', 'players');
-      [['Hitters', team.hitters], ['Pitchers', team.pitchers]].forEach(function (g) {
+      team.columns.forEach(function (g) {
         var col = el('div', 'playerCol');
-        col.appendChild(el('h2', 'colHead', g[0]));
-        g[1].forEach(function (pl) {
+        col.appendChild(el('h2', 'colHead', g.title));
+        g.players.forEach(function (pl) {
           var row = el('div', 'player');
           row.appendChild(el('span', 'playerName', pl.name));
           row.appendChild(el('span', 'playerLine', pl.line));
@@ -395,7 +442,7 @@
       .catch(function () { card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
+  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

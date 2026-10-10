@@ -279,6 +279,19 @@ describe('sports_team is league-agnostic and follows the layout spec', () => {
   });
 });
 
+describe('typed player groups', () => {
+  it('a typed group makes a row a player (no tag in the label); old cards still read the suffix', () => {
+    const t = plain(raw.teamBecausePayload({ title: 'Athletics 2026', rows: [
+      { label: 'Record', value: '80-82' }, { label: 'Games (regular season)', value: '162' },
+      { label: 'Shohei Ohtani', value: '.310 AVG', group: 'hitter' }, { label: 'Yoshinobu Yamamoto (pitcher)', value: '12-8', group: 'pitcher' },
+    ] }));
+    assert.deepEqual(t.tiles.map((x) => x.label), ['Games (regular season)']);
+    assert.deepEqual(t.columns.map((c) => [c.group, c.players.map((p) => p.name)]), [['hitter', ['Shohei Ohtani']], ['pitcher', ['Yoshinobu Yamamoto']]]);
+    const old = plain(raw.teamBecausePayload({ title: 'Athletics 2026', rows: [{ label: 'Old Row (pitcher)', value: '1-0' }] }));
+    assert.equal(old.columns[0].players[0].name, 'Old Row');
+  });
+});
+
 describe('the card script is reachable', () => {
   it('its path is not swallowed by the /a/<token> rewrite (which would serve the page HTML as JS)', () => {
     const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8');

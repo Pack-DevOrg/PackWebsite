@@ -180,10 +180,10 @@ describe('sports_team card is one dense screen', () => {
     assert.equal(t.name, 'Los Angeles Dodgers');
     assert.equal(t.season, '2026');
     assert.equal(t.record, '98-64');
-    assert.deepEqual(t.tiles.map((x) => x.label), ['Record', 'Place', 'Games', 'Runs for', 'Runs against']);
-    assert.equal(t.tiles[1].value, '1st');
-    assert.equal(t.hitters.length, 7);
-    assert.equal(t.pitchers.length, 7);
+    assert.deepEqual(t.tiles.map((x) => x.label), ['Place', 'Games', 'Runs for', 'Runs against']);
+    assert.equal(t.tiles[0].value, '1st');
+    assert.equal(t.hitters.length, 9);
+    assert.equal(t.pitchers.length, 9);
     assert.equal(t.logo, DODGERS.imageUrl);
     const bad = plain(raw.teamBecausePayload({ ...DODGERS, imageUrl: 'javascript:1', accent: 'red' }));
     assert.equal(bad.logo, '');
@@ -204,17 +204,44 @@ describe('sports_team card is one dense screen', () => {
     const head = doc.querySelector('.teamHead');
     assert.equal(head.style.background !== '', true);
     assert.equal(head.lastElementChild.tagName, 'IMG');
-    assert.equal(doc.querySelectorAll('.tile').length, 5);
+    assert.equal(doc.querySelectorAll('.tile').length, 4);
     const cols = doc.querySelectorAll('.playerCol');
     assert.deepEqual([...cols].map((c) => c.querySelector('.colHead').textContent), ['Hitters', 'Pitchers']);
-    assert.equal(cols[0].querySelectorAll('.player').length, 7);
+    assert.equal(cols[0].querySelectorAll('.player').length, 9);
     assert.ok(doc.querySelector('.source').textContent.includes('MLB Stats API, 2026-10-09'));
     assert.ok(!card.querySelector('.row'), 'no plain row list');
     // one screen: fixed heights add up under the 390x844 viewport
     const css = html.match(/<style>[\s\S]*<\/style>/)[0];
     const px = (re) => Number(re.exec(css)[1]);
-    const total = 2 * 14 + px(/\.teamHead \{[^}]*height: (\d+)px/) + px(/\.tile \{[^}]*height: (\d+)px/) * 2 + 8 + 12 + 12 + px(/\.colHead \{[^}]*height: (\d+)px/) + px(/\.player \{[^}]*height: (\d+)px/) * 7 + 12 + 14;
+    const total = 2 * 14 + px(/\.teamHead \{[^}]*height: (\d+)px/) + px(/\.tile \{[^}]*height: (\d+)px/) * 2 + 8 + 12 + 12 + px(/\.colHead \{[^}]*height: (\d+)px/) + px(/\.player \{[^}]*height: (\d+)px/) * 9 + 12 + 14;
     assert.ok(total <= 844 - 150, `team card ${total}px fits one screen`);
+  });
+});
+
+describe('sports_team polish and the static map', () => {
+  it('drops OPS then WHIP only when the line would wrap', () => {
+    assert.equal(raw.compactStatLine('.310 AVG, 54 HR, 130 RBI, 1.036 OPS'), '.310 AVG, 54 HR, 130 RBI');
+    assert.equal(raw.compactStatLine('12-8, 2.49 ERA, 201 K, 1.02 WHIP'), '12-8, 2.49 ERA, 201 K');
+    assert.equal(raw.compactStatLine('3-1, 2.90 ERA, 40 K, 8 SV'), '3-1, 2.90 ERA, 40 K, 8 SV');
+  });
+
+  it('a place_list with a server map shows the image (https only) and falls back to the pin plot on error', async () => {
+    const { JSDOM } = await import('jsdom');
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
+    const payload = { kind: 'place_list', title: 'Coffee', blocks: [{ kind: 'place_list', mapImageUrl: 'https://www.trypackai.com/og/maps/abc.png', items: [{ rank: 1, name: 'Alma', lat: 37.7881, lon: -122.4072 }, { rank: 2, name: 'Odd', lat: 37.7886, lon: -122.4082 }] }] };
+    assert.equal(plain(raw.viewModelBecausePayload(payload)).mapImage, 'https://www.trypackai.com/og/maps/abc.png');
+    assert.equal(plain(raw.viewModelBecausePayload({ ...payload, blocks: [{ ...payload.blocks[0], mapImageUrl: 'http://evil.example/m.png' }] })).mapImage, '');
+    const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
+    dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    await new Promise((r) => setTimeout(r, 20));
+    const doc = dom.window.document;
+    const img = doc.querySelector('img.mapImage');
+    assert.equal(img.src, 'https://www.trypackai.com/og/maps/abc.png');
+    assert.equal(doc.querySelectorAll('svg.map').length, 0);
+    img.dispatchEvent(new dom.window.Event('error'));
+    assert.equal(doc.querySelectorAll('svg.map circle').length, 2);
+    assert.equal(doc.querySelector('img.mapImage'), null);
   });
 });
 

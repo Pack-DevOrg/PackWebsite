@@ -30,10 +30,10 @@ const AGENDA = (extra = {}) => ({
 const opened = [];
 afterAll(() => opened.forEach((w) => w.close()));
 
-async function page({ pathname = '/a/tok', responses, session = {}, interval } = {}) {
+async function page({ pathname = '/a/tok', responses, session = {}, interval, userAgent } = {}) {
   const { JSDOM } = await import('jsdom');
   const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
-  const dom = new JSDOM(html, { url: `https://www.trypackai.com${pathname}`, runScripts: 'outside-only' });
+  const dom = new JSDOM(html, { url: `https://www.trypackai.com${pathname}`, runScripts: 'outside-only', ...(userAgent ? { userAgent } : {}) });
   const w = dom.window;
   Object.defineProperty(w, 'crypto', { value: webcrypto, configurable: true });
   w.TextEncoder = TextEncoder;
@@ -79,6 +79,34 @@ describe('anonymous private card', () => {
     assert.equal(q.get('state'), pending.state);
     const digest = new Uint8Array(await webcrypto.subtle.digest('SHA-256', new TextEncoder().encode(pending.verifier)));
     assert.equal(q.get('code_challenge'), Buffer.from(digest).toString('base64url'));
+  });
+});
+
+describe('locked state', () => {
+  const PRIVATE = { status: 401, body: { unlock: 'otp', preview: { kind: 'agenda', title: 'Tech Week LA' } } };
+
+  it('names what is locked (kind and title), with the Pack mark, one primary and one text action', async () => {
+    const { doc } = await page({ responses: [PRIVATE] });
+    assert.equal(doc.querySelector('.gateMark').getAttribute('src'), '/logo.png');
+    assert.equal(doc.querySelector('.kindChip').textContent, 'Shared agenda');
+    assert.equal(doc.querySelector('.lockedTitle').textContent, 'Tech Week LA');
+    assert.equal(doc.querySelectorAll('.gatePrimary').length, 1);
+    assert.equal(doc.querySelectorAll('.gateText').length, 1);
+    assert.equal(doc.querySelector('.gatePrimary').textContent, 'Sign in to view');
+    assert.equal(doc.body.className, 'gateBody');
+  });
+
+  it('on a phone the primary action is Open in Pack and Sign in to view is the text action', async () => {
+    const { doc } = await page({ responses: [PRIVATE], userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15' });
+    assert.equal(doc.querySelector('.gatePrimary').textContent, 'Open in Pack');
+    assert.equal(doc.querySelector('.gateText').textContent, 'Sign in to view');
+    assert.equal(doc.getElementById('signin').textContent, 'Sign in to view');
+  });
+
+  it('a 403 shows no preview of the card', async () => {
+    const { doc } = await page({ responses: [{ status: 403, body: { error: 'No access' } }] });
+    assert.equal(doc.querySelector('.lockedTitle'), null);
+    assert.match(doc.getElementById('card').textContent, /do not have access/);
   });
 });
 

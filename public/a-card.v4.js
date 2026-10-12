@@ -19,6 +19,7 @@
   var REAUTH_GUARD_MS = 60000;
   var LIVE_REFRESH_MS = 30000;
   var SIGN_IN_PRIVATE = 'This card is private. Sign in to view it, or open it in the Pack app.';
+  var MOBILE_UA = /iPhone|iPad|iPod|Android/i;
   var SIGN_IN_ENDED = 'Your sign-in ended. Sign in again to view this card.';
   var NO_ACCESS = 'You do not have access to this card.';
   var STATUS_LABEL = { host: 'Hosting', going: 'Going', pending_approval: 'Pending approval', waitlist: 'Waitlist', invited: 'Invited', maybe: 'Maybe' };
@@ -549,6 +550,7 @@
       return n;
     }
     var card = doc.getElementById('card');
+    setGateTheme(doc, !!model.agenda);
     card.textContent = '';
     card.className = model.agenda ? 'agendaCard' : model.team ? 'dense team' : model.places.length ? 'dense placesCard' : '';
     if (model.agenda) {
@@ -721,26 +723,75 @@
       .catch(function () { return { token: token, error: true }; });
   }
 
-  function signInButton(win, doc, token, label, fresh) {
-    var b = doc.createElement('button');
-    b.type = 'button';
-    b.id = 'signin';
-    b.className = 'cta signin';
-    b.textContent = label;
-    b.addEventListener('click', function () { beginSignIn(win, token, fresh); });
-    return b;
+  var LOCK_SVG = 'M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1zm2 0h6V8a3 3 0 0 0-6 0v2z';
+
+  function lockIcon(doc, size) {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = doc.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', String(size));
+    svg.setAttribute('height', String(size));
+    svg.setAttribute('aria-hidden', 'true');
+    var path = doc.createElementNS(NS, 'path');
+    path.setAttribute('d', LOCK_SVG);
+    path.setAttribute('fill', 'currentColor');
+    svg.appendChild(path);
+    return svg;
   }
 
-  function showGate(win, token, text, buttonLabel, fresh) {
+  function setGateTheme(doc, on) {
+    doc.body.className = on ? 'gateBody' : '';
+  }
+
+  /** The locked state of a private card: the Pack mark, what the card is (kind, title: the same public preview the link unfurl shows), a blurred body, one primary action and one text action. */
+  function showGate(win, token, opts) {
     var doc = win.document;
+    function el(tag, cls, text) { var n = doc.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
     var card = doc.getElementById('card');
-    card.className = '';
+    setGateTheme(doc, true);
+    card.className = 'gate';
     card.textContent = '';
+    var mark = el('img', 'gateMark');
+    mark.src = '/logo.png'; mark.alt = 'Pack'; mark.width = 44; mark.height = 44;
+    card.appendChild(mark);
+    var locked = el('div', 'locked');
+    var art = el('div', 'lockedArt');
+    for (var i = 0; i < 4; i++) art.appendChild(el('i', 'bar b' + i));
+    var badge = el('span', 'lockBadge');
+    badge.appendChild(lockIcon(doc, 26));
+    locked.appendChild(art);
+    locked.appendChild(badge);
+    var meta = el('div', 'lockedMeta');
+    if (opts.kind) meta.appendChild(el('span', 'kindChip', kindLabel(opts.kind) === 'Agenda' ? 'Shared agenda' : kindLabel(opts.kind)));
+    if (opts.title) meta.appendChild(el('h1', 'lockedTitle', opts.title));
+    locked.appendChild(meta);
+    card.appendChild(locked);
+    card.appendChild(el('h2', 'gateHeading', opts.heading));
+    card.appendChild(el('p', 'gateSub', opts.sub));
+    var mobile = MOBILE_UA.test((win.navigator && win.navigator.userAgent) || '');
+    var signIn = el('button', mobile && !opts.noApp ? 'gateText' : 'gatePrimary', opts.button);
+    signIn.type = 'button'; signIn.id = 'signin';
+    signIn.addEventListener('click', function () { beginSignIn(win, token, !!opts.fresh); });
+    var open = el('button', mobile ? 'gatePrimary' : 'gateText', 'Open in Pack');
+    open.type = 'button'; open.id = 'gateOpen';
+    open.addEventListener('click', function () { openInPack(win, token); });
+    if (mobile) { card.appendChild(open); card.appendChild(signIn); } else { card.appendChild(signIn); card.appendChild(open); }
+    card.appendChild(el('p', 'gateNote', 'Sign in with Apple, Google or email.'));
+  }
+
+  function showLoading(win) {
+    var doc = win.document;
+    setGateTheme(doc, true);
+    var card = doc.getElementById('card');
+    card.className = 'gate';
+    card.textContent = '';
+    var mark = doc.createElement('img');
+    mark.className = 'gateMark'; mark.src = '/logo.png'; mark.alt = 'Pack'; mark.width = 44; mark.height = 44;
+    card.appendChild(mark);
     var p = doc.createElement('p');
-    p.className = 'gateText';
-    p.textContent = text;
+    p.className = 'gateSub';
+    p.textContent = 'Signing you in...';
     card.appendChild(p);
-    card.appendChild(signInButton(win, doc, token, buttonLabel, fresh));
   }
 
   function liveKind(payload) { return payload && (payload.kind === 'agenda' || payload.kind === 'composed'); }
@@ -750,7 +801,7 @@
     var card = doc.getElementById('card');
     var state = { idToken: '', last: '', timer: 0, token: tokenBecausePath(win.location.pathname) };
     if (win.location.pathname === '/a/callback') {
-      card.textContent = 'Signing you in...';
+      showLoading(win);
       completeSignIn(win).then(function (done) {
         if (!done.token) { card.textContent = messageBecauseStatus(404); return; }
         if (done.error) { remember(win, HINT_KEY, null); }
@@ -758,7 +809,7 @@
         try { win.history.replaceState(null, '', '/a/' + encodeURIComponent(done.token)); } catch (e) { /* the page still works */ }
         state.token = done.token;
         wireOpenButton(win, state.token);
-        if (done.error) showGate(win, state.token, 'Sign-in did not finish. Try again.', 'Sign in to view', false);
+        if (done.error) showGate(win, state.token, { heading: 'Sign-in did not finish', sub: 'Try again.', button: 'Sign in to view' });
         else load(win, state);
       });
       return;
@@ -778,7 +829,7 @@
       .then(function (res) {
         if (res.ok) return res.json().then(function (payload) { return { payload: payload }; });
         if (res.status === 401) {
-          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: 401, ended: !!(body && body.signIn) }; });
+          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: 401, ended: !!(body && body.signIn), preview: body && body.preview && typeof body.preview.title === 'string' ? body.preview : null }; });
         }
         return { status: res.status };
       })
@@ -798,10 +849,14 @@
           var ago = Date.now() - Number(recall(win, REAUTH_KEY) || 0);
           // Signed in earlier in this tab and the Hosted UI session is still there: go straight round, once a minute at most.
           if (recall(win, HINT_KEY) === '1' && ago > REAUTH_GUARD_MS) { beginSignIn(win, state.token, false); return; }
-          showGate(win, state.token, out.ended ? SIGN_IN_ENDED : SIGN_IN_PRIVATE, 'Sign in to view', false);
+          showGate(win, state.token, {
+            kind: out.preview ? out.preview.kind : '', title: out.preview ? out.preview.title : '',
+            heading: out.ended ? 'Your sign-in ended' : 'This card is private',
+            sub: out.ended ? 'Sign in again to view this card.' : 'Sign in to view it, or open it in the Pack app.', button: 'Sign in to view'
+          });
           return;
         }
-        if (out.status === 403) { showGate(win, state.token, NO_ACCESS, 'Sign in with a different account', true); return; }
+        if (out.status === 403) { showGate(win, state.token, { heading: NO_ACCESS, sub: 'This card belongs to someone else. Try a different account.', button: 'Sign in with a different account', fresh: true }); return; }
         card.textContent = messageBecauseStatus(out.status);
       })
       .catch(function () { if (!quiet) card.textContent = messageBecauseStatus(0); });

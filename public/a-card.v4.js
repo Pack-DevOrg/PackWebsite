@@ -683,17 +683,19 @@
   function redirectUriFor(win) { return win.location.origin + '/a/callback'; }
 
   /** Send the browser to the Hosted UI (Apple, Google or email). `fresh` asks for the account picker. */
-  function beginSignIn(win, token, fresh) {
+  function beginSignIn(win, token, fresh, provider) {
     var verifier = randomString(win, 32);
     var state = randomString(win, 16);
     return win.crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)).then(function (digest) {
       var challenge = b64url(new Uint8Array(digest));
-      remember(win, PKCE_KEY, JSON.stringify({ state: state, verifier: verifier, token: token, at: Date.now() }));
+      remember(win, PKCE_KEY, JSON.stringify({ state: state, verifier: verifier, token: token, provider: provider || '', at: Date.now() }));
       remember(win, REAUTH_KEY, String(Date.now()));
       var q = [
         ['client_id', COGNITO_CLIENT_ID], ['response_type', 'code'], ['scope', SIGNIN_SCOPE], ['redirect_uri', redirectUriFor(win)],
         ['state', state], ['code_challenge', challenge], ['code_challenge_method', 'S256']
       ];
+      // identity_provider sends the browser straight to Google or Apple: the Cognito login page is never shown.
+      if (provider) q.push(['identity_provider', provider]);
       if (fresh) q.push(['prompt', 'login']);
       var url = COGNITO_DOMAIN + '/oauth2/authorize?' + q.map(function (kv) { return kv[0] + '=' + encodeURIComponent(kv[1]); }).join('&');
       win.location.assign(url);
@@ -719,7 +721,7 @@
     form.set('code_verifier', pending.verifier);
     return win.fetch(COGNITO_DOMAIN + '/oauth2/token', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: form.toString() })
       .then(function (res) { return res.ok ? res.json() : null; })
-      .then(function (body) { return body && typeof body.id_token === 'string' ? { token: token, idToken: body.id_token } : { token: token, error: true }; })
+      .then(function (body) { return body && typeof body.id_token === 'string' ? { token: token, idToken: body.id_token, provider: pending.provider || '' } : { token: token, error: true }; })
       .catch(function () { return { token: token, error: true }; });
   }
 
@@ -741,6 +743,58 @@
 
   function setGateTheme(doc, on) {
     doc.body.className = on ? 'gateBody' : '';
+  }
+
+
+  /* The app's own sign-in buttons (AuthProviderButtons: Google white, Apple black, same copy and order), straight to the provider. */
+  var GOOGLE_PATHS = [['M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z', '#4285F4'], ['M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33A9 9 0 0 0 9 18z', '#34A853'], ['M3.96 10.71A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.17.28-1.71V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3-2.33z', '#FBBC05'], ['M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z', '#EA4335']];
+  var APPLE_PATH = 'M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z';
+
+  function providerIcon(doc, which) {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = doc.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', which === 'google' ? '0 0 18 18' : '0 0 24 24');
+    svg.setAttribute('width', '20'); svg.setAttribute('height', '20'); svg.setAttribute('aria-hidden', 'true');
+    var paths = which === 'google' ? GOOGLE_PATHS : [[APPLE_PATH, '#FFFFFF']];
+    paths.forEach(function (pc) {
+      var path = doc.createElementNS(NS, 'path');
+      path.setAttribute('d', pc[0]); path.setAttribute('fill', pc[1]);
+      svg.appendChild(path);
+    });
+    return svg;
+  }
+
+  function openSheet(win, token, fresh) {
+    var doc = win.document;
+    function el(tag, cls, text) { var n = doc.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+    var old = doc.getElementById('signinSheet');
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+    var backdrop = el('div', 'sheetBackdrop');
+    backdrop.id = 'signinSheet';
+    var sheet = el('div', 'sheet');
+    sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-label', 'Sign in to view');
+    sheet.appendChild(el('span', 'sheetGrip'));
+    sheet.appendChild(el('h2', 'sheetTitle', 'Sign in to view'));
+    sheet.appendChild(el('p', 'sheetSub', 'Use the account you use in Pack.'));
+    function provider(cls, which, label, idp) {
+      var b = el('button', 'authBtn ' + cls);
+      b.type = 'button';
+      b.id = 'continue-' + which;
+      b.appendChild(providerIcon(doc, which));
+      b.appendChild(el('span', '', label));
+      b.addEventListener('click', function () { b.disabled = true; beginSignIn(win, token, fresh, idp); });
+      return b;
+    }
+    sheet.appendChild(provider('google', 'google', 'Continue with Google', 'Google'));
+    sheet.appendChild(provider('apple', 'apple', 'Continue with Apple', 'SignInWithApple'));
+    var close = el('button', 'gateText', 'Not now');
+    close.type = 'button';
+    close.addEventListener('click', function () { if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop); });
+    sheet.appendChild(close);
+    backdrop.appendChild(sheet);
+    backdrop.addEventListener('click', function (e) { if (e.target === backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop); });
+    doc.body.appendChild(backdrop);
+    return backdrop;
   }
 
   /** The locked state of a private card: the Pack mark, what the card is (kind, title: the same public preview the link unfurl shows), a blurred body, one primary action and one text action. */
@@ -771,7 +825,11 @@
     var mobile = MOBILE_UA.test((win.navigator && win.navigator.userAgent) || '');
     var signIn = el('button', mobile && !opts.noApp ? 'gateText' : 'gatePrimary', opts.button);
     signIn.type = 'button'; signIn.id = 'signin';
-    signIn.addEventListener('click', function () { beginSignIn(win, token, !!opts.fresh); });
+    signIn.addEventListener('click', function () {
+      // ?signin=cognito is the test door to the password page (the E2E account has no Google or Apple login); users get the sheet.
+      if (/[?&]signin=cognito\b/.test(win.location.search)) beginSignIn(win, token, !!opts.fresh, '');
+      else openSheet(win, token, !!opts.fresh);
+    });
     var open = el('button', mobile ? 'gatePrimary' : 'gateText', 'Open in Pack');
     open.type = 'button'; open.id = 'gateOpen';
     open.addEventListener('click', function () { openInPack(win, token); });
@@ -805,7 +863,7 @@
       completeSignIn(win).then(function (done) {
         if (!done.token) { card.textContent = messageBecauseStatus(404); return; }
         if (done.error) { remember(win, HINT_KEY, null); }
-        else { state.idToken = done.idToken; remember(win, HINT_KEY, '1'); }
+        else { state.idToken = done.idToken; remember(win, HINT_KEY, done.provider || '1'); }
         try { win.history.replaceState(null, '', '/a/' + encodeURIComponent(done.token)); } catch (e) { /* the page still works */ }
         state.token = done.token;
         wireOpenButton(win, state.token);
@@ -848,7 +906,8 @@
           state.idToken = '';
           var ago = Date.now() - Number(recall(win, REAUTH_KEY) || 0);
           // Signed in earlier in this tab and the Hosted UI session is still there: go straight round, once a minute at most.
-          if (recall(win, HINT_KEY) === '1' && ago > REAUTH_GUARD_MS) { beginSignIn(win, state.token, false); return; }
+          var hint = recall(win, HINT_KEY);
+          if (hint && ago > REAUTH_GUARD_MS) { beginSignIn(win, state.token, false, hint === '1' ? '' : hint); return; }
           showGate(win, state.token, {
             kind: out.preview ? out.preview.kind : '', title: out.preview ? out.preview.title : '',
             heading: out.ended ? 'Your sign-in ended' : 'This card is private',

@@ -111,6 +111,38 @@ describe('locked state', () => {
   });
 });
 
+describe('sign-in sheet: the app own buttons', () => {
+  const PRIVATE = { status: 401, body: { unlock: 'otp' } };
+
+  it('Sign in to view opens a sheet with Continue with Google, then Continue with Apple (the app order), no email field', async () => {
+    const { doc, w } = await page({ responses: [PRIVATE] });
+    assert.equal(doc.getElementById('signinSheet'), null);
+    doc.getElementById('signin').click();
+    const labels = [...doc.querySelectorAll('#signinSheet .authBtn')].map((b) => b.textContent);
+    assert.deepEqual(labels, ['Continue with Google', 'Continue with Apple']);
+    assert.equal(doc.querySelectorAll('#signinSheet input').length, 0);
+    assert.equal(w.location.hostname, 'www.trypackai.com');
+  });
+
+  it('each provider goes straight to its identity provider, so the Cognito login page is skipped', async () => {
+    const { w } = await page({ responses: [PRIVATE] });
+    const google = new URL(await w.PackCard.beginSignIn(w, 'tok', false, 'Google'));
+    assert.equal(google.searchParams.get('identity_provider'), 'Google');
+    const apple = new URL(await w.PackCard.beginSignIn(w, 'tok', false, 'SignInWithApple'));
+    assert.equal(apple.searchParams.get('identity_provider'), 'SignInWithApple');
+    assert.equal(JSON.parse(w.sessionStorage.getItem('pack.card.pkce')).provider, 'SignInWithApple');
+  });
+
+  it('the provider is remembered (not the token) so an ended session goes back to the same provider', async () => {
+    const { w } = await page({
+      pathname: '/a/callback?code=CODE&state=S',
+      session: { 'pack.card.pkce': JSON.stringify({ state: 'S', verifier: 'V'.repeat(43), token: 'tok', provider: 'Google', at: Date.now() }) },
+      responses: [{ status: 200, body: { id_token: 'ID' } }, { status: 200, body: AGENDA() }],
+    });
+    assert.equal(w.sessionStorage.getItem('pack.card.signedin'), 'Google');
+  });
+});
+
 describe('after sign-in', () => {
   const callbackSession = (extra = {}) => ({ 'pack.card.pkce': JSON.stringify({ state: 'S', verifier: 'V'.repeat(43), token: 'tok', at: Date.now(), ...extra }) });
 

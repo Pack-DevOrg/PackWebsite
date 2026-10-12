@@ -83,6 +83,31 @@ main { max-width: 560px; margin: 0 auto; padding: 24px 16px 40px; }
 .placeCard .placeMeta { padding: 0 12px; font-size: 13px; line-height: 18px; color: #a8a5a1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 .placeMeta b.open { color: #4caf50; } .placeMeta b.closed { color: #ff9800; }
 .chip { align-self: flex-start; margin: 4px 12px 0; height: 26px; line-height: 26px; padding: 0 10px; border-radius: 13px; background: var(--saffron); color: #1e1e1e; font-size: 13px; font-weight: 600; max-width: calc(100% - 24px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+button.cta { width: 100%; border: 0; font: inherit; font-weight: 600; cursor: pointer; }
+.gateText { margin: 0 0 4px; font-size: 18px; line-height: 1.35; }
+#card:has(.gateText) { padding-bottom: 8px; }
+#card.agendaCard { background: #121212; color: #f4f2ef; border-color: rgba(255,255,255,.14); padding: 18px 16px; }
+.agendaCard .kind, .agendaCard .agendaCount, .agendaCard .agendaMeta, .agendaCard .source { color: #a8a5a1; }
+.agendaCard .source a { color: #a8a5a1; }
+.agendaHead .title { margin: 0 0 4px; font-size: 24px; }
+.agendaCount { margin: 0 0 10px; font-size: 14px; }
+.agendaMembers { display: flex; flex-wrap: wrap; gap: 6px; }
+.memberChip { padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.1); font-size: 13px; }
+.memberChip.quiet { opacity: .6; }
+.agendaNote { margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; background: rgba(240,198,45,.14); color: #f0c62d; font-size: 14px; }
+.agendaMap { position: relative; margin-top: 14px; aspect-ratio: 358 / 220; border-radius: 14px; overflow: hidden; background: #1a1918; }
+.agendaMap .mapImage { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pin.static { cursor: default; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin: -14px 0 0 -14px; font-size: 13px; }
+.dayLabel { margin: 18px 0 4px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--saffron); }
+.agendaEvent { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.12); }
+.agendaDay .agendaEvent:first-of-type { border-top: 0; }
+.agendaTime { flex: none; width: 74px; font-size: 14px; font-variant-numeric: tabular-nums; color: #a8a5a1; }
+.agendaBody { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.agendaTitle { font-size: 16px; font-weight: 700; color: #f4f2ef; text-decoration: none; overflow-wrap: anywhere; }
+.agendaMeta { font-size: 13px; }
+.agendaTags { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.agendaTags .chip { margin: 0; }
+.agendaDirections { font-size: 13px; color: #f4f2ef; }
 noscript { display: block; padding: 16px 0; }
 </style>
 </head>
@@ -93,6 +118,6 @@ noscript { display: block; padding: 16px 0; }
 <p id="openNote" class="progress" role="status"></p>
 <noscript>This card needs JavaScript. Open this link on a phone with Pack installed.</noscript>
 </main>
-<script src="/a-card.v3.js"></script>
+<script src="/a-card.v4.js"></script>
 </body>
 </html>

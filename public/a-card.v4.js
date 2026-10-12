@@ -1,5 +1,7 @@
 /* Web fallback for /a/<token>: the same typed artifact the App Clip renders, from GET /api/artifact/<token>.
-   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a-card.v3.js)); render() only touches the DOM
+   A private card (401) offers "Sign in to view": Cognito Hosted UI (Apple, Google, email) with PKCE, back at /a/callback. The ID token lives in
+   memory only (never storage, never a cookie we set); the server serves the card only to its owner or an active member.
+   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a-card.v4.js)); render() only touches the DOM
    with textContent, so card text is never parsed as HTML. */
 (function (root) {
   'use strict';
@@ -7,6 +9,19 @@
   var APP_STORE = 'https://apps.apple.com/app/id6761626050';
   var APP_SCHEME = 'com.packai.app';
   var APP_WAIT_MS = 1500;
+  /* Same user pool as the app (us-east-1_QuNk9AZqk), the website's own client (pack-web), Hosted UI, authorization code + PKCE. */
+  var COGNITO_DOMAIN = 'https://auth.trypackai.com';
+  var COGNITO_CLIENT_ID = '4h8pha61va6n081674mdrc0m7';
+  var SIGNIN_SCOPE = 'openid email profile';
+  var PKCE_KEY = 'pack.card.pkce';
+  var HINT_KEY = 'pack.card.signedin';
+  var REAUTH_KEY = 'pack.card.reauth';
+  var REAUTH_GUARD_MS = 60000;
+  var LIVE_REFRESH_MS = 30000;
+  var SIGN_IN_PRIVATE = 'This card is private. Sign in to view it, or open it in the Pack app.';
+  var SIGN_IN_ENDED = 'Your sign-in ended. Sign in again to view this card.';
+  var NO_ACCESS = 'You do not have access to this card.';
+  var STATUS_LABEL = { host: 'Hosting', going: 'Going', pending_approval: 'Pending approval', waitlist: 'Waitlist', invited: 'Invited', maybe: 'Maybe' };
   /* The product page 404s until 1.0 ships, and iOS renders that as a blank white sheet. Flip when the app is live. */
   var APP_STORE_LIVE = false;
   var NOT_OPENED = 'Pack did not open. Pack may not be installed on this phone, or it is not on the App Store yet. Install the Pack beta from TestFlight, then tap Open in Pack again.';
@@ -220,7 +235,7 @@
 
   function viewModelBecausePayload(payload) {
     var kind = payload && payload.kind ? String(payload.kind) : '';
-    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, mapImage: '', mapPins: [], sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
+    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, agenda: null, mapImage: '', mapPins: [], sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
     if (!payload) return model;
     if (kind === 'trip' && payload.data) {
       model.title = payload.data.title || 'Trip';
@@ -244,6 +259,9 @@
       model.mapPins = Array.isArray(list.mapPins) ? list.mapPins.filter(function (q) { return q && typeof q.x === 'number' && typeof q.y === 'number'; }) : [];
       var mapUrl = list.mapImageUrl || payload.mapImageUrl;
       model.mapImage = typeof mapUrl === 'string' && /^https:\/\//i.test(mapUrl) ? mapUrl : '';
+    } else if (kind === 'agenda' && block(payload, 'agenda')) {
+      model.agenda = agendaBecauseBlock(block(payload, 'agenda'));
+      model.title = model.agenda.title || model.title;
     } else if (kind === 'sports_team') {
       model.team = teamBecausePayload(payload);
       model.sections = sectionsBecauseRows(payload.rows);
@@ -266,7 +284,8 @@
 
   function messageBecauseStatus(status) {
     if (status === 404) return 'This link has expired or does not exist.';
-    if (status === 401) return 'This card is private. Open it in the Pack app.';
+    if (status === 401) return SIGN_IN_PRIVATE;
+    if (status === 403) return NO_ACCESS;
     return 'This card could not be loaded right now.';
   }
 
@@ -347,6 +366,104 @@
     select(0, false);
     frame.appendChild(rail);
     return frame;
+  }
+
+
+  /** agenda: the living shared agenda, grouped by day in its own time zone. Names only (the server serves opaque member ids). */
+  function dayKeyIn(iso, tz) {
+    try { return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso)); } catch (e) { return String(iso).slice(0, 10); }
+  }
+  function dayLabelIn(iso, tz) {
+    try { return new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(iso)); } catch (e) { return String(iso).slice(0, 10); }
+  }
+  function clockIn(iso, tz) {
+    try { return new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit' }).format(new Date(iso)).replace(':00', ''); } catch (e) { return ''; }
+  }
+
+  function agendaBecauseBlock(b) {
+    var tz = typeof b.timeZone === 'string' && b.timeZone ? b.timeZone : 'UTC';
+    var names = {};
+    var members = (b.members || []).map(function (m) { names[m.id] = m.name; return { name: m.name, role: m.role, shared: m.events === 'shared', waiting: m.events === 'pending' }; });
+    var viewerId = b.viewer && b.viewer.memberId;
+    var days = [];
+    var byKey = {};
+    var placed = 0;
+    var pins = [];
+    (b.events || []).forEach(function (e) {
+      var key = dayKeyIn(e.startIso, tz);
+      if (!byKey[key]) { byKey[key] = { label: dayLabelIn(e.startIso, tz), events: [] }; days.push(byKey[key]); }
+      var mine = (e.attendees || []).filter(function (a) { return a.memberId === viewerId; })[0];
+      var hasPlace = typeof e.lat === 'number' && typeof e.lon === 'number';
+      if (hasPlace) placed += 1;
+      var time = e.allDay ? 'All day' : clockIn(e.startIso, tz) + (e.endIso ? '–' + clockIn(e.endIso, tz) : '');
+      byKey[key].events.push({
+        title: e.title, time: time, venue: e.venue || '', pin: hasPlace ? placed : 0,
+        host: e.host || '', status: mine ? STATUS_LABEL[mine.status] || '' : '',
+        who: (e.attendees || []).map(function (a) { return a.memberId === viewerId ? 'You' : names[a.memberId] || ''; }).filter(Boolean),
+        rsvp: typeof e.rsvpUrl === 'string' && /^https:\/\//i.test(e.rsvpUrl) ? e.rsvpUrl : '',
+        directions: hasPlace ? directionsUrl(e) : '',
+        image: typeof e.imageUrl === 'string' && /^https:\/\//i.test(e.imageUrl) ? e.imageUrl : ''
+      });
+    });
+    var mapUrl = typeof b.mapImageUrl === 'string' && /^https:\/\//i.test(b.mapImageUrl) ? b.mapImageUrl : '';
+    return {
+      title: b.title || 'Agenda', members: members, days: days, count: (b.events || []).length,
+      needsConsent: !!(b.viewer && b.viewer.needsConsent), asOf: b.asOf || '', source: b.source || '',
+      mapImage: mapUrl,
+      mapPins: Array.isArray(b.mapPins) ? b.mapPins.filter(function (q) { return q && typeof q.x === 'number' && typeof q.y === 'number'; }) : []
+    };
+  }
+
+  function renderAgenda(doc, card, agenda, el) {
+    var head = el('header', 'agendaHead');
+    head.appendChild(el('p', 'kind', 'Shared agenda'));
+    head.appendChild(el('h1', 'title', agenda.title));
+    var count = agenda.count + (agenda.count === 1 ? ' event' : ' events') + ' · ' + agenda.members.length + (agenda.members.length === 1 ? ' person' : ' people');
+    head.appendChild(el('p', 'agendaCount', count));
+    var chips = el('div', 'agendaMembers');
+    agenda.members.forEach(function (m) { chips.appendChild(el('span', m.shared ? 'memberChip' : 'memberChip quiet', m.name + (m.waiting ? ' (not shared yet)' : ''))); });
+    head.appendChild(chips);
+    card.appendChild(head);
+    if (agenda.needsConsent) card.appendChild(el('p', 'agendaNote', 'Your events are not in this agenda yet. Open Pack to choose what to share.'));
+    if (agenda.mapImage) {
+      var frame = el('div', 'agendaMap');
+      var img = doc.createElement('img');
+      img.src = agenda.mapImage; img.alt = 'Map of the events'; img.className = 'mapImage';
+      img.addEventListener('error', function () { if (frame.parentNode) frame.parentNode.removeChild(frame); });
+      frame.appendChild(img);
+      agenda.mapPins.forEach(function (q, i) {
+        var pin = el('span', 'pin static', String(i + 1));
+        pin.style.left = (q.x * 100) + '%';
+        pin.style.top = (q.y * 100) + '%';
+        frame.appendChild(pin);
+      });
+      card.appendChild(frame);
+    }
+    if (!agenda.days.length) card.appendChild(el('p', 'agendaNote', 'Nothing on the agenda yet.'));
+    agenda.days.forEach(function (day) {
+      var sec = el('section', 'agendaDay');
+      sec.appendChild(el('h2', 'dayLabel', day.label));
+      day.events.forEach(function (ev) {
+        var row = el('div', 'agendaEvent');
+        row.appendChild(el('span', 'agendaTime', ev.time));
+        var body = el('div', 'agendaBody');
+        if (ev.rsvp) { var a = el('a', 'agendaTitle', ev.title); a.href = ev.rsvp; a.target = '_blank'; a.rel = 'noopener noreferrer'; body.appendChild(a); }
+        else body.appendChild(el('span', 'agendaTitle', ev.title));
+        var meta = [ev.venue, ev.host ? 'Hosted by ' + ev.host : ''].filter(Boolean).join(' · ');
+        if (meta) body.appendChild(el('span', 'agendaMeta', meta));
+        if (ev.who.length) body.appendChild(el('span', 'agendaMeta', ev.who.join(', ')));
+        if (ev.status || ev.pin || ev.directions) {
+          var tags = el('span', 'agendaTags');
+          if (ev.pin) tags.appendChild(el('span', 'rank', String(ev.pin)));
+          if (ev.status) tags.appendChild(el('span', 'chip', ev.status));
+          if (ev.directions) { var d = el('a', 'agendaDirections', 'Directions'); d.href = ev.directions; d.target = '_blank'; d.rel = 'noopener noreferrer'; tags.appendChild(d); }
+          body.appendChild(tags);
+        }
+        row.appendChild(body);
+        sec.appendChild(row);
+      });
+      card.appendChild(sec);
+    });
   }
 
   function renderSource(doc, card, model, el) {
@@ -433,7 +550,13 @@
     }
     var card = doc.getElementById('card');
     card.textContent = '';
-    card.className = model.team ? 'dense team' : model.places.length ? 'dense placesCard' : '';
+    card.className = model.agenda ? 'agendaCard' : model.team ? 'dense team' : model.places.length ? 'dense placesCard' : '';
+    if (model.agenda) {
+      renderAgenda(doc, card, model.agenda, el);
+      renderSource(doc, card, model, el);
+      if (model.title) doc.title = model.title + ' | Pack';
+      return;
+    }
     if (model.team) {
       renderTeam(doc, card, model.team, el);
       renderSource(doc, card, model, el);
@@ -533,22 +656,158 @@
     cta.addEventListener('click', function (e) { e.preventDefault(); openInPack(win, token); });
   }
 
-  function start(win) {
-    var doc = win.document;
-    var token = tokenBecausePath(win.location.pathname);
-    var card = doc.getElementById('card');
-    wireOpenButton(win, token);
-    if (!token) { card.textContent = messageBecauseStatus(404); return; }
-    win.fetch(API + '/api/artifact/' + encodeURIComponent(token), { headers: { accept: 'application/json' } })
-      .then(function (res) {
-        if (!res.ok) { card.textContent = messageBecauseStatus(res.status); return null; }
-        return res.json();
-      })
-      .then(function (payload) { if (payload) render(doc, viewModelBecausePayload(payload)); })
-      .catch(function () { card.textContent = messageBecauseStatus(0); });
+  /* ---- Sign in to view: Cognito Hosted UI, authorization code + PKCE. The ID token is kept in memory only. ---- */
+  function store(win, area) {
+    try { return win[area] || null; } catch (e) { return null; }
+  }
+  function remember(win, key, value) {
+    var st = store(win, 'sessionStorage');
+    try { if (st) { if (value === null) st.removeItem(key); else st.setItem(key, value); } } catch (e) { /* private mode: fine */ }
+  }
+  function recall(win, key) {
+    var st = store(win, 'sessionStorage');
+    try { return st ? st.getItem(key) : null; } catch (e) { return null; }
+  }
+  function b64url(bytes) {
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return root.btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function randomString(win, n) {
+    var bytes = new Uint8Array(n);
+    win.crypto.getRandomValues(bytes);
+    return b64url(bytes);
+  }
+  function redirectUriFor(win) { return win.location.origin + '/a/callback'; }
+
+  /** Send the browser to the Hosted UI (Apple, Google or email). `fresh` asks for the account picker. */
+  function beginSignIn(win, token, fresh) {
+    var verifier = randomString(win, 32);
+    var state = randomString(win, 16);
+    return win.crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)).then(function (digest) {
+      var challenge = b64url(new Uint8Array(digest));
+      remember(win, PKCE_KEY, JSON.stringify({ state: state, verifier: verifier, token: token, at: Date.now() }));
+      remember(win, REAUTH_KEY, String(Date.now()));
+      var q = [
+        ['client_id', COGNITO_CLIENT_ID], ['response_type', 'code'], ['scope', SIGNIN_SCOPE], ['redirect_uri', redirectUriFor(win)],
+        ['state', state], ['code_challenge', challenge], ['code_challenge_method', 'S256']
+      ];
+      if (fresh) q.push(['prompt', 'login']);
+      var url = COGNITO_DOMAIN + '/oauth2/authorize?' + q.map(function (kv) { return kv[0] + '=' + encodeURIComponent(kv[1]); }).join('&');
+      win.location.assign(url);
+      return url;
+    });
   }
 
-  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
+  /** At /a/callback: trade the code for the ID token, then go back to the card. Resolves {token, idToken} or {token, error}. */
+  function completeSignIn(win) {
+    var params = new URLSearchParams(win.location.search);
+    var pending = null;
+    try { pending = JSON.parse(recall(win, PKCE_KEY) || 'null'); } catch (e) { pending = null; }
+    remember(win, PKCE_KEY, null);
+    var token = pending && typeof pending.token === 'string' ? pending.token : '';
+    if (!pending || params.get('error') || !params.get('code') || params.get('state') !== pending.state || Date.now() - pending.at > 600000) {
+      return Promise.resolve({ token: token, error: true });
+    }
+    var form = new URLSearchParams();
+    form.set('grant_type', 'authorization_code');
+    form.set('client_id', COGNITO_CLIENT_ID);
+    form.set('code', params.get('code'));
+    form.set('redirect_uri', redirectUriFor(win));
+    form.set('code_verifier', pending.verifier);
+    return win.fetch(COGNITO_DOMAIN + '/oauth2/token', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: form.toString() })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (body) { return body && typeof body.id_token === 'string' ? { token: token, idToken: body.id_token } : { token: token, error: true }; })
+      .catch(function () { return { token: token, error: true }; });
+  }
+
+  function signInButton(win, doc, token, label, fresh) {
+    var b = doc.createElement('button');
+    b.type = 'button';
+    b.id = 'signin';
+    b.className = 'cta signin';
+    b.textContent = label;
+    b.addEventListener('click', function () { beginSignIn(win, token, fresh); });
+    return b;
+  }
+
+  function showGate(win, token, text, buttonLabel, fresh) {
+    var doc = win.document;
+    var card = doc.getElementById('card');
+    card.className = '';
+    card.textContent = '';
+    var p = doc.createElement('p');
+    p.className = 'gateText';
+    p.textContent = text;
+    card.appendChild(p);
+    card.appendChild(signInButton(win, doc, token, buttonLabel, fresh));
+  }
+
+  function liveKind(payload) { return payload && (payload.kind === 'agenda' || payload.kind === 'composed'); }
+
+  function start(win) {
+    var doc = win.document;
+    var card = doc.getElementById('card');
+    var state = { idToken: '', last: '', timer: 0, token: tokenBecausePath(win.location.pathname) };
+    if (win.location.pathname === '/a/callback') {
+      card.textContent = 'Signing you in...';
+      completeSignIn(win).then(function (done) {
+        if (!done.token) { card.textContent = messageBecauseStatus(404); return; }
+        if (done.error) { remember(win, HINT_KEY, null); }
+        else { state.idToken = done.idToken; remember(win, HINT_KEY, '1'); }
+        try { win.history.replaceState(null, '', '/a/' + encodeURIComponent(done.token)); } catch (e) { /* the page still works */ }
+        state.token = done.token;
+        wireOpenButton(win, state.token);
+        if (done.error) showGate(win, state.token, 'Sign-in did not finish. Try again.', 'Sign in to view', false);
+        else load(win, state);
+      });
+      return;
+    }
+    wireOpenButton(win, state.token);
+    if (!state.token) { card.textContent = messageBecauseStatus(404); return; }
+    load(win, state);
+  }
+
+  /** One fetch of the card (with the ID token when signed in). `quiet` = a live refresh: keep what is on screen unless it changed. */
+  function load(win, state, quiet) {
+    var doc = win.document;
+    var card = doc.getElementById('card');
+    var headers = { accept: 'application/json' };
+    if (state.idToken) headers.authorization = 'Bearer ' + state.idToken;
+    return win.fetch(API + '/api/artifact/' + encodeURIComponent(state.token), { headers: headers })
+      .then(function (res) {
+        if (res.ok) return res.json().then(function (payload) { return { payload: payload }; });
+        if (res.status === 401) {
+          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: 401, ended: !!(body && body.signIn) }; });
+        }
+        return { status: res.status };
+      })
+      .then(function (out) {
+        if (out.payload) {
+          var text = JSON.stringify(out.payload);
+          if (!quiet || text !== state.last) render(doc, viewModelBecausePayload(out.payload));
+          state.last = text;
+          if (state.idToken && liveKind(out.payload) && !state.timer) {
+            state.timer = win.setInterval(function () { if (!doc.hidden) load(win, state, true); }, LIVE_REFRESH_MS);
+          }
+          return;
+        }
+        if (state.timer) { win.clearInterval(state.timer); state.timer = 0; }
+        if (out.status === 401) {
+          state.idToken = '';
+          var ago = Date.now() - Number(recall(win, REAUTH_KEY) || 0);
+          // Signed in earlier in this tab and the Hosted UI session is still there: go straight round, once a minute at most.
+          if (recall(win, HINT_KEY) === '1' && ago > REAUTH_GUARD_MS) { beginSignIn(win, state.token, false); return; }
+          showGate(win, state.token, out.ended ? SIGN_IN_ENDED : SIGN_IN_PRIVATE, 'Sign in to view', false);
+          return;
+        }
+        if (out.status === 403) { showGate(win, state.token, NO_ACCESS, 'Sign in with a different account', true); return; }
+        card.textContent = messageBecauseStatus(out.status);
+      })
+      .catch(function () { if (!quiet) card.textContent = messageBecauseStatus(0); });
+  }
+
+  var api = { agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

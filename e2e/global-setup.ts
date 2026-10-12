@@ -104,7 +104,7 @@ function ssmRegion(): string {
   return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "us-east-1";
 }
 
-function readE2EPassword(): string {
+export function readE2EPassword(): string {
   const region = ssmRegion();
   const args = [
     "ssm",
@@ -207,7 +207,7 @@ async function choosePasswordSignIn(page: Page): Promise<void> {
   await page.getByRole("radio", { name: "Password", exact: true }).click();
 }
 
-async function submitHostedUiLogin(page: Page, password: string): Promise<void> {
+export async function submitHostedUiLogin(page: Page, password: string): Promise<void> {
   await page.waitForURL(/auth\.trypackai\.com/i, { timeout: 45_000 });
   const username = page.locator(
     'input[name="username"], input[name="email"], input[type="email"], #signInFormUsername',

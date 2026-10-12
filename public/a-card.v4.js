@@ -834,7 +834,7 @@
     open.type = 'button'; open.id = 'gateOpen';
     open.addEventListener('click', function () { openInPack(win, token); });
     if (mobile) { card.appendChild(open); card.appendChild(signIn); } else { card.appendChild(signIn); card.appendChild(open); }
-    card.appendChild(el('p', 'gateNote', 'Sign in with Apple, Google or email.'));
+    card.appendChild(el('p', 'gateNote', 'Sign in with Google or Apple.'));
   }
 
   function showLoading(win) {

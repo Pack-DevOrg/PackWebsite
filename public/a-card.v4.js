@@ -19,6 +19,7 @@
   var REAUTH_GUARD_MS = 60000;
   var LIVE_REFRESH_MS = 30000;
   var SIGN_IN_PRIVATE = 'This card is private. Sign in to view it, or open it in the Pack app.';
+  var MOBILE_UA = /iPhone|iPad|iPod|Android/i;
   var SIGN_IN_ENDED = 'Your sign-in ended. Sign in again to view this card.';
   var NO_ACCESS = 'You do not have access to this card.';
   var STATUS_LABEL = { host: 'Hosting', going: 'Going', pending_approval: 'Pending approval', waitlist: 'Waitlist', invited: 'Invited', maybe: 'Maybe' };
@@ -549,6 +550,7 @@
       return n;
     }
     var card = doc.getElementById('card');
+    setGateTheme(doc, !!model.agenda);
     card.textContent = '';
     card.className = model.agenda ? 'agendaCard' : model.team ? 'dense team' : model.places.length ? 'dense placesCard' : '';
     if (model.agenda) {
@@ -681,17 +683,19 @@
   function redirectUriFor(win) { return win.location.origin + '/a/callback'; }
 
   /** Send the browser to the Hosted UI (Apple, Google or email). `fresh` asks for the account picker. */
-  function beginSignIn(win, token, fresh) {
+  function beginSignIn(win, token, fresh, provider) {
     var verifier = randomString(win, 32);
     var state = randomString(win, 16);
     return win.crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)).then(function (digest) {
       var challenge = b64url(new Uint8Array(digest));
-      remember(win, PKCE_KEY, JSON.stringify({ state: state, verifier: verifier, token: token, at: Date.now() }));
+      remember(win, PKCE_KEY, JSON.stringify({ state: state, verifier: verifier, token: token, provider: provider || '', at: Date.now() }));
       remember(win, REAUTH_KEY, String(Date.now()));
       var q = [
         ['client_id', COGNITO_CLIENT_ID], ['response_type', 'code'], ['scope', SIGNIN_SCOPE], ['redirect_uri', redirectUriFor(win)],
         ['state', state], ['code_challenge', challenge], ['code_challenge_method', 'S256']
       ];
+      // identity_provider sends the browser straight to Google or Apple: the Cognito login page is never shown.
+      if (provider) q.push(['identity_provider', provider]);
       if (fresh) q.push(['prompt', 'login']);
       var url = COGNITO_DOMAIN + '/oauth2/authorize?' + q.map(function (kv) { return kv[0] + '=' + encodeURIComponent(kv[1]); }).join('&');
       win.location.assign(url);
@@ -717,30 +721,135 @@
     form.set('code_verifier', pending.verifier);
     return win.fetch(COGNITO_DOMAIN + '/oauth2/token', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: form.toString() })
       .then(function (res) { return res.ok ? res.json() : null; })
-      .then(function (body) { return body && typeof body.id_token === 'string' ? { token: token, idToken: body.id_token } : { token: token, error: true }; })
+      .then(function (body) { return body && typeof body.id_token === 'string' ? { token: token, idToken: body.id_token, provider: pending.provider || '' } : { token: token, error: true }; })
       .catch(function () { return { token: token, error: true }; });
   }
 
-  function signInButton(win, doc, token, label, fresh) {
-    var b = doc.createElement('button');
-    b.type = 'button';
-    b.id = 'signin';
-    b.className = 'cta signin';
-    b.textContent = label;
-    b.addEventListener('click', function () { beginSignIn(win, token, fresh); });
-    return b;
+  var LOCK_SVG = 'M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1zm2 0h6V8a3 3 0 0 0-6 0v2z';
+
+  function lockIcon(doc, size) {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = doc.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', String(size));
+    svg.setAttribute('height', String(size));
+    svg.setAttribute('aria-hidden', 'true');
+    var path = doc.createElementNS(NS, 'path');
+    path.setAttribute('d', LOCK_SVG);
+    path.setAttribute('fill', 'currentColor');
+    svg.appendChild(path);
+    return svg;
   }
 
-  function showGate(win, token, text, buttonLabel, fresh) {
+  function setGateTheme(doc, on) {
+    doc.body.className = on ? 'gateBody' : '';
+  }
+
+
+  /* The app's own sign-in buttons (AuthProviderButtons: Google white, Apple black, same copy and order), straight to the provider. */
+  var GOOGLE_PATHS = [['M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z', '#4285F4'], ['M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33A9 9 0 0 0 9 18z', '#34A853'], ['M3.96 10.71A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.17.28-1.71V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3-2.33z', '#FBBC05'], ['M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z', '#EA4335']];
+  var APPLE_PATH = 'M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z';
+
+  function providerIcon(doc, which) {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = doc.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', which === 'google' ? '0 0 18 18' : '0 0 24 24');
+    svg.setAttribute('width', '20'); svg.setAttribute('height', '20'); svg.setAttribute('aria-hidden', 'true');
+    var paths = which === 'google' ? GOOGLE_PATHS : [[APPLE_PATH, '#FFFFFF']];
+    paths.forEach(function (pc) {
+      var path = doc.createElementNS(NS, 'path');
+      path.setAttribute('d', pc[0]); path.setAttribute('fill', pc[1]);
+      svg.appendChild(path);
+    });
+    return svg;
+  }
+
+  function openSheet(win, token, fresh) {
     var doc = win.document;
+    function el(tag, cls, text) { var n = doc.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+    var old = doc.getElementById('signinSheet');
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+    var backdrop = el('div', 'sheetBackdrop');
+    backdrop.id = 'signinSheet';
+    var sheet = el('div', 'sheet');
+    sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-label', 'Sign in to view');
+    sheet.appendChild(el('span', 'sheetGrip'));
+    sheet.appendChild(el('h2', 'sheetTitle', 'Sign in to view'));
+    sheet.appendChild(el('p', 'sheetSub', 'Use the account you use in Pack.'));
+    function provider(cls, which, label, idp) {
+      var b = el('button', 'authBtn ' + cls);
+      b.type = 'button';
+      b.id = 'continue-' + which;
+      b.appendChild(providerIcon(doc, which));
+      b.appendChild(el('span', '', label));
+      b.addEventListener('click', function () { b.disabled = true; beginSignIn(win, token, fresh, idp); });
+      return b;
+    }
+    sheet.appendChild(provider('google', 'google', 'Continue with Google', 'Google'));
+    sheet.appendChild(provider('apple', 'apple', 'Continue with Apple', 'SignInWithApple'));
+    var close = el('button', 'gateText', 'Not now');
+    close.type = 'button';
+    close.addEventListener('click', function () { if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop); });
+    sheet.appendChild(close);
+    backdrop.appendChild(sheet);
+    backdrop.addEventListener('click', function (e) { if (e.target === backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop); });
+    doc.body.appendChild(backdrop);
+    return backdrop;
+  }
+
+  /** The locked state of a private card: the Pack mark, what the card is (kind, title: the same public preview the link unfurl shows), a blurred body, one primary action and one text action. */
+  function showGate(win, token, opts) {
+    var doc = win.document;
+    function el(tag, cls, text) { var n = doc.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
     var card = doc.getElementById('card');
-    card.className = '';
+    setGateTheme(doc, true);
+    card.className = 'gate';
     card.textContent = '';
+    var mark = el('img', 'gateMark');
+    mark.src = '/logo.png'; mark.alt = 'Pack'; mark.width = 44; mark.height = 44;
+    card.appendChild(mark);
+    var locked = el('div', 'locked');
+    var art = el('div', 'lockedArt');
+    for (var i = 0; i < 4; i++) art.appendChild(el('i', 'bar b' + i));
+    var badge = el('span', 'lockBadge');
+    badge.appendChild(lockIcon(doc, 26));
+    locked.appendChild(art);
+    locked.appendChild(badge);
+    var meta = el('div', 'lockedMeta');
+    if (opts.kind) meta.appendChild(el('span', 'kindChip', kindLabel(opts.kind) === 'Agenda' ? 'Shared agenda' : kindLabel(opts.kind)));
+    if (opts.title) meta.appendChild(el('h1', 'lockedTitle', opts.title));
+    locked.appendChild(meta);
+    card.appendChild(locked);
+    card.appendChild(el('h2', 'gateHeading', opts.heading));
+    card.appendChild(el('p', 'gateSub', opts.sub));
+    var mobile = MOBILE_UA.test((win.navigator && win.navigator.userAgent) || '');
+    var signIn = el('button', mobile && !opts.noApp ? 'gateText' : 'gatePrimary', opts.button);
+    signIn.type = 'button'; signIn.id = 'signin';
+    signIn.addEventListener('click', function () {
+      // ?signin=cognito is the test door to the password page (the E2E account has no Google or Apple login); users get the sheet.
+      if (/[?&]signin=cognito\b/.test(win.location.search)) beginSignIn(win, token, !!opts.fresh, '');
+      else openSheet(win, token, !!opts.fresh);
+    });
+    var open = el('button', mobile ? 'gatePrimary' : 'gateText', 'Open in Pack');
+    open.type = 'button'; open.id = 'gateOpen';
+    open.addEventListener('click', function () { openInPack(win, token); });
+    if (mobile) { card.appendChild(open); card.appendChild(signIn); } else { card.appendChild(signIn); card.appendChild(open); }
+    card.appendChild(el('p', 'gateNote', 'Sign in with Apple, Google or email.'));
+  }
+
+  function showLoading(win) {
+    var doc = win.document;
+    setGateTheme(doc, true);
+    var card = doc.getElementById('card');
+    card.className = 'gate';
+    card.textContent = '';
+    var mark = doc.createElement('img');
+    mark.className = 'gateMark'; mark.src = '/logo.png'; mark.alt = 'Pack'; mark.width = 44; mark.height = 44;
+    card.appendChild(mark);
     var p = doc.createElement('p');
-    p.className = 'gateText';
-    p.textContent = text;
+    p.className = 'gateSub';
+    p.textContent = 'Signing you in...';
     card.appendChild(p);
-    card.appendChild(signInButton(win, doc, token, buttonLabel, fresh));
   }
 
   function liveKind(payload) { return payload && (payload.kind === 'agenda' || payload.kind === 'composed'); }
@@ -750,15 +859,15 @@
     var card = doc.getElementById('card');
     var state = { idToken: '', last: '', timer: 0, token: tokenBecausePath(win.location.pathname) };
     if (win.location.pathname === '/a/callback') {
-      card.textContent = 'Signing you in...';
+      showLoading(win);
       completeSignIn(win).then(function (done) {
         if (!done.token) { card.textContent = messageBecauseStatus(404); return; }
         if (done.error) { remember(win, HINT_KEY, null); }
-        else { state.idToken = done.idToken; remember(win, HINT_KEY, '1'); }
+        else { state.idToken = done.idToken; remember(win, HINT_KEY, done.provider || '1'); }
         try { win.history.replaceState(null, '', '/a/' + encodeURIComponent(done.token)); } catch (e) { /* the page still works */ }
         state.token = done.token;
         wireOpenButton(win, state.token);
-        if (done.error) showGate(win, state.token, 'Sign-in did not finish. Try again.', 'Sign in to view', false);
+        if (done.error) showGate(win, state.token, { heading: 'Sign-in did not finish', sub: 'Try again.', button: 'Sign in to view' });
         else load(win, state);
       });
       return;
@@ -778,7 +887,7 @@
       .then(function (res) {
         if (res.ok) return res.json().then(function (payload) { return { payload: payload }; });
         if (res.status === 401) {
-          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: 401, ended: !!(body && body.signIn) }; });
+          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: 401, ended: !!(body && body.signIn), preview: body && body.preview && typeof body.preview.title === 'string' ? body.preview : null }; });
         }
         return { status: res.status };
       })
@@ -797,11 +906,16 @@
           state.idToken = '';
           var ago = Date.now() - Number(recall(win, REAUTH_KEY) || 0);
           // Signed in earlier in this tab and the Hosted UI session is still there: go straight round, once a minute at most.
-          if (recall(win, HINT_KEY) === '1' && ago > REAUTH_GUARD_MS) { beginSignIn(win, state.token, false); return; }
-          showGate(win, state.token, out.ended ? SIGN_IN_ENDED : SIGN_IN_PRIVATE, 'Sign in to view', false);
+          var hint = recall(win, HINT_KEY);
+          if (hint && ago > REAUTH_GUARD_MS) { beginSignIn(win, state.token, false, hint === '1' ? '' : hint); return; }
+          showGate(win, state.token, {
+            kind: out.preview ? out.preview.kind : '', title: out.preview ? out.preview.title : '',
+            heading: out.ended ? 'Your sign-in ended' : 'This card is private',
+            sub: out.ended ? 'Sign in again to view this card.' : 'Sign in to view it, or open it in the Pack app.', button: 'Sign in to view'
+          });
           return;
         }
-        if (out.status === 403) { showGate(win, state.token, NO_ACCESS, 'Sign in with a different account', true); return; }
+        if (out.status === 403) { showGate(win, state.token, { heading: NO_ACCESS, sub: 'This card belongs to someone else. Try a different account.', button: 'Sign in with a different account', fresh: true }); return; }
         card.textContent = messageBecauseStatus(out.status);
       })
       .catch(function () { if (!quiet) card.textContent = messageBecauseStatus(0); });

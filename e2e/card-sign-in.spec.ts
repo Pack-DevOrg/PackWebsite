@@ -26,10 +26,12 @@ test.describe("card page: Sign in to view", () => {
     await page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: true });
   };
 
-  const signInThroughHostedUi = async (page: Page): Promise<void> => {
-    const password = readE2EPassword();
+  // The E2E account signs in with a password, which the app's own buttons (Google, Apple) do not offer. ?signin=cognito is the
+  // test door that sends Sign in to view to the password page; users only ever get the sheet.
+  const signInAsE2EAccount = async (page: Page, token: string): Promise<void> => {
+    await page.goto(`/a/${token}?signin=cognito`);
     await page.getByRole("button", { name: "Sign in to view" }).click();
-    await submitHostedUiLogin(page, password);
+    await submitHostedUiLogin(page, readE2EPassword());
   };
 
   test("anonymous sees the private state with a Sign in to view button", async ({ page }, testInfo) => {
@@ -41,11 +43,28 @@ test.describe("card page: Sign in to view", () => {
     await shot(page, "1-anonymous-private");
   });
 
+  test("Sign in to view opens the app's own sheet; each provider goes straight to Google or Apple, never the Cognito page", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium-desktop", "one browser is enough for the hosted login lane");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/a/${OWNER_TOKEN}`);
+    await page.getByRole("button", { name: "Sign in to view" }).click();
+    await expect(page.getByRole("button", { name: "Continue with Google" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continue with Apple" })).toBeVisible();
+    await shot(page, "1b-sign-in-sheet-phone");
+    const visited: string[] = [];
+    page.on("request", (request) => {
+      if (request.isNavigationRequest()) visited.push(request.url());
+    });
+    await page.getByRole("button", { name: "Continue with Google" }).click();
+    await page.waitForURL(/accounts\.google\.com/, { timeout: 30_000 });
+    expect(visited.some((url) => /auth\.trypackai\.com\/oauth2\/authorize\?.*identity_provider=Google/.test(url))).toBe(true);
+    expect(visited.some((url) => /auth\.trypackai\.com\/login/.test(url))).toBe(false);
+    await shot(page, "1c-google-direct");
+  });
+
   test("the E2E account signs in and sees its own agenda card", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium-desktop", "one browser is enough for the hosted login lane");
-    await page.goto(`/a/${OWNER_TOKEN}`);
-    await expect(page.getByRole("button", { name: "Sign in to view" })).toBeVisible();
-    await signInThroughHostedUi(page);
+    await signInAsE2EAccount(page, OWNER_TOKEN);
     await page.waitForURL(new RegExp(`/a/${OWNER_TOKEN}$`), { timeout: 60_000 });
     await expect(page.locator("#card.agendaCard")).toBeVisible({ timeout: 30_000 });
     await expect(page.locator("#card")).toContainText("Tech Week LA");
@@ -60,9 +79,7 @@ test.describe("card page: Sign in to view", () => {
 
   test("a signed-in account that is not a member gets You do not have access, no card content", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium-desktop", "one browser is enough for the hosted login lane");
-    await page.goto(`/a/${FOREIGN_TOKEN}`);
-    await expect(page.getByRole("button", { name: "Sign in to view" })).toBeVisible();
-    await signInThroughHostedUi(page);
+    await signInAsE2EAccount(page, FOREIGN_TOKEN);
     await page.waitForURL(new RegExp(`/a/${FOREIGN_TOKEN}$`), { timeout: 60_000 });
     await expect(page.locator("#card")).toContainText("You do not have access to this card", { timeout: 30_000 });
     await expect(page.locator("#card")).not.toContainText("Not Yours");

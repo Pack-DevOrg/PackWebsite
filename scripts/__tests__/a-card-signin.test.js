@@ -30,13 +30,14 @@ const AGENDA = (extra = {}) => ({
 const opened = [];
 afterAll(() => opened.forEach((w) => w.close()));
 
-async function page({ pathname = '/a/tok', responses, session = {}, interval } = {}) {
+async function page({ pathname = '/a/tok', responses, session = {}, interval, userAgent } = {}) {
   const { JSDOM } = await import('jsdom');
   const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
-  const dom = new JSDOM(html, { url: `https://www.trypackai.com${pathname}`, runScripts: 'outside-only' });
+  const dom = new JSDOM(html, { url: `https://www.trypackai.com${pathname}`, runScripts: 'outside-only', });
   const w = dom.window;
   Object.defineProperty(w, 'crypto', { value: webcrypto, configurable: true });
   w.TextEncoder = TextEncoder;
+  if (userAgent) Object.defineProperty(w.navigator, 'userAgent', { value: userAgent, configurable: true });
   Object.defineProperty(w.document, 'hidden', { value: false, configurable: true });
   for (const [k, v] of Object.entries(session)) w.sessionStorage.setItem(k, v);
   const calls = [];
@@ -79,6 +80,66 @@ describe('anonymous private card', () => {
     assert.equal(q.get('state'), pending.state);
     const digest = new Uint8Array(await webcrypto.subtle.digest('SHA-256', new TextEncoder().encode(pending.verifier)));
     assert.equal(q.get('code_challenge'), Buffer.from(digest).toString('base64url'));
+  });
+});
+
+describe('locked state', () => {
+  const PRIVATE = { status: 401, body: { unlock: 'otp', preview: { kind: 'agenda', title: 'Tech Week LA' } } };
+
+  it('names what is locked (kind and title), with the Pack mark, one primary and one text action', async () => {
+    const { doc } = await page({ responses: [PRIVATE] });
+    assert.equal(doc.querySelector('.gateMark').getAttribute('src'), '/logo.png');
+    assert.equal(doc.querySelector('.kindChip').textContent, 'Shared agenda');
+    assert.equal(doc.querySelector('.lockedTitle').textContent, 'Tech Week LA');
+    assert.equal(doc.querySelectorAll('.gatePrimary').length, 1);
+    assert.equal(doc.querySelectorAll('.gateText').length, 1);
+    assert.equal(doc.querySelector('.gatePrimary').textContent, 'Sign in to view');
+    assert.equal(doc.body.className, 'gateBody');
+  });
+
+  it('on a phone the primary action is Open in Pack and Sign in to view is the text action', async () => {
+    const { doc } = await page({ responses: [PRIVATE], userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15' });
+    assert.equal(doc.querySelector('.gatePrimary').textContent, 'Open in Pack');
+    assert.equal(doc.querySelector('.gateText').textContent, 'Sign in to view');
+    assert.equal(doc.getElementById('signin').textContent, 'Sign in to view');
+  });
+
+  it('a 403 shows no preview of the card', async () => {
+    const { doc } = await page({ responses: [{ status: 403, body: { error: 'No access' } }] });
+    assert.equal(doc.querySelector('.lockedTitle'), null);
+    assert.match(doc.getElementById('card').textContent, /do not have access/);
+  });
+});
+
+describe('sign-in sheet: the app own buttons', () => {
+  const PRIVATE = { status: 401, body: { unlock: 'otp' } };
+
+  it('Sign in to view opens a sheet with Continue with Google, then Continue with Apple (the app order), no email field', async () => {
+    const { doc, w } = await page({ responses: [PRIVATE] });
+    assert.equal(doc.getElementById('signinSheet'), null);
+    doc.getElementById('signin').click();
+    const labels = [...doc.querySelectorAll('#signinSheet .authBtn')].map((b) => b.textContent);
+    assert.deepEqual(labels, ['Continue with Google', 'Continue with Apple']);
+    assert.equal(doc.querySelectorAll('#signinSheet input').length, 0);
+    assert.equal(w.location.hostname, 'www.trypackai.com');
+  });
+
+  it('each provider goes straight to its identity provider, so the Cognito login page is skipped', async () => {
+    const { w } = await page({ responses: [PRIVATE] });
+    const google = new URL(await w.PackCard.beginSignIn(w, 'tok', false, 'Google'));
+    assert.equal(google.searchParams.get('identity_provider'), 'Google');
+    const apple = new URL(await w.PackCard.beginSignIn(w, 'tok', false, 'SignInWithApple'));
+    assert.equal(apple.searchParams.get('identity_provider'), 'SignInWithApple');
+    assert.equal(JSON.parse(w.sessionStorage.getItem('pack.card.pkce')).provider, 'SignInWithApple');
+  });
+
+  it('the provider is remembered (not the token) so an ended session goes back to the same provider', async () => {
+    const { w } = await page({
+      pathname: '/a/callback?code=CODE&state=S',
+      session: { 'pack.card.pkce': JSON.stringify({ state: 'S', verifier: 'V'.repeat(43), token: 'tok', provider: 'Google', at: Date.now() }) },
+      responses: [{ status: 200, body: { id_token: 'ID' } }, { status: 200, body: AGENDA() }],
+    });
+    assert.equal(w.sessionStorage.getItem('pack.card.signedin'), 'Google');
   });
 });
 

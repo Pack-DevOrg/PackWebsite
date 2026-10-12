@@ -46,14 +46,18 @@ describe('apple-app-site-association', () => {
     expect(netlify).toMatch(/from = "\/\*"\s+to = "\/index\.html"\s+status = 200/);
   });
 
-  it('keeps /a/* clip-first: excluded from the app, first in order, with /app/* claimed', () => {
+  it('lets the installed full app claim /a/* and keeps the clip for everyone else', () => {
     const body = JSON.parse(readFileSync(file, 'utf8')) as {
-      applinks: {details: Array<{components: Array<{'/': string; exclude?: boolean}>}>};
+      applinks: {details: Array<{appIDs: string[]; components: Array<{'/': string; exclude?: boolean}>}>};
+      appclips: {apps: string[]};
     };
-    const components = body.applinks.details[0]?.components ?? [];
-    expect(components[0]).toMatchObject({'/': '/a/*', exclude: true});
-    expect(components.filter((component) => component['/'] === '/a/*')).toHaveLength(1);
-    expect(components.find((component) => component['/'] === '/app/*')?.exclude).toBeUndefined();
+    const detail = body.applinks.details[0];
+    const cards = detail?.components.filter((component) => component['/'] === '/a/*') ?? [];
+    expect(cards).toHaveLength(1);
+    expect(cards[0]?.exclude).toBeUndefined();
+    expect(detail?.appIDs).toEqual([APP_ID]);
+    expect(detail?.components.find((component) => component['/'] === '/app/*')?.exclude).toBeUndefined();
+    expect(body.appclips.apps).toEqual([CLIP_ID]);
   });
 
   it('keeps the existing application/json header for the extensionless path', () => {

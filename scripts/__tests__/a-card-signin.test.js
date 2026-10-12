@@ -33,10 +33,11 @@ afterAll(() => opened.forEach((w) => w.close()));
 async function page({ pathname = '/a/tok', responses, session = {}, interval, userAgent } = {}) {
   const { JSDOM } = await import('jsdom');
   const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
-  const dom = new JSDOM(html, { url: `https://www.trypackai.com${pathname}`, runScripts: 'outside-only', ...(userAgent ? { userAgent } : {}) });
+  const dom = new JSDOM(html, { url: `https://www.trypackai.com${pathname}`, runScripts: 'outside-only', });
   const w = dom.window;
   Object.defineProperty(w, 'crypto', { value: webcrypto, configurable: true });
   w.TextEncoder = TextEncoder;
+  if (userAgent) Object.defineProperty(w.navigator, 'userAgent', { value: userAgent, configurable: true });
   Object.defineProperty(w.document, 'hidden', { value: false, configurable: true });
   for (const [k, v] of Object.entries(session)) w.sessionStorage.setItem(k, v);
   const calls = [];

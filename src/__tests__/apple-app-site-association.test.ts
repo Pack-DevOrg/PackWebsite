@@ -60,6 +60,18 @@ describe('apple-app-site-association', () => {
     expect(body.appclips.apps).toEqual([CLIP_ID]);
   });
 
+  it('keeps the Sign in to view return URL /a/callback in the browser, ahead of the /a/* claim', () => {
+    const body = JSON.parse(readFileSync(file, 'utf8')) as {
+      applinks: {details: Array<{components: Array<{'/': string; exclude?: boolean}>}>};
+    };
+    const components = body.applinks.details[0]?.components ?? [];
+    const callback = components.findIndex((component) => component['/'] === '/a/callback');
+    const cards = components.findIndex((component) => component['/'] === '/a/*');
+    expect(components[callback]?.exclude).toBe(true);
+    expect(callback).toBeGreaterThanOrEqual(0);
+    expect(callback).toBeLessThan(cards);
+  });
+
   it('keeps the existing application/json header for the extensionless path', () => {
     const netlify = readFileSync(join(process.cwd(), 'netlify.toml'), 'utf8');
     expect(netlifyContentType(netlify, AASA_URL_PATH)).toBe('application/json');

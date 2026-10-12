@@ -7,6 +7,11 @@
         ],
         "components": [
           {
+            "/": "/a/callback",
+            "exclude": true,
+            "comment": "Sign in to view returns here from the Hosted UI; it finishes in the browser, never in the app"
+          },
+          {
             "/": "/a/*",
             "comment": "Card links open the full app when it is installed (Apple: an installed full app replaces the App Clip and is launched for every invocation). People without the app still get the App Clip via the appclips section"
           },

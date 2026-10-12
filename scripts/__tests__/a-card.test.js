@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const sandbox = { module: { exports: {} }, URL };
-vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'), sandbox);
+vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a-card.v3.js'), 'utf8'), sandbox);
 const raw = sandbox.module.exports;
 const plain = (x) => JSON.parse(JSON.stringify(x));
 const card = { ...raw, viewModelBecausePayload: (p) => plain(raw.viewModelBecausePayload(p)) };
@@ -93,7 +93,7 @@ describe('web card renders into the page', () => {
       calls.push(String(url));
       return { ok: status === 200, status, json: async () => payload };
     };
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v3.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     return { dom, calls, text: dom.window.document.getElementById('card').textContent };
   }
@@ -105,7 +105,7 @@ describe('web card renders into the page', () => {
       assert.ok(text.includes(bit), `missing ${bit}`);
     }
     assert.equal(dom.window.document.title, 'New York Yankees 2026 | Pack');
-    assert.ok(dom.window.document.querySelector('a.cta[href*="apps.apple.com"]'));
+    assert.ok(dom.window.document.querySelector('a.cta[href^="com.packai.app://a/"]'));
   });
 
   it('a guide ticks steps and counts progress; an expired link says so', async () => {
@@ -149,7 +149,7 @@ describe('place_list card', () => {
     const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => list });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v3.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     // no server map: the dark frame holds the pin plot and one swipeable card per place
@@ -194,7 +194,7 @@ describe('sports_team card is one dense screen', () => {
     const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => DODGERS });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v3.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     const card = doc.getElementById('card');
@@ -232,7 +232,7 @@ describe('sports_team polish and the static map', () => {
     assert.equal(plain(raw.viewModelBecausePayload({ ...payload, blocks: [{ ...payload.blocks[0], mapImageUrl: 'http://evil.example/m.png' }] })).mapImage, '');
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v3.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     const img = doc.querySelector('img.mapImage');
@@ -290,7 +290,7 @@ describe('place_list carousel', () => {
     ] }] };
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v2.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v3.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     const pins = [...doc.querySelectorAll('button.pin')];
@@ -339,5 +339,45 @@ describe('the card script is reachable', () => {
     const out = sandbox2.handler({ request: { uri: src, headers: { host: { value: 'www.trypackai.com' } }, querystring: {} } });
     assert.equal(out.uri, src);
     assert.ok(fs.existsSync(path.join(here, '../../public', src)), `${src} exists in public/`);
+  });
+});
+
+describe('open in Pack button', () => {
+  function fakeWin(hideOnOpen) {
+    const listeners = {};
+    const timers = [];
+    const doc = {
+      hidden: false, visibilityState: 'visible',
+      addEventListener: (n, f) => { listeners[n] = f; }, removeEventListener: () => {},
+    };
+    const win = {
+      document: doc, location: { href: 'https://www.trypackai.com/a/tok12345' },
+      addEventListener: () => {}, setTimeout: (f) => timers.push(f),
+    };
+    const hrefs = [];
+    Object.defineProperty(win.location, 'href', {
+      get: () => hrefs[hrefs.length - 1] ?? '',
+      set: (v) => { hrefs.push(v); if (hideOnOpen && hrefs.length === 1) { doc.hidden = true; listeners.visibilitychange(); } },
+    });
+    return { win, hrefs, fire: () => timers.forEach((f) => f()) };
+  }
+
+  it('tries the app scheme first, then shows a designed note (never the 404 App Store page) when the page never left', () => {
+    assert.equal(card.appLinkBecauseToken('tok12345'), 'com.packai.app://a/tok12345');
+    const t = fakeWin(false);
+    const note = { textContent: '' };
+    t.win.document.getElementById = () => note;
+    raw.openInPack(t.win, 'tok12345');
+    assert.deepEqual(t.hrefs, ['com.packai.app://a/tok12345']);
+    t.fire();
+    assert.deepEqual(t.hrefs, ['com.packai.app://a/tok12345']);
+    assert.equal(note.textContent, raw.NOT_OPENED);
+  });
+
+  it('stays put when the app took over', () => {
+    const t = fakeWin(true);
+    raw.openInPack(t.win, 'tok12345');
+    t.fire();
+    assert.deepEqual(t.hrefs, ['com.packai.app://a/tok12345']);
   });
 });

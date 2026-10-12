@@ -1,10 +1,15 @@
 /* Web fallback for /a/<token>: the same typed artifact the App Clip renders, from GET /api/artifact/<token>.
-   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a-card.v1.js)); render() only touches the DOM
+   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a-card.v3.js)); render() only touches the DOM
    with textContent, so card text is never parsed as HTML. */
 (function (root) {
   'use strict';
   var API = 'https://api.trypackai.com';
   var APP_STORE = 'https://apps.apple.com/app/id6761626050';
+  var APP_SCHEME = 'com.packai.app';
+  var APP_WAIT_MS = 1500;
+  /* The product page 404s until 1.0 ships, and iOS renders that as a blank white sheet. Flip when the app is live. */
+  var APP_STORE_LIVE = false;
+  var NOT_OPENED = 'Pack did not open. Pack may not be installed on this phone, or it is not on the App Store yet. Install the Pack beta from TestFlight, then tap Open in Pack again.';
   var PLAYER_ROW = /^(.*) \((hitter|pitcher|skater|goalie|player)\)$/;
   var GROUP_TITLE = { hitter: 'Hitters', pitcher: 'Pitchers', skater: 'Skaters', goalie: 'Goalies', player: 'Players' };
 
@@ -500,10 +505,39 @@
     if (model.title) doc.title = model.title + ' | Pack';
   }
 
+  /** scheme://a/<token>: the installed full app's own door to this card. */
+  function appLinkBecauseToken(token) {
+    return APP_SCHEME + '://a/' + encodeURIComponent(token);
+  }
+
+  /** Try the installed app first; if the page is still visible after a beat, go to the App Store (clip / install). Never a dead end. */
+  function openInPack(win, token) {
+    var doc = win.document;
+    var left = false;
+    function note() { if (doc.hidden || doc.visibilityState === 'hidden') left = true; }
+    doc.addEventListener('visibilitychange', note);
+    win.addEventListener('pagehide', function () { left = true; });
+    win.location.href = appLinkBecauseToken(token);
+    win.setTimeout(function () {
+      doc.removeEventListener('visibilitychange', note);
+      if (left) return;
+      if (APP_STORE_LIVE) { win.location.href = APP_STORE; return; }
+      var note = doc.getElementById('openNote');
+      if (note) note.textContent = NOT_OPENED;
+    }, APP_WAIT_MS);
+  }
+
+  function wireOpenButton(win, token) {
+    var cta = win.document.getElementById('open');
+    if (!cta || !token) return;
+    cta.addEventListener('click', function (e) { e.preventDefault(); openInPack(win, token); });
+  }
+
   function start(win) {
     var doc = win.document;
     var token = tokenBecausePath(win.location.pathname);
     var card = doc.getElementById('card');
+    wireOpenButton(win, token);
     if (!token) { card.textContent = messageBecauseStatus(404); return; }
     win.fetch(API + '/api/artifact/' + encodeURIComponent(token), { headers: { accept: 'application/json' } })
       .then(function (res) {
@@ -514,7 +548,7 @@
       .catch(function () { card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, APP_STORE: APP_STORE };
+  var api = { tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

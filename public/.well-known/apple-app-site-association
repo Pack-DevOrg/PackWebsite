@@ -8,8 +8,7 @@
         "components": [
           {
             "/": "/a/*",
-            "exclude": true,
-            "comment": "Clip-first card links: the full app never claims these, so the App Clip card opens even when Pack is installed"
+            "comment": "Card links open the full app when it is installed (Apple: an installed full app replaces the App Clip and is launched for every invocation). People without the app still get the App Clip via the appclips section"
           },
           {
             "/": "/app/*",

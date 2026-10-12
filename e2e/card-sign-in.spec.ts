@@ -1,7 +1,7 @@
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
-import { readE2EPassword, submitHostedUiLogin } from "./global-setup";
+import { readE2EPassword, submitHostedUiLogin } from "./hosted-ui-login";
 
 /*
  * "Sign in to view" on a private card page (/a/<token>), live lane only (the Cognito return URL is registered for

@@ -107,9 +107,9 @@ function shouldAdvanceSignupBecauseAuthenticated(
   return stepIndex === SIGNUP_INDEX;
 }
 
-export const ACCESS_REDEEM_PATH = "/access/redeem";
+export const ACCESS_REDEEM_PATH = "/user/accounts/access/redeem";
 
-/** /access/redeem envelope codes (user-accounts ACCESS_REDEEM_FAILURE) -> field reason. */
+/** /user/accounts/access/redeem envelope codes (user-accounts ACCESS_REDEEM_FAILURE) -> field reason. */
 const REDEEM_CODE_REASONS: Readonly<Record<string, string>> = {
   CODE_UNKNOWN: "invalid",
   CODE_EXPIRED: "expired",

@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
 
-import { OnboardPage } from "./OnboardPage";
+import { ACCESS_REDEEM_PATH, OnboardPage } from "./OnboardPage";
 import { WAITLIST_TITLE } from "@/components/onboard/WaitlistStep";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { ThemeProvider } from "@/styles/ThemeProvider";
@@ -126,6 +126,9 @@ describe("OnboardPage access step", () => {
     const posted = (global.fetch as jest.Mock).mock.calls.find(([u]) =>
       String(u).includes("/access/redeem"),
     );
+    // The API serves POST /user/accounts/access/redeem; /access/redeem is a 403 "Missing Authentication Token" in prod.
+    expect(new URL(String(posted?.[0])).pathname).toMatch(/\/user\/accounts\/access\/redeem$/);
+    expect(ACCESS_REDEEM_PATH).toBe("/user/accounts/access/redeem");
     expect(posted?.[1]?.method).toBe("POST");
     expect(String(posted?.[1]?.body)).toContain("ABCD2345");
   });

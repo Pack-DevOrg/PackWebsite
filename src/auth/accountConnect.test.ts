@@ -24,9 +24,11 @@ describe("accountConnect", () => {
     expect(url.searchParams.get("access_type")).toBe("offline");
     expect(url.searchParams.get("prompt")).toBe("consent");
     const scope = url.searchParams.get("scope") ?? "";
-    expect(scope).toContain("https://www.googleapis.com/auth/gmail.modify");
+    expect(scope).toContain("https://www.googleapis.com/auth/gmail.readonly");
     expect(scope).toContain("https://www.googleapis.com/auth/calendar.readonly");
     expect(scope.split(" ").sort()).toEqual([...GOOGLE_CONNECT_SCOPES].sort());
+    // Sign-in is read-only: write scopes come later, one per ask (needs_scope).
+    expect(scope).not.toMatch(/gmail\.(modify|send|compose)|auth\/calendar(\.events)?(\s|$)/);
   });
 
   it("posts the auth code to the same /user/accounts body the app sends", () => {

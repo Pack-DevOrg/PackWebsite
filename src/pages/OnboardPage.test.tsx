@@ -296,7 +296,7 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expect(url.searchParams.get("client_id")).toBe(GOOGLE_WEB_CLIENT_ID);
     expect(url.searchParams.get("redirect_uri")).toBe(GOOGLE_REDIRECT_URI);
     expect(url.searchParams.get("scope")).toContain(
-      "https://www.googleapis.com/auth/gmail.modify",
+      "https://www.googleapis.com/auth/gmail.readonly",
     );
     expect(url.searchParams.get("scope")).toContain(
       "https://www.googleapis.com/auth/calendar.readonly",

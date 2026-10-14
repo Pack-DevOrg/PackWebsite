@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const sandbox = { module: { exports: {} }, URL };
-vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a-card.v4.js'), 'utf8'), sandbox);
+vm.runInNewContext(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'), sandbox);
 const raw = sandbox.module.exports;
 const plain = (x) => JSON.parse(JSON.stringify(x));
 const card = { ...raw, viewModelBecausePayload: (p) => plain(raw.viewModelBecausePayload(p)) };
@@ -93,7 +93,7 @@ describe('web card renders into the page', () => {
       calls.push(String(url));
       return { ok: status === 200, status, json: async () => payload };
     };
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v4.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     return { dom, calls, text: dom.window.document.getElementById('card').textContent };
   }
@@ -149,7 +149,7 @@ describe('place_list card', () => {
     const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => list });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v4.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     // no server map: the dark frame holds the pin plot and one swipeable card per place
@@ -194,7 +194,7 @@ describe('sports_team card is one dense screen', () => {
     const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => DODGERS });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v4.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     const card = doc.getElementById('card');
@@ -232,7 +232,7 @@ describe('sports_team polish and the static map', () => {
     assert.equal(plain(raw.viewModelBecausePayload({ ...payload, blocks: [{ ...payload.blocks[0], mapImageUrl: 'http://evil.example/m.png' }] })).mapImage, '');
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v4.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     const img = doc.querySelector('img.mapImage');
@@ -290,7 +290,7 @@ describe('place_list carousel', () => {
     ] }] };
     const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok', runScripts: 'outside-only' });
     dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
-    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v4.js'), 'utf8'));
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'));
     await new Promise((r) => setTimeout(r, 20));
     const doc = dom.window.document;
     const pins = [...doc.querySelectorAll('button.pin')];

@@ -8,7 +8,7 @@ import vm from 'node:vm';
 
 /* "Sign in to view" on /a/<token>: the 401 gate, Hosted UI PKCE, the in-memory ID token, 403, expiry, live refresh. */
 const here = path.dirname(fileURLToPath(import.meta.url));
-const SCRIPT = fs.readFileSync(path.join(here, '../../public/a-card.v4.js'), 'utf8');
+const SCRIPT = fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8');
 const sandbox = { module: { exports: {} }, URL };
 vm.runInNewContext(SCRIPT, sandbox);
 const raw = sandbox.module.exports;
@@ -84,13 +84,14 @@ describe('anonymous private card', () => {
 });
 
 describe('locked state', () => {
-  const PRIVATE = { status: 401, body: { unlock: 'otp', preview: { kind: 'agenda', title: 'Tech Week LA' } } };
+  const PRIVATE = { status: 401, body: { unlock: 'otp', preview: { kind: 'agenda', ownerFirstName: 'Noah' } } };
 
-  it('names what is locked (kind and title), with the Pack mark, one primary and one text action', async () => {
+  it('names what is locked (kind and whose it is, never the title), with the Pack mark, one primary and one text action', async () => {
     const { doc } = await page({ responses: [PRIVATE] });
     assert.equal(doc.querySelector('.gateMark').getAttribute('src'), '/logo.png');
     assert.equal(doc.querySelector('.kindChip').textContent, 'Shared agenda');
-    assert.equal(doc.querySelector('.lockedTitle').textContent, 'Tech Week LA');
+    assert.equal(doc.querySelector('.lockedTitle').textContent, 'Shared by Noah');
+    assert.equal(doc.getElementById('card').textContent.includes('Tech Week'), false);
     assert.equal(doc.querySelectorAll('.gatePrimary').length, 1);
     assert.equal(doc.querySelectorAll('.gateText').length, 1);
     assert.equal(doc.querySelector('.gatePrimary').textContent, 'Sign in to view');
@@ -102,6 +103,12 @@ describe('locked state', () => {
     assert.equal(doc.querySelector('.gatePrimary').textContent, 'Open in Pack');
     assert.equal(doc.querySelector('.gateText').textContent, 'Sign in to view');
     assert.equal(doc.getElementById('signin').textContent, 'Sign in to view');
+  });
+
+  it('an older server that still sends a title is not shown it', async () => {
+    const { doc } = await page({ responses: [{ status: 401, body: { unlock: 'otp', preview: { kind: 'agenda', title: 'Tech Week LA' } } }] });
+    assert.equal(doc.getElementById('card').textContent.includes('Tech Week'), false);
+    assert.equal(doc.querySelector('.lockedTitle'), null);
   });
 
   it('a 403 shows no preview of the card', async () => {
@@ -234,5 +241,104 @@ describe('agenda view model', () => {
   it('tells a viewer whose events are not shared yet', () => {
     const m = JSON.parse(JSON.stringify(raw.viewModelBecausePayload(AGENDA({ viewer: { memberId: 'm2', needsConsent: true } }))));
     assert.equal(m.agenda.needsConsent, true);
+  });
+});
+
+
+describe('request access (signed in, not on the card)', () => {
+  const callbackSession = (extra = {}) => ({ 'pack.card.pkce': JSON.stringify({ state: 'S', verifier: 'V'.repeat(43), token: 'tok', at: Date.now(), ...extra }) });
+  const callback = (...more) => ({
+    pathname: '/a/callback?code=CODE&state=S', session: callbackSession(),
+    responses: [{ status: 200, body: { id_token: 'ID' } }, ...more],
+  });
+  const LOCKED = (extra = {}) => ({ status: 403, body: { error: 'No access', requestAccess: true, preview: { kind: 'agenda', ownerFirstName: 'Noah' }, ...extra } });
+  const settle = () => new Promise((r) => setTimeout(r, 20));
+
+  it('offers Request access with the kind and the owner first name, and no card content', async () => {
+    const { doc, text } = await page(callback(LOCKED()));
+    assert.equal(doc.getElementById('requestAccess').textContent, 'Request access');
+    assert.match(text(), /You need access/);
+    assert.match(text(), /Ask Noah to let you in/);
+    assert.equal(doc.querySelector('.kindChip').textContent, 'Shared agenda');
+    assert.equal(doc.querySelector('.lockedTitle').textContent, 'Shared by Noah');
+    assert.equal(doc.getElementById('signin').textContent, 'Sign in with a different account');
+    assert.equal(text().includes('Tech Week'), false);
+    assert.equal(doc.querySelectorAll('.gatePrimary').length, 1);
+  });
+
+  it('the tap sends the agenda ask with the account bearer, then waits, and opens the card by itself when approved', async () => {
+    const timers = [];
+    const p = await page({ ...callback(LOCKED(), { status: 200, body: { requested: true, requestId: 'r1', state: 'pending' } }, { status: 200, body: AGENDA() }) });
+    p.w.setTimeout = (fn) => { timers.push(fn); return timers.length; };
+    p.doc.getElementById('requestAccess').click();
+    await settle();
+    const ask = p.calls.find((c) => c.url.endsWith('/api/i/tok/actions'));
+    assert.equal(ask.init.method, 'POST');
+    assert.equal(ask.init.headers.authorization, 'Bearer ID');
+    assert.deepEqual(JSON.parse(ask.init.body).actions.map((a) => a.type), ['agenda_request']);
+    assert.match(p.text(), /Request sent/);
+    assert.match(p.text(), /You will get in when Noah approves/);
+    assert.equal(p.doc.getElementById('requestAccess'), null, 'no second ask while one is open');
+    assert.equal(timers.length, 1);
+    timers.shift()();
+    await settle();
+    assert.ok(p.doc.getElementById('card').classList.contains('agendaCard'), 'approved: the card opens by itself');
+  });
+
+  it('a card that is not an agenda asks with share_request; the name field is sent', async () => {
+    const p = await page(callback(LOCKED({ preview: { kind: 'place_list', ownerFirstName: 'Noah' } }), { status: 200, body: { requested: true, requestId: 'r1', pollSecret: 's', state: 'pending' } }));
+    p.w.setTimeout = () => 1;
+    p.doc.getElementById('reqName').value = 'Sara';
+    p.doc.getElementById('requestAccess').click();
+    await settle();
+    const body = JSON.parse(p.calls.find((c) => c.url.endsWith('/actions')).init.body);
+    assert.deepEqual(body.actions, [{ type: 'share_request', name: 'Sara' }]);
+  });
+
+  it('a request already open (page reload) shows the wait, not the button', async () => {
+    const p = await page(callback(LOCKED({ requestState: 'pending' })));
+    p.w.setTimeout = () => 1;
+    assert.match(p.text(), /Request sent/);
+    assert.equal(p.doc.getElementById('requestAccess'), null);
+  });
+
+  it('declined says only "not available": no owner name, no way to ask again', async () => {
+    const p = await page(callback(LOCKED({ requestState: 'denied' })));
+    assert.match(p.text(), /This card is not available\./);
+    assert.equal(p.text().includes('Noah'), false);
+    assert.equal(p.doc.getElementById('requestAccess'), null);
+  });
+
+  it('already a member by the time they ask: the card opens', async () => {
+    const p = await page(callback(LOCKED(), { status: 200, body: { requested: false, alreadyHasAccess: true } }, { status: 200, body: AGENDA() }));
+    p.doc.getElementById('requestAccess').click();
+    await settle();
+    assert.ok(p.doc.getElementById('card').classList.contains('agendaCard'));
+  });
+
+  it('too many requests and a failed send both say so and keep the button', async () => {
+    const limited = await page(callback(LOCKED(), { status: 429, body: {} }));
+    limited.doc.getElementById('requestAccess').click();
+    await settle();
+    assert.match(limited.doc.getElementById('requestNote').textContent, /Too many requests/);
+    assert.equal(limited.doc.getElementById('requestAccess').disabled, false);
+    const failed = await page(callback(LOCKED(), { status: 500, body: {} }));
+    failed.doc.getElementById('requestAccess').click();
+    await settle();
+    assert.match(failed.doc.getElementById('requestNote').textContent, /Could not send the request/);
+  });
+
+  it('a 403 with no way to ask (an old link) keeps the plain "no access" state', async () => {
+    const p = await page(callback({ status: 403, body: { error: 'No access' } }));
+    assert.equal(p.doc.getElementById('requestAccess'), null);
+    assert.match(p.text(), /do not have access/);
+  });
+
+  it('a long or emoji owner name and a long name field stay words in the page (no markup)', async () => {
+    const owner = '👩🏽‍🍳'.repeat(12);
+    const p = await page(callback(LOCKED({ preview: { kind: 'agenda', ownerFirstName: owner + '<img src=x>' } })));
+    assert.equal(p.doc.querySelector('.lockedTitle').textContent, 'Shared by ' + owner + '<img src=x>');
+    assert.equal(p.doc.querySelector('#card img[src="x"]'), null);
+    assert.equal(p.doc.getElementById('reqName').maxLength, 60);
   });
 });

@@ -77,12 +77,19 @@ test.describe("card page: Sign in to view", () => {
     await shot(page, "2-owner-sees-agenda");
   });
 
-  test("a signed-in account that is not a member gets You do not have access, no card content", async ({ page }, testInfo) => {
+  test("a signed-in account that is not a member sees only the kind and who shared it, with Request access, and no card content", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium-desktop", "one browser is enough for the hosted login lane");
     await signInAsE2EAccount(page, FOREIGN_TOKEN);
     await page.waitForURL(new RegExp(`/a/${FOREIGN_TOKEN}$`), { timeout: 60_000 });
-    await expect(page.locator("#card")).toContainText("You do not have access to this card", { timeout: 30_000 });
+    await expect(page.locator("#card")).toContainText("You need access", { timeout: 30_000 });
+    await expect(page.getByRole("button", { name: "Request access" })).toBeVisible();
     await expect(page.locator("#card")).not.toContainText("Not Yours");
-    await shot(page, "3-non-member-no-access");
+    await expect(page.locator("#card")).not.toContainText("Tech Week");
+    await shot(page, "3-non-member-request-access");
+    // The ask goes to the card's (synthetic) owner; the page then waits and says so.
+    await page.getByRole("button", { name: "Request access" }).click();
+    await expect(page.locator("#card")).toContainText("Request sent", { timeout: 30_000 });
+    await expect(page.getByRole("button", { name: "Request access" })).toHaveCount(0);
+    await shot(page, "4-request-sent");
   });
 });

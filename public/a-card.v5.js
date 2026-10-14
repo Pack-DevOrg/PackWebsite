@@ -1,7 +1,7 @@
 /* Web fallback for /a/<token>: the same typed artifact the App Clip renders, from GET /api/artifact/<token>.
    A private card (401) offers "Sign in to view": Cognito Hosted UI (Apple, Google, email) with PKCE, back at /a/callback. The ID token lives in
    memory only (never storage, never a cookie we set); the server serves the card only to its owner or an active member.
-   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a-card.v4.js)); render() only touches the DOM
+   viewModelBecausePayload is pure (tested in scripts/__tests__/a-card.test.js (loads public/a-card.v5.js)); render() only touches the DOM
    with textContent, so card text is never parsed as HTML. */
 (function (root) {
   'use strict';
@@ -817,14 +817,17 @@
     locked.appendChild(badge);
     var meta = el('div', 'lockedMeta');
     if (opts.kind) meta.appendChild(el('span', 'kindChip', kindLabel(opts.kind) === 'Agenda' ? 'Shared agenda' : kindLabel(opts.kind)));
-    if (opts.title) meta.appendChild(el('h1', 'lockedTitle', opts.title));
+    // What the page may say about a card the viewer cannot open: its kind and whose it is. Never its title.
+    if (opts.owner) meta.appendChild(el('h1', 'lockedTitle', 'Shared by ' + opts.owner));
     locked.appendChild(meta);
     card.appendChild(locked);
     card.appendChild(el('h2', 'gateHeading', opts.heading));
     card.appendChild(el('p', 'gateSub', opts.sub));
     var mobile = MOBILE_UA.test((win.navigator && win.navigator.userAgent) || '');
-    var signIn = el('button', mobile && !opts.noApp ? 'gateText' : 'gatePrimary', opts.button);
+    if (opts.request) { opts.request(card, el); }
+    var signIn = el('button', opts.requestGate ? 'gateText' : mobile && !opts.noApp ? 'gateText' : 'gatePrimary', opts.button);
     signIn.type = 'button'; signIn.id = 'signin';
+    if (opts.noSignIn) signIn.style.display = 'none';
     signIn.addEventListener('click', function () {
       // ?signin=cognito is the test door to the password page (the E2E account has no Google or Apple login); users get the sheet.
       if (/[?&]signin=cognito\b/.test(win.location.search)) beginSignIn(win, token, !!opts.fresh, '');
@@ -833,8 +836,97 @@
     var open = el('button', mobile ? 'gatePrimary' : 'gateText', 'Open in Pack');
     open.type = 'button'; open.id = 'gateOpen';
     open.addEventListener('click', function () { openInPack(win, token); });
-    if (mobile) { card.appendChild(open); card.appendChild(signIn); } else { card.appendChild(signIn); card.appendChild(open); }
-    card.appendChild(el('p', 'gateNote', 'Sign in with Apple, Google or email.'));
+    if (opts.requestGate) { card.appendChild(signIn); }
+    else if (mobile) { card.appendChild(open); card.appendChild(signIn); } else { card.appendChild(signIn); card.appendChild(open); }
+    if (!opts.requestGate) card.appendChild(el('p', 'gateNote', 'Sign in with Apple, Google or email.'));
+  }
+
+  var REQUEST_POLL_MS = 6000;
+  var REQUEST_POLL_MAX = 100;
+  var DENIED = 'This card is not available.';
+
+  /** The first name a signed-in account gave its provider, to prefill the one optional field. Display only. */
+  function givenNameBecauseToken(token) {
+    try {
+      var part = String(token || '').split('.')[1] || '';
+      var json = decodeURIComponent(escape(atob(part.replace(/-/g, '+').replace(/_/g, '/'))));
+      var claims = JSON.parse(json);
+      var name = claims.given_name || claims.name || '';
+      return typeof name === 'string' ? name.split(/\s+/)[0].slice(0, 30) : '';
+    } catch (e) { return ''; }
+  }
+
+  /** POST the ask for a card the signed-in viewer is not on. Agendas and cards take different taps; both answer { requested, state } or { alreadyHasAccess }. */
+  function postAccessRequest(win, state, kind, name) {
+    var action = { type: kind === 'agenda' ? 'agenda_request' : 'share_request' };
+    if (name) action.name = name;
+    return win.fetch(API + '/api/i/' + encodeURIComponent(state.token) + '/actions', {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json', authorization: 'Bearer ' + state.idToken },
+      body: JSON.stringify({ actions: [action] })
+    }).then(function (res) {
+      return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: res.status, body: body || {} }; });
+    });
+  }
+
+  /**
+   * Signed in, not on the card: the locked state offers Request access. Only the kind and the owner's first name are shown.
+   * Sent: the page asks the card again every few seconds, so it opens by itself when the owner approves, and says
+   * "not available" (and nothing else) if the owner declines.
+   */
+  function showRequestGate(win, state, out) {
+    var preview = out.preview || {};
+    var owner = typeof preview.ownerFirstName === 'string' ? preview.ownerFirstName : '';
+    var asked = out.requestState === 'pending' || state.requestSent === true;
+    if (state.pollTimer) { win.clearTimeout(state.pollTimer); state.pollTimer = 0; }
+    if (out.requestState === 'denied') {
+      showGate(win, state.token, { kind: preview.kind, owner: '', heading: 'Not available', sub: DENIED, button: 'Sign in with a different account', fresh: true, requestGate: true });
+      return;
+    }
+    var line = asked
+      ? (owner ? 'You will get in when ' + owner + ' approves. This page opens the card by itself.' : 'You will get in when the owner approves. This page opens the card by itself.')
+      : (owner ? 'Ask ' + owner + ' to let you in.' : 'Ask the owner to let you in.');
+    showGate(win, state.token, {
+      kind: preview.kind, owner: owner, heading: asked ? 'Request sent' : 'You need access', sub: line,
+      button: 'Sign in with a different account', fresh: true, requestGate: true,
+      request: asked ? null : function (card, el) {
+        var input = el('input', 'gateInput');
+        input.type = 'text'; input.id = 'reqName'; input.maxLength = 60; input.autocomplete = 'given-name';
+        input.setAttribute('aria-label', 'Your name (optional)');
+        input.placeholder = 'Your name (optional)';
+        input.value = givenNameBecauseToken(state.idToken);
+        var btn = el('button', 'gatePrimary', 'Request access');
+        btn.type = 'button'; btn.id = 'requestAccess';
+        var note = el('p', 'gateNote'); note.id = 'requestNote'; note.setAttribute('role', 'status');
+        btn.addEventListener('click', function () {
+          btn.disabled = true; btn.textContent = 'Sending...'; note.textContent = '';
+          postAccessRequest(win, state, preview.kind, input.value.trim()).then(function (r) {
+            if (r.status === 200 && r.body.alreadyHasAccess) { load(win, state); return; }
+            if (r.status === 200 && r.body.requested) {
+              state.requestSent = true;
+              if (r.body.state === 'denied') { showRequestGate(win, state, { preview: preview, requestState: 'denied' }); return; }
+              showRequestGate(win, state, { preview: preview, requestState: 'pending' });
+              schedulePoll(win, state);
+              return;
+            }
+            btn.disabled = false; btn.textContent = 'Request access';
+            if (r.status === 401) { note.textContent = 'Sign in again to ask.'; return; }
+            note.textContent = r.status === 429 ? 'Too many requests. Try again later.' : 'Could not send the request. Try again.';
+          }).catch(function () { btn.disabled = false; btn.textContent = 'Request access'; note.textContent = 'Could not send the request. Try again.'; });
+        });
+        card.appendChild(input); card.appendChild(btn); card.appendChild(note);
+      }
+    });
+    if (asked) schedulePoll(win, state);
+  }
+
+  function schedulePoll(win, state) {
+    if (state.pollTimer || (state.pollCount || 0) >= REQUEST_POLL_MAX) return;
+    state.pollTimer = win.setTimeout(function () {
+      state.pollTimer = 0;
+      state.pollCount = (state.pollCount || 0) + 1;
+      if (!win.document.hidden) load(win, state, true); else schedulePoll(win, state);
+    }, REQUEST_POLL_MS);
   }
 
   function showLoading(win) {
@@ -887,7 +979,12 @@
       .then(function (res) {
         if (res.ok) return res.json().then(function (payload) { return { payload: payload }; });
         if (res.status === 401) {
-          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: 401, ended: !!(body && body.signIn), preview: body && body.preview && typeof body.preview.title === 'string' ? body.preview : null }; });
+          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) { return { status: 401, ended: !!(body && body.signIn), preview: body && body.preview && typeof body.preview.kind === 'string' ? body.preview : null }; });
+        }
+        if (res.status === 403) {
+          return (res.json ? res.json() : Promise.resolve({})).catch(function () { return {}; }).then(function (body) {
+            return { status: 403, request: !!(body && body.requestAccess === true && body.preview && typeof body.preview.kind === 'string'), preview: body && body.preview, requestState: body && body.requestState };
+          });
         }
         return { status: res.status };
       })
@@ -909,19 +1006,20 @@
           var hint = recall(win, HINT_KEY);
           if (hint && ago > REAUTH_GUARD_MS) { beginSignIn(win, state.token, false, hint === '1' ? '' : hint); return; }
           showGate(win, state.token, {
-            kind: out.preview ? out.preview.kind : '', title: out.preview ? out.preview.title : '',
+            kind: out.preview ? out.preview.kind : '', owner: out.preview && typeof out.preview.ownerFirstName === 'string' ? out.preview.ownerFirstName : '',
             heading: out.ended ? 'Your sign-in ended' : 'This card is private',
             sub: out.ended ? 'Sign in again to view this card.' : 'Sign in to view it, or open it in the Pack app.', button: 'Sign in to view'
           });
           return;
         }
+        if (out.status === 403 && out.request && state.idToken) { showRequestGate(win, state, out); return; }
         if (out.status === 403) { showGate(win, state.token, { heading: NO_ACCESS, sub: 'This card belongs to someone else. Try a different account.', button: 'Sign in with a different account', fresh: true }); return; }
         card.textContent = messageBecauseStatus(out.status);
       })
       .catch(function () { if (!quiet) card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
+  var api = { showRequestGate: showRequestGate, agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

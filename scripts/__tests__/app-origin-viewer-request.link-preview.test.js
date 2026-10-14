@@ -97,7 +97,7 @@ describe('app-origin-viewer-request category paths', () => {
 
   it('the static page and unrelated /a-prefixed files are not tokens', () => {
     assert.equal(run('/a/index.html', SAFARI).uri, '/a/index.html');
-    assert.equal(run('/a-card.v4.js', SAFARI).uri, '/a-card.v4.js');
+    assert.equal(run('/a-card.v5.js', SAFARI).uri, '/a-card.v5.js');
     assert.equal(run('/a/x/y/z/w', SAFARI).uri, '/a/x/y/z/w/index.html');
   });
 });

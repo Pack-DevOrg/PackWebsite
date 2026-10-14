@@ -23,14 +23,14 @@ export const GOOGLE_AUTHORIZE_URL =
 export const MICROSOFT_AUTHORIZE_URL =
   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
 
-/** Identity scopes plus the Gmail and Calendar scopes ConnectedAccountsScreen requests. */
+/** Identity scopes plus read-only Gmail and Calendar. Write scopes are asked later, per ask (needs_scope). */
 export const GOOGLE_CONNECT_SCOPES = [
   "openid",
   "email",
   "profile",
   "https://www.googleapis.com/auth/userinfo.email",
   "https://www.googleapis.com/auth/userinfo.profile",
-  "https://www.googleapis.com/auth/gmail.modify",
+  "https://www.googleapis.com/auth/gmail.readonly",
   "https://www.googleapis.com/auth/calendar.readonly",
 ] as const;
 

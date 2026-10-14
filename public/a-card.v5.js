@@ -775,7 +775,7 @@
     sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-label', 'Sign in to view');
     sheet.appendChild(el('span', 'sheetGrip'));
     sheet.appendChild(el('h2', 'sheetTitle', 'Sign in to view'));
-    sheet.appendChild(el('p', 'sheetSub', 'Use the account you use in Pack.'));
+    sheet.appendChild(el('p', 'sheetSub', 'Use the account you use in Pack. New to Pack? Continuing creates your account.'));
     function provider(cls, which, label, idp) {
       var b = el('button', 'authBtn ' + cls);
       b.type = 'button';

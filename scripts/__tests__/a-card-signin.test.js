@@ -129,6 +129,7 @@ describe('sign-in sheet: the app own buttons', () => {
     assert.deepEqual(labels, ['Continue with Google', 'Continue with Apple']);
     assert.equal(doc.querySelectorAll('#signinSheet input').length, 0);
     assert.equal(w.location.hostname, 'www.trypackai.com');
+    assert.match(doc.querySelector('#signinSheet .sheetSub').textContent, /New to Pack\? Continuing creates your account/);
   });
 
   it('each provider goes straight to its identity provider, so the Cognito login page is skipped', async () => {

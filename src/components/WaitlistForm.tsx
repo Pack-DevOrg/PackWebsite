@@ -64,6 +64,11 @@ type IconProps = React.SVGProps<SVGSVGElement> & {
   readonly size?: number;
 };
 
+// Version of the consent sentence shown next to the checkbox ('waitlist.marketingOptIn' in
+// i18n/messages.ts). The server stores it with the request time as proof of what was shown;
+// consent is granted only after the address is verified. Bump it when that sentence changes.
+const WAITLIST_CONSENT_TEXT_VERSION = 'waitlist-marketing-2026-10-16';
+
 const CheckIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" {...props}>
     <path
@@ -1013,6 +1018,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
           : {}),
         marketingConsent: hasMarketingTrackingConsent,
         marketingEmailConsent: marketingEmailOptIn,
+        consentVersion: WAITLIST_CONSENT_TEXT_VERSION,
         ageConfirmed: true,
         ...(marketingEventId ? {eventId: marketingEventId} : {}),
         ...(hasMarketingTrackingConsent ? {gclid, wbraid, gbraid, ttclid, ttp, fbc, fbp} : {}),

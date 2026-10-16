@@ -139,6 +139,7 @@ describe('WaitlistForm marketing payload', () => {
 
     expect(payload.marketingConsent).toBe(true);
     expect(payload.marketingEmailConsent).toBe(true);
+    expect(payload.consentVersion).toMatch(/^waitlist-marketing-/);
     expect(payload.ageConfirmed).toBe(true);
     expect(typeof payload.eventId).toBe('string');
     expect(payload.eventId).toMatch(/^evt_/);

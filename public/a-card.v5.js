@@ -34,6 +34,12 @@
     return parts.length >= 2 && parts[0] === 'a' ? parts[parts.length - 1] : '';
   }
 
+  /* /a/onboard/<token> is the texted connect/admit link, not a card: /api/artifact has no such token and answered 404. The web fallback is the onboarding page. */
+  function onboardRedirectBecausePath(pathname) {
+    var parts = String(pathname || '').split('/').filter(Boolean);
+    return parts.length >= 3 && parts[0] === 'a' && parts[1] === 'onboard' ? '/onboard' : '';
+  }
+
   function hostOf(url) {
     try { return new URL(url).host; } catch (e) { return ''; }
   }
@@ -950,6 +956,8 @@
     var doc = win.document;
     var card = doc.getElementById('card');
     var state = { idToken: '', last: '', timer: 0, token: tokenBecausePath(win.location.pathname) };
+    var onboard = onboardRedirectBecausePath(win.location.pathname);
+    if (onboard) { win.location.replace(onboard); return; }
     if (win.location.pathname === '/a/callback') {
       showLoading(win);
       completeSignIn(win).then(function (done) {
@@ -1019,7 +1027,7 @@
       .catch(function () { if (!quiet) card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { showRequestGate: showRequestGate, agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
+  var api = { showRequestGate: showRequestGate, agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, onboardRedirectBecausePath: onboardRedirectBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

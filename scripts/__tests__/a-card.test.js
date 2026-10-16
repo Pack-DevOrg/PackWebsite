@@ -31,6 +31,12 @@ describe('web card for /a/<token>', () => {
     assert.equal(card.tokenBecausePath('/pricing'), '');
   });
 
+  it('the texted connect link /a/onboard/<token> goes to onboarding, not the artifact fetch that 404s', () => {
+    assert.equal(card.onboardRedirectBecausePath('/a/onboard/tBOu6FsNrSz1cJFjv1uA.tn28tb.scy6f4wRc5GcAZriDzmc0Q'), '/onboard');
+    assert.equal(card.onboardRedirectBecausePath('/a/L2ofNLC4kpZPk7OVtMxy5A'), '');
+    assert.equal(card.onboardRedirectBecausePath('/a/onboard'), '');
+  });
+
   it('a sports team card shows record and place, hitters and pitchers apart, then source and as-of', () => {
     const m = card.viewModelBecausePayload(YANKEES);
     assert.equal(m.title, 'New York Yankees 2026');

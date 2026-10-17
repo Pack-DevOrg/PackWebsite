@@ -161,21 +161,38 @@ const summarizePathForLogs = (path: string): { path: string; hasQuery: boolean }
 
 const SENSITIVE_ROUTE_PREFIXES = [
   '/auth/callback',
+  '/oauth/callback',
   '/unsubscribe',
   '/privacy/requests/verify',
+  '/privacy-request/verify',
   '/trip/',
   '/share/',
+  '/i/',
+  '/lv/',
+  '/2fa/',
+  '/a/',
+  '/live/',
+  '/api/artifact/',
 ] as const;
 
+const CAPABILITY_ROUTE_TOKEN_PATTERN =
+  /(\/(?:a\/onboard|a|share|trip|i|lv|2fa|live|api\/artifact|unsubscribe|privacy\/requests\/verify|privacy-request\/verify)\/)[^/?#]+/gi;
+
+const redactCapabilityRoutePath = (pathname: string): string =>
+  pathname.replace(CAPABILITY_ROUTE_TOKEN_PATTERN, '$1[REDACTED]');
+
 const sanitizeTrackedPagePath = (page: string): string => {
-  const fallbackPath = page.split('#', 1)[0]?.split('?', 1)[0] || '/';
+  const fallbackPath = redactCapabilityRoutePath(
+    page.split('#', 1)[0]?.split('?', 1)[0] || '/',
+  );
   try {
     const url = new URL(page, window.location.origin);
-    const isSensitiveRoute = SENSITIVE_ROUTE_PREFIXES.some((prefix) =>
-      url.pathname.startsWith(prefix),
-    );
+    const scrubbedPathname = redactCapabilityRoutePath(url.pathname);
+    const isSensitiveRoute =
+      scrubbedPathname !== url.pathname ||
+      SENSITIVE_ROUTE_PREFIXES.some((prefix) => url.pathname.startsWith(prefix));
     if (isSensitiveRoute) {
-      return url.pathname;
+      return scrubbedPathname;
     }
 
     const safeParams = new URLSearchParams();
@@ -186,7 +203,7 @@ const sanitizeTrackedPagePath = (page: string): string => {
       }
     }
     const query = safeParams.toString();
-    return `${url.pathname}${query ? `?${query}` : ''}`;
+    return `${scrubbedPathname}${query ? `?${query}` : ''}`;
   } catch {
     return fallbackPath;
   }
@@ -269,6 +286,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
   const lastGa4PagePathRef = useRef<string | null>(null);
   const lastMetaPageViewPathRef = useRef<string | null>(null);
   const lastTikTokPagePathRef = useRef<string | null>(null);
+  const lastPostHogPagePathRef = useRef<string | null>(null);
 
   const isTestEnv =
     (typeof globalThis !== 'undefined' && Boolean((globalThis as {__TEST_ENV__?: unknown}).__TEST_ENV__)) ||
@@ -607,6 +625,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       setIsTikTokPixelLoaded(false);
       setIsGtmLoaded(false);
       lastMetaPageViewPathRef.current = null;
+      lastPostHogPagePathRef.current = null;
     },
     [applyConsentDecision],
   );
@@ -788,13 +807,20 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
       lastTikTokPagePathRef.current = trackedPage;
     }
 
-    capturePageview(trackedPage);
+    if (
+      hasAnalyticsConsent &&
+      !gpcApplies &&
+      lastPostHogPagePathRef.current !== trackedPage
+    ) {
+      capturePageview(trackedPage);
+      lastPostHogPagePathRef.current = trackedPage;
+    }
 
     if (env.DEV) {
       const summary = summarizePathForLogs(trackedPage);
       console.log(`Tracking page view: ${summary.path}`, {hasQuery: summary.hasQuery});
     }
-  }, [ga4MeasurementId, hasAnalyticsConsent, hasMarketingConsent, isGA4Loaded, isMetaPixelLoaded, isTikTokPixelLoaded]);
+  }, [ga4MeasurementId, gpcApplies, hasAnalyticsConsent, hasMarketingConsent, isGA4Loaded, isMetaPixelLoaded, isTikTokPixelLoaded]);
 
   /**
    * Track page views across all platforms.
@@ -850,7 +876,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
         applyConsentDecision={applyConsentDecision}
         setGpcApplies={setGpcApplies}
       />
-      <PostHogBootstrap />
+      {hasAnalyticsConsent && !gpcApplies ? <PostHogBootstrap /> : null}
       {hasAnalyticsConsent || hasMarketingConsent ? (
         <TrackingScriptLoader
           key={`scripts:${hasAnalyticsConsent}:${hasMarketingConsent}:${gtmId ?? 'none'}`}
@@ -979,9 +1005,7 @@ const TrackingScriptLoader: React.FC<{
   readonly loadTikTokPixel: () => Promise<void>;
 }> = ({ loadGtm, loadGA4, loadMetaPixel, loadTikTokPixel }) => {
   useMountEffect(() => {
-    void initPostHog();
     return runWhenIdle(() => {
-      void initPostHog();
       void loadGtm();
       void loadGA4();
       void loadMetaPixel();

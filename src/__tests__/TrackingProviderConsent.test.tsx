@@ -39,6 +39,13 @@ const runtimeMock = jest.requireMock('../tracking/runtime') as {
   loadTikTokPixelRuntime: jest.Mock;
 };
 
+const posthogMock = jest.requireMock('../tracking/posthog') as {
+  initPostHog: jest.Mock;
+  capturePageview: jest.Mock;
+  captureSiteAction: jest.Mock;
+  capturePosthog: jest.Mock;
+};
+
 const TestWrapper: React.FC<{children: React.ReactNode}> = ({children}) => (
   <ThemeProvider>
     <TrackingProvider>{children}</TrackingProvider>
@@ -387,6 +394,61 @@ describe('TrackingProvider consent gating', () => {
       'trackCustom',
       'form_start',
       expect.anything(),
+    );
+  });
+
+  it('does not initialize PostHog or capture PostHog pageviews without analytics consent', async () => {
+    localStorageMock.getItem.mockImplementation((key: string) => {
+      if (key === 'tracking-consent') return 'partial';
+      if (key === 'tracking-consent-timestamp') return Date.now().toString();
+      if (key === 'tracking-preferences') {
+        return JSON.stringify({analytics: false, marketing: true, functional: true});
+      }
+      return null;
+    });
+
+    render(
+      <TestWrapper>
+        <TrackPageViewHarness page="/pricing" />
+      </TestWrapper>,
+    );
+
+    await flushIdle();
+
+    expect(posthogMock.initPostHog).not.toHaveBeenCalled();
+    expect(posthogMock.capturePageview).not.toHaveBeenCalled();
+  });
+
+  it('initializes PostHog and redacts capability tokens from tracked page paths when analytics consent is granted', async () => {
+    runtimeMock.loadGA4Runtime.mockImplementation(async ({onLoaded}: {onLoaded: () => void}) => {
+      onLoaded();
+    });
+
+    localStorageMock.getItem.mockImplementation((key: string) => {
+      if (key === 'tracking-consent') return 'partial';
+      if (key === 'tracking-consent-timestamp') return Date.now().toString();
+      if (key === 'tracking-preferences') {
+        return JSON.stringify({analytics: true, marketing: false, functional: true});
+      }
+      return null;
+    });
+
+    render(
+      <TestWrapper>
+        <TrackPageViewHarness page="/share/secret_share_token_999?token=raw_secret" />
+      </TestWrapper>,
+    );
+
+    await flushIdle();
+
+    expect(posthogMock.initPostHog).toHaveBeenCalled();
+    expect(posthogMock.capturePageview).toHaveBeenCalledWith('/share/[REDACTED]');
+    expect(window.gtag).toHaveBeenCalledWith(
+      'event',
+      'page_view',
+      expect.objectContaining({
+        page_path: '/share/[REDACTED]',
+      }),
     );
   });
 });

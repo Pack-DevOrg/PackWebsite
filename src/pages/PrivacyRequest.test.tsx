@@ -95,4 +95,20 @@ describe("PrivacyRequestPage", () => {
     );
     expect(screen.getByLabelText("Request Type *")).toHaveValue("opt_out");
   });
+
+  it("applies shared dark input styling to Input, Select, and TextArea controls", () => {
+    renderPrivacyRequestRoute("/privacy-request/access");
+
+    const requestTypeSelect = screen.getByLabelText("Request Type *");
+    const emailInput = screen.getByLabelText(/Email Address/i);
+    const detailsTextArea = screen.getByLabelText(/Request Details/i);
+
+    for (const control of [requestTypeSelect, emailInput, detailsTextArea]) {
+      const computed = window.getComputedStyle(control);
+      expect(computed.backgroundColor).toBe("rgba(255, 255, 255, 0.03)");
+      expect(computed.color).toBe("rgb(255, 255, 255)");
+      expect(computed.borderRadius).toBe("10px");
+      expect(computed.fontFamily).toBe("inherit");
+    }
+  });
 });

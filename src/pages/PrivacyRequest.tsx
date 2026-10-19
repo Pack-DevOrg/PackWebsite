@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { env } from "../utils/env";
 import { loadRecaptchaScript, executeRecaptchaAction } from "../utils/recaptcha";
 import { useTracking } from "../components/TrackingProvider";
@@ -136,13 +136,14 @@ const Label = styled.label`
   color: #f5f5f5;
 `;
 
-const Input = styled.input<{ $hasError?: boolean }>`
+const inputStyles = css<{ $hasError?: boolean }>`
   padding: 0.85rem 1rem;
   border-radius: 10px;
   border: 1px solid
     ${({ $hasError }) => ($hasError ? "rgba(244, 67, 54, 0.65)" : "rgba(255, 255, 255, 0.12)")};
   background: rgba(255, 255, 255, 0.03);
   color: #ffffff;
+  font-family: inherit;
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
@@ -153,15 +154,24 @@ const Input = styled.input<{ $hasError?: boolean }>`
   }
 `;
 
+const Input = styled.input<{ $hasError?: boolean }>`
+  ${inputStyles}
+`;
+
 const Select = styled.select<{ $hasError?: boolean }>`
-  ${Input}
+  ${inputStyles}
   min-height: 3.35rem;
   padding-top: 0.95rem;
   padding-bottom: 0.95rem;
+
+  option {
+    background: #141414;
+    color: #ffffff;
+  }
 `;
 
 const TextArea = styled.textarea<{ $hasError?: boolean }>`
-  ${Input};
+  ${inputStyles}
   min-height: 140px;
   resize: vertical;
   line-height: 1.5;

@@ -534,8 +534,9 @@ const faqContent = {
                     <strong>Encryption:</strong> All data is encrypted in transit and at rest
                   </li>
                   <li>
-                    <strong>No selling data:</strong> We never sell your personal information to
-                    third parties
+                    <strong>Privacy details:</strong> Read our <a href="/privacy">Privacy Policy</a>{" "}
+                    to learn how we collect, use, disclose, and retain personal information. Visit{" "}
+                    <a href="/privacy-request">Your Privacy Choices</a> to exercise your rights.
                   </li>
                   <li>
                     <strong>Secure payments:</strong> All transactions use industry-standard
@@ -920,8 +921,10 @@ const faqContent = {
                     reposo
                   </li>
                   <li>
-                    <strong>No vendemos datos:</strong> Nunca vendemos tu información personal a
-                    terceros
+                    <strong>Detalles de privacidad:</strong> Lee nuestra{" "}
+                    <a href="/privacy">Política de Privacidad</a> para conocer cómo recopilamos,
+                    usamos, divulgamos y conservamos la información personal. Visita{" "}
+                    <a href="/privacy-request">Tus opciones de privacidad</a> para ejercer tus derechos.
                   </li>
                   <li>
                     <strong>Pagos seguros:</strong> Todas las transacciones usan seguridad estándar

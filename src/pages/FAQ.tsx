@@ -534,17 +534,24 @@ const faqContent = {
                     <strong>Encryption:</strong> All data is encrypted in transit and at rest
                   </li>
                   <li>
-                    <strong>Privacy details:</strong> Read our <a href="/privacy">Privacy Policy</a>{" "}
-                    to learn how we collect, use, disclose, and retain personal information. Visit{" "}
-                    <a href="/privacy-request">Your Privacy Choices</a> to exercise your rights.
+                    <strong>Google Limited Use:</strong> Connected Google data is used only to
+                    provide and secure the travel features you request, in compliance with the
+                    Google API Services User Data Policy Limited Use requirements, and is not used
+                    for advertising, retargeting, personalized ads, or sale to data brokers
+                  </li>
+                  <li>
+                    <strong>Source &amp; deletion controls:</strong> You can disconnect connected
+                    accounts or request deletion of your personal information at any time
                   </li>
                   <li>
                     <strong>Secure payments:</strong> All transactions use industry-standard
                     security
                   </li>
                   <li>
-                    <strong>Privacy-focused:</strong> Designed to meet GDPR requirements and
-                    international privacy standards
+                    <strong>Privacy rights &amp; choices:</strong> See our{" "}
+                    <a href="/privacy">Privacy Policy</a> and{" "}
+                    <a href="/privacy-request">Your Privacy Choices</a> for full details on how we
+                    use, share, and protect your information
                   </li>
                 </ul>
               </div>
@@ -921,18 +928,26 @@ const faqContent = {
                     reposo
                   </li>
                   <li>
-                    <strong>Detalles de privacidad:</strong> Lee nuestra{" "}
-                    <a href="/privacy">Política de Privacidad</a> para conocer cómo recopilamos,
-                    usamos, divulgamos y conservamos la información personal. Visita{" "}
-                    <a href="/privacy-request">Tus opciones de privacidad</a> para ejercer tus derechos.
+                    <strong>Uso limitado de Google:</strong> Los datos conectados de Google se usan
+                    solo para brindar y proteger las funciones de viaje que solicitas, conforme a
+                    los requisitos de Uso Limitado de la Política de Datos de Usuario de los
+                    Servicios API de Google, y no se usan para publicidad, retargeting, anuncios
+                    personalizados ni venta a corredores de datos
+                  </li>
+                  <li>
+                    <strong>Control de fuentes y eliminación:</strong> Puedes desconectar cuentas
+                    conectadas o solicitar la eliminación de tu información personal en cualquier
+                    momento
                   </li>
                   <li>
                     <strong>Pagos seguros:</strong> Todas las transacciones usan seguridad estándar
                     de la industria
                   </li>
                   <li>
-                    <strong>Enfoque en privacidad:</strong> Diseñado para alinearse con GDPR y
-                    normas internacionales
+                    <strong>Derechos y opciones de privacidad:</strong> Consulta nuestra{" "}
+                    <a href="/privacy">Política de Privacidad</a> y{" "}
+                    <a href="/privacy-request">Tus Opciones de Privacidad</a> para ver todos los
+                    detalles sobre cómo usamos, compartimos y protegemos tu información
                   </li>
                 </ul>
               </div>

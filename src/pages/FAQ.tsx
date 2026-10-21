@@ -13,51 +13,121 @@ import WaitlistForm from "../components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo from "@/seo/pageSeo";
 
-// Owner decision 2026-10-21: the legally reviewed Privacy Policy is the source of truth.
-// Privacy, data, and security FAQ answers only point to it and may quote one exact
-// sentence from public/PrivacyPolicy.md (a test asserts the quote appears verbatim).
-export const POLICY_SAFEGUARDS_QUOTE =
-  "We use reasonable administrative, technical, and organizational safeguards designed to protect personal information.";
+// Owner decision 2026-10-21: the legally reviewed Privacy Policy (public/PrivacyPolicy.md) is the
+// only source of privacy and security facts. These answers are short, plain summaries of what the
+// policy says and end with a link to it. Every factual sentence is mapped to the policy sentence
+// that supports it in FAQ.test.tsx, which reads the policy at test time.
+type PolicyLocale = "en" | "es";
+type PolicyAnswerId =
+  | "data-privacy"
+  | "data-usage"
+  | "booking-security"
+  | "technology-security";
 
-const policyPointerCopy = {
+const POLICY_ANSWERS: Record<
+  PolicyAnswerId,
+  { choices: boolean; sentences: Record<PolicyLocale, readonly string[]> }
+> = {
+  "data-privacy": {
+    choices: true,
+    sentences: {
+      en: [
+        "We use reasonable administrative, technical, and organizational safeguards designed to protect your personal information, but no method of transmission, storage, or processing is completely secure, so we cannot guarantee absolute security.",
+        "We keep personal information for as long as reasonably necessary for the purposes described in our Privacy Policy.",
+        "If you delete your account, disconnect a data source, or ask us to delete information, we will delete or anonymize it within a reasonable period, subject to backup, legal, fraud-prevention, audit, and similar retention needs.",
+        "Depending on where you live, you may also have the right to ask for access to, correction of, or deletion of your personal information, and you can make those requests through our privacy request page.",
+      ],
+      es: [
+        "Usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger tu información personal, pero ningún método de transmisión, almacenamiento o procesamiento es completamente seguro, así que no podemos garantizar una seguridad absoluta.",
+        "Conservamos la información personal durante el tiempo razonablemente necesario para los fines descritos en nuestra Política de Privacidad.",
+        "Si eliminas tu cuenta, desconectas una fuente de datos o nos pides eliminar información, la eliminaremos o la anonimizaremos en un plazo razonable, sujeto a necesidades de respaldo, legales, de prevención de fraude, de auditoría y similares.",
+        "Según dónde vivas, también puedes tener derecho a pedir acceso a tu información personal, su corrección o su eliminación, y puedes hacer esas solicitudes desde nuestra página de solicitudes de privacidad.",
+      ],
+    },
+  },
+  "data-usage": {
+    choices: true,
+    sentences: {
+      en: [
+        "Depending on how you use Pack, we may collect contact and account details such as your name, email address, and phone number, plus information you choose to provide or connect, such as travel confirmations, itineraries, calendar data, and the contents of emails.",
+        "That can include sensitive details like government-issued ID or precise geolocation if you choose to provide or enable them.",
+        "We and our service providers may also automatically collect technical information such as your browser, operating system, device type, and approximate location based on IP, along with usage details like pages viewed, searches, and clicks.",
+        "We use sensitive information only to provide, secure, support, and improve our services, or as otherwise permitted by law.",
+      ],
+      es: [
+        "Según cómo uses Pack, podemos recopilar datos de contacto y de cuenta, como tu nombre, correo electrónico y número de teléfono, además de la información que decidas proporcionar o conectar, como confirmaciones de viaje, itinerarios, datos del calendario y el contenido de correos electrónicos.",
+        "Eso puede incluir datos sensibles, como un documento de identidad oficial o tu ubicación precisa, si decides proporcionarlos o activarlos.",
+        "Nosotros y nuestros proveedores de servicios también podemos recopilar automáticamente información técnica, como tu navegador, sistema operativo, tipo de dispositivo y ubicación aproximada según la IP, además de datos de uso, como páginas vistas, búsquedas y clics.",
+        "Usamos la información sensible solo para ofrecer, proteger, respaldar y mejorar nuestros servicios, o según lo permita la ley.",
+      ],
+    },
+  },
+  "booking-security": {
+    choices: false,
+    sentences: {
+      en: [
+        "Pack helps coordinate flights and hotels, then lets you complete the booking flow inside Pack.",
+        "Our Privacy Policy says we share personal information with travel suppliers and partners if and when you ask us to help facilitate a travel booking, booking inquiry, or related travel service.",
+        "It also says we use reasonable administrative, technical, and organizational safeguards designed to protect personal information, and that no method of transmission, storage, or processing is completely secure.",
+        "The policy does not describe how payment cards are handled, so we will not say more here than it does.",
+      ],
+      es: [
+        "Pack ayuda a coordinar vuelos y hoteles, y te permite completar todo el flujo de reserva dentro de Pack.",
+        "Nuestra Política de Privacidad dice que compartimos información personal con proveedores y socios de viaje si y cuando nos pides ayuda con una reserva de viaje, una consulta de reserva o un servicio de viaje relacionado.",
+        "También dice que usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger la información personal, y que ningún método de transmisión, almacenamiento o procesamiento es completamente seguro.",
+        "La política no describe cómo se manejan las tarjetas de pago, así que aquí no diremos más de lo que dice ella.",
+      ],
+    },
+  },
+  "technology-security": {
+    choices: false,
+    sentences: {
+      en: [
+        "Our Privacy Policy speaks to how we protect personal information, not to how reliable the app is, so we will not make reliability claims here.",
+        "In it, we say we use reasonable administrative, technical, and organizational safeguards designed to protect personal information.",
+        "We also say that no method of transmission, storage, or processing is completely secure, and that we cannot guarantee absolute security.",
+      ],
+      es: [
+        "Nuestra Política de Privacidad habla de cómo protegemos la información personal, no de qué tan confiable es la app, así que aquí no haremos afirmaciones sobre confiabilidad.",
+        "En ella decimos que usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger la información personal.",
+        "También decimos que ningún método de transmisión, almacenamiento o procesamiento es completamente seguro y que no podemos garantizar una seguridad absoluta.",
+      ],
+    },
+  },
+};
+
+const policyLinkCopy = {
   en: {
-    lead: "For how Pack handles personal information, read our",
+    readLead: "You can read the full",
     link: "Privacy Policy",
-    quoteIntro: "The Privacy Policy says:",
-    choicesLead: "To exercise privacy rights, visit",
+    readTail: "here.",
+    choicesLead: "To ask about or delete your information, visit",
     choicesLink: "Your Privacy Choices",
   },
   es: {
-    lead: "Para saber cómo Pack maneja la información personal, lee nuestra",
+    readLead: "Puedes leer la",
     link: "Política de Privacidad",
-    quoteIntro: "La Política de Privacidad (en inglés) dice:",
-    choicesLead: "Para ejercer tus derechos de privacidad, visita",
+    readTail: "completa aquí.",
+    choicesLead: "Para consultar o eliminar tu información, visita",
     choicesLink: "Tus opciones de privacidad",
   },
 } as const;
 
-const policyPointer = (
-  locale: "en" | "es",
-  options: { quote?: boolean; choices?: boolean } = {},
-) => {
-  const copy = policyPointerCopy[locale];
-  const policyHref = "/privacy";
-  const choicesHref = "/privacy-request";
+const policyAnswer = (locale: PolicyLocale, id: PolicyAnswerId) => {
+  const copy = policyLinkCopy[locale];
+  const answer = POLICY_ANSWERS[id];
   return (
     <div>
+      <p>{answer.sentences[locale].join(" ")}</p>
       <p>
-        {copy.lead} <a href={policyHref}>{copy.link}</a>.
+        {copy.readLead} <a href="/privacy">{copy.link}</a> {copy.readTail}
+        {answer.choices ? (
+          <>
+            {" "}
+            {copy.choicesLead} <a href="/privacy-request">{copy.choicesLink}</a>.
+          </>
+        ) : null}
       </p>
-      {options.quote ? (
-        <p>
-          {copy.quoteIntro} <q lang="en">{POLICY_SAFEGUARDS_QUOTE}</q>
-        </p>
-      ) : null}
-      {options.choices ? (
-        <p>
-          {copy.choicesLead} <a href={choicesHref}>{copy.choicesLink}</a>.
-        </p>
-      ) : null}
     </div>
   );
 };
@@ -324,7 +394,7 @@ const faqContent = {
           {
             id: "technology-security",
             question: "How reliable and secure is Pack?",
-            answer: policyPointer("en", { quote: true }),
+            answer: policyAnswer("en", "technology-security"),
           },
           {
             id: "flight-disruptions",
@@ -574,17 +644,17 @@ const faqContent = {
           {
             id: "data-privacy",
             question: "How does Pack protect my personal information?",
-            answer: policyPointer("en", { quote: true, choices: true }),
+            answer: policyAnswer("en", "data-privacy"),
           },
           {
             id: "data-usage",
             question: "What data does Pack collect?",
-            answer: policyPointer("en"),
+            answer: policyAnswer("en", "data-usage"),
           },
           {
             id: "booking-security",
             question: "Is it safe to book travel through Pack?",
-            answer: policyPointer("en", { quote: true }),
+            answer: policyAnswer("en", "booking-security"),
           },
         ],
       },
@@ -673,7 +743,7 @@ const faqContent = {
           {
             id: "technology-security",
             question: "¿Qué tan confiable y seguro es Pack?",
-            answer: policyPointer("es", { quote: true }),
+            answer: policyAnswer("es", "technology-security"),
           },
           {
             id: "flight-disruptions",
@@ -935,17 +1005,17 @@ const faqContent = {
           {
             id: "data-privacy",
             question: "¿Cómo protege Pack mi información personal?",
-            answer: policyPointer("es", { quote: true, choices: true }),
+            answer: policyAnswer("es", "data-privacy"),
           },
           {
             id: "data-usage",
             question: "¿Qué datos recopila Pack?",
-            answer: policyPointer("es"),
+            answer: policyAnswer("es", "data-usage"),
           },
           {
             id: "booking-security",
             question: "¿Es seguro reservar viajes a través de Pack?",
-            answer: policyPointer("es", { quote: true }),
+            answer: policyAnswer("es", "booking-security"),
           },
         ],
       },

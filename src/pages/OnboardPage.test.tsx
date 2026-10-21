@@ -3,6 +3,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+import { CAPABILITY_SPECS } from "@pack/app/screens/settings/ConnectedServices/capabilities";
 import {
   accountConnectWindow,
   GOOGLE_REDIRECT_URI,
@@ -296,10 +298,10 @@ describe("OnboardPage /onboard five-step app flow", () => {
     expect(url.searchParams.get("client_id")).toBe(GOOGLE_WEB_CLIENT_ID);
     expect(url.searchParams.get("redirect_uri")).toBe(GOOGLE_REDIRECT_URI);
     expect(url.searchParams.get("scope")).toContain(
-      "https://www.googleapis.com/auth/gmail.readonly",
+      CAPABILITY_SPECS.mail_read.requestScope.google,
     );
     expect(url.searchParams.get("scope")).toContain(
-      "https://www.googleapis.com/auth/calendar.readonly",
+      CAPABILITY_SPECS.calendar_read.requestScope.google,
     );
     assign.mockRestore();
   });

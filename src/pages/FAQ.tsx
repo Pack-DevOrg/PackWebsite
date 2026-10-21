@@ -13,6 +13,55 @@ import WaitlistForm from "../components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo from "@/seo/pageSeo";
 
+// Owner decision 2026-10-21: the legally reviewed Privacy Policy is the source of truth.
+// Privacy, data, and security FAQ answers only point to it and may quote one exact
+// sentence from public/PrivacyPolicy.md (a test asserts the quote appears verbatim).
+export const POLICY_SAFEGUARDS_QUOTE =
+  "We use reasonable administrative, technical, and organizational safeguards designed to protect personal information.";
+
+const policyPointerCopy = {
+  en: {
+    lead: "For how Pack handles personal information, read our",
+    link: "Privacy Policy",
+    quoteIntro: "The Privacy Policy says:",
+    choicesLead: "To exercise privacy rights, visit",
+    choicesLink: "Your Privacy Choices",
+  },
+  es: {
+    lead: "Para saber cómo Pack maneja la información personal, lee nuestra",
+    link: "Política de Privacidad",
+    quoteIntro: "La Política de Privacidad (en inglés) dice:",
+    choicesLead: "Para ejercer tus derechos de privacidad, visita",
+    choicesLink: "Tus opciones de privacidad",
+  },
+} as const;
+
+const policyPointer = (
+  locale: "en" | "es",
+  options: { quote?: boolean; choices?: boolean } = {},
+) => {
+  const copy = policyPointerCopy[locale];
+  const policyHref = "/privacy";
+  const choicesHref = "/privacy-request";
+  return (
+    <div>
+      <p>
+        {copy.lead} <a href={policyHref}>{copy.link}</a>.
+      </p>
+      {options.quote ? (
+        <p>
+          {copy.quoteIntro} <q lang="en">{POLICY_SAFEGUARDS_QUOTE}</q>
+        </p>
+      ) : null}
+      {options.choices ? (
+        <p>
+          {copy.choicesLead} <a href={choicesHref}>{copy.choicesLink}</a>.
+        </p>
+      ) : null}
+    </div>
+  );
+};
+
 const FAQContainer = styled.section`
   max-width: 800px;
   margin: 0 auto;
@@ -275,8 +324,7 @@ const faqContent = {
           {
             id: "technology-security",
             question: "How reliable and secure is Pack?",
-            answer:
-              "Pack is built to make travel details easier to verify before you book while handling travel data and checkout details with care inside Pack. The goal is fewer avoidable booking mistakes and less uncertainty about what you are actually approving.",
+            answer: policyPointer("en", { quote: true }),
           },
           {
             id: "flight-disruptions",
@@ -328,7 +376,7 @@ const faqContent = {
             id: "automation-goal",
             question: "What is Pack's goal for travel planning?",
             answer:
-              "Pack aims to automate the parts of travel planning that feel repetitive, fragmented, and easy to get wrong. From understanding your preferences and narrowing options to guiding secure checkout inside Pack and organizing the itinerary afterward, the goal is less admin work and more confidence in the trip you are approving.",
+              "Pack aims to automate the parts of travel planning that feel repetitive, fragmented, and easy to get wrong. From understanding your preferences and narrowing options to guiding checkout inside Pack and organizing the itinerary afterward, the goal is less admin work and more confidence in the trip you are approving.",
           },
           {
             id: "last-minute-travel",
@@ -347,7 +395,7 @@ const faqContent = {
                     <strong>Automatic Discovery:</strong> Pack finds all travel confirmations in your email inbox
                   </li>
                   <li>
-                    <strong>Secure Backup:</strong> All confirmation codes and booking references are stored safely in one place
+                    <strong>Backup:</strong> All confirmation codes and booking references are kept in one place
                   </li>
                   <li>
                     <strong>Easy Access:</strong> Find any booking detail instantly, even if the original email is deleted
@@ -526,41 +574,17 @@ const faqContent = {
           {
             id: "data-privacy",
             question: "How does Pack protect my personal information?",
-            answer: (
-              <div>
-                <p>Your privacy and security are our top priorities:</p>
-                <ul>
-                  <li>
-                    <strong>Encryption:</strong> All data is encrypted in transit and at rest
-                  </li>
-                  <li>
-                    <strong>Privacy details:</strong> Read our <a href="/privacy">Privacy Policy</a>{" "}
-                    to learn how we collect, use, disclose, and retain personal information. Visit{" "}
-                    <a href="/privacy-request">Your Privacy Choices</a> to exercise your rights.
-                  </li>
-                  <li>
-                    <strong>Secure payments:</strong> All transactions use industry-standard
-                    security
-                  </li>
-                  <li>
-                    <strong>Privacy-focused:</strong> Designed to meet GDPR requirements and
-                    international privacy standards
-                  </li>
-                </ul>
-              </div>
-            ),
+            answer: policyPointer("en", { quote: true, choices: true }),
           },
           {
             id: "data-usage",
             question: "What data does Pack collect?",
-            answer:
-              "Pack uses the travel information needed to organize trips, personalize recommendations, and improve future planning. That can include booking details, connected travel context, preferences, and limited product usage data. For the complete policy, see our Privacy Policy.",
+            answer: policyPointer("en"),
           },
           {
             id: "booking-security",
             question: "Is it safe to book travel through Pack?",
-            answer:
-              "Yes. Pack is designed to support secure in-app checkout with industry-standard protections for payment and traveler information. Booking still follows the applicable airline or hotel reservation terms, while the full checkout flow stays inside Pack.",
+            answer: policyPointer("en", { quote: true }),
           },
         ],
       },
@@ -649,8 +673,7 @@ const faqContent = {
           {
             id: "technology-security",
             question: "¿Qué tan confiable y seguro es Pack?",
-            answer:
-              "Pack está diseñado para que los detalles del viaje sean más fáciles de verificar antes de reservar, tratando la información de viaje y checkout con seguridad y cuidado dentro de Pack.",
+            answer: policyPointer("es", { quote: true }),
           },
           {
             id: "flight-disruptions",
@@ -704,7 +727,7 @@ const faqContent = {
             id: "automation-goal",
             question: "¿Cuál es el objetivo de Pack para la planificación de viajes?",
             answer:
-              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por un checkout seguro dentro de Pack y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
+              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por el checkout dentro de Pack y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
           },
           {
             id: "last-minute-travel",
@@ -724,8 +747,8 @@ const faqContent = {
                     viaje en tu bandeja de entrada
                   </li>
                   <li>
-                    <strong>Respaldo seguro:</strong> Los códigos y referencias quedan guardados de
-                    forma segura en un solo lugar
+                    <strong>Respaldo:</strong> Los códigos y referencias quedan guardados en un
+                    solo lugar
                   </li>
                   <li>
                     <strong>Acceso fácil:</strong> Encuentra cualquier detalle al instante, incluso
@@ -912,43 +935,17 @@ const faqContent = {
           {
             id: "data-privacy",
             question: "¿Cómo protege Pack mi información personal?",
-            answer: (
-              <div>
-                <p>Tu privacidad y seguridad son nuestras principales prioridades:</p>
-                <ul>
-                  <li>
-                    <strong>Cifrado:</strong> Todos los datos están cifrados en tránsito y en
-                    reposo
-                  </li>
-                  <li>
-                    <strong>Detalles de privacidad:</strong> Lee nuestra{" "}
-                    <a href="/privacy">Política de Privacidad</a> para conocer cómo recopilamos,
-                    usamos, divulgamos y conservamos la información personal. Visita{" "}
-                    <a href="/privacy-request">Tus opciones de privacidad</a> para ejercer tus derechos.
-                  </li>
-                  <li>
-                    <strong>Pagos seguros:</strong> Todas las transacciones usan seguridad estándar
-                    de la industria
-                  </li>
-                  <li>
-                    <strong>Enfoque en privacidad:</strong> Diseñado para alinearse con GDPR y
-                    normas internacionales
-                  </li>
-                </ul>
-              </div>
-            ),
+            answer: policyPointer("es", { quote: true, choices: true }),
           },
           {
             id: "data-usage",
             question: "¿Qué datos recopila Pack?",
-            answer:
-              "Pack usa la información de viaje necesaria para organizar viajes, personalizar recomendaciones y mejorar la planificación futura. Esto puede incluir detalles de reserva, contexto conectado, preferencias y datos limitados de uso del producto. Para la política completa, consulta nuestra Política de Privacidad.",
+            answer: policyPointer("es"),
           },
           {
             id: "booking-security",
             question: "¿Es seguro reservar viajes a través de Pack?",
-            answer:
-              "Sí. Pack está diseñado para admitir un checkout seguro dentro de la app con protecciones estándar de la industria para la información de pago y del viajero. La reserva sigue las políticas aplicables de la aerolínea o del hotel, mientras todo el flujo de checkout ocurre dentro de Pack.",
+            answer: policyPointer("es", { quote: true }),
           },
         ],
       },

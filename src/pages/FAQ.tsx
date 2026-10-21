@@ -13,6 +13,125 @@ import WaitlistForm from "../components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo from "@/seo/pageSeo";
 
+// Owner decision 2026-10-21: the legally reviewed Privacy Policy (public/PrivacyPolicy.md) is the
+// only source of privacy and security facts. These answers are short, plain summaries of what the
+// policy says and end with a link to it. Every factual sentence is mapped to the policy sentence
+// that supports it in FAQ.test.tsx, which reads the policy at test time.
+type PolicyLocale = "en" | "es";
+type PolicyAnswerId =
+  | "data-privacy"
+  | "data-usage"
+  | "booking-security"
+  | "technology-security";
+
+const POLICY_ANSWERS: Record<
+  PolicyAnswerId,
+  { choices: boolean; sentences: Record<PolicyLocale, readonly string[]> }
+> = {
+  "data-privacy": {
+    choices: true,
+    sentences: {
+      en: [
+        "We use reasonable administrative, technical, and organizational safeguards designed to protect your personal information, but no method of transmission, storage, or processing is completely secure, so we cannot guarantee absolute security.",
+        "We keep personal information for as long as reasonably necessary for the purposes described in our Privacy Policy.",
+        "If you delete your account, disconnect a data source, or ask us to delete information, we will delete or anonymize it within a reasonable period, subject to backup, legal, fraud-prevention, audit, and similar retention needs.",
+        "Depending on where you live, you may also have the right to ask for access to, correction of, or deletion of your personal information, and you can make those requests through our privacy request page.",
+      ],
+      es: [
+        "Usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger tu información personal, pero ningún método de transmisión, almacenamiento o procesamiento es completamente seguro, así que no podemos garantizar una seguridad absoluta.",
+        "Conservamos la información personal durante el tiempo razonablemente necesario para los fines descritos en nuestra Política de Privacidad.",
+        "Si eliminas tu cuenta, desconectas una fuente de datos o nos pides eliminar información, la eliminaremos o la anonimizaremos en un plazo razonable, sujeto a necesidades de respaldo, legales, de prevención de fraude, de auditoría y similares.",
+        "Según dónde vivas, también puedes tener derecho a pedir acceso a tu información personal, su corrección o su eliminación, y puedes hacer esas solicitudes desde nuestra página de solicitudes de privacidad.",
+      ],
+    },
+  },
+  "data-usage": {
+    choices: true,
+    sentences: {
+      en: [
+        "Depending on how you use Pack, we may collect contact and account details such as your name, email address, and phone number, plus information you choose to provide or connect, such as travel confirmations, itineraries, calendar data, and the contents of emails.",
+        "That can include sensitive details like government-issued ID or precise geolocation if you choose to provide or enable them.",
+        "We and our service providers may also automatically collect technical information such as your browser, operating system, device type, and approximate location based on IP, along with usage details like pages viewed, searches, and clicks.",
+        "We use sensitive information only to provide, secure, support, and improve our services, or as otherwise permitted by law.",
+      ],
+      es: [
+        "Según cómo uses Pack, podemos recopilar datos de contacto y de cuenta, como tu nombre, correo electrónico y número de teléfono, además de la información que decidas proporcionar o conectar, como confirmaciones de viaje, itinerarios, datos del calendario y el contenido de correos electrónicos.",
+        "Eso puede incluir datos sensibles, como un documento de identidad oficial o tu ubicación precisa, si decides proporcionarlos o activarlos.",
+        "Nosotros y nuestros proveedores de servicios también podemos recopilar automáticamente información técnica, como tu navegador, sistema operativo, tipo de dispositivo y ubicación aproximada según la IP, además de datos de uso, como páginas vistas, búsquedas y clics.",
+        "Usamos la información sensible solo para ofrecer, proteger, respaldar y mejorar nuestros servicios, o según lo permita la ley.",
+      ],
+    },
+  },
+  "booking-security": {
+    choices: false,
+    sentences: {
+      en: [
+        "Pack helps coordinate flights and hotels, then lets you complete the booking flow inside Pack.",
+        "Our Privacy Policy says we share personal information with travel suppliers and partners if and when you ask us to help facilitate a travel booking, booking inquiry, or related travel service.",
+        "It also says we use reasonable administrative, technical, and organizational safeguards designed to protect personal information, and that no method of transmission, storage, or processing is completely secure.",
+        "The policy does not describe how payment cards are handled, so we will not say more here than it does.",
+      ],
+      es: [
+        "Pack ayuda a coordinar vuelos y hoteles, y te permite completar todo el flujo de reserva dentro de Pack.",
+        "Nuestra Política de Privacidad dice que compartimos información personal con proveedores y socios de viaje si y cuando nos pides ayuda con una reserva de viaje, una consulta de reserva o un servicio de viaje relacionado.",
+        "También dice que usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger la información personal, y que ningún método de transmisión, almacenamiento o procesamiento es completamente seguro.",
+        "La política no describe cómo se manejan las tarjetas de pago, así que aquí no diremos más de lo que dice ella.",
+      ],
+    },
+  },
+  "technology-security": {
+    choices: false,
+    sentences: {
+      en: [
+        "Our Privacy Policy speaks to how we protect personal information, not to how reliable the app is, so we will not make reliability claims here.",
+        "In it, we say we use reasonable administrative, technical, and organizational safeguards designed to protect personal information.",
+        "We also say that no method of transmission, storage, or processing is completely secure, and that we cannot guarantee absolute security.",
+      ],
+      es: [
+        "Nuestra Política de Privacidad habla de cómo protegemos la información personal, no de qué tan confiable es la app, así que aquí no haremos afirmaciones sobre confiabilidad.",
+        "En ella decimos que usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger la información personal.",
+        "También decimos que ningún método de transmisión, almacenamiento o procesamiento es completamente seguro y que no podemos garantizar una seguridad absoluta.",
+      ],
+    },
+  },
+};
+
+const policyLinkCopy = {
+  en: {
+    readLead: "You can read the full",
+    link: "Privacy Policy",
+    readTail: "here.",
+    choicesLead: "To ask about or delete your information, visit",
+    choicesLink: "Your Privacy Choices",
+  },
+  es: {
+    readLead: "Puedes leer la",
+    link: "Política de Privacidad",
+    readTail: "completa aquí.",
+    choicesLead: "Para consultar o eliminar tu información, visita",
+    choicesLink: "Tus opciones de privacidad",
+  },
+} as const;
+
+const policyAnswer = (locale: PolicyLocale, id: PolicyAnswerId) => {
+  const copy = policyLinkCopy[locale];
+  const answer = POLICY_ANSWERS[id];
+  return (
+    <div>
+      <p>{answer.sentences[locale].join(" ")}</p>
+      <p>
+        {copy.readLead} <a href="/privacy">{copy.link}</a> {copy.readTail}
+        {answer.choices ? (
+          <>
+            {" "}
+            {copy.choicesLead} <a href="/privacy-request">{copy.choicesLink}</a>.
+          </>
+        ) : null}
+      </p>
+    </div>
+  );
+};
+
 const FAQContainer = styled.section`
   max-width: 800px;
   margin: 0 auto;
@@ -275,8 +394,7 @@ const faqContent = {
           {
             id: "technology-security",
             question: "How reliable and secure is Pack?",
-            answer:
-              "Pack is built to make travel details easier to verify before you book while handling travel data and checkout details with care inside Pack. The goal is fewer avoidable booking mistakes and less uncertainty about what you are actually approving.",
+            answer: policyAnswer("en", "technology-security"),
           },
           {
             id: "flight-disruptions",
@@ -328,7 +446,7 @@ const faqContent = {
             id: "automation-goal",
             question: "What is Pack's goal for travel planning?",
             answer:
-              "Pack aims to automate the parts of travel planning that feel repetitive, fragmented, and easy to get wrong. From understanding your preferences and narrowing options to guiding secure checkout inside Pack and organizing the itinerary afterward, the goal is less admin work and more confidence in the trip you are approving.",
+              "Pack aims to automate the parts of travel planning that feel repetitive, fragmented, and easy to get wrong. From understanding your preferences and narrowing options to guiding checkout inside Pack and organizing the itinerary afterward, the goal is less admin work and more confidence in the trip you are approving.",
           },
           {
             id: "last-minute-travel",
@@ -347,7 +465,7 @@ const faqContent = {
                     <strong>Automatic Discovery:</strong> Pack finds all travel confirmations in your email inbox
                   </li>
                   <li>
-                    <strong>Secure Backup:</strong> All confirmation codes and booking references are stored safely in one place
+                    <strong>Backup:</strong> All confirmation codes and booking references are kept in one place
                   </li>
                   <li>
                     <strong>Easy Access:</strong> Find any booking detail instantly, even if the original email is deleted
@@ -526,41 +644,17 @@ const faqContent = {
           {
             id: "data-privacy",
             question: "How does Pack protect my personal information?",
-            answer: (
-              <div>
-                <p>Your privacy and security are our top priorities:</p>
-                <ul>
-                  <li>
-                    <strong>Encryption:</strong> All data is encrypted in transit and at rest
-                  </li>
-                  <li>
-                    <strong>Privacy details:</strong> Read our <a href="/privacy">Privacy Policy</a>{" "}
-                    to learn how we collect, use, disclose, and retain personal information. Visit{" "}
-                    <a href="/privacy-request">Your Privacy Choices</a> to exercise your rights.
-                  </li>
-                  <li>
-                    <strong>Secure payments:</strong> All transactions use industry-standard
-                    security
-                  </li>
-                  <li>
-                    <strong>Privacy-focused:</strong> Designed to meet GDPR requirements and
-                    international privacy standards
-                  </li>
-                </ul>
-              </div>
-            ),
+            answer: policyAnswer("en", "data-privacy"),
           },
           {
             id: "data-usage",
             question: "What data does Pack collect?",
-            answer:
-              "Pack uses the travel information needed to organize trips, personalize recommendations, and improve future planning. That can include booking details, connected travel context, preferences, and limited product usage data. For the complete policy, see our Privacy Policy.",
+            answer: policyAnswer("en", "data-usage"),
           },
           {
             id: "booking-security",
             question: "Is it safe to book travel through Pack?",
-            answer:
-              "Yes. Pack is designed to support secure in-app checkout with industry-standard protections for payment and traveler information. Booking still follows the applicable airline or hotel reservation terms, while the full checkout flow stays inside Pack.",
+            answer: policyAnswer("en", "booking-security"),
           },
         ],
       },
@@ -649,8 +743,7 @@ const faqContent = {
           {
             id: "technology-security",
             question: "¿Qué tan confiable y seguro es Pack?",
-            answer:
-              "Pack está diseñado para que los detalles del viaje sean más fáciles de verificar antes de reservar, tratando la información de viaje y checkout con seguridad y cuidado dentro de Pack.",
+            answer: policyAnswer("es", "technology-security"),
           },
           {
             id: "flight-disruptions",
@@ -704,7 +797,7 @@ const faqContent = {
             id: "automation-goal",
             question: "¿Cuál es el objetivo de Pack para la planificación de viajes?",
             answer:
-              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por un checkout seguro dentro de Pack y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
+              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por el checkout dentro de Pack y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
           },
           {
             id: "last-minute-travel",
@@ -724,8 +817,8 @@ const faqContent = {
                     viaje en tu bandeja de entrada
                   </li>
                   <li>
-                    <strong>Respaldo seguro:</strong> Los códigos y referencias quedan guardados de
-                    forma segura en un solo lugar
+                    <strong>Respaldo:</strong> Los códigos y referencias quedan guardados en un
+                    solo lugar
                   </li>
                   <li>
                     <strong>Acceso fácil:</strong> Encuentra cualquier detalle al instante, incluso
@@ -912,43 +1005,17 @@ const faqContent = {
           {
             id: "data-privacy",
             question: "¿Cómo protege Pack mi información personal?",
-            answer: (
-              <div>
-                <p>Tu privacidad y seguridad son nuestras principales prioridades:</p>
-                <ul>
-                  <li>
-                    <strong>Cifrado:</strong> Todos los datos están cifrados en tránsito y en
-                    reposo
-                  </li>
-                  <li>
-                    <strong>Detalles de privacidad:</strong> Lee nuestra{" "}
-                    <a href="/privacy">Política de Privacidad</a> para conocer cómo recopilamos,
-                    usamos, divulgamos y conservamos la información personal. Visita{" "}
-                    <a href="/privacy-request">Tus opciones de privacidad</a> para ejercer tus derechos.
-                  </li>
-                  <li>
-                    <strong>Pagos seguros:</strong> Todas las transacciones usan seguridad estándar
-                    de la industria
-                  </li>
-                  <li>
-                    <strong>Enfoque en privacidad:</strong> Diseñado para alinearse con GDPR y
-                    normas internacionales
-                  </li>
-                </ul>
-              </div>
-            ),
+            answer: policyAnswer("es", "data-privacy"),
           },
           {
             id: "data-usage",
             question: "¿Qué datos recopila Pack?",
-            answer:
-              "Pack usa la información de viaje necesaria para organizar viajes, personalizar recomendaciones y mejorar la planificación futura. Esto puede incluir detalles de reserva, contexto conectado, preferencias y datos limitados de uso del producto. Para la política completa, consulta nuestra Política de Privacidad.",
+            answer: policyAnswer("es", "data-usage"),
           },
           {
             id: "booking-security",
             question: "¿Es seguro reservar viajes a través de Pack?",
-            answer:
-              "Sí. Pack está diseñado para admitir un checkout seguro dentro de la app con protecciones estándar de la industria para la información de pago y del viajero. La reserva sigue las políticas aplicables de la aerolínea o del hotel, mientras todo el flujo de checkout ocurre dentro de Pack.",
+            answer: policyAnswer("es", "booking-security"),
           },
         ],
       },

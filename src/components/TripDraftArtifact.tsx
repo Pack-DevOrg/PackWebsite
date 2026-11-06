@@ -22,6 +22,7 @@ const MONTHS = [
 
 export type TripDraftOption = {
   readonly id?: string;
+  readonly optionId?: string;
   readonly label?: string;
   readonly title?: string;
   readonly name?: string;
@@ -30,17 +31,23 @@ export type TripDraftOption = {
 
 export type TripDraftLeg = {
   readonly kind: string;
-  readonly from: string;
-  readonly to: string;
+  readonly from?: string;
+  readonly to?: string;
+  readonly chosenOptionId?: string;
   readonly options: readonly (TripDraftOption | string)[];
 };
 
 export type TripDraft = {
+  readonly draftId?: string;
   readonly window: {
-    readonly depart: string;
-    readonly return: string;
+    readonly depart?: string;
+    readonly return?: string;
+    readonly flexibility?: string;
   };
   readonly legs: readonly TripDraftLeg[];
+  readonly travelers?: readonly { readonly name: string }[];
+  readonly origin?: string;
+  readonly linkSent?: boolean;
 };
 
 export type TripDraftFetch = (token: string) => Promise<TripDraft>;
@@ -88,7 +95,11 @@ function isTripDraft(value: unknown): value is TripDraft {
   if (!isRecord(value) || !isRecord(value.window) || !Array.isArray(value.legs)) {
     return false;
   }
-  if (typeof value.window.depart !== "string" || typeof value.window.return !== "string") {
+  if (
+    (value.window.depart !== undefined && typeof value.window.depart !== "string") ||
+    (value.window.return !== undefined && typeof value.window.return !== "string") ||
+    (value.window.flexibility !== undefined && typeof value.window.flexibility !== "string")
+  ) {
     return false;
   }
   return value.legs.every((leg) => {
@@ -97,8 +108,11 @@ function isTripDraft(value: unknown): value is TripDraft {
     }
     return (
       typeof leg.kind === "string" &&
-      typeof leg.from === "string" &&
-      typeof leg.to === "string"
+      leg.kind.length > 0 &&
+      (leg.from === undefined || typeof leg.from === "string") &&
+      (leg.to === undefined || typeof leg.to === "string") &&
+      (leg.chosenOptionId === undefined || typeof leg.chosenOptionId === "string") &&
+      leg.options.every((option) => typeof option === "string" || isRecord(option))
     );
   });
 }
@@ -121,7 +135,13 @@ function optionLabel(option: TripDraftOption | string, index: number): string {
   if (typeof option === "string") {
     return option;
   }
-  const label = option.label ?? option.title ?? option.name ?? option.summary ?? option.id;
+  const label =
+    option.label ??
+    option.title ??
+    option.name ??
+    option.summary ??
+    option.optionId ??
+    option.id;
   return label && label.length > 0 ? label : `Option ${index + 1}`;
 }
 
@@ -129,12 +149,12 @@ function optionKey(option: TripDraftOption | string, index: number): string {
   if (typeof option === "string") {
     return `${option}-${index}`;
   }
-  return option.id ?? `${optionLabel(option, index)}-${index}`;
+  return option.optionId ?? option.id ?? `${optionLabel(option, index)}-${index}`;
 }
 
 async function fetchTripDraft(token: string): Promise<TripDraft> {
   const response = await fetch(
-    `${appConfig.apiBaseUrl}/api/i/${encodeURIComponent(token)}`,
+    `${appConfig.apiBaseUrl}/i/${encodeURIComponent(token)}`,
   );
   if (!response.ok) {
     throw new Error(`Trip draft fetch failed (${response.status})`);
@@ -201,17 +221,22 @@ export const TripDraftArtifact: React.FC<{
   return (
     <Page aria-label="Trip draft">
       <WindowHeading>
-        <span>{displayDraftDate(draft.window.depart)}</span>
-        {" to "}
-        <span>{displayDraftDate(draft.window.return)}</span>
+        <span>{displayDraftDate(draft.window.depart ?? "")}</span>
+        {draft.window.depart && draft.window.return ? " to " : null}
+        <span>{displayDraftDate(draft.window.return ?? "")}</span>
       </WindowHeading>
       <LegList>
         {draft.legs.map((leg, legIndex) => (
-          <li key={`${leg.kind}-${leg.from}-${leg.to}-${legIndex}`}>
-            <span>{leg.kind}</span>{" "}
-            <span>{leg.from}</span>
-            {" to "}
-            <span>{leg.to}</span>
+          <li key={`${leg.kind}-${leg.from ?? ""}-${leg.to ?? ""}-${legIndex}`}>
+            <span>{leg.kind}</span>
+            {leg.from && leg.to ? (
+              <>
+                {" "}
+                <span>{leg.from}</span>
+                {" to "}
+                <span>{leg.to}</span>
+              </>
+            ) : null}
             <OptionList>
               {leg.options.map((option, optionIndex) => (
                 <li key={optionKey(option, optionIndex)}>

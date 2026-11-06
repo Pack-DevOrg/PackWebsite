@@ -144,7 +144,7 @@ const SUPPORT: Record<string, Claim[]> = {
   "booking-security": [
     {
       en: "Pack helps coordinate flights and hotels, then lets you complete the booking flow inside Pack.",
-      es: "Pack ayuda a coordinar vuelos y hoteles, y te permite completar todo el flujo de reserva dentro de Pack.",
+      es: "Pack ayuda a coordinar vuelos y hoteles, y te permite completar el flujo de reserva dentro de Pack.",
       support: { kind: "product", sourceId: "what-can-pack-book" },
     },
     {

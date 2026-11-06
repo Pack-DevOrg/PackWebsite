@@ -38,7 +38,8 @@ const POLICY_ANSWERS: Record<
         "Depending on where you live, you may also have the right to ask for access to, correction of, or deletion of your personal information, and you can make those requests through our privacy request page.",
       ],
       es: [
-        "Usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger tu información personal, pero ningún método de transmisión, almacenamiento o procesamiento es completamente seguro, así que no podemos garantizar una seguridad absoluta.",
+        "Usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger tu información personal, " +
+          "pero ningún método de transmisión, almacenamiento o procesamiento es completamente seguro, así que no podemos garantizar una seguridad absoluta.",
         "Conservamos la información personal durante el tiempo razonablemente necesario para los fines descritos en nuestra Política de Privacidad.",
         "Si eliminas tu cuenta, desconectas una fuente de datos o nos pides eliminar información, la eliminaremos o la anonimizaremos en un plazo razonable, sujeto a necesidades de respaldo, legales, de prevención de fraude, de auditoría y similares.",
         "Según dónde vivas, también puedes tener derecho a pedir acceso a tu información personal, su corrección o su eliminación, y puedes hacer esas solicitudes desde nuestra página de solicitudes de privacidad.",
@@ -55,7 +56,8 @@ const POLICY_ANSWERS: Record<
         "We use sensitive information only to provide, secure, support, and improve our services, or as otherwise permitted by law.",
       ],
       es: [
-        "Según cómo uses Pack, podemos recopilar datos de contacto y de cuenta, como tu nombre, correo electrónico y número de teléfono, además de la información que decidas proporcionar o conectar, como confirmaciones de viaje, itinerarios, datos del calendario y el contenido de correos electrónicos.",
+        "Según cómo uses Pack, podemos recopilar datos de contacto y de cuenta, como tu nombre, correo electrónico y número de teléfono, " +
+          "además de la información que decidas proporcionar o conectar, como confirmaciones de viaje, itinerarios, datos del calendario y el contenido de correos electrónicos.",
         "Eso puede incluir datos sensibles, como un documento de identidad oficial o tu ubicación precisa, si decides proporcionarlos o activarlos.",
         "Nosotros y nuestros proveedores de servicios también podemos recopilar automáticamente información técnica, como tu navegador, sistema operativo, tipo de dispositivo y ubicación aproximada según la IP, además de datos de uso, como páginas vistas, búsquedas y clics.",
         "Usamos la información sensible solo para ofrecer, proteger, respaldar y mejorar nuestros servicios, o según lo permita la ley.",
@@ -72,7 +74,7 @@ const POLICY_ANSWERS: Record<
         "The policy does not describe how payment cards are handled, so we will not say more here than it does.",
       ],
       es: [
-        "Pack ayuda a coordinar vuelos y hoteles, y te permite completar todo el flujo de reserva dentro de Pack.",
+        "Pack ayuda a coordinar vuelos y hoteles, y te permite completar el flujo de reserva dentro de Pack.",
         "Nuestra Política de Privacidad dice que compartimos información personal con proveedores y socios de viaje si y cuando nos pides ayuda con una reserva de viaje, una consulta de reserva o un servicio de viaje relacionado.",
         "También dice que usamos medidas de protección administrativas, técnicas y organizativas razonables, pensadas para proteger la información personal, y que ningún método de transmisión, almacenamiento o procesamiento es completamente seguro.",
         "La política no describe cómo se manejan las tarjetas de pago, así que aquí no diremos más de lo que dice ella.",
@@ -446,7 +448,8 @@ const faqContent = {
             id: "automation-goal",
             question: "What is Pack's goal for travel planning?",
             answer:
-              "Pack aims to automate the parts of travel planning that feel repetitive, fragmented, and easy to get wrong. From understanding your preferences and narrowing options to guiding checkout inside Pack and organizing the itinerary afterward, the goal is less admin work and more confidence in the trip you are approving.",
+              "Pack aims to automate the parts of travel planning that feel repetitive, fragmented, and easy to get wrong. " +
+              "From understanding your preferences and narrowing options to guiding checkout inside Pack and organizing the itinerary afterward, the goal is less admin work and more confidence in the trip you are approving.",
           },
           {
             id: "last-minute-travel",
@@ -708,7 +711,7 @@ const faqContent = {
             id: "what-can-pack-book",
             question: "¿Qué puede ayudarme a reservar Pack?",
             answer:
-              "Pack ayuda a coordinar vuelos y hoteles, y te permite completar todo el flujo de reserva dentro de Pack. La reservación, el pago y los detalles del viaje permanecen conectados en un solo lugar.",
+              "Pack ayuda a coordinar vuelos y hoteles, y te permite completar el flujo de reserva dentro de Pack. La reservación, el pago y los detalles del viaje permanecen conectados en un solo lugar.",
           },
           {
             id: "supports-destinations",
@@ -797,7 +800,8 @@ const faqContent = {
             id: "automation-goal",
             question: "¿Cuál es el objetivo de Pack para la planificación de viajes?",
             answer:
-              "Pack busca automatizar la mayor parte posible del proceso de viaje. Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por el checkout dentro de Pack y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
+              "Pack busca automatizar la mayor parte posible del proceso de viaje. " +
+              "Desde entender tus preferencias y encontrar mejores opciones hasta guiarte por el checkout dentro de Pack y organizar tu itinerario, queremos eliminar la parte tediosa de planear para que te enfoques en disfrutar el viaje.",
           },
           {
             id: "last-minute-travel",

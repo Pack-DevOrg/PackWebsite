@@ -548,9 +548,7 @@ const faqContent = {
                     security
                   </li>
                   <li>
-                    <strong>Privacy rights &amp; choices:</strong> See our{" "}
-                    <a href="/privacy">Privacy Policy</a> and{" "}
-                    <a href="/privacy-request">Your Privacy Choices</a> for full details on how we
+                    <strong>Privacy rights &amp; choices:</strong> See our <a href="/privacy">Privacy Policy</a> and <a href="/privacy-request">Your Privacy Choices</a> for full details on how we
                     use, share, and protect your information
                   </li>
                 </ul>
@@ -944,9 +942,7 @@ const faqContent = {
                     de la industria
                   </li>
                   <li>
-                    <strong>Derechos y opciones de privacidad:</strong> Consulta nuestra{" "}
-                    <a href="/privacy">Política de Privacidad</a> y{" "}
-                    <a href="/privacy-request">Tus Opciones de Privacidad</a> para ver todos los
+                    <strong>Derechos y opciones de privacidad:</strong> Consulta nuestra <a href="/privacy">Política de Privacidad</a> y <a href="/privacy-request">Tus Opciones de Privacidad</a> para ver todos los
                     detalles sobre cómo usamos, compartimos y protegemos tu información
                   </li>
                 </ul>

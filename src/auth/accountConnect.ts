@@ -4,6 +4,28 @@
  * Apex 301s this redirect onto www, so the SPA callback still has the session.
  */
 
+// @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
+import { CAPABILITY_SPECS } from "@pack/app/screens/settings/ConnectedServices/capabilities";
+
+type WebOnboardCapabilityId = "mail_read" | "calendar_read";
+
+const WEB_ONBOARD_CAPABILITY_IDS: readonly WebOnboardCapabilityId[] = [
+  "mail_read",
+  "calendar_read",
+];
+
+const CANONICAL_CAPABILITY_SPECS: Readonly<
+  Record<
+    WebOnboardCapabilityId,
+    {
+      readonly requestScope: {
+        readonly google: string;
+        readonly microsoft: string;
+      };
+    }
+  >
+> = CAPABILITY_SPECS;
+
 export const USER_ACCOUNTS_PATH = "/user/accounts";
 
 export const GOOGLE_WEB_CLIENT_ID =
@@ -23,26 +45,39 @@ export const GOOGLE_AUTHORIZE_URL =
 export const MICROSOFT_AUTHORIZE_URL =
   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
 
-/** Identity scopes plus read-only Gmail and Calendar. Write scopes are asked later, per ask (needs_scope). */
-export const GOOGLE_CONNECT_SCOPES = [
+const GOOGLE_IDENTITY_SCOPES = [
   "openid",
   "email",
   "profile",
   "https://www.googleapis.com/auth/userinfo.email",
   "https://www.googleapis.com/auth/userinfo.profile",
-  "https://www.googleapis.com/auth/gmail.readonly",
-  "https://www.googleapis.com/auth/calendar.readonly",
 ] as const;
 
-export const MICROSOFT_CONNECT_SCOPES = [
+const MICROSOFT_IDENTITY_SCOPES = [
   "offline_access",
   "openid",
   "profile",
   "email",
   "User.Read",
-  "Mail.Read",
-  "Calendars.Read",
 ] as const;
+
+function resolveProviderConnectScopes(
+  provider: AccountConnectProvider,
+): readonly string[] {
+  const identityScopes =
+    provider === "google" ? GOOGLE_IDENTITY_SCOPES : MICROSOFT_IDENTITY_SCOPES;
+  const capabilityScopes = WEB_ONBOARD_CAPABILITY_IDS.map(
+    (id) => CANONICAL_CAPABILITY_SPECS[id].requestScope[provider],
+  );
+  return [...identityScopes, ...new Set(capabilityScopes)];
+}
+
+/** Identity scopes plus read-only Gmail and Calendar scopes from canonical `CAPABILITY_SPECS`. */
+export const GOOGLE_CONNECT_SCOPES: readonly string[] =
+  resolveProviderConnectScopes("google");
+
+export const MICROSOFT_CONNECT_SCOPES: readonly string[] =
+  resolveProviderConnectScopes("microsoft");
 
 export const ACCOUNT_CONNECT_CATEGORIES = ["email", "calendar"] as const;
 

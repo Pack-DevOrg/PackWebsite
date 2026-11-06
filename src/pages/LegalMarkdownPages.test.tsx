@@ -89,7 +89,7 @@ describe('Legal markdown pages', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /when you sign in to a third-party website during a Pack Live View handoff, Pack keeps that site session/i,
+        /when you sign in to a third-party site in Live View, Pack keeps that site session/i,
       ),
     ).toBeInTheDocument();
     await waitFor(() => {
@@ -117,7 +117,7 @@ describe('Legal markdown pages', () => {
 
     expect(
       await screen.findByText(
-        /when you sign in to a third-party website during a Pack Live View handoff, Pack keeps that site session/i,
+        /when you sign in to a third-party site in Live View, Pack keeps that site session/i,
       ),
     ).toBeInTheDocument();
   });

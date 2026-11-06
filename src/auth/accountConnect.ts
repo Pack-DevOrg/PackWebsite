@@ -5,24 +5,19 @@
  */
 
 // @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
-import { CAPABILITY_IDS, CAPABILITY_SPECS } from "@pack/app/screens/settings/ConnectedServices/capabilities";
+import { CAPABILITY_SPECS } from "@pack/app/screens/settings/ConnectedServices/capabilities";
 
-export type AccountConnectCapabilityId =
-  | "mail_read"
-  | "mail_send"
-  | "mail_organize"
-  | "calendar_read"
-  | "calendar_write"
-  | "contacts_read"
-  | "contacts_write";
+type WebOnboardCapabilityId = "mail_read" | "calendar_read";
 
-const CANONICAL_CAPABILITY_IDS: readonly AccountConnectCapabilityId[] =
-  CAPABILITY_IDS;
+const WEB_ONBOARD_CAPABILITY_IDS: readonly WebOnboardCapabilityId[] = [
+  "mail_read",
+  "calendar_read",
+];
+
 const CANONICAL_CAPABILITY_SPECS: Readonly<
   Record<
-    AccountConnectCapabilityId,
+    WebOnboardCapabilityId,
     {
-      readonly defaultMode: "on" | "off" | "ask";
       readonly requestScope: {
         readonly google: string;
         readonly microsoft: string;
@@ -66,24 +61,18 @@ const MICROSOFT_IDENTITY_SCOPES = [
   "User.Read",
 ] as const;
 
-const DEFAULT_CONNECT_CAPABILITIES: readonly AccountConnectCapabilityId[] =
-  CANONICAL_CAPABILITY_IDS.filter(
-    (id) => CANONICAL_CAPABILITY_SPECS[id].defaultMode === "on",
-  );
-
 function resolveProviderConnectScopes(
   provider: AccountConnectProvider,
-  capabilities: readonly AccountConnectCapabilityId[] = DEFAULT_CONNECT_CAPABILITIES,
 ): readonly string[] {
   const identityScopes =
     provider === "google" ? GOOGLE_IDENTITY_SCOPES : MICROSOFT_IDENTITY_SCOPES;
-  const capabilityScopes = capabilities.map(
+  const capabilityScopes = WEB_ONBOARD_CAPABILITY_IDS.map(
     (id) => CANONICAL_CAPABILITY_SPECS[id].requestScope[provider],
   );
   return [...identityScopes, ...new Set(capabilityScopes)];
 }
 
-/** Identity scopes plus default onboarding capabilities (`defaultOnInOnboarding`) from canonical `CAPABILITY_SPECS`. */
+/** Identity scopes plus read-only Gmail and Calendar scopes from canonical `CAPABILITY_SPECS`. */
 export const GOOGLE_CONNECT_SCOPES: readonly string[] =
   resolveProviderConnectScopes("google");
 
@@ -179,16 +168,12 @@ export function resolveMicrosoftClientId(override?: string): string {
 export function buildGoogleAccountConnectUrl(input: {
   readonly state: string;
   readonly clientId?: string;
-  readonly capabilities?: readonly AccountConnectCapabilityId[];
 }): string {
-  const scopes = input.capabilities
-    ? resolveProviderConnectScopes("google", input.capabilities)
-    : GOOGLE_CONNECT_SCOPES;
   const url = new URL(GOOGLE_AUTHORIZE_URL);
   url.searchParams.set("client_id", resolveGoogleWebClientId(input.clientId));
   url.searchParams.set("redirect_uri", GOOGLE_REDIRECT_URI);
   url.searchParams.set("response_type", "code");
-  url.searchParams.set("scope", scopes.join(" "));
+  url.searchParams.set("scope", GOOGLE_CONNECT_SCOPES.join(" "));
   url.searchParams.set("access_type", "offline");
   url.searchParams.set("prompt", "consent");
   url.searchParams.set("include_granted_scopes", "true");
@@ -200,11 +185,7 @@ export async function buildMicrosoftAccountConnectUrl(input: {
   readonly state: string;
   readonly codeVerifier: string;
   readonly clientId?: string;
-  readonly capabilities?: readonly AccountConnectCapabilityId[];
 }): Promise<string> {
-  const scopes = input.capabilities
-    ? resolveProviderConnectScopes("microsoft", input.capabilities)
-    : MICROSOFT_CONNECT_SCOPES;
   const digest = await crypto.subtle.digest(
     "SHA-256",
     new TextEncoder().encode(input.codeVerifier),
@@ -213,7 +194,7 @@ export async function buildMicrosoftAccountConnectUrl(input: {
   url.searchParams.set("client_id", resolveMicrosoftClientId(input.clientId));
   url.searchParams.set("redirect_uri", MICROSOFT_REDIRECT_URI);
   url.searchParams.set("response_type", "code");
-  url.searchParams.set("scope", scopes.join(" "));
+  url.searchParams.set("scope", MICROSOFT_CONNECT_SCOPES.join(" "));
   url.searchParams.set("prompt", "select_account");
   url.searchParams.set("state", input.state);
   url.searchParams.set("code_challenge", base64Url(new Uint8Array(digest)));

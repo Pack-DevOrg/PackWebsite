@@ -50,4 +50,47 @@ describe("FAQ privacy consistency", () => {
       within(privacyAnswer!).getByRole("link", { name: "Your Privacy Choices" }),
     ).toHaveAttribute("href", "/privacy-request");
   });
+
+  it("renders policy-consistent Spanish privacy protections and controls without claiming GDPR compliance", () => {
+    render(
+      <MemoryRouter initialEntries={["/es/faq"]}>
+        <HelmetProvider>
+          <ThemeProvider>
+            <TrackingProvider>
+              <I18nProvider>
+                <FAQ />
+              </I18nProvider>
+            </TrackingProvider>
+          </ThemeProvider>
+        </HelmetProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "¿Cómo protege Pack mi información personal?",
+      }),
+    );
+
+    const privacyAnswer = document.getElementById("faq-answer-data-privacy");
+    expect(privacyAnswer).not.toBeNull();
+    expect(privacyAnswer).toBeVisible();
+
+    expect(privacyAnswer).not.toHaveTextContent(/GDPR/i);
+    expect(privacyAnswer).toHaveTextContent(/cifrados en tránsito y en reposo/i);
+    expect(privacyAnswer).toHaveTextContent(
+      /Política de Datos de Usuario de los Servicios API de Google/i,
+    );
+    expect(privacyAnswer).toHaveTextContent(/Uso Limitado/i);
+    expect(privacyAnswer).toHaveTextContent(
+      /desconectar cuentas conectadas o solicitar la eliminación/i,
+    );
+
+    expect(
+      within(privacyAnswer!).getByRole("link", { name: "Política de Privacidad" }),
+    ).toHaveAttribute("href", "/privacy");
+    expect(
+      within(privacyAnswer!).getByRole("link", { name: "Tus Opciones de Privacidad" }),
+    ).toHaveAttribute("href", "/privacy-request");
+  });
 });

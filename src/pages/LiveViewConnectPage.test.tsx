@@ -7,6 +7,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import {
   clearLiveViewHandoffBecauseApiClient,
+  LiveViewConnectPage,
   LiveViewConnectView,
   type LiveViewLinkQuery,
 } from "./LiveViewConnectPage";
@@ -247,5 +248,34 @@ describe("LiveViewConnectPage", () => {
       [{ path: "/live-view?lv=w7pIQA37", method: "POST" }],
       [{ path: "/live-view?token=tok-1", method: "POST" }],
     ]);
+  });
+
+  it("shows the third-party site session retention disclosure before sign-in and inside the live view", async () => {
+    const disclosure =
+      "When you sign in to a site in Live View, Pack keeps that site session so it can finish this request and future tasks on that site for you.";
+
+    const unauthRender = render(
+      <HelmetProvider>
+        <MemoryRouter initialEntries={["/live-view?token=tok-unauth"]}>
+          <I18nProvider>
+            <ThemeProvider>
+              <LiveViewConnectPage />
+            </ThemeProvider>
+          </I18nProvider>
+        </MemoryRouter>
+      </HelmetProvider>,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Sign in to watch Pack work" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(disclosure)).toBeInTheDocument();
+    unauthRender.unmount();
+
+    fetchMock.mockResolvedValue(jsonOk(okTicket()));
+    renderPage("?token=tok-session");
+
+    expect(await screen.findByTestId("session-viewer")).toBeInTheDocument();
+    expect(screen.getByText(disclosure)).toBeInTheDocument();
   });
 });

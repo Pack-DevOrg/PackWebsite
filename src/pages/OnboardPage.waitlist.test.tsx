@@ -3,7 +3,8 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter } from "react-router-dom";
 
-import { ACCESS_REDEEM_PATH, OnboardPage } from "./OnboardPage";
+import { ACCESS_REDEEM_PATH, OnboardPage, redeemRefusalReason } from "./OnboardPage";
+import { ApiRequestError } from "@/api/client";
 import { WAITLIST_TITLE } from "@/components/onboard/WaitlistStep";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { ThemeProvider } from "@/styles/ThemeProvider";
@@ -134,6 +135,9 @@ describe("OnboardPage access step", () => {
   });
 
   it.each([
+    ["CODE_INVALID", 400, "That code isn't valid. Check it and try again."],
+    ["CODE_INVALID", 404, "That code isn't valid. Check it and try again."],
+    ["ALREADY_REDEEMED", 409, "That code has already been used."],
     ["CODE_UNKNOWN", 404, "That code isn't valid. Check it and try again."],
     ["CODE_EXPIRED", 410, "That code has expired."],
     ["CODE_USED_UP", 409, "That code has already been used."],
@@ -149,7 +153,10 @@ describe("OnboardPage access step", () => {
           ok: false,
           status,
           text: async () =>
-            JSON.stringify({ success: false, error: { code, message: "Code expired used invalid" } }),
+            JSON.stringify({
+              success: false,
+              error: { code, message: "Invalid or expired access code" },
+            }),
           clone() {
             return this;
           },
@@ -164,6 +171,74 @@ describe("OnboardPage access step", () => {
     fireEvent.click(screen.getByRole("button", { name: "Redeem code" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(line);
     expect(screen.getByLabelText("Access code")).toBeInTheDocument();
+  });
+
+  it("maps top-level server CODE_INVALID response and advances on idempotent 200 ALREADY_REDEEMED", async () => {
+    expect(redeemRefusalReason(new ApiRequestError(500, "Server error", null))).toBe(
+      "unknown",
+    );
+    expect(
+      redeemRefusalReason(
+        new ApiRequestError(404, "Invalid or expired access code", {
+          code: "CODE_INVALID",
+        }),
+      ),
+    ).toBe("invalid");
+    expect(
+      redeemRefusalReason(
+        new ApiRequestError(404, "Invalid or expired access code", {
+          error: "Invalid or expired access code",
+          code: "CODE_INVALID",
+        }),
+      ),
+    ).toBe("invalid");
+    expect(
+      redeemRefusalReason(
+        new ApiRequestError(400, "Invalid or expired access code", {
+          success: false,
+          error: {
+            code: "CODE_INVALID",
+            message: "Invalid or expired access code",
+          },
+        }),
+      ),
+    ).toBe("invalid");
+    expect(
+      redeemRefusalReason(
+        new ApiRequestError(409, "Already redeemed", {
+          error: { code: "ALREADY_REDEEMED", message: "Already redeemed" },
+        }),
+      ),
+    ).toBe("used");
+
+    access = "waitlisted";
+    mockInformation();
+    const base = global.fetch as jest.Mock;
+    global.fetch = jest.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input).includes("/access/redeem")) {
+        return {
+          ok: true,
+          status: 200,
+          text: async () =>
+            JSON.stringify({
+              success: true,
+              data: { status: "active", code: "ALREADY_REDEEMED" },
+            }),
+          clone() {
+            return this;
+          },
+        };
+      }
+      return base(input, init);
+    }) as unknown as typeof fetch;
+    await reachAccessStep();
+    fireEvent.change(await screen.findByLabelText("Access code"), {
+      target: { value: "ABCD2345" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Redeem code" }));
+    expect(
+      await screen.findByRole("heading", { name: "Connections" }),
+    ).toBeInTheDocument();
   });
 
   it("pre-fills the field from ?code=", async () => {

@@ -111,6 +111,8 @@ export const ACCESS_REDEEM_PATH = "/user/accounts/access/redeem";
 
 /** /user/accounts/access/redeem envelope codes (user-accounts ACCESS_REDEEM_FAILURE) -> field reason. */
 const REDEEM_CODE_REASONS: Readonly<Record<string, string>> = {
+  CODE_INVALID: "invalid",
+  ALREADY_REDEEMED: "used",
   CODE_UNKNOWN: "invalid",
   CODE_EXPIRED: "expired",
   CODE_USED_UP: "used",
@@ -118,8 +120,11 @@ const REDEEM_CODE_REASONS: Readonly<Record<string, string>> = {
 
 export function redeemRefusalReason(error: unknown): string {
   if (error instanceof ApiRequestError) {
-    const details = error.details as { error?: { code?: unknown } } | null;
-    const code = details?.error?.code;
+    const details = error.details as {
+      code?: unknown;
+      error?: { code?: unknown };
+    } | null;
+    const code = details?.error?.code ?? details?.code;
     if (typeof code === "string" && Object.hasOwn(REDEEM_CODE_REASONS, code)) {
       return REDEEM_CODE_REASONS[code];
     }

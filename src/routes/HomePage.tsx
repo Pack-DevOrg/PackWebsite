@@ -5,6 +5,7 @@ import Hero from "@/components/Hero";
 import WaitlistForm from "@/components/WaitlistForm";
 import { useI18n } from "@/i18n/I18nProvider";
 import PageSeo, {
+  HERO_SHARE_VIDEO_URL,
   TEAM_MEMBER_PROFILES,
   createPersonSchema,
   createSoftwareApplicationSchema,
@@ -579,6 +580,7 @@ const HomePage: React.FC = () => {
         title="AI Trip Planner from Emails, Calendar Events & Prompts | Pack"
         description="Pack is an AI trip planner and itinerary organizer that turns confirmation emails, calendar events, and prompts into trips you can review, book, and share."
         path="/"
+        videoUrl={HERO_SHARE_VIDEO_URL}
         schema={[
           createSoftwareApplicationSchema(
             "Pack",

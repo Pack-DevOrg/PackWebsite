@@ -118,12 +118,11 @@ const REDEEM_CODE_REASONS: Readonly<Record<string, string>> = {
   CODE_USED_UP: "used",
 };
 
+type RedeemErrorDetails = { code?: unknown; error?: { code?: unknown } };
+
 export function redeemRefusalReason(error: unknown): string {
   if (error instanceof ApiRequestError) {
-    const details = error.details as {
-      code?: unknown;
-      error?: { code?: unknown };
-    } | null;
+    const details = error.details as RedeemErrorDetails | null;
     const code = details?.error?.code ?? details?.code;
     if (typeof code === "string" && Object.hasOwn(REDEEM_CODE_REASONS, code)) {
       return REDEEM_CODE_REASONS[code];

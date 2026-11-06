@@ -157,7 +157,7 @@ test("deploy.yml calls the GitHub-hosted smoke and red posts #auto-errors", () =
   assert.match(deploy, /signin-smoke:/);
   assert.match(deploy, /needs: deploy/);
   assert.match(deploy, /web-signin-smoke\.yml/);
-  assert.match(smoke, /runs-on: ubuntu-latest/);
+  assert.match(smoke, /runs-on: ubuntu-24\.04/);
   assert.match(smoke, /workflow_call:/);
   assert.match(smoke, /repository_dispatch:/);
   assert.match(smoke, /api-stack-deployed/);

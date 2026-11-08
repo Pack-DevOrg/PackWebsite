@@ -89,7 +89,7 @@ describe('Legal markdown pages', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /when you sign in to a third-party site in Live View, Pack keeps that site session/i,
+        /when you sign in to a third-party site in Live View, Pack keeps that site session \(encrypted cookies and storage\) to finish your request and future tasks on that site until it expires or you disconnect it\./i,
       ),
     ).toBeInTheDocument();
     await waitFor(() => {
@@ -109,15 +109,16 @@ describe('Legal markdown pages', () => {
         ok: true,
         status: 200,
         statusText: 'OK',
-        text: () => Promise.resolve(policyMarkdown),
+        text: () => Promise.resolve(`${policyMarkdown}\n\nFetched policy body marker.`),
       }),
     ) as jest.Mock;
 
     renderWithProviders(<PrivacyPolicy />);
 
+    expect(await screen.findByText(/Fetched policy body marker\./i)).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        /when you sign in to a third-party site in Live View, Pack keeps that site session/i,
+      screen.getByText(
+        /when you sign in to a third-party site in Live View, Pack keeps that site session \(encrypted cookies and storage\) to finish your request and future tasks on that site until it expires or you disconnect it\./i,
       ),
     ).toBeInTheDocument();
   });

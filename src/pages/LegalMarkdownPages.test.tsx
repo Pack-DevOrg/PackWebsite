@@ -1,3 +1,5 @@
+import {readFileSync} from 'node:fs';
+import {join} from 'node:path';
 import React from 'react';
 import {render, screen, waitFor} from '@testing-library/react';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
@@ -85,11 +87,40 @@ describe('Legal markdown pages', () => {
     expect(
       screen.getByRole('heading', {name: /^Privacy Policy$/i, level: 1}),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /when you sign in to a site in Live View, Pack keeps that site session so it can finish this request and future tasks on that site for you\./i,
+      ),
+    ).toBeInTheDocument();
     await waitFor(() => {
       expect(
         screen.queryByText(/Unable to load privacy policy right now/i),
       ).not.toBeInTheDocument();
     });
+  });
+
+  test('PrivacyPolicy markdown from public/PrivacyPolicy.md discloses keeping third-party Live View site sessions', async () => {
+    const policyMarkdown = readFileSync(
+      join(process.cwd(), 'public/PrivacyPolicy.md'),
+      'utf8',
+    );
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: () => Promise.resolve(`${policyMarkdown}\n\nFetched policy body marker.`),
+      }),
+    ) as jest.Mock;
+
+    renderWithProviders(<PrivacyPolicy />);
+
+    expect(await screen.findByText(/Fetched policy body marker\./i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /when you sign in to a site in Live View, Pack keeps that site session so it can finish this request and future tasks on that site for you\./i,
+      ),
+    ).toBeInTheDocument();
   });
 
   test('TermsOfService fetches markdown from site root', async () => {

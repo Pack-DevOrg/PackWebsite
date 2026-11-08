@@ -22,6 +22,8 @@ import { AuthProvider, useAuth } from "../auth/AuthContext";
 const LIVE_VIEW_EXPIRED_HEADING = "Pack needs your help — this link expired";
 const LIVE_VIEW_SIGN_IN_HEADING = "Sign in to watch Pack work";
 const LIVE_VIEW_SIGN_IN_BUTTON = "Sign in";
+const LIVE_VIEW_SESSION_DISCLOSURE =
+  "When you sign in to a site in Live View, Pack keeps that site session so it can finish this request and future tasks on that site for you.";
 const LIVE_VIEW_CLEAR_SENT = "Pack is picking it back up.";
 const LIVE_VIEW_CLEAR_FAILED = "That didn't reach Pack. Tap again.";
 const INSTALL_STORAGE_KEY = "pack-live-view-install-id";
@@ -311,6 +313,7 @@ export function LiveViewConnectView({
       <PageContainer>
         {viewer !== null ? (
           <ViewerHost>
+            <ClearStatus>{LIVE_VIEW_SESSION_DISCLOSURE}</ClearStatus>
             {clearState === "failed" ? (
               <ClearStatus role="alert">{LIVE_VIEW_CLEAR_FAILED}</ClearStatus>
             ) : null}
@@ -411,6 +414,7 @@ function LiveViewAuthGate() {
       <PageContainer>
         <Centered>
           <FallbackHeading>{LIVE_VIEW_SIGN_IN_HEADING}</FallbackHeading>
+          <ClearStatus>{LIVE_VIEW_SESSION_DISCLOSURE}</ClearStatus>
           <ResumeButton
             type="button"
             onClick={() => {

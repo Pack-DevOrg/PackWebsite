@@ -89,7 +89,7 @@ describe('Legal markdown pages', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /when you sign in to a third-party site in Live View, Pack keeps that site session \(encrypted cookies and storage\) to finish your request and future tasks on that site until it expires or you disconnect it\./i,
+        /when you sign in to a site in Live View, Pack keeps that site session so it can finish this request and future tasks on that site for you\./i,
       ),
     ).toBeInTheDocument();
     await waitFor(() => {
@@ -118,7 +118,7 @@ describe('Legal markdown pages', () => {
     expect(await screen.findByText(/Fetched policy body marker\./i)).toBeInTheDocument();
     expect(
       screen.getByText(
-        /when you sign in to a third-party site in Live View, Pack keeps that site session \(encrypted cookies and storage\) to finish your request and future tasks on that site until it expires or you disconnect it\./i,
+        /when you sign in to a site in Live View, Pack keeps that site session so it can finish this request and future tasks on that site for you\./i,
       ),
     ).toBeInTheDocument();
   });

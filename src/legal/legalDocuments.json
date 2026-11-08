@@ -13,8 +13,8 @@
       "lock": {
         "mode": "hard",
         "reviewed": true,
-        "reviewedAt": "2026-11-06",
-        "reviewedSha256": "108a63bdec6e025e77c5116bb2fb01364fdcae340ddd7dc13e32703146433ce3"
+        "reviewedAt": "2026-07-29",
+        "reviewedSha256": "c33c8362f48a222dbf4c0ab9820dc7038151c0f499db19c956bcb112de8d5b32"
       }
     },
     {
@@ -40,8 +40,8 @@
       "lock": {
         "mode": "hard",
         "reviewed": true,
-        "reviewedAt": "2026-11-06",
-        "reviewedSha256": "430c6c441064954f77fe5d47b06a6c34cc3f7c7fc414e5d5fbdc2fc3d47509e1"
+        "reviewedAt": "2026-07-29",
+        "reviewedSha256": "45a2d70a018ef6e7fdb46049f63e76115478c7fdaeccda13b365ddf9f4897d55"
       }
     },
     {

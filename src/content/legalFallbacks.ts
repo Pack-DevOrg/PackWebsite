@@ -171,7 +171,7 @@ Depending on how you use the Services, we may collect:
 - **Communications and submissions:** messages, feedback, support requests, survey responses, form submissions, and other information you choose to send us.
 - **Search, booking-interest, and marketing information:** airport searches, travel preferences, booking inquiries, attribution parameters, and your preferences regarding newsletters, promotions, and similar communications.
 - **Third-party login and connected-account information:** if you choose to sign in with, connect, or import from Google, Microsoft, Apple, or another account provider, we and our identity or authentication providers may receive information made available through that flow, such as account identifiers, name, email address, profile image, authentication and session metadata, connected email content, calendar data, forwarding settings, and permissions needed to provide the features you request.
-- **Third-party site sessions in Live View:** when you sign in to a third-party site in Live View, Pack keeps that site session (encrypted cookies and storage) to finish your request and future tasks on that site until it expires or you disconnect it.
+- **Third-party site sessions in Live View:** when you sign in to a site in Live View, Pack keeps that site session so it can finish this request and future tasks on that site for you.
 
 ### Information Collected Automatically
 

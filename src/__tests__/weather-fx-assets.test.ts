@@ -26,6 +26,7 @@ describe('weather-fx hero HEVC-with-alpha assets', () => {
       expect(existsSync(filePath)).toBe(true);
       const bytes = readFileSync(filePath);
       expect(bytes.length).toBeGreaterThan(100_000);
+      expect(bytes.length).toBeLessThan(3 * 1024 * 1024);
       expect(bytes.subarray(4, 10).toString('ascii')).toBe('ftypqt');
       const hvc1Offset = bytes.indexOf(Buffer.from('hvc1', 'ascii'));
       expect(hvc1Offset).toBeGreaterThan(0);

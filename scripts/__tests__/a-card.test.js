@@ -448,3 +448,132 @@ describe('local fixture mode (dev-only)', () => {
     assert.equal(prodDom.window.document.getElementById('card').textContent, 'This link has expired or does not exist.');
   });
 });
+
+describe('dedicated web renderers for trip_history, place_detail, and calendar_event', () => {
+  const fixturesDir = path.join(here, '../../public/a/fixtures');
+  const tripHistoryFixture = JSON.parse(fs.readFileSync(path.join(fixturesDir, 'trip_history.json'), 'utf8'));
+  const placeDetailFixture = JSON.parse(fs.readFileSync(path.join(fixturesDir, 'place_detail.json'), 'utf8'));
+  const calendarEventFixture = JSON.parse(fs.readFileSync(path.join(fixturesDir, 'calendar_event.json'), 'utf8'));
+
+  async function renderPayload(payload) {
+    const { JSDOM } = await import('jsdom');
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
+    const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok123', runScripts: 'outside-only' });
+    dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'));
+    await new Promise((r) => setTimeout(r, 20));
+    return dom.window.document;
+  }
+
+  it('trip_history renders stat row (trips, countries, cities, year) and structured trip rows with title, dates, and location', async () => {
+    const vm = card.viewModelBecausePayload(tripHistoryFixture);
+    assert.ok(vm.tripHistory, 'builds tripHistory view model');
+    assert.equal(vm.tripHistory.tripCount, 6);
+    assert.equal(vm.tripHistory.countriesCount, 1);
+    assert.equal(vm.tripHistory.citiesCount, 5);
+    assert.equal(vm.tripHistory.year, '2026');
+    assert.equal(vm.tripHistory.trips.length, 6);
+    assert.deepEqual(
+      [vm.tripHistory.trips[0].title, vm.tripHistory.trips[0].dates, vm.tripHistory.trips[0].location],
+      ['Las Vegas weekend', 'Mar 13–16', 'LAX ↔ LAS'],
+    );
+
+    const intl = card.viewModelBecausePayload({
+      kind: 'trip_history',
+      title: 'International Trips',
+      rows: [
+        { label: 'Paris spring', value: 'May 10–15, 2026 · Le Meurice · Paris, France' },
+        { label: 'Tokyo autumn', value: 'Oct 2–9, 2026 · Aman Tokyo · Tokyo, Japan' },
+      ],
+    });
+    assert.equal(intl.tripHistory.tripCount, 2);
+    assert.equal(intl.tripHistory.countriesCount, 2);
+    assert.equal(intl.tripHistory.citiesCount, 2);
+    assert.equal(intl.tripHistory.trips[0].dates, 'May 10–15, 2026');
+    assert.equal(intl.tripHistory.trips[0].location, 'Paris, France');
+
+    const doc = await renderPayload(tripHistoryFixture);
+    assert.equal(doc.querySelectorAll('.tripStat').length, 4);
+    assert.equal(doc.querySelectorAll('.tripRow').length, 6);
+    assert.ok(doc.querySelector('.tripRow .tripTitle').textContent.includes('Las Vegas weekend'));
+    assert.ok(doc.querySelector('.tripRow .tripDates').textContent.includes('Mar 13–16'));
+    assert.ok(doc.querySelector('.tripRow .tripLoc').textContent.includes('LAX ↔ LAS'));
+  });
+
+  it('place_detail renders hero header, category/rating/price/neighborhood, hours, and call/directions/website/menu actions', async () => {
+    const vm = card.viewModelBecausePayload(placeDetailFixture);
+    assert.ok(vm.placeDetail, 'builds placeDetail view model');
+    assert.equal(vm.placeDetail.name, "Wahoo's Fish Taco");
+    assert.equal(vm.placeDetail.category, 'Mexican');
+    assert.match(vm.placeDetail.hero, /dining\.restaurant\.jpg$/);
+    assert.equal(vm.placeDetail.websiteUrl, 'https://www.wahoos.com');
+    assert.equal(vm.placeDetail.menuUrl, 'https://www.wahoos.com/food-menus/');
+    assert.ok(vm.placeDetail.mapUrl.startsWith('https://maps.apple.com/'));
+
+    const doc = await renderPayload(placeDetailFixture);
+    assert.ok(doc.querySelector('.placeHero img.placeHeroImg'), 'renders hero image');
+    assert.equal(doc.querySelector('.placeHeroTitle').textContent, "Wahoo's Fish Taco");
+    assert.ok(doc.querySelector('.placeDetailHours'), 'renders hours block');
+    const actionHrefs = [...doc.querySelectorAll('a.placeActionBtn')].map((a) => [a.textContent.trim(), a.getAttribute('href')]);
+    assert.deepEqual(actionHrefs, [
+      ['Directions', "https://maps.apple.com/?ll=33.9805965423584,-118.43761444091797&q=Wahoo's%20Fish%20Taco"],
+      ['Website', 'https://www.wahoos.com'],
+      ['Menu', 'https://www.wahoos.com/food-menus/'],
+    ]);
+
+    const richPlace = await renderPayload({
+      kind: 'place_detail',
+      title: 'Balthazar',
+      blocks: [{
+        kind: 'place_detail',
+        name: 'Balthazar',
+        cuisine: 'French brasserie',
+        rating: 4.7,
+        priceLevel: 3,
+        neighborhood: 'SoHo',
+        address: '80 Spring St, New York, NY',
+        phone: '+1 (212) 965-1414',
+        hours: { state: 'open', closesAtLocal: '23:00' },
+        hoursWeek: [{ day: 'Mon–Sun', text: '8:00 AM – 11:00 PM' }],
+        location: { lat: 40.7226, lon: -73.9982 },
+        mapUrl: 'https://maps.apple.com/?ll=40.7226,-73.9982&q=Balthazar',
+        website: 'https://balthazarny.com',
+        primaryAction: 'call',
+      }],
+    });
+    const richText = richPlace.getElementById('card').textContent;
+    for (const bit of ['French Brasserie', '★ 4.7', '$$$', 'SoHo', '80 Spring St, New York, NY', 'Open now', 'Until 11:00 PM', 'Mon–Sun']) {
+      assert.ok(richText.includes(bit), `missing ${bit}`);
+    }
+    const callBtn = richPlace.querySelector('a.placeActionBtn[href^="tel:"]');
+    assert.ok(callBtn, 'renders tel: call button');
+    assert.equal(callBtn.getAttribute('href'), 'tel:+12129651414');
+  });
+
+  it('calendar_event renders formatted date/time block, timezone/location/attendees, and working Add to Calendar (.ics + Google Calendar) actions', async () => {
+    const vm = card.viewModelBecausePayload(calendarEventFixture);
+    assert.ok(vm.calendarEvent, 'builds calendarEvent view model');
+    assert.equal(vm.calendarEvent.title, 'Dinner with Sam');
+    assert.equal(vm.calendarEvent.monthShort, 'NOV');
+    assert.equal(vm.calendarEvent.dayNum, '7');
+    assert.equal(vm.calendarEvent.dateLine, 'Saturday, Nov 7, 2026');
+    assert.equal(vm.calendarEvent.timeLine, '7:00 PM – 8:00 PM');
+    assert.equal(vm.calendarEvent.tz, 'America/Los_Angeles');
+    assert.ok(vm.calendarEvent.icsUrl.startsWith('data:text/calendar;charset=utf-8,'));
+    assert.ok(decodeURIComponent(vm.calendarEvent.icsUrl).includes('SUMMARY:Dinner with Sam'));
+    assert.ok(decodeURIComponent(vm.calendarEvent.icsUrl).includes('DTSTART;TZID=America/Los_Angeles:20261107T190000'));
+    assert.ok(vm.calendarEvent.googleUrl.startsWith('https://calendar.google.com/calendar/render?action=TEMPLATE'));
+
+    const doc = await renderPayload(calendarEventFixture);
+    assert.equal(doc.querySelector('.calTitle').textContent, 'Dinner with Sam');
+    assert.equal(doc.querySelector('.calTimePrimary').textContent, '7:00 PM – 8:00 PM');
+    assert.ok(doc.querySelector('.calDateLine').textContent.includes('Saturday, Nov 7, 2026'));
+    const icsLink = doc.querySelector('a.calAddBtn');
+    assert.ok(icsLink, 'renders Add to Calendar button');
+    assert.ok(icsLink.getAttribute('href').startsWith('data:text/calendar;charset=utf-8,'));
+    const gcalLink = doc.querySelector('a.calSecondaryBtn');
+    assert.ok(gcalLink, 'renders Google Calendar button');
+    assert.ok(gcalLink.getAttribute('href').startsWith('https://calendar.google.com/calendar/render'));
+  });
+});
+

@@ -1,0 +1,50 @@
+{
+  "kind": "place_detail",
+  "version": 1,
+  "ref": {
+    "kind": "place_detail",
+    "id": "overture:ff5e424f-1aa2-4e04-b834-6fbef22952e0"
+  },
+  "title": "Wahoo's Fish Taco",
+  "subtitle": "mexican",
+  "rows": [],
+  "blocks": [
+    {
+      "kind": "place_detail",
+      "placeRef": {
+        "kind": "place_detail",
+        "id": "overture:ff5e424f-1aa2-4e04-b834-6fbef22952e0"
+      },
+      "name": "Wahoo's Fish Taco",
+      "cuisine": "mexican",
+      "photos": [],
+      "hours": {
+        "state": "unknown"
+      },
+      "menu": {
+        "url": "https://www.wahoos.com/food-menus/",
+        "topItems": []
+      },
+      "reservations": {
+        "available": null
+      },
+      "location": {
+        "lat": 33.9805965423584,
+        "lon": -118.43761444091797
+      },
+      "mapUrl": "https://maps.apple.com/?ll=33.9805965423584,-118.43761444091797&q=Wahoo's%20Fish%20Taco",
+      "website": "http://www.wahoos.com",
+      "primaryAction": "directions",
+      "lowConfidence": [
+        "menu_url",
+        "order_links",
+        "ordering_links",
+        "cuisine",
+        "menu_dishes"
+      ]
+    }
+  ],
+  "source": "Pack place data",
+  "asOf": "2026-11-09T10:28:32.517Z",
+  "actions": []
+}

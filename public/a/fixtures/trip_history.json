@@ -1,0 +1,40 @@
+{
+  "kind": "trip_history",
+  "version": 1,
+  "title": "2026 Trips",
+  "rows": [
+    {
+      "label": "Mar 13–16 · Las Vegas weekend",
+      "value": "UA 1203 / UA 1208 (LAX ↔ LAS) · Park MGM Las Vegas"
+    },
+    {
+      "label": "May 18–21 · Seattle work trip",
+      "value": "AS 1335 / AS 1340 (LAX ↔ SEA) · Hyatt Regency Seattle"
+    },
+    {
+      "label": "Jul 9–13 · New York in July",
+      "value": "UA 2150 / UA 2157 (LAX ↔ EWR) · Moxy NYC Times Square"
+    },
+    {
+      "label": "Oct 26–30 · Aspen fall retreat",
+      "value": "LAX ↔ ASE · Aspen, CO"
+    },
+    {
+      "label": "Oct 30–Nov 1 · Stay in San Diego",
+      "value": "San Diego, CA (SAN)"
+    },
+    {
+      "label": "Nov 20–23 · Vegas with Chase",
+      "value": "UA 2468 / UA 2471 (LAX ↔ LAS) · Park MGM Las Vegas"
+    }
+  ],
+  "source": "Your trips",
+  "asOf": "2026-11-04T05:45:52.572Z",
+  "actions": [
+    {
+      "type": "open-in-app",
+      "label": "Open in Pack",
+      "url": "https://www.trypackai.com/app/a/trip-history-e2e"
+    }
+  ]
+}

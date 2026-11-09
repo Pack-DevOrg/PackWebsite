@@ -1034,6 +1034,26 @@ export default defineConfig(({ mode, ssrBuild }) => {
               void handleLogoLabGenerate(request, response);
             },
           );
+          server.middlewares.use((request, response, next) => {
+            if (request.method !== 'GET' && request.method !== 'HEAD') {
+              next();
+              return;
+            }
+            const rawUrl = request.url ?? '';
+            const pathname = rawUrl.split('?')[0];
+            if (pathname !== '/a' && pathname !== '/a/' && pathname !== '/a/index.html') {
+              next();
+              return;
+            }
+            const cardHtmlPath = path.join(rootDir, 'public', 'a', 'index.html');
+            if (!fs.existsSync(cardHtmlPath)) {
+              next();
+              return;
+            }
+            response.statusCode = 200;
+            response.setHeader('Content-Type', 'text/html; charset=utf-8');
+            response.end(fs.readFileSync(cardHtmlPath, 'utf8'));
+          });
         },
       },
       react({

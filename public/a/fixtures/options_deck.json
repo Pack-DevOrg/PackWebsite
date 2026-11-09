@@ -1,0 +1,72 @@
+{
+  "kind": "flight_card",
+  "version": 1,
+  "title": "2 flights",
+  "rows": [],
+  "blocks": [
+    {
+      "kind": "options_deck",
+      "options": [
+        {
+          "id": "option-1",
+          "item": {
+            "kind": "flight_outline",
+            "carrier": "UA",
+            "flightNo": "2468",
+            "origin": "LAX",
+            "destination": "LAS",
+            "departIso": "2026-11-20T16:30",
+            "arriveIso": "2026-11-20T17:40",
+            "provenance": {
+              "source": "trips.list"
+            }
+          }
+        },
+        {
+          "id": "option-2",
+          "item": {
+            "kind": "flight_outline",
+            "carrier": "UA",
+            "flightNo": "2471",
+            "origin": "LAS",
+            "destination": "LAX",
+            "departIso": "2026-11-23T13:15",
+            "arriveIso": "2026-11-23T14:30",
+            "provenance": {
+              "source": "trips.list"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "open-in-app",
+      "label": "Open in Pack",
+      "url": "https://www.trypackai.com/a/q8MwX9s24yDcS8H_LF_FVA"
+    }
+  ],
+  "sharing": {
+    "role": "owner",
+    "linkSetting": "members",
+    "memberCount": 1,
+    "members": [],
+    "privacy": {
+      "restricted": true,
+      "privateLabels": [
+        "Made from your private Pack data",
+        "UA 2468 · LAX→LAS · Nov 20 4:30pm → 5:40pm",
+        "What Pack remembers about you",
+        "Your trips and email",
+        "Your location",
+        "Your preferences",
+        "Private Pack data (travel)",
+        "Private Pack data (flight_search)",
+        "Private Pack data (ambient)",
+        "Pages opened for you",
+        "Private Pack data (trips.list)"
+      ]
+    }
+  }
+}

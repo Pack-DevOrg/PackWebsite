@@ -60,6 +60,7 @@ const routesToPrerender = [
 async function prerender() {
   rmSync(join(distDir, "labs"), { recursive: true, force: true });
   rmSync(join(distDir, "lab"), { recursive: true, force: true });
+  rmSync(join(distDir, "a", "fixtures"), { recursive: true, force: true });
 
   const template = readFileSync(join(distDir, "index.html"), "utf-8");
   const manifestPath = join(ssrDir, ".vite/manifest.json");

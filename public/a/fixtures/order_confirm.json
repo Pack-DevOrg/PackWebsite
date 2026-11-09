@@ -1,0 +1,66 @@
+{
+  "kind": "order_confirm",
+  "version": 1,
+  "title": "1x white claw (Variety pack) from GoPuff, to Admiralty Way, 20-45 min",
+  "rows": [
+    {
+      "label": "Item",
+      "value": "white claw (Variety pack)"
+    },
+    {
+      "label": "Quantity",
+      "value": "1"
+    },
+    {
+      "label": "Store",
+      "value": "GoPuff"
+    },
+    {
+      "label": "Arrives",
+      "value": "20-45 min"
+    },
+    {
+      "label": "Deliver to",
+      "value": "4606 Admiralty Way, Marina del Rey, CA 90292"
+    },
+    {
+      "label": "Total",
+      "value": "At checkout"
+    }
+  ],
+  "blocks": [
+    {
+      "kind": "order_confirm",
+      "item": "white claw",
+      "qty": 1,
+      "store": "GoPuff",
+      "eta": "20-45 min",
+      "total": null,
+      "button": "Review & pay",
+      "storeHost": "gopuff.com",
+      "pin": {
+        "lat": 34.007282,
+        "lng": -118.4890528
+      },
+      "fulfillment": "pickup",
+      "deliverTo": "4606 Admiralty Way, Marina del Rey, CA 90292",
+      "choice": {
+        "label": "Flavor",
+        "options": [
+          "Variety pack",
+          "Mango",
+          "Black Cherry",
+          "Lime"
+        ],
+        "selected": "Variety pack"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "open-in-app",
+      "label": "Open in Pack",
+      "url": "https://www.trypackai.com/a/-NHruigw18Q_zl3BRyl10w"
+    }
+  ]
+}

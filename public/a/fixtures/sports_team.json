@@ -1,0 +1,136 @@
+{
+  "kind": "sports_team",
+  "version": 1,
+  "title": "Los Angeles Dodgers 2026",
+  "rows": [
+    {
+      "label": "Record",
+      "value": "100-62"
+    },
+    {
+      "label": "Place",
+      "value": "1",
+      "ref": {
+        "kind": "standings",
+        "id": "mlb:name:los-angeles-dodgers"
+      }
+    },
+    {
+      "label": "Games (incl. postseason)",
+      "value": "162"
+    },
+    {
+      "label": "Runs for (incl. postseason)",
+      "value": "842"
+    },
+    {
+      "label": "Runs against (incl. postseason)",
+      "value": "686"
+    },
+    {
+      "label": "Shohei Ohtani (hitter)",
+      "value": ".282 AVG, 55 HR, 102 RBI, 1.014 OPS",
+      "group": "hitter",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:660271"
+      }
+    },
+    {
+      "label": "Andy Pages (hitter)",
+      "value": ".272 AVG, 27 HR, 86 RBI, .774 OPS",
+      "group": "hitter",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:681624"
+      }
+    },
+    {
+      "label": "Teoscar Hernández (hitter)",
+      "value": ".247 AVG, 25 HR, 89 RBI, .738 OPS",
+      "group": "hitter",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:606192"
+      }
+    },
+    {
+      "label": "Freddie Freeman (hitter)",
+      "value": ".295 AVG, 24 HR, 90 RBI, .869 OPS",
+      "group": "hitter",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:518692"
+      }
+    },
+    {
+      "label": "Mookie Betts (hitter)",
+      "value": ".258 AVG, 20 HR, 82 RBI, .732 OPS",
+      "group": "hitter",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:605141"
+      }
+    },
+    {
+      "label": "Yoshinobu Yamamoto (pitcher)",
+      "value": "12-8, 2.49 ERA, 201 SO, 0.99 WHIP",
+      "group": "pitcher",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:808967"
+      }
+    },
+    {
+      "label": "Clayton Kershaw (pitcher)",
+      "value": "11-2, 3.36 ERA, 84 SO, 1.22 WHIP",
+      "group": "pitcher",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:477132"
+      }
+    },
+    {
+      "label": "Ben Casparius (pitcher)",
+      "value": "7-5, 4.64 ERA, 71 SO, 1.27 WHIP",
+      "group": "pitcher",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:676508"
+      }
+    },
+    {
+      "label": "Dustin May (pitcher)",
+      "value": "6-7, 4.85 ERA, 97 SO, 1.35 WHIP",
+      "group": "pitcher",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:669160"
+      }
+    },
+    {
+      "label": "Emmet Sheehan (pitcher)",
+      "value": "6-3, 2.82 ERA, 89 SO, 0.97 WHIP",
+      "group": "pitcher",
+      "ref": {
+        "kind": "player",
+        "id": "mlb:686218"
+      }
+    },
+    {
+      "label": "Player stats",
+      "value": "MLB Stats API, 2026-10-15"
+    }
+  ],
+  "source": "https://www.mlb.com/dodgers",
+  "asOf": "2026-10-15T20:26:52.044Z",
+  "imageUrl": "https://www.mlbstatic.com/team-logos/119.svg",
+  "actions": [
+    {
+      "type": "open-in-app",
+      "label": "Open in Pack",
+      "url": "https://www.trypackai.com/app/a/sports-team-e2e"
+    }
+  ],
+  "accent": "#003861"
+}

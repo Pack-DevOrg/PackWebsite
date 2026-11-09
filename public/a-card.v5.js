@@ -34,6 +34,27 @@
     return parts.length >= 2 && parts[0] === 'a' ? parts[parts.length - 1] : '';
   }
 
+  function isLocalFixtureHost(win) {
+    if (!win) return false;
+    if (typeof win.__PACK_CARD_DEV__ === 'boolean') return win.__PACK_CARD_DEV__;
+    var host = String((win.location && win.location.hostname) || '').toLowerCase();
+    return host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+  }
+
+  function fixtureBecauseSearch(win) {
+    if (!isLocalFixtureHost(win)) return '';
+    var search = String((win.location && win.location.search) || '').replace(/^\?/, '');
+    var raw = '';
+    search.split('&').forEach(function (pair) {
+      var eq = pair.indexOf('=');
+      var k = eq >= 0 ? pair.slice(0, eq) : pair;
+      if (k === 'fixture' && !raw) {
+        try { raw = decodeURIComponent(eq >= 0 ? pair.slice(eq + 1) : ''); } catch (e) { raw = ''; }
+      }
+    });
+    return /^[a-z0-9_-]+$/i.test(raw) ? raw : '';
+  }
+
   /* /a/onboard/<token> is the texted connect/admit link, not a card: /api/artifact has no such token and answered 404. The web fallback is the onboarding page. */
   function onboardRedirectBecausePath(pathname) {
     var parts = String(pathname || '').split('/').filter(Boolean);
@@ -973,8 +994,25 @@
       return;
     }
     wireOpenButton(win, state.token);
-    if (!state.token) { card.textContent = messageBecauseStatus(404); return; }
+    if (!state.token) {
+      var fixture = fixtureBecauseSearch(win);
+      if (fixture) { loadFixture(win, fixture); return; }
+      card.textContent = messageBecauseStatus(404);
+      return;
+    }
     load(win, state);
+  }
+
+  function loadFixture(win, fixture) {
+    var doc = win.document;
+    var card = doc.getElementById('card');
+    return win.fetch('/a/fixtures/' + encodeURIComponent(fixture) + '.json', { headers: { accept: 'application/json' } })
+      .then(function (res) { return res.ok ? res.json().then(function (payload) { return { payload: payload }; }) : { status: res.status }; })
+      .then(function (out) {
+        if (out.payload) { render(doc, viewModelBecausePayload(out.payload)); return; }
+        card.textContent = messageBecauseStatus(out.status);
+      })
+      .catch(function () { card.textContent = messageBecauseStatus(0); });
   }
 
   /** One fetch of the card (with the ID token when signed in). `quiet` = a live refresh: keep what is on screen unless it changed. */
@@ -1028,6 +1066,7 @@
   }
 
   var api = { showRequestGate: showRequestGate, agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, onboardRedirectBecausePath: onboardRedirectBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
+  api.fixtureBecauseSearch = fixtureBecauseSearch;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

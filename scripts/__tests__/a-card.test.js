@@ -465,7 +465,7 @@ describe('dedicated web renderers for trip_history, place_detail, and calendar_e
     return dom.window.document;
   }
 
-  it('trip_history renders stat row (trips, countries, cities, year) and structured trip rows with title, dates, and location', async () => {
+  it('trip_history renders stat row (trips, countries, cities, year) and structured trip rows from typed dates, countryCodes, and legs without display-string parsing or United States fallback', async () => {
     const vm = card.viewModelBecausePayload(tripHistoryFixture);
     assert.ok(vm.tripHistory, 'builds tripHistory view model');
     assert.equal(vm.tripHistory.tripCount, 6);
@@ -474,23 +474,73 @@ describe('dedicated web renderers for trip_history, place_detail, and calendar_e
     assert.equal(vm.tripHistory.year, '2026');
     assert.equal(vm.tripHistory.trips.length, 6);
     assert.deepEqual(
-      [vm.tripHistory.trips[0].title, vm.tripHistory.trips[0].dates, vm.tripHistory.trips[0].location],
-      ['Las Vegas weekend', 'Mar 13–16', 'LAX ↔ LAS'],
+      [vm.tripHistory.trips[0].title, vm.tripHistory.trips[0].dates, vm.tripHistory.trips[0].location, vm.tripHistory.trips[0].detail],
+      ['Las Vegas weekend', 'Mar 13–16', 'LAX ↔ LAS', 'UA 1203 / UA 1208 · Park MGM Las Vegas'],
+    );
+    assert.deepEqual(
+      [vm.tripHistory.trips[4].title, vm.tripHistory.trips[4].dates, vm.tripHistory.trips[4].location, vm.tripHistory.trips[4].detail],
+      ['Stay in San Diego', 'Oct 30–Nov 1', 'San Diego, CA', 'SAN'],
     );
 
     const intl = card.viewModelBecausePayload({
       kind: 'trip_history',
       title: 'International Trips',
-      rows: [
-        { label: 'Paris spring', value: 'May 10–15, 2026 · Le Meurice · Paris, France' },
-        { label: 'Tokyo autumn', value: 'Oct 2–9, 2026 · Aman Tokyo · Tokyo, Japan' },
+      trips: [
+        {
+          id: 'trip-paris',
+          title: 'Paris spring',
+          dates: { start: '2026-05-10', end: '2026-05-15' },
+          countryCodes: ['FR'],
+          legs: [{ city: 'Paris', country: 'France', countryCode: 'FR', hotel: 'Le Meurice' }],
+        },
+        {
+          id: 'trip-japan',
+          title: 'Tokyo & Kyoto autumn',
+          dates: { start: '2026-10-02', end: '2026-10-09' },
+          countryCodes: ['JP'],
+          legs: [
+            { from: 'LAX', to: 'HND', flight: 'NH 105', city: 'Tokyo', country: 'Japan', countryCode: 'JP', hotel: 'Aman Tokyo' },
+            { from: 'HND', to: 'KIX', flight: 'NH 985', city: 'Kyoto', country: 'Japan', countryCode: 'JP', hotel: 'Ritz-Carlton Kyoto' },
+          ],
+        },
+        {
+          id: 'trip-vancouver',
+          title: 'Vancouver ski weekend',
+          dates: { start: '2025-12-28', end: '2026-01-02' },
+          countryCodes: ['CA'],
+          legs: [
+            { from: 'SEA', to: 'YVR', flight: 'AC 8091', city: 'Vancouver', state: 'BC', countryCode: 'CA', hotel: 'Fairmont Pacific Rim' },
+            { from: 'YVR', to: 'SEA', flight: 'AC 8094' },
+          ],
+        },
       ],
     });
-    assert.equal(intl.tripHistory.tripCount, 2);
-    assert.equal(intl.tripHistory.countriesCount, 2);
-    assert.equal(intl.tripHistory.citiesCount, 2);
+    assert.equal(intl.tripHistory.tripCount, 3);
+    assert.equal(intl.tripHistory.countriesCount, 3);
+    assert.equal(intl.tripHistory.citiesCount, 4);
     assert.equal(intl.tripHistory.trips[0].dates, 'May 10–15, 2026');
     assert.equal(intl.tripHistory.trips[0].location, 'Paris, France');
+    assert.equal(intl.tripHistory.trips[0].detail, 'Le Meurice');
+    assert.equal(intl.tripHistory.trips[1].dates, 'Oct 2–9, 2026');
+    assert.equal(intl.tripHistory.trips[1].location, 'LAX → HND → KIX');
+    assert.equal(intl.tripHistory.trips[1].detail, 'NH 105 / NH 985 · Aman Tokyo · Ritz-Carlton Kyoto');
+    assert.equal(intl.tripHistory.trips[2].dates, 'Dec 28, 2025–Jan 2, 2026');
+    assert.equal(intl.tripHistory.trips[2].location, 'SEA ↔ YVR');
+    assert.equal(intl.tripHistory.trips[2].detail, 'AC 8091 / AC 8094 · Fairmont Pacific Rim');
+
+    const unparsedDisplayStrings = card.viewModelBecausePayload({
+      kind: 'trip_history',
+      title: 'Unannotated display rows',
+      rows: [
+        { label: 'May 18–21 · Vancouver trip', value: 'AC 8091 (SEA ↔ YVR) · Vancouver, BC' },
+        { label: 'Jun 1–4 · Toronto trip', value: 'Toronto, ON (YYZ)' },
+      ],
+    });
+    assert.equal(unparsedDisplayStrings.tripHistory.countriesCount, 0, 'never infers United States from 2-letter codes or IATA in display strings');
+    assert.equal(unparsedDisplayStrings.tripHistory.citiesCount, 0, 'never re-parses cities from value display strings');
+    assert.equal(unparsedDisplayStrings.tripHistory.trips[0].title, 'May 18–21 · Vancouver trip');
+    assert.equal(unparsedDisplayStrings.tripHistory.trips[0].dates, '');
+    assert.equal(unparsedDisplayStrings.tripHistory.trips[0].location, '');
 
     const doc = await renderPayload(tripHistoryFixture);
     assert.equal(doc.querySelectorAll('.tripStat').length, 4);

@@ -263,35 +263,42 @@
 
   function httpsUrl(raw) { var s = typeof raw === 'string' ? raw.trim() : ''; return /^https:\/\//i.test(s) ? s : ''; }
   function titleWords(raw) { return String(raw || '').trim().split(/\s+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join(' '); }
+  var MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function formatTripDates(rawDates, startIso, endIso, cardYear) {
+    var dObj = rawDates && typeof rawDates === 'object' ? rawDates : null, sRaw = typeof rawDates === 'string' ? rawDates.trim() : String((dObj && (dObj.start || dObj.startDate)) || startIso || '').trim(), eRaw = String((dObj && (dObj.end || dObj.endDate)) || endIso || '').trim(), a = /^(\d{4})-(\d{2})-(\d{2})$/.exec(sRaw);
+    if (dObj && typeof dObj.label === 'string' && dObj.label.trim()) return dObj.label.trim();
+    if (!a) return sRaw;
+    var y1 = a[1], m1 = MONTHS_SHORT[Number(a[2]) - 1], d1 = Number(a[3]), yr = (!cardYear || String(cardYear) !== y1) ? ', ' + y1 : '', b = eRaw && eRaw !== sRaw ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(eRaw) : null, y2 = b ? b[1] : '', m2 = b ? MONTHS_SHORT[Number(b[2]) - 1] : '', d2 = b ? Number(b[3]) : 0;
+    return !b ? m1 + ' ' + d1 + yr : (y1 === y2 && a[2] === b[2] ? m1 + ' ' + d1 + '\u2013' + d2 + yr : y1 === y2 ? m1 + ' ' + d1 + '\u2013' + m2 + ' ' + d2 + yr : m1 + ' ' + d1 + ', ' + y1 + '\u2013' + m2 + ' ' + d2 + ', ' + y2);
+  }
   function tripHistoryBecausePayload(payload) {
-    var b = block(payload, 'trip_history') || payload.tripHistory || payload;
-    var rawRows = Array.isArray(b.trips) ? b.trips : Array.isArray(b.rows) ? b.rows : Array.isArray(payload.rows) ? payload.rows : Array.isArray(payload.fields) ? payload.fields : [];
-    var ym = /\b(20\d{2})\b/.exec(String(payload.year || b.year || payload.title || '')), year = ym ? ym[1] : '';
-    var countries = {}, cities = {};
+    var b = block(payload, 'trip_history') || payload.tripHistory || payload, countries = {}, cities = {}, year = b.year != null ? String(b.year).trim() : payload.year != null ? String(payload.year).trim() : '';
+    var rawRows = Array.isArray(b.trips) ? b.trips : Array.isArray(payload.trips) ? payload.trips : Array.isArray(b.rows) ? b.rows : Array.isArray(payload.rows) ? payload.rows : [];
+    (Array.isArray(b.countryCodes) ? b.countryCodes : []).forEach(function (c) { if (c) countries[String(c).trim().toUpperCase()] = 1; });
     var trips = rawRows.map(function (r) {
-      var lParts = String(r.label || '').split(' \u00B7 '), vParts = String(r.value || '').split(' \u00B7 ');
-      var dateFirst = lParts.length >= 2 && (/^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d/i.test(lParts[0]) || /^\d{4}-\d{2}-\d{2}/.test(lParts[0]));
-      var title = r.title || (dateFirst ? lParts.slice(1).join(' \u00B7 ') : String(r.label || ''));
-      var dates = r.dates || (dateFirst ? lParts[0] : (vParts[0] || ''));
-      var detail = r.detail || (dateFirst ? String(r.value || '') : vParts.slice(1).join(' \u00B7 '));
-      var rm = /\b([A-Z]{3})\s*(?:\u2194|<->|\u2192|->)\s*([A-Z]{3})\b/.exec(detail);
-      var route = rm ? rm[1] + ' \u2194 ' + rm[2] : '', iata = rm ? rm[2] : (/\(([A-Z]{3})\)/.exec(detail) || [])[1] || '', locLabel = '';
-      (Array.isArray(r.countries) ? r.countries : r.country ? [r.country] : []).forEach(function (c) { if (c) countries[c] = 1; });
-      (Array.isArray(r.cities) ? r.cities : r.city ? [r.city] : []).forEach(function (c) { if (c) cities[c] = 1; });
-      detail.split(' \u00B7 ').forEach(function (seg) {
-        var clean = seg.replace(/\s*\([A-Z]{3}\)\s*$/, '').trim(), cm = /^([^,()\/]+),\s*([A-Za-z .'-]+)$/.exec(clean);
-        if (cm) { cities[cm[1].trim()] = 1; countries[/^[A-Z]{2}$/.test(cm[2].trim()) ? 'United States' : cm[2].trim()] = 1; locLabel = clean; }
+      var legs = Array.isArray(r.legs) ? r.legs : [], flightLegs = [], flights = [], stays = [], cityLabels = [], legAirports = [], firstFrom = legs[0] && typeof (legs[0].from || legs[0].departureAirport || legs[0].origin) === 'string' ? String(legs[0].from || legs[0].departureAirport || legs[0].origin).trim() : '';
+      var rowCountries = Array.isArray(r.countryCodes) ? r.countryCodes : Array.isArray(r.destinationCountryCodes) ? r.destinationCountryCodes : Array.isArray(r.countries) ? r.countries : r.country ? [r.country] : [];
+      var rowCities = Array.isArray(r.cityCodes) ? r.cityCodes : Array.isArray(r.destinationCityCodes) ? r.destinationCityCodes : Array.isArray(r.cities) ? r.cities : (r.cityCode || r.city) ? [r.cityCode || r.city] : [];
+      rowCountries.forEach(function (c) { if (c) countries[String(c).trim().toUpperCase()] = 1; });
+      rowCities.forEach(function (c) { if (c) cities[String(c).trim().toUpperCase()] = 1; });
+      legs.forEach(function (l, idx) {
+        if (!l || typeof l !== 'object') return;
+        if (l.countryCode || l.country) countries[String(l.countryCode || l.country).trim().toUpperCase()] = 1;
+        var from = typeof (l.from || l.departureAirport || l.origin) === 'string' ? String(l.from || l.departureAirport || l.origin).trim() : '', to = typeof (l.to || l.arrivalAirport || l.destination) === 'string' ? String(l.to || l.arrivalAirport || l.destination).trim() : '';
+        var fl = typeof l.flight === 'string' && l.flight.trim() ? l.flight.trim() : (l.airlineCode && l.flightNumber ? String(l.airlineCode).trim() + ' ' + String(l.flightNumber).trim() : '');
+        if (from && to) flightLegs.push({ from: from, to: to, roundTrip: Boolean(l.roundTrip) }); else if (to && legAirports.indexOf(to) < 0) legAirports.push(to);
+        if (fl && flights.indexOf(fl) < 0) flights.push(fl);
+        var stay = typeof (l.hotel || l.stay || l.hotelName) === 'string' ? String(l.hotel || l.stay || l.hotelName).trim() : '', cName = typeof l.city === 'string' ? l.city.trim() : '', cQual = typeof (l.state || l.region || l.country) === 'string' ? String(l.state || l.region || l.country).trim() : '';
+        if (stay && stays.indexOf(stay) < 0) stays.push(stay);
+        var cDisp = cName ? (cQual && cName.indexOf(cQual) < 0 ? cName + ', ' + cQual : cName) : '', cityKey = String(l.cityCode || (idx > 0 && firstFrom && to === firstFrom ? '' : to) || cName).trim().toUpperCase();
+        if (cDisp && cityLabels.indexOf(cDisp) < 0) cityLabels.push(cDisp);
+        if (cityKey && !rowCities.length) cities[cityKey] = 1;
       });
-      if (!locLabel && iata) { cities[iata] = 1; countries['United States'] = 1; }
-      var loc = route || locLabel || iata || detail.split(' \u00B7 ').slice(-1)[0] || '';
-      var cleanDetail = detail.replace(/\s*\([A-Z]{3}\s*(?:\u2194|<->|\u2192|->)\s*[A-Z]{3}\)/g, '').split(' \u00B7 ').filter(function (s) { return s && s !== loc; }).join(' \u00B7 ');
-      return { title: title, dates: dates, location: loc, detail: cleanDetail, id: r.ref && r.ref.id ? String(r.ref.id) : '' };
+      var route = flightLegs.length === 1 ? flightLegs[0].from + (flightLegs[0].roundTrip ? ' \u2194 ' : ' \u2192 ') + flightLegs[0].to : (flightLegs.length === 2 && flightLegs[0].from === flightLegs[1].to && flightLegs[0].to === flightLegs[1].from ? flightLegs[0].from + ' \u2194 ' + flightLegs[0].to : (flightLegs.length >= 2 ? [flightLegs[0].from].concat(flightLegs.map(function (fl) { return fl.to; })).join(' \u2192 ') : ''));
+      var loc = typeof r.location === 'string' && r.location.trim() ? r.location.trim() : (route || cityLabels.join(' \u2192 ') || legAirports[0] || (typeof r.cityCode === 'string' ? r.cityCode.trim() : '')), detailParts = (flights.length ? [flights.join(' / ')] : []).concat(stays.length ? [stays.join(' \u00B7 ')] : (route && cityLabels.length ? [cityLabels.join(' \u00B7 ')] : (!route && cityLabels.length && legAirports.length ? [legAirports.join(', ')] : [])));
+      return { title: typeof r.title === 'string' && r.title.trim() ? r.title.trim() : String(r.label || '').trim(), dates: formatTripDates(r.dates, r.startDate || r.start, r.endDate || r.end, year), location: loc, detail: typeof r.detail === 'string' && r.detail.trim() ? r.detail.trim() : detailParts.join(' \u00B7 '), id: String(r.id || r.tripId || (r.ref && r.ref.id) || '') };
     });
-    var tripCount = typeof b.tripCount === 'number' ? b.tripCount : trips.length;
-    var countriesCount = typeof b.countriesCount === 'number' ? b.countriesCount : (Object.keys(countries).length || (trips.length ? 1 : 0));
-    var citiesCount = typeof b.citiesCount === 'number' ? b.citiesCount : (Object.keys(cities).length || trips.length);
-    var stats = [{ key: 'trips', value: String(tripCount), label: tripCount === 1 ? 'Trip' : 'Trips' }, { key: 'countries', value: String(countriesCount), label: countriesCount === 1 ? 'Country' : 'Countries' }, { key: 'cities', value: String(citiesCount), label: citiesCount === 1 ? 'City' : 'Cities' }];
-    if (year) stats.push({ key: 'year', value: year, label: 'Year' });
+    var tripCount = typeof b.tripCount === 'number' ? b.tripCount : trips.length, countriesCount = typeof b.countriesCount === 'number' ? b.countriesCount : Object.keys(countries).length, citiesCount = typeof b.citiesCount === 'number' ? b.citiesCount : Object.keys(cities).length, stats = [{ key: 'trips', value: String(tripCount), label: tripCount === 1 ? 'Trip' : 'Trips' }, { key: 'countries', value: String(countriesCount), label: countriesCount === 1 ? 'Country' : 'Countries' }, { key: 'cities', value: String(citiesCount), label: citiesCount === 1 ? 'City' : 'Cities' }].concat(year ? [{ key: 'year', value: year, label: 'Year' }] : []);
     return { title: payload.title || b.title || 'Trips', tripCount: tripCount, countriesCount: countriesCount, citiesCount: citiesCount, year: year, stats: stats, trips: trips };
   }
   function placeDetailBecausePayload(payload) {

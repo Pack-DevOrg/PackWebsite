@@ -261,9 +261,93 @@
     });
   }
 
+  function httpsUrl(raw) { var s = typeof raw === 'string' ? raw.trim() : ''; return /^https:\/\//i.test(s) ? s : ''; }
+  function titleWords(raw) { return String(raw || '').trim().split(/\s+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join(' '); }
+  var MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function formatTripDates(rawDates, startIso, endIso, cardYear) {
+    var dObj = rawDates && typeof rawDates === 'object' ? rawDates : null, sRaw = typeof rawDates === 'string' ? rawDates.trim() : String((dObj && (dObj.start || dObj.startDate)) || startIso || '').trim();
+    if (dObj && typeof dObj.label === 'string' && dObj.label.trim()) return dObj.label.trim();
+    var eRaw = String((dObj && (dObj.end || dObj.endDate)) || endIso || '').trim(), a = /^(\d{4})-(\d{2})-(\d{2})$/.exec(sRaw);
+    var y1 = a ? a[1] : '', m1 = a ? MONTHS_SHORT[Number(a[2]) - 1] : '', d1 = a ? Number(a[3]) : 0, yr = (!cardYear || String(cardYear) !== y1) ? ', ' + y1 : '';
+    var b = a && eRaw && eRaw !== sRaw ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(eRaw) : null, y2 = b ? b[1] : '', m2 = b ? MONTHS_SHORT[Number(b[2]) - 1] : '', d2 = b ? Number(b[3]) : 0;
+    return !a ? sRaw : !b ? m1 + ' ' + d1 + yr : (y1 === y2 && a[2] === b[2] ? m1 + ' ' + d1 + '\u2013' + d2 + yr : y1 === y2 ? m1 + ' ' + d1 + '\u2013' + m2 + ' ' + d2 + yr : m1 + ' ' + d1 + ', ' + y1 + '\u2013' + m2 + ' ' + d2 + ', ' + y2);
+  }
+  function tripHistoryBecausePayload(payload) {
+    var b = block(payload, 'trip_history') || payload.tripHistory || payload, countries = {}, cities = {}, year = b.year != null ? String(b.year).trim() : payload.year != null ? String(payload.year).trim() : '';
+    var rawRows = Array.isArray(b.trips) ? b.trips : Array.isArray(payload.trips) ? payload.trips : Array.isArray(b.rows) ? b.rows : Array.isArray(payload.rows) ? payload.rows : [];
+    (Array.isArray(b.countryCodes) ? b.countryCodes : []).forEach(function (c) { if (c) countries[String(c).trim().toUpperCase()] = 1; });
+    var trips = rawRows.map(function (r) {
+      var legs = Array.isArray(r.legs) ? r.legs : [], flightLegs = [], flights = [], stays = [], cityLabels = [], legAirports = [];
+      var firstFrom = legs[0] && typeof (legs[0].from || legs[0].departureAirport || legs[0].origin) === 'string' ? String(legs[0].from || legs[0].departureAirport || legs[0].origin).trim() : '';
+      var rowCountries = Array.isArray(r.countryCodes) ? r.countryCodes : Array.isArray(r.destinationCountryCodes) ? r.destinationCountryCodes : Array.isArray(r.countries) ? r.countries : r.country ? [r.country] : [];
+      var rowCities = Array.isArray(r.cityCodes) ? r.cityCodes : Array.isArray(r.destinationCityCodes) ? r.destinationCityCodes : Array.isArray(r.cities) ? r.cities : (r.cityCode || r.city) ? [r.cityCode || r.city] : [];
+      rowCountries.forEach(function (c) { if (c) countries[String(c).trim().toUpperCase()] = 1; }); rowCities.forEach(function (c) { if (c) cities[String(c).trim().toUpperCase()] = 1; });
+      legs.forEach(function (l, idx) {
+        if (!l || typeof l !== 'object') return;
+        if (l.countryCode || l.country) countries[String(l.countryCode || l.country).trim().toUpperCase()] = 1;
+        var from = String(l.from || l.departureAirport || l.origin || '').trim(), to = String(l.to || l.arrivalAirport || l.destination || '').trim();
+        var fl = typeof l.flight === 'string' && l.flight.trim() ? l.flight.trim() : (l.airlineCode && l.flightNumber ? String(l.airlineCode).trim() + ' ' + String(l.flightNumber).trim() : '');
+        if (from && to) flightLegs.push({ from: from, to: to, roundTrip: Boolean(l.roundTrip) }); else if (to && legAirports.indexOf(to) < 0) legAirports.push(to); if (fl && flights.indexOf(fl) < 0) flights.push(fl);
+        var stay = typeof (l.hotel || l.stay || l.hotelName) === 'string' ? String(l.hotel || l.stay || l.hotelName).trim() : ''; if (stay && stays.indexOf(stay) < 0) stays.push(stay);
+        var cName = typeof l.city === 'string' ? l.city.trim() : '', cQual = typeof (l.state || l.region || l.country) === 'string' ? String(l.state || l.region || l.country).trim() : '';
+        var cDisp = cName ? (cQual && cName.indexOf(cQual) < 0 ? cName + ', ' + cQual : cName) : '', cityKey = String(l.cityCode || (idx > 0 && firstFrom && to === firstFrom ? '' : to) || cName).trim().toUpperCase();
+        if (cDisp && cityLabels.indexOf(cDisp) < 0) cityLabels.push(cDisp); if (cityKey && !rowCities.length) cities[cityKey] = 1;
+      });
+      var isRtPair = flightLegs.length === 2 && flightLegs[0].from === flightLegs[1].to && flightLegs[0].to === flightLegs[1].from, multiRoute = flightLegs.length >= 2 ? [flightLegs[0].from].concat(flightLegs.map(function (fl) { return fl.to; })).join(' \u2192 ') : '';
+      var route = flightLegs.length === 1 ? flightLegs[0].from + (flightLegs[0].roundTrip ? ' \u2194 ' : ' \u2192 ') + flightLegs[0].to : (isRtPair ? flightLegs[0].from + ' \u2194 ' + flightLegs[0].to : multiRoute);
+      var loc = typeof r.location === 'string' && r.location.trim() ? r.location.trim() : (route || cityLabels.join(' \u2192 ') || legAirports[0] || (typeof r.cityCode === 'string' ? r.cityCode.trim() : ''));
+      var detailParts = (flights.length ? [flights.join(' / ')] : []).concat(stays.length ? [stays.join(' \u00B7 ')] : (route && cityLabels.length ? [cityLabels.join(' \u00B7 ')] : (!route && cityLabels.length && legAirports.length ? [legAirports.join(', ')] : [])));
+      return {
+        title: typeof r.title === 'string' && r.title.trim() ? r.title.trim() : String(r.label || '').trim(), dates: formatTripDates(r.dates, r.startDate || r.start, r.endDate || r.end, year),
+        location: loc, detail: typeof r.detail === 'string' && r.detail.trim() ? r.detail.trim() : detailParts.join(' \u00B7 '), id: String(r.id || r.tripId || (r.ref && r.ref.id) || '')
+      };
+    });
+    var tripCount = typeof b.tripCount === 'number' ? b.tripCount : trips.length;
+    var countriesCount = typeof b.countriesCount === 'number' ? b.countriesCount : Object.keys(countries).length, citiesCount = typeof b.citiesCount === 'number' ? b.citiesCount : Object.keys(cities).length;
+    var stats = [{ key: 'trips', value: String(tripCount), label: tripCount === 1 ? 'Trip' : 'Trips' }, { key: 'countries', value: String(countriesCount), label: countriesCount === 1 ? 'Country' : 'Countries' }]
+      .concat([{ key: 'cities', value: String(citiesCount), label: citiesCount === 1 ? 'City' : 'Cities' }], year ? [{ key: 'year', value: year, label: 'Year' }] : []);
+    return { title: payload.title || b.title || 'Trips', tripCount: tripCount, countriesCount: countriesCount, citiesCount: citiesCount, year: year, stats: stats, trips: trips };
+  }
+  function placeDetailBecausePayload(payload) {
+    var b = block(payload, 'place_detail') || payload.placeDetail || payload, links = Array.isArray(b.links) ? b.links : [], h = b.hours && typeof b.hours === 'object' ? b.hours : { state: 'unknown' };
+    function linkUrl(k) { for (var i = 0; i < links.length; i++) if (links[i] && links[i].kind === k && httpsUrl(links[i].url)) return httpsUrl(links[i].url); return ''; }
+    var hero = (b.heroImage && httpsUrl(b.heroImage.url)) || (b.photos && b.photos[0] && httpsUrl(b.photos[0].url)) || (b.art && httpsUrl(b.art.url)) || '', art = placeArtUrl((b.cuisine || b.menu) ? 'restaurant' : (b.category || payload.subtitle || ''));
+    var hoursState = h.state === 'open' ? 'Open now' : h.state === 'closed' ? 'Closed' : 'Hours', hoursWeek = Array.isArray(b.hoursWeek) ? b.hoursWeek.filter(function (w) { return w && w.day && w.text; }) : [];
+    var hoursDetail = h.text ? h.text : h.state === 'open' && h.closesAtLocal ? 'Until ' + clock12(h.closesAtLocal) : h.state === 'closed' && h.opensAtLocal ? 'Opens at ' + clock12(h.opensAtLocal) : 'Check website for today\u2019s hours';
+    var phone = typeof b.phone === 'string' && /^[0-9+() \-./]+$/.test(b.phone.trim()) && /\d/.test(b.phone) ? b.phone.trim() : '', callUrl = phone ? 'tel:' + phone.replace(/[^0-9+]/g, '') : '', mapUrl = b.mapUrl ? httpsUrl(b.mapUrl) : directionsUrl(b.location || b);
+    var websiteUrl = linkUrl('website') || httpsUrl(b.website), menuUrl = linkUrl('menu') || httpsUrl((b.menu && b.menu.url) || b.menuUrl), actions = [];
+    if (callUrl) actions.push({ id: 'call', label: 'Call', url: callUrl, primary: b.primaryAction === 'call' }); if (mapUrl) actions.push({ id: 'directions', label: 'Directions', url: mapUrl, primary: b.primaryAction !== 'call' });
+    if (websiteUrl) actions.push({ id: 'website', label: 'Website', url: websiteUrl, primary: false }); if (menuUrl && menuUrl !== websiteUrl) actions.push({ id: 'menu', label: 'Menu', url: menuUrl, primary: false });
+    return {
+      name: b.name || payload.title || '', category: titleWords(b.cuisine || b.category || payload.subtitle || ''), rating: typeof b.rating === 'number' ? '\u2605 ' + b.rating.toFixed(1) : '',
+      price: typeof b.priceLevel === 'number' && b.priceLevel > 0 ? new Array(b.priceLevel + 1).join('$') : '', neighborhood: b.neighborhood || awayLine(b) || '', address: typeof b.address === 'string' ? b.address.trim() : '',
+      hero: hero, art: art, hoursState: hoursState, hoursOpen: h.state === 'open', hoursClosed: h.state === 'closed', hoursDetail: hoursDetail, hoursWeek: hoursWeek, callUrl: callUrl, mapUrl: mapUrl, websiteUrl: websiteUrl, menuUrl: menuUrl, actions: actions
+    };
+  }
+  function calendarEventBecausePayload(payload) {
+    var b = block(payload, 'calendar_event') || payload.calendarEvent || payload, w = b.when && typeof b.when === 'object' ? b.when : {};
+    var startLocal = typeof w.startLocal === 'string' ? w.startLocal : '', endLocal = typeof w.endLocal === 'string' ? w.endLocal : '', tz = w.tz && typeof w.tz.iana === 'string' ? w.tz.iana : 'UTC';
+    var dm = /^(\d{4})-(\d{2})-(\d{2})/.exec(startLocal), dt = dm ? new Date(Date.UTC(Number(dm[1]), Number(dm[2]) - 1, Number(dm[3]), 12, 0, 0)) : null;
+    var monthShort = dt ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short' }).format(dt).toUpperCase() : '', dayNum = dm ? String(Number(dm[3])) : '';
+    var dateLine = dt ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }).format(dt) : startLocal.slice(0, 10);
+    var st = startLocal.slice(11, 16), et = endLocal.slice(11, 16), timeLine = w.allDay ? 'All day' : (st ? clock12(st) + (et ? ' \u2013 ' + clock12(et) : '') : '');
+    var title = b.title || payload.title || 'Event', location = typeof b.location === 'string' ? b.location.trim() : '';
+    function compactIso(iso, allDay) { var m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(iso || ''); return m ? (allDay ? m[1] + m[2] + m[3] : m[1] + m[2] + m[3] + 'T' + (m[4] || '09') + (m[5] || '00') + '00') : ''; }
+    var cStart = compactIso(startLocal, w.allDay), cEnd = compactIso(endLocal || startLocal, w.allDay), dtProp = w.allDay ? ';VALUE=DATE:' : (tz ? ';TZID=' + tz + ':' : ':');
+    var icsText = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pack//Web Card//EN', 'BEGIN:VEVENT', 'SUMMARY:' + title, 'DTSTART' + dtProp + cStart, 'DTEND' + dtProp + cEnd].concat(location ? ['LOCATION:' + location] : [], ['END:VEVENT', 'END:VCALENDAR']).join('\r\n');
+    var defaultGoogleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) +
+      '&dates=' + encodeURIComponent(cStart + '/' + cEnd) + (tz ? '&ctz=' + encodeURIComponent(tz) : '') + (location ? '&location=' + encodeURIComponent(location) : '');
+    var googleUrl = (b.url || b.calendarUrl || b.googleUrl) ? httpsUrl(b.url || b.calendarUrl || b.googleUrl) : defaultGoogleUrl;
+    var attendees = (Array.isArray(b.attendees) ? b.attendees : []).map(function (a) { return a && (a.name || a.email) ? (a.name ? a.name + ' (' + a.email + ')' : a.email) : ''; }).filter(Boolean);
+    return {
+      title: title, statusLabel: b.state === 'created' ? 'Added to calendar' : 'Calendar invite', calendarName: b.calendar && b.calendar.name ? b.calendar.name : '',
+      monthShort: monthShort, dayNum: dayNum, dateLine: dateLine, timeLine: timeLine, tz: tz, location: location, attendees: attendees, icsText: icsText, googleUrl: googleUrl
+    };
+  }
+
   function viewModelBecausePayload(payload) {
     var kind = payload && payload.kind ? String(payload.kind) : '';
-    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, agenda: null, mapImage: '', mapPins: [], sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
+    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, agenda: null, tripHistory: null, placeDetail: null, calendarEvent: null, mapImage: '', mapPins: [], sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
     if (!payload) return model;
     if (kind === 'trip' && payload.data) {
       model.title = payload.data.title || 'Trip';
@@ -293,6 +377,9 @@
     } else if (kind === 'sports_team') {
       model.team = teamBecausePayload(payload);
       model.sections = sectionsBecauseRows(payload.rows);
+    } else if (kind === 'trip_history') { model.tripHistory = tripHistoryBecausePayload(payload);
+    } else if (kind === 'place_detail') { model.placeDetail = placeDetailBecausePayload(payload); model.title = model.placeDetail.name || model.title;
+    } else if (kind === 'calendar_event') { model.calendarEvent = calendarEventBecausePayload(payload); model.title = model.calendarEvent.title || model.title;
     } else {
       model.sections = sectionsBecauseRows(payload.rows);
     }
@@ -569,6 +656,54 @@
     }
   }
 
+  function renderTripHistory(doc, card, th, el) {
+    var stats = el('div', 'tripStats'), ul = el('ul', 'tripList'); card.appendChild(el('p', 'kind', 'Trip history')); card.appendChild(el('h1', 'title', th.title));
+    th.stats.forEach(function (s) { var st = el('div', 'tripStat'); st.appendChild(el('span', 'tripStatVal', s.value)); st.appendChild(el('span', 'tripStatLbl', s.label)); stats.appendChild(st); });
+    card.appendChild(stats);
+    th.trips.forEach(function (t) {
+      var li = el('li', 'tripRow'), top = el('div', 'tripTop'), sub = el('div', 'tripSub');
+      top.appendChild(el('span', 'tripTitle', t.title)); if (t.dates) top.appendChild(el('span', 'tripDates', t.dates));
+      if (t.location) sub.appendChild(el('span', 'tripLoc', t.location)); if (t.detail) sub.appendChild(el('span', 'tripDetail', t.detail));
+      li.appendChild(top); li.appendChild(sub); ul.appendChild(li);
+    });
+    card.appendChild(ul);
+  }
+  function renderPlaceDetail(doc, card, pd, el) {
+    var hero = el('div', 'placeHero'), scrim = el('div', 'placeHeroScrim'), heroSrc = typeof pd.hero === 'string' && /^https:\/\//i.test(pd.hero) ? pd.hero : pd.art;
+    if (heroSrc) { var img = doc.createElement('img'); img.className = 'placeHeroImg'; img.src = heroSrc; img.alt = pd.name; hero.appendChild(img); }
+    if (pd.category) scrim.appendChild(el('span', 'placeHeroBadge', pd.category));
+    scrim.appendChild(el('h1', 'placeHeroTitle', pd.name)); hero.appendChild(scrim); card.appendChild(hero);
+    var meta = (pd.rating || pd.price || pd.neighborhood) ? [pd.category, pd.rating, pd.price, pd.neighborhood].filter(Boolean).join(' \u00B7 ') : '', hrs = el('div', 'placeDetailHours');
+    if (meta) card.appendChild(el('p', 'placeDetailMeta', meta)); if (pd.address) card.appendChild(el('p', 'placeAddress', pd.address));
+    hrs.appendChild(el('b', pd.hoursOpen ? 'open' : pd.hoursClosed ? 'closed' : '', pd.hoursState)); if (pd.hoursDetail) hrs.appendChild(doc.createTextNode(' \u00B7 ' + pd.hoursDetail));
+    if (pd.hoursWeek.length) {
+      var wk = el('div', 'placeWeek');
+      pd.hoursWeek.forEach(function (w) { var r = el('div', 'placeWeekRow'); r.appendChild(el('span', 'label', w.day)); r.appendChild(el('span', 'value', w.text)); wk.appendChild(r); });
+      hrs.appendChild(wk);
+    }
+    card.appendChild(hrs);
+    if (pd.actions.length) {
+      var act = el('div', 'placeActions');
+      pd.actions.forEach(function (a) {
+        if (!a || typeof a.url !== 'string' || !(/^https:\/\//i.test(a.url) || (a.id === 'call' && /^tel:\+?[0-9]+$/.test(a.url)))) return;
+        var btn = el('a', a.primary ? 'placeActionBtn primary' : 'placeActionBtn', a.label); btn.href = a.url;
+        if (/^https:\/\//i.test(a.url)) { btn.target = '_blank'; btn.rel = 'noopener noreferrer'; } act.appendChild(btn);
+      });
+      if (act.childNodes.length) card.appendChild(act);
+    }
+  }
+  function renderCalendarEvent(doc, card, cal, el) {
+    var head = el('div', 'calHead'), tb = el('div', 'calTimeBlock'), tm = el('div', 'calTimeMeta'), acts = el('div', 'calActions');
+    head.appendChild(el('span', 'calBadge', cal.statusLabel)); if (cal.calendarName) head.appendChild(el('span', 'kind', cal.calendarName));
+    card.appendChild(head); card.appendChild(el('h1', 'calTitle', cal.title));
+    if (cal.monthShort && cal.dayNum) { var db = el('div', 'calDateBox'); db.appendChild(el('span', 'calMonth', cal.monthShort)); db.appendChild(el('span', 'calDay', cal.dayNum)); tb.appendChild(db); }
+    if (cal.dateLine) tm.appendChild(el('span', 'calDateLine', cal.dateLine)); if (cal.timeLine) tm.appendChild(el('span', 'calTimePrimary', cal.timeLine)); if (cal.tz) tm.appendChild(el('span', 'calTz', cal.tz));
+    tb.appendChild(tm); card.appendChild(tb);
+    if (cal.location) { var lr = el('div', 'row'); lr.appendChild(el('span', 'label', 'Location')); lr.appendChild(el('span', 'value', cal.location)); card.appendChild(lr); }
+    if (cal.attendees.length) { var ar = el('div', 'row'); ar.appendChild(el('span', 'label', 'Guests')); ar.appendChild(el('span', 'value', cal.attendees.join(', '))); card.appendChild(ar); }
+    if (typeof cal.googleUrl === 'string' && /^https:\/\//i.test(cal.googleUrl)) { var add = el('a', 'calAddBtn', 'Add to Calendar'); add.href = cal.googleUrl; add.target = '_blank'; add.rel = 'noopener noreferrer'; acts.appendChild(add); card.appendChild(acts); }
+  }
+
   function render(doc, model) {
     function el(tag, cls, text) {
       var n = doc.createElement(tag);
@@ -591,6 +726,10 @@
       renderSource(doc, card, model, el);
       if (model.title) doc.title = model.title + ' | Pack';
       return;
+    }
+    if (model.tripHistory || model.placeDetail || model.calendarEvent) {
+      if (model.tripHistory) renderTripHistory(doc, card, model.tripHistory, el); else if (model.placeDetail) renderPlaceDetail(doc, card, model.placeDetail, el); else renderCalendarEvent(doc, card, model.calendarEvent, el);
+      renderSource(doc, card, model, el); if (model.title) doc.title = model.title + ' | Pack'; return;
     }
     if (!model.places.length) card.appendChild(el('p', 'kind', model.label));
     card.appendChild(el('h1', 'title', model.title));

@@ -2,6 +2,15 @@
   "kind": "trip_history",
   "version": 1,
   "title": "2026 Trips",
+  "year": 2026,
+  "trips": [
+    { "id": "past-vegas-2026-03", "title": "Las Vegas weekend", "dates": { "start": "2026-03-13", "end": "2026-03-16" }, "countryCodes": ["US"], "legs": [{ "from": "LAX", "to": "LAS", "flight": "UA 1203", "hotel": "Park MGM Las Vegas", "city": "Las Vegas", "state": "NV", "countryCode": "US" }, { "from": "LAS", "to": "LAX", "flight": "UA 1208" }] },
+    { "id": "past-seattle-2026-05", "title": "Seattle work trip", "dates": { "start": "2026-05-18", "end": "2026-05-21" }, "countryCodes": ["US"], "legs": [{ "from": "LAX", "to": "SEA", "flight": "AS 1335", "hotel": "Hyatt Regency Seattle", "city": "Seattle", "state": "WA", "countryCode": "US" }, { "from": "SEA", "to": "LAX", "flight": "AS 1340" }] },
+    { "id": "past-nyc-2026-07", "title": "New York in July", "dates": { "start": "2026-07-09", "end": "2026-07-13" }, "countryCodes": ["US"], "legs": [{ "from": "LAX", "to": "EWR", "flight": "UA 2150", "hotel": "Moxy NYC Times Square", "city": "New York", "state": "NY", "countryCode": "US" }, { "from": "EWR", "to": "LAX", "flight": "UA 2157" }] },
+    { "id": "past-aspen-2026-10", "title": "Aspen fall retreat", "dates": { "start": "2026-10-26", "end": "2026-10-30" }, "countryCodes": ["US"], "legs": [{ "from": "LAX", "to": "ASE", "city": "Aspen", "state": "CO", "countryCode": "US" }, { "from": "ASE", "to": "LAX" }] },
+    { "id": "past-sandiego-2026-10", "title": "Stay in San Diego", "dates": { "start": "2026-10-30", "end": "2026-11-01" }, "countryCodes": ["US"], "legs": [{ "to": "SAN", "city": "San Diego", "state": "CA", "countryCode": "US" }] },
+    { "id": "upcoming-vegas", "title": "Vegas with Chase", "dates": { "start": "2026-11-20", "end": "2026-11-23" }, "countryCodes": ["US"], "legs": [{ "from": "LAX", "to": "LAS", "flight": "UA 2468", "hotel": "Park MGM Las Vegas", "city": "Las Vegas", "state": "NV", "countryCode": "US" }, { "from": "LAS", "to": "LAX", "flight": "UA 2471" }] }
+  ],
   "rows": [
     {
       "label": "Mar 13–16 · Las Vegas weekend",

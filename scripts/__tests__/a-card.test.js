@@ -505,8 +505,9 @@ describe('dedicated web renderers for trip_history, place_detail, and calendar_e
     assert.ok(vm.placeDetail, 'builds placeDetail view model');
     assert.equal(vm.placeDetail.name, "Wahoo's Fish Taco");
     assert.equal(vm.placeDetail.category, 'Mexican');
-    assert.match(vm.placeDetail.hero, /dining\.restaurant\.jpg$/);
-    assert.equal(vm.placeDetail.websiteUrl, 'https://www.wahoos.com');
+    assert.equal(vm.placeDetail.hero, '');
+    assert.match(vm.placeDetail.art, /dining\.restaurant\.jpg$/);
+    assert.equal(vm.placeDetail.websiteUrl, '');
     assert.equal(vm.placeDetail.menuUrl, 'https://www.wahoos.com/food-menus/');
     assert.ok(vm.placeDetail.mapUrl.startsWith('https://maps.apple.com/'));
 
@@ -517,7 +518,6 @@ describe('dedicated web renderers for trip_history, place_detail, and calendar_e
     const actionHrefs = [...doc.querySelectorAll('a.placeActionBtn')].map((a) => [a.textContent.trim(), a.getAttribute('href')]);
     assert.deepEqual(actionHrefs, [
       ['Directions', "https://maps.apple.com/?ll=33.9805965423584,-118.43761444091797&q=Wahoo's%20Fish%20Taco"],
-      ['Website', 'https://www.wahoos.com'],
       ['Menu', 'https://www.wahoos.com/food-menus/'],
     ]);
 
@@ -550,7 +550,7 @@ describe('dedicated web renderers for trip_history, place_detail, and calendar_e
     assert.equal(callBtn.getAttribute('href'), 'tel:+12129651414');
   });
 
-  it('calendar_event renders formatted date/time block, timezone/location/attendees, and working Add to Calendar (.ics + Google Calendar) actions', async () => {
+  it('calendar_event renders formatted date/time block, timezone/location/attendees, and working Add to Calendar action', async () => {
     const vm = card.viewModelBecausePayload(calendarEventFixture);
     assert.ok(vm.calendarEvent, 'builds calendarEvent view model');
     assert.equal(vm.calendarEvent.title, 'Dinner with Sam');
@@ -559,21 +559,55 @@ describe('dedicated web renderers for trip_history, place_detail, and calendar_e
     assert.equal(vm.calendarEvent.dateLine, 'Saturday, Nov 7, 2026');
     assert.equal(vm.calendarEvent.timeLine, '7:00 PM – 8:00 PM');
     assert.equal(vm.calendarEvent.tz, 'America/Los_Angeles');
-    assert.ok(vm.calendarEvent.icsUrl.startsWith('data:text/calendar;charset=utf-8,'));
-    assert.ok(decodeURIComponent(vm.calendarEvent.icsUrl).includes('SUMMARY:Dinner with Sam'));
-    assert.ok(decodeURIComponent(vm.calendarEvent.icsUrl).includes('DTSTART;TZID=America/Los_Angeles:20261107T190000'));
+    assert.ok(vm.calendarEvent.icsText.includes('SUMMARY:Dinner with Sam'));
+    assert.ok(vm.calendarEvent.icsText.includes('DTSTART;TZID=America/Los_Angeles:20261107T190000'));
     assert.ok(vm.calendarEvent.googleUrl.startsWith('https://calendar.google.com/calendar/render?action=TEMPLATE'));
 
     const doc = await renderPayload(calendarEventFixture);
     assert.equal(doc.querySelector('.calTitle').textContent, 'Dinner with Sam');
     assert.equal(doc.querySelector('.calTimePrimary').textContent, '7:00 PM – 8:00 PM');
     assert.ok(doc.querySelector('.calDateLine').textContent.includes('Saturday, Nov 7, 2026'));
-    const icsLink = doc.querySelector('a.calAddBtn');
-    assert.ok(icsLink, 'renders Add to Calendar button');
-    assert.ok(icsLink.getAttribute('href').startsWith('data:text/calendar;charset=utf-8,'));
-    const gcalLink = doc.querySelector('a.calSecondaryBtn');
-    assert.ok(gcalLink, 'renders Google Calendar button');
-    assert.ok(gcalLink.getAttribute('href').startsWith('https://calendar.google.com/calendar/render'));
+    const addLink = doc.querySelector('a.calAddBtn');
+    assert.ok(addLink, 'renders Add to Calendar button');
+    assert.ok(addLink.getAttribute('href').startsWith('https://calendar.google.com/calendar/render'));
+  });
+
+  it('rejects javascript: and data: URLs in place_detail and calendar_event payloads and renders no unsafe link or hero src', async () => {
+    const unsafePlaceDoc = await renderPayload({
+      kind: 'place_detail',
+      title: 'Unsafe Place',
+      blocks: [{
+        kind: 'place_detail',
+        name: 'Unsafe Place',
+        heroImage: { url: 'javascript:alert(1)' },
+        photos: [{ url: 'data:text/html,<script>alert(1)</script>' }],
+        art: { url: 'javascript:alert(2)', key: '../../evil' },
+        phone: 'javascript:alert(3)',
+        mapUrl: 'javascript:alert(4)',
+        website: 'javascript:alert(5)',
+        menu: { url: 'data:text/html,evil' },
+        links: [
+          { kind: 'website', url: 'javascript:alert(6)' },
+          { kind: 'menu', url: 'javascript:alert(7)' },
+        ],
+      }],
+    });
+    assert.equal(unsafePlaceDoc.querySelectorAll('#card a').length, 0, 'renders no action links for javascript:/data: URLs');
+    const heroImg = unsafePlaceDoc.querySelector('.placeHero img.placeHeroImg');
+    assert.ok(heroImg, 'falls back to safe category art');
+    assert.equal(heroImg.getAttribute('src'), '/assets/clip-headers/dining.restaurant.jpg');
+
+    const unsafeCalDoc = await renderPayload({
+      kind: 'calendar_event',
+      title: 'Unsafe Event',
+      blocks: [{
+        kind: 'calendar_event',
+        title: 'Unsafe Event',
+        url: 'javascript:alert(1)',
+        when: { startLocal: '2026-11-07T19:00:00', endLocal: '2026-11-07T20:00:00', tz: { iana: 'America/Los_Angeles' } },
+      }],
+    });
+    assert.equal(unsafeCalDoc.querySelectorAll('#card a').length, 0, 'renders no calendar link when url is javascript:');
   });
 });
 

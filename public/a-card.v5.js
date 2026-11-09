@@ -261,13 +261,8 @@
     });
   }
 
-  function normalizeWebUrl(raw) {
-    var s = typeof raw === 'string' ? raw.trim() : '';
-    return /^http:\/\//i.test(s) ? 'https://' + s.slice(7) : /^https:\/\//i.test(s) ? s : '';
-  }
-  function titleWords(raw) {
-    return String(raw || '').trim().split(/\s+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join(' ');
-  }
+  function httpsUrl(raw) { var s = typeof raw === 'string' ? raw.trim() : ''; return /^https:\/\//i.test(s) ? s : ''; }
+  function titleWords(raw) { return String(raw || '').trim().split(/\s+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join(' '); }
   function tripHistoryBecausePayload(payload) {
     var b = block(payload, 'trip_history') || payload.tripHistory || payload;
     var rawRows = Array.isArray(b.trips) ? b.trips : Array.isArray(b.rows) ? b.rows : Array.isArray(payload.rows) ? payload.rows : Array.isArray(payload.fields) ? payload.fields : [];
@@ -301,19 +296,20 @@
   }
   function placeDetailBecausePayload(payload) {
     var b = block(payload, 'place_detail') || payload.placeDetail || payload, links = Array.isArray(b.links) ? b.links : [];
-    function linkUrl(k) { for (var i = 0; i < links.length; i++) if (links[i] && links[i].kind === k && normalizeWebUrl(links[i].url)) return normalizeWebUrl(links[i].url); return ''; }
-    var hero = (b.heroImage && normalizeWebUrl(b.heroImage.url)) || (b.photos && b.photos[0] && normalizeWebUrl(b.photos[0].url)) || (b.art && normalizeWebUrl(b.art.url)) || (b.art && b.art.key ? '/assets/clip-headers/' + b.art.key + '.jpg' : (b.cuisine || b.menu ? '/assets/clip-headers/dining.restaurant.jpg' : placeArtUrl(b.category || payload.subtitle || '')));
+    function linkUrl(k) { for (var i = 0; i < links.length; i++) if (links[i] && links[i].kind === k && httpsUrl(links[i].url)) return httpsUrl(links[i].url); return ''; }
+    var hero = (b.heroImage && httpsUrl(b.heroImage.url)) || (b.photos && b.photos[0] && httpsUrl(b.photos[0].url)) || (b.art && httpsUrl(b.art.url)) || '';
+    var art = placeArtUrl((b.cuisine || b.menu) ? 'restaurant' : (b.category || payload.subtitle || ''));
     var h = b.hours && typeof b.hours === 'object' ? b.hours : { state: 'unknown' };
     var hoursState = h.state === 'open' ? 'Open now' : h.state === 'closed' ? 'Closed' : 'Hours';
     var hoursDetail = h.text ? h.text : h.state === 'open' && h.closesAtLocal ? 'Until ' + clock12(h.closesAtLocal) : h.state === 'closed' && h.opensAtLocal ? 'Opens at ' + clock12(h.opensAtLocal) : 'Check website for today\u2019s hours';
-    var phone = typeof b.phone === 'string' && /^[0-9+() \-./]+$/.test(b.phone.trim()) ? b.phone.trim() : '';
-    var callUrl = phone ? 'tel:' + phone.replace(/[^0-9+]/g, '') : '', mapUrl = normalizeWebUrl(b.mapUrl) || directionsUrl(b.location || b);
-    var websiteUrl = linkUrl('website') || normalizeWebUrl(b.website), menuUrl = linkUrl('menu') || normalizeWebUrl((b.menu && b.menu.url) || b.menuUrl), actions = [];
+    var phone = typeof b.phone === 'string' && /^[0-9+() \-./]+$/.test(b.phone.trim()) && /\d/.test(b.phone) ? b.phone.trim() : '';
+    var callUrl = phone ? 'tel:' + phone.replace(/[^0-9+]/g, '') : '', mapUrl = b.mapUrl ? httpsUrl(b.mapUrl) : directionsUrl(b.location || b);
+    var websiteUrl = linkUrl('website') || httpsUrl(b.website), menuUrl = linkUrl('menu') || httpsUrl((b.menu && b.menu.url) || b.menuUrl), actions = [];
     if (callUrl) actions.push({ id: 'call', label: 'Call', url: callUrl, primary: b.primaryAction === 'call' });
     if (mapUrl) actions.push({ id: 'directions', label: 'Directions', url: mapUrl, primary: b.primaryAction !== 'call' });
     if (websiteUrl) actions.push({ id: 'website', label: 'Website', url: websiteUrl, primary: false });
     if (menuUrl && menuUrl !== websiteUrl) actions.push({ id: 'menu', label: 'Menu', url: menuUrl, primary: false });
-    return { name: b.name || payload.title || '', category: titleWords(b.cuisine || b.category || payload.subtitle || ''), rating: typeof b.rating === 'number' ? '\u2605 ' + b.rating.toFixed(1) : '', price: typeof b.priceLevel === 'number' && b.priceLevel > 0 ? new Array(b.priceLevel + 1).join('$') : '', neighborhood: b.neighborhood || awayLine(b) || '', address: typeof b.address === 'string' ? b.address.trim() : '', hero: hero, hoursState: hoursState, hoursOpen: h.state === 'open', hoursClosed: h.state === 'closed', hoursDetail: hoursDetail, hoursWeek: Array.isArray(b.hoursWeek) ? b.hoursWeek.filter(function (w) { return w && w.day && w.text; }) : [], callUrl: callUrl, mapUrl: mapUrl, websiteUrl: websiteUrl, menuUrl: menuUrl, actions: actions };
+    return { name: b.name || payload.title || '', category: titleWords(b.cuisine || b.category || payload.subtitle || ''), rating: typeof b.rating === 'number' ? '\u2605 ' + b.rating.toFixed(1) : '', price: typeof b.priceLevel === 'number' && b.priceLevel > 0 ? new Array(b.priceLevel + 1).join('$') : '', neighborhood: b.neighborhood || awayLine(b) || '', address: typeof b.address === 'string' ? b.address.trim() : '', hero: hero, art: art, hoursState: hoursState, hoursOpen: h.state === 'open', hoursClosed: h.state === 'closed', hoursDetail: hoursDetail, hoursWeek: Array.isArray(b.hoursWeek) ? b.hoursWeek.filter(function (w) { return w && w.day && w.text; }) : [], callUrl: callUrl, mapUrl: mapUrl, websiteUrl: websiteUrl, menuUrl: menuUrl, actions: actions };
   }
   function calendarEventBecausePayload(payload) {
     var b = block(payload, 'calendar_event') || payload.calendarEvent || payload, w = b.when && typeof b.when === 'object' ? b.when : {};
@@ -325,11 +321,11 @@
     var title = b.title || payload.title || 'Event', location = typeof b.location === 'string' ? b.location.trim() : '';
     function compactIso(iso, allDay) { var m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(iso || ''); return m ? (allDay ? m[1] + m[2] + m[3] : m[1] + m[2] + m[3] + 'T' + (m[4] || '09') + (m[5] || '00') + '00') : ''; }
     var cStart = compactIso(startLocal, w.allDay), cEnd = compactIso(endLocal || startLocal, w.allDay), dtProp = w.allDay ? ';VALUE=DATE:' : (tz ? ';TZID=' + tz + ':' : ':');
-    var icsLines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pack//Web Card//EN', 'BEGIN:VEVENT', 'SUMMARY:' + title, 'DTSTART' + dtProp + cStart, 'DTEND' + dtProp + cEnd].concat(location ? ['LOCATION:' + location] : [], ['END:VEVENT', 'END:VCALENDAR']);
-    var icsUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsLines.join('\r\n'));
-    var googleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) + '&dates=' + encodeURIComponent(cStart + '/' + cEnd) + (tz ? '&ctz=' + encodeURIComponent(tz) : '') + (location ? '&location=' + encodeURIComponent(location) : '');
+    var icsText = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pack//Web Card//EN', 'BEGIN:VEVENT', 'SUMMARY:' + title, 'DTSTART' + dtProp + cStart, 'DTEND' + dtProp + cEnd].concat(location ? ['LOCATION:' + location] : [], ['END:VEVENT', 'END:VCALENDAR']).join('\r\n');
+    var defaultGoogleUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) + '&dates=' + encodeURIComponent(cStart + '/' + cEnd) + (tz ? '&ctz=' + encodeURIComponent(tz) : '') + (location ? '&location=' + encodeURIComponent(location) : '');
+    var googleUrl = (b.url || b.calendarUrl || b.googleUrl) ? httpsUrl(b.url || b.calendarUrl || b.googleUrl) : defaultGoogleUrl;
     var attendees = (Array.isArray(b.attendees) ? b.attendees : []).map(function (a) { return a && (a.name || a.email) ? (a.name ? a.name + ' (' + a.email + ')' : a.email) : ''; }).filter(Boolean);
-    return { title: title, statusLabel: b.state === 'created' ? 'Added to calendar' : 'Calendar invite', calendarName: b.calendar && b.calendar.name ? b.calendar.name : '', monthShort: monthShort, dayNum: dayNum, dateLine: dateLine, timeLine: timeLine, tz: tz, location: location, attendees: attendees, icsUrl: icsUrl, googleUrl: googleUrl };
+    return { title: title, statusLabel: b.state === 'created' ? 'Added to calendar' : 'Calendar invite', calendarName: b.calendar && b.calendar.name ? b.calendar.name : '', monthShort: monthShort, dayNum: dayNum, dateLine: dateLine, timeLine: timeLine, tz: tz, location: location, attendees: attendees, icsText: icsText, googleUrl: googleUrl };
   }
 
   function viewModelBecausePayload(payload) {
@@ -660,8 +656,8 @@
     card.appendChild(ul);
   }
   function renderPlaceDetail(doc, card, pd, el) {
-    var hero = el('div', 'placeHero'), scrim = el('div', 'placeHeroScrim');
-    if (pd.hero) { var img = doc.createElement('img'); img.className = 'placeHeroImg'; img.src = pd.hero; img.alt = pd.name; hero.appendChild(img); }
+    var hero = el('div', 'placeHero'), scrim = el('div', 'placeHeroScrim'), heroSrc = typeof pd.hero === 'string' && /^https:\/\//i.test(pd.hero) ? pd.hero : pd.art;
+    if (heroSrc) { var img = doc.createElement('img'); img.className = 'placeHeroImg'; img.src = heroSrc; img.alt = pd.name; hero.appendChild(img); }
     if (pd.category) scrim.appendChild(el('span', 'placeHeroBadge', pd.category));
     scrim.appendChild(el('h1', 'placeHeroTitle', pd.name)); hero.appendChild(scrim); card.appendChild(hero);
     var meta = (pd.rating || pd.price || pd.neighborhood) ? [pd.category, pd.rating, pd.price, pd.neighborhood].filter(Boolean).join(' \u00B7 ') : '';
@@ -678,8 +674,8 @@
     card.appendChild(hrs);
     if (pd.actions.length) {
       var act = el('div', 'placeActions');
-      pd.actions.forEach(function (a) { var btn = el('a', a.primary ? 'placeActionBtn primary' : 'placeActionBtn', a.label); btn.href = a.url; if (!/^tel:/i.test(a.url)) { btn.target = '_blank'; btn.rel = 'noopener noreferrer'; } act.appendChild(btn); });
-      card.appendChild(act);
+      pd.actions.forEach(function (a) { if (!a || typeof a.url !== 'string' || !(/^https:\/\//i.test(a.url) || (a.id === 'call' && /^tel:\+?[0-9]+$/.test(a.url)))) return; var btn = el('a', a.primary ? 'placeActionBtn primary' : 'placeActionBtn', a.label); btn.href = a.url; if (/^https:\/\//i.test(a.url)) { btn.target = '_blank'; btn.rel = 'noopener noreferrer'; } act.appendChild(btn); });
+      if (act.childNodes.length) card.appendChild(act);
     }
   }
   function renderCalendarEvent(doc, card, cal, el) {
@@ -694,9 +690,7 @@
     tb.appendChild(tm); card.appendChild(tb);
     if (cal.location) { var lr = el('div', 'row'); lr.appendChild(el('span', 'label', 'Location')); lr.appendChild(el('span', 'value', cal.location)); card.appendChild(lr); }
     if (cal.attendees.length) { var ar = el('div', 'row'); ar.appendChild(el('span', 'label', 'Guests')); ar.appendChild(el('span', 'value', cal.attendees.join(', '))); card.appendChild(ar); }
-    var add = el('a', 'calAddBtn', 'Add to Calendar'), gcal = el('a', 'calSecondaryBtn', 'Open in Google Calendar');
-    add.href = cal.icsUrl; add.setAttribute('download', 'event.ics'); gcal.href = cal.googleUrl; gcal.target = '_blank'; gcal.rel = 'noopener noreferrer';
-    acts.appendChild(add); acts.appendChild(gcal); card.appendChild(acts);
+    if (typeof cal.googleUrl === 'string' && /^https:\/\//i.test(cal.googleUrl)) { var add = el('a', 'calAddBtn', 'Add to Calendar'); add.href = cal.googleUrl; add.target = '_blank'; add.rel = 'noopener noreferrer'; acts.appendChild(add); card.appendChild(acts); }
   }
 
   function render(doc, model) {

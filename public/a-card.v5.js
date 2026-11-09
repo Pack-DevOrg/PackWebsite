@@ -36,8 +36,7 @@
 
   function isLocalFixtureHost(win) {
     if (!win) return false;
-    if (win.__PACK_CARD_DEV__ === true) return true;
-    if (win.__PACK_CARD_DEV__ === false) return false;
+    if (typeof win.__PACK_CARD_DEV__ === 'boolean') return win.__PACK_CARD_DEV__;
     var host = String((win.location && win.location.hostname) || '').toLowerCase();
     return host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
   }
@@ -1066,7 +1065,8 @@
       .catch(function () { if (!quiet) card.textContent = messageBecauseStatus(0); });
   }
 
-  var api = { showRequestGate: showRequestGate, agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, fixtureBecauseSearch: fixtureBecauseSearch, onboardRedirectBecausePath: onboardRedirectBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
+  var api = { showRequestGate: showRequestGate, agendaBecauseBlock: agendaBecauseBlock, beginSignIn: beginSignIn, completeSignIn: completeSignIn, tokenBecausePath: tokenBecausePath, onboardRedirectBecausePath: onboardRedirectBecausePath, viewModelBecausePayload: viewModelBecausePayload, sectionsBecauseRows: sectionsBecauseRows, pinsBecauseItems: pinsBecauseItems, placeLine: placeLine, clock12: clock12, placeArtUrl: placeArtUrl, awayLine: awayLine, hoursLine: hoursLine, teamBecausePayload: teamBecausePayload, headerTitleFit: headerTitleFit, compactStatLine: compactStatLine, actionHref: actionHref, messageBecauseStatus: messageBecauseStatus, render: render, start: start, appLinkBecauseToken: appLinkBecauseToken, openInPack: openInPack, APP_STORE: APP_STORE, NOT_OPENED: NOT_OPENED };
+  api.fixtureBecauseSearch = fixtureBecauseSearch;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.PackCard = api; if (root.document) start(root); }
 })(typeof window !== 'undefined' ? window : this);

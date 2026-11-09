@@ -387,3 +387,64 @@ describe('open in Pack button', () => {
     assert.deepEqual(t.hrefs, ['com.packai.app://a/tok12345']);
   });
 });
+
+describe('local fixture mode (dev-only)', () => {
+  const EXPECTED_KINDS = [
+    'place_list',
+    'place_detail',
+    'trip_history',
+    'sports_team',
+    'agenda',
+    'calendar_event',
+    'options_deck',
+    'order_confirm',
+    'heatmap',
+  ];
+
+  it('allows ?fixture=<name> only on localhost / 127.0.0.1 / [::1] or __PACK_CARD_DEV__ === true, and blocks prod hosts and path traversal', () => {
+    assert.equal(card.fixtureBecauseSearch({ location: { hostname: 'localhost', search: '?fixture=place_list' } }), 'place_list');
+    assert.equal(card.fixtureBecauseSearch({ location: { hostname: '127.0.0.1', search: '?fixture=sports_team' } }), 'sports_team');
+    assert.equal(card.fixtureBecauseSearch({ location: { hostname: '[::1]', search: '?fixture=agenda' } }), 'agenda');
+    assert.equal(card.fixtureBecauseSearch({ __PACK_CARD_DEV__: true, location: { hostname: 'preview.internal', search: '?fixture=heatmap' } }), 'heatmap');
+    assert.equal(card.fixtureBecauseSearch({ __PACK_CARD_DEV__: false, location: { hostname: 'localhost', search: '?fixture=place_list' } }), '');
+    assert.equal(card.fixtureBecauseSearch({ location: { hostname: 'www.trypackai.com', search: '?fixture=place_list' } }), '');
+    assert.equal(card.fixtureBecauseSearch({ location: { hostname: 'trypackai.com', search: '?fixture=place_list' } }), '');
+    assert.equal(card.fixtureBecauseSearch({ location: { hostname: 'localhost', search: '?fixture=../secret' } }), '');
+    assert.equal(card.fixtureBecauseSearch({ location: { hostname: 'localhost', search: '?fixture=a/b' } }), '');
+  });
+
+  it('loads and renders all 9 real E2E fixtures on localhost via /a/?fixture=<kind> and never fetches fixtures on prod', async () => {
+    const { JSDOM } = await import('jsdom');
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
+    const scriptText = fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8');
+    const fixturesDir = path.join(here, '../../public/a/fixtures');
+
+    for (const name of EXPECTED_KINDS) {
+      const fixturePath = path.join(fixturesDir, `${name}.json`);
+      assert.ok(fs.existsSync(fixturePath), `missing fixture ${name}.json`);
+      const payload = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+      const fetchedUrls = [];
+      const dom = new JSDOM(html, { url: `http://localhost:5173/a/?fixture=${name}`, runScripts: 'outside-only' });
+      dom.window.fetch = async (url) => {
+        fetchedUrls.push(String(url));
+        return { ok: true, status: 200, json: async () => payload };
+      };
+      dom.window.eval(scriptText);
+      await new Promise((r) => setTimeout(r, 20));
+      assert.deepEqual(fetchedUrls, [`/a/fixtures/${name}.json`]);
+      const cardEl = dom.window.document.getElementById('card');
+      assert.ok(cardEl.textContent.includes(payload.title), `${name} rendered title ${payload.title}`);
+    }
+
+    const prodFetches = [];
+    const prodDom = new JSDOM(html, { url: 'https://www.trypackai.com/a/?fixture=place_list', runScripts: 'outside-only' });
+    prodDom.window.fetch = async (url) => {
+      prodFetches.push(String(url));
+      return { ok: true, status: 200, json: async () => ({}) };
+    };
+    prodDom.window.eval(scriptText);
+    await new Promise((r) => setTimeout(r, 20));
+    assert.deepEqual(prodFetches, []);
+    assert.equal(prodDom.window.document.getElementById('card').textContent, 'This link has expired or does not exist.');
+  });
+});

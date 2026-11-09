@@ -1,0 +1,1158 @@
+{
+  "kind": "place_list",
+  "version": 1,
+  "title": "Coffee shop near you",
+  "rows": [
+    {
+      "label": "1. Starbucks",
+      "value": "4th closest of 5 · 15 min walk"
+    },
+    {
+      "label": "2. Starbucks",
+      "value": "Closest of 5 that fit"
+    },
+    {
+      "label": "3. Alfred Coffee",
+      "value": "2nd closest of 5 · 5 min walk"
+    },
+    {
+      "label": "4. Starbucks",
+      "value": "3rd closest of 5 · 9 min walk"
+    }
+  ],
+  "source": "Pack place data",
+  "asOf": "2026-11-04T16:11:27.322Z",
+  "placeList": {
+    "items": [
+      {
+        "name": "Starbucks",
+        "category": "Cafe",
+        "lat": 33.98504829406738,
+        "lon": -118.43977355957031,
+        "rank": 1,
+        "placeId": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "name": "Starbucks",
+        "category": "Cafe",
+        "lat": 33.984363,
+        "lon": -118.443489,
+        "rank": 2,
+        "placeId": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "name": "Alfred Coffee",
+        "category": "Cafe",
+        "lat": 33.98134602425104,
+        "lon": -118.44185968142911,
+        "rank": 3,
+        "placeId": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "name": "Starbucks",
+        "category": "Cafe",
+        "lat": 33.985886995872285,
+        "lon": -118.44328969640172,
+        "rank": 4,
+        "placeId": "fsq:fsq:427ff980f964a520bb211fe3"
+      }
+    ],
+    "title": "Coffee shop near you",
+    "center": {
+      "lat": 33.983,
+      "lon": -118.444
+    },
+    "radius": 3000,
+    "source": "Pack place data",
+    "asOf": "2026-11-04T16:11:27.322Z"
+  },
+  "placeArtifact": {
+    "schemaVersion": 2,
+    "title": "Coffee shop near you",
+    "asOf": "2026-11-04T16:11:27.322Z",
+    "user": {
+      "location": {
+        "lat": 33.983,
+        "lng": -118.444,
+        "kind": "user"
+      }
+    },
+    "items": [
+      {
+        "placeId": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "rank": 1,
+        "name": "Starbucks",
+        "category": "Cafe",
+        "categoryLabel": "Cafe",
+        "rankLabel": "Best match",
+        "art": {
+          "key": "local.places",
+          "variant": "day"
+        },
+        "distance": {
+          "meters": 451,
+          "label": "15 min walk",
+          "mode": "walk"
+        },
+        "openState": {
+          "state": "open",
+          "label": "Open until 7 PM",
+          "until": "19:00"
+        },
+        "hoursState": "known",
+        "fit": {
+          "band": "great",
+          "headline": "4th closest of 5, 15 min walk",
+          "headlineShort": "4th closest of 5 · 15 min walk",
+          "headlineKinds": [
+            "distance"
+          ],
+          "headlineFeatures": [
+            {
+              "feature": "distance.rank",
+              "slots": {
+                "rank": 4,
+                "of": 5,
+                "label": "15 min walk"
+              }
+            }
+          ],
+          "evidenceIds": [
+            "distance:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+          ],
+          "chips": [
+            {
+              "kind": "hours",
+              "label": "Open until 7 PM",
+              "evidenceIds": [
+                "hours:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+              ]
+            }
+          ]
+        },
+        "details": {
+          "why": [],
+          "context": [],
+          "hours": {
+            "today": {
+              "label": "5 AM to 7 PM",
+              "open": true,
+              "until": "19:00"
+            },
+            "week": [
+              {
+                "day": "wed",
+                "label": "5 AM to 7 PM"
+              },
+              {
+                "day": "thu",
+                "label": "5 AM to 7 PM"
+              },
+              {
+                "day": "fri",
+                "label": "5 AM to 7 PM"
+              },
+              {
+                "day": "sat",
+                "label": "5 AM to 7 PM"
+              },
+              {
+                "day": "sun",
+                "label": "5 AM to 7 PM"
+              },
+              {
+                "day": "mon",
+                "label": "5 AM to 7 PM"
+              },
+              {
+                "day": "tue",
+                "label": "5 AM to 7 PM"
+              }
+            ],
+            "source": "poi",
+            "evidenceIds": [
+              "hours:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+            ]
+          },
+          "phone": {
+            "e164": "+13108217208",
+            "display": "(310) 821-7208",
+            "evidenceIds": [
+              "public_fact:place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:phone"
+            ]
+          },
+          "links": [
+            {
+              "kind": "website",
+              "url": "https://www.starbucks.com/store-locator/store/6875",
+              "label": "Website",
+              "evidenceIds": [
+                "poi:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+              ]
+            },
+            {
+              "kind": "menu",
+              "url": "https://www.starbucks.com/menu",
+              "label": "Menu",
+              "evidenceIds": [
+                "public_fact:place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:menu_url"
+              ]
+            },
+            {
+              "kind": "order",
+              "url": "https://www.starbucks.com/stores-and-ordering/delivery/",
+              "label": "Order online",
+              "evidenceIds": [
+                "public_fact:place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:order_links"
+              ]
+            }
+          ],
+          "website": "https://www.starbucks.com/store-locator/store/6875",
+          "mapsUrl": "https://maps.apple.com/?ll=33.98504829406738,-118.43977355957031&q=Starbucks"
+        },
+        "coords": {
+          "lat": 33.98504829406738,
+          "lng": -118.43977355957031
+        }
+      },
+      {
+        "placeId": "fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "rank": 2,
+        "name": "Starbucks",
+        "category": "Cafe",
+        "categoryLabel": "Cafe",
+        "rankLabel": "#2 for you",
+        "art": {
+          "key": "local.places",
+          "variant": "day"
+        },
+        "distance": {
+          "meters": 159,
+          "label": "8 min walk",
+          "mode": "walk"
+        },
+        "openState": {
+          "state": "open",
+          "label": "Open until 9 PM",
+          "until": "21:00"
+        },
+        "hoursState": "known",
+        "fit": {
+          "band": "great",
+          "headline": "Closest of 5 that fit",
+          "headlineShort": "Closest of 5 that fit",
+          "headlineKinds": [
+            "distance"
+          ],
+          "headlineFeatures": [
+            {
+              "feature": "distance.nearest_of_n",
+              "slots": {
+                "n": 5
+              }
+            }
+          ],
+          "evidenceIds": [
+            "distance:fsq:fsq:68df0a6e7d59ee51685b2c78"
+          ],
+          "chips": [
+            {
+              "kind": "hours",
+              "label": "Open until 9 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:68df0a6e7d59ee51685b2c78"
+              ]
+            }
+          ]
+        },
+        "details": {
+          "why": [],
+          "context": [],
+          "hours": {
+            "today": {
+              "label": "4:30 AM to 9 PM",
+              "open": true,
+              "until": "21:00"
+            },
+            "week": [
+              {
+                "day": "wed",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "thu",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "fri",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "sat",
+                "label": "5 AM to 8:30 PM"
+              },
+              {
+                "day": "sun",
+                "label": "5 AM to 8:30 PM"
+              },
+              {
+                "day": "mon",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "tue",
+                "label": "4:30 AM to 9 PM"
+              }
+            ],
+            "source": "poi",
+            "evidenceIds": [
+              "hours:fsq:fsq:68df0a6e7d59ee51685b2c78"
+            ]
+          },
+          "phone": {
+            "e164": "+13105740909",
+            "display": "(310) 574-0909",
+            "evidenceIds": [
+              "public_fact:place:fsq:fsq:68df0a6e7d59ee51685b2c78:phone"
+            ]
+          },
+          "links": [
+            {
+              "kind": "website",
+              "url": "https://www.starbucks.com/store-locator/store/1006570",
+              "label": "Website",
+              "evidenceIds": [
+                "poi:fsq:fsq:68df0a6e7d59ee51685b2c78"
+              ]
+            },
+            {
+              "kind": "menu",
+              "url": "https://www.starbucks.com/menu",
+              "label": "Menu",
+              "evidenceIds": [
+                "public_fact:place:fsq:fsq:68df0a6e7d59ee51685b2c78:menu_url"
+              ]
+            }
+          ],
+          "website": "https://www.starbucks.com/store-locator/store/1006570",
+          "mapsUrl": "https://maps.apple.com/?ll=33.984363,-118.443489&q=Starbucks"
+        },
+        "coords": {
+          "lat": 33.984363,
+          "lng": -118.443489
+        }
+      },
+      {
+        "placeId": "fsq:fsq:6393c8914770ea39699aaccf",
+        "rank": 3,
+        "name": "Alfred Coffee",
+        "category": "Cafe",
+        "categoryLabel": "Cafe",
+        "rankLabel": "#3 for you",
+        "photo": {
+          "url": "https://www.trypackai.com/og/places/0215a38a61b2facc4b99fceb5f77f541/640.jpg",
+          "source": "listing",
+          "license": "venue-own-site",
+          "credit": "Photo from alfred.la"
+        },
+        "art": {
+          "key": "local.places",
+          "variant": "day"
+        },
+        "distance": {
+          "meters": 270,
+          "label": "5 min walk",
+          "mode": "walk"
+        },
+        "openState": {
+          "state": "open",
+          "label": "Open until 11 PM",
+          "until": "23:00"
+        },
+        "hoursState": "known",
+        "fit": {
+          "band": "great",
+          "headline": "2nd closest of 5, 5 min walk",
+          "headlineShort": "2nd closest of 5 · 5 min walk",
+          "headlineKinds": [
+            "distance"
+          ],
+          "headlineFeatures": [
+            {
+              "feature": "distance.rank",
+              "slots": {
+                "rank": 2,
+                "of": 5,
+                "label": "5 min walk"
+              }
+            }
+          ],
+          "evidenceIds": [
+            "distance:fsq:fsq:6393c8914770ea39699aaccf"
+          ],
+          "chips": [
+            {
+              "kind": "hours",
+              "label": "Open until 11 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:6393c8914770ea39699aaccf"
+              ]
+            }
+          ]
+        },
+        "details": {
+          "why": [],
+          "context": [],
+          "hours": {
+            "today": {
+              "label": "4 AM to 11 PM",
+              "open": true,
+              "until": "23:00"
+            },
+            "week": [
+              {
+                "day": "wed",
+                "label": "4 AM to 11 PM"
+              },
+              {
+                "day": "thu",
+                "label": "4 AM to 11 PM"
+              },
+              {
+                "day": "fri",
+                "label": "4 AM to 11 PM"
+              },
+              {
+                "day": "sat",
+                "label": "4 AM to 11 PM"
+              },
+              {
+                "day": "sun",
+                "label": "4 AM to 11 PM"
+              },
+              {
+                "day": "mon",
+                "label": "4 AM to 11 PM"
+              },
+              {
+                "day": "tue",
+                "label": "4 AM to 11 PM"
+              }
+            ],
+            "source": "venue-site",
+            "asOf": "2026-11-04T16:11:27.322Z",
+            "evidenceIds": [
+              "public_fact:place:fsq:fsq:6393c8914770ea39699aaccf:hours"
+            ]
+          },
+          "phone": {
+            "e164": "+13103888040",
+            "display": "(310) 388-8040",
+            "evidenceIds": [
+              "public_fact:place:fsq:fsq:6393c8914770ea39699aaccf:phone"
+            ]
+          },
+          "links": [
+            {
+              "kind": "website",
+              "url": "https://alfred.la",
+              "label": "Website",
+              "evidenceIds": [
+                "poi:fsq:fsq:6393c8914770ea39699aaccf"
+              ]
+            }
+          ],
+          "website": "https://alfred.la",
+          "mapsUrl": "https://maps.apple.com/?ll=33.98134602425104,-118.44185968142911&q=Alfred%20Coffee"
+        },
+        "coords": {
+          "lat": 33.98134602425104,
+          "lng": -118.44185968142911
+        }
+      },
+      {
+        "placeId": "fsq:fsq:427ff980f964a520bb211fe3",
+        "rank": 4,
+        "name": "Starbucks",
+        "category": "Cafe",
+        "categoryLabel": "Cafe",
+        "rankLabel": "#4 for you",
+        "art": {
+          "key": "local.places",
+          "variant": "day"
+        },
+        "distance": {
+          "meters": 328,
+          "label": "9 min walk",
+          "mode": "walk"
+        },
+        "openState": {
+          "state": "open",
+          "label": "Open until 9 PM",
+          "until": "21:00"
+        },
+        "hoursState": "known",
+        "fit": {
+          "band": "great",
+          "headline": "3rd closest of 5, 9 min walk",
+          "headlineShort": "3rd closest of 5 · 9 min walk",
+          "headlineKinds": [
+            "distance"
+          ],
+          "headlineFeatures": [
+            {
+              "feature": "distance.rank",
+              "slots": {
+                "rank": 3,
+                "of": 5,
+                "label": "9 min walk"
+              }
+            }
+          ],
+          "evidenceIds": [
+            "distance:fsq:fsq:427ff980f964a520bb211fe3"
+          ],
+          "chips": [
+            {
+              "kind": "hours",
+              "label": "Open until 9 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:427ff980f964a520bb211fe3"
+              ]
+            }
+          ]
+        },
+        "details": {
+          "why": [],
+          "context": [],
+          "hours": {
+            "today": {
+              "label": "4:30 AM to 9 PM",
+              "open": true,
+              "until": "21:00"
+            },
+            "week": [
+              {
+                "day": "wed",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "thu",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "fri",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "sat",
+                "label": "5 AM to 8:30 PM"
+              },
+              {
+                "day": "sun",
+                "label": "5 AM to 8:30 PM"
+              },
+              {
+                "day": "mon",
+                "label": "4:30 AM to 9 PM"
+              },
+              {
+                "day": "tue",
+                "label": "4:30 AM to 9 PM"
+              }
+            ],
+            "source": "poi",
+            "evidenceIds": [
+              "hours:fsq:fsq:427ff980f964a520bb211fe3"
+            ]
+          },
+          "phone": {
+            "e164": "+13105786832",
+            "display": "(310) 578-6832",
+            "evidenceIds": [
+              "public_fact:place:fsq:fsq:427ff980f964a520bb211fe3:phone"
+            ]
+          },
+          "links": [
+            {
+              "kind": "website",
+              "url": "https://www.starbucks.com/store-locator/store/11307",
+              "label": "Website",
+              "evidenceIds": [
+                "poi:fsq:fsq:427ff980f964a520bb211fe3"
+              ]
+            },
+            {
+              "kind": "menu",
+              "url": "https://www.starbucks.com/menu",
+              "label": "Menu",
+              "evidenceIds": [
+                "public_fact:place:fsq:fsq:427ff980f964a520bb211fe3:menu_url"
+              ]
+            }
+          ],
+          "website": "https://www.starbucks.com/store-locator/store/11307",
+          "mapsUrl": "https://maps.apple.com/?ll=33.985886995872285,-118.44328969640172&q=Starbucks"
+        },
+        "coords": {
+          "lat": 33.985886995872285,
+          "lng": -118.44328969640172
+        }
+      },
+      {
+        "placeId": "fsq:fsq:4a6115aff964a520cec11fe3",
+        "rank": 5,
+        "name": "The Coffee Bean & Tea Leaf",
+        "category": "Cafe",
+        "categoryLabel": "Cafe",
+        "rankLabel": "#5 for you",
+        "art": {
+          "key": "local.places",
+          "variant": "day"
+        },
+        "distance": {
+          "meters": 515,
+          "label": "13 min walk",
+          "mode": "walk"
+        },
+        "openState": {
+          "state": "open",
+          "label": "Open until 10 PM",
+          "until": "22:00"
+        },
+        "hoursState": "known",
+        "fit": {
+          "band": "great",
+          "headline": "5th closest of 5, 13 min walk",
+          "headlineShort": "5th closest of 5 · 13 min walk",
+          "headlineKinds": [
+            "distance"
+          ],
+          "headlineFeatures": [
+            {
+              "feature": "distance.rank",
+              "slots": {
+                "rank": 5,
+                "of": 5,
+                "label": "13 min walk"
+              }
+            }
+          ],
+          "evidenceIds": [
+            "distance:fsq:fsq:4a6115aff964a520cec11fe3"
+          ],
+          "chips": [
+            {
+              "kind": "hours",
+              "label": "Open until 10 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:4a6115aff964a520cec11fe3"
+              ]
+            }
+          ]
+        },
+        "details": {
+          "why": [],
+          "context": [],
+          "hours": {
+            "today": {
+              "label": "5:30 AM to 10 PM",
+              "open": true,
+              "until": "22:00"
+            },
+            "week": [
+              {
+                "day": "wed",
+                "label": "5:30 AM to 10 PM"
+              },
+              {
+                "day": "thu",
+                "label": "5:30 AM to 10 PM"
+              },
+              {
+                "day": "fri",
+                "label": "5:30 AM to 10 PM"
+              },
+              {
+                "day": "sat",
+                "label": "6 AM to 10 PM"
+              },
+              {
+                "day": "sun",
+                "label": "6 AM to 10 PM"
+              },
+              {
+                "day": "mon",
+                "label": "5:30 AM to 10 PM"
+              },
+              {
+                "day": "tue",
+                "label": "5:30 AM to 10 PM"
+              }
+            ],
+            "source": "poi",
+            "evidenceIds": [
+              "hours:fsq:fsq:4a6115aff964a520cec11fe3"
+            ]
+          },
+          "phone": {
+            "e164": "+13108230858",
+            "display": "(310) 823-0858",
+            "evidenceIds": [
+              "public_fact:place:fsq:fsq:4a6115aff964a520cec11fe3:phone"
+            ]
+          },
+          "links": [
+            {
+              "kind": "website",
+              "url": "https://www.coffeebean.com/store/ca/marina-del-rey/13420-maxella",
+              "label": "Website",
+              "evidenceIds": [
+                "poi:fsq:fsq:4a6115aff964a520cec11fe3"
+              ]
+            },
+            {
+              "kind": "order",
+              "url": "https://coffeebean.olo.com/menu/coffee-bean-tea-leaf-villa-marina-marketplace-mdr",
+              "label": "Order online",
+              "evidenceIds": [
+                "public_fact:place:fsq:fsq:4a6115aff964a520cec11fe3:order_links"
+              ]
+            }
+          ],
+          "website": "https://www.coffeebean.com/store/ca/marina-del-rey/13420-maxella",
+          "mapsUrl": "https://maps.apple.com/?ll=33.98631205,-118.44010119&q=The%20Coffee%20Bean%20%26%20Tea%20Leaf"
+        },
+        "coords": {
+          "lat": 33.98631205,
+          "lng": -118.44010119
+        }
+      }
+    ],
+    "compare": {
+      "axes": [
+        {
+          "key": "distance",
+          "label": "Distance",
+          "better": "lower",
+          "bestPlaceId": "fsq:fsq:6393c8914770ea39699aaccf",
+          "bestLabel": "5 min walk",
+          "values": [
+            {
+              "placeId": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+              "norm": 0.333,
+              "label": "15 min walk",
+              "evidenceIds": [
+                "distance:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:68df0a6e7d59ee51685b2c78",
+              "norm": 0.625,
+              "label": "8 min walk",
+              "evidenceIds": [
+                "distance:fsq:fsq:68df0a6e7d59ee51685b2c78"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:6393c8914770ea39699aaccf",
+              "norm": 1,
+              "label": "5 min walk",
+              "evidenceIds": [
+                "distance:fsq:fsq:6393c8914770ea39699aaccf"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:427ff980f964a520bb211fe3",
+              "norm": 0.556,
+              "label": "9 min walk",
+              "evidenceIds": [
+                "distance:fsq:fsq:427ff980f964a520bb211fe3"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:4a6115aff964a520cec11fe3",
+              "norm": 0.385,
+              "label": "13 min walk",
+              "evidenceIds": [
+                "distance:fsq:fsq:4a6115aff964a520cec11fe3"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hours",
+          "label": "Open",
+          "better": "higher",
+          "bestPlaceId": "fsq:fsq:6393c8914770ea39699aaccf",
+          "bestLabel": "Until 11 PM",
+          "values": [
+            {
+              "placeId": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+              "norm": 0.73,
+              "label": "Until 7 PM",
+              "evidenceIds": [
+                "hours:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:68df0a6e7d59ee51685b2c78",
+              "norm": 0.865,
+              "label": "Until 9 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:68df0a6e7d59ee51685b2c78"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:6393c8914770ea39699aaccf",
+              "norm": 1,
+              "label": "Until 11 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:6393c8914770ea39699aaccf"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:427ff980f964a520bb211fe3",
+              "norm": 0.865,
+              "label": "Until 9 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:427ff980f964a520bb211fe3"
+              ]
+            },
+            {
+              "placeId": "fsq:fsq:4a6115aff964a520cec11fe3",
+              "norm": 0.933,
+              "label": "Until 10 PM",
+              "evidenceIds": [
+                "hours:fsq:fsq:4a6115aff964a520cec11fe3"
+              ]
+            }
+          ]
+        }
+      ],
+      "strongest": [
+        {
+          "placeId": "fsq:fsq:6393c8914770ea39699aaccf",
+          "axis": "distance"
+        }
+      ]
+    },
+    "selectedIndex": 0,
+    "fitCount": 5,
+    "restCount": 0,
+    "evidence": [
+      {
+        "id": "tool_row:places.search#overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "tool_row",
+        "ref": "places.search#overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "poi:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "poi",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "distance:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "distance",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "hours:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "hours",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "taste:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "taste",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "history:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "history",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "companion:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "companion",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "novelty:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "novelty",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "price:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d",
+        "kind": "price",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d"
+      },
+      {
+        "id": "menu:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d-key",
+        "kind": "menu",
+        "ref": "overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d-key"
+      },
+      {
+        "id": "public_fact:place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:menu_url",
+        "kind": "public_fact",
+        "ref": "place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:menu_url"
+      },
+      {
+        "id": "public_fact:place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:order_links",
+        "kind": "public_fact",
+        "ref": "place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:order_links"
+      },
+      {
+        "id": "public_fact:place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:phone",
+        "kind": "public_fact",
+        "ref": "place:overture:cf116b4a-2b9a-4fea-a707-70b3e661df7d:phone"
+      },
+      {
+        "id": "tool_row:places.search#fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "tool_row",
+        "ref": "places.search#fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "poi:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "poi",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "distance:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "distance",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "hours:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "hours",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "taste:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "taste",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "history:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "history",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "companion:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "companion",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "novelty:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "novelty",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "price:fsq:fsq:68df0a6e7d59ee51685b2c78",
+        "kind": "price",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78"
+      },
+      {
+        "id": "menu:fsq:fsq:68df0a6e7d59ee51685b2c78-key",
+        "kind": "menu",
+        "ref": "fsq:fsq:68df0a6e7d59ee51685b2c78-key"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:68df0a6e7d59ee51685b2c78:menu_url",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:68df0a6e7d59ee51685b2c78:menu_url"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:68df0a6e7d59ee51685b2c78:phone",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:68df0a6e7d59ee51685b2c78:phone"
+      },
+      {
+        "id": "tool_row:places.search#fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "tool_row",
+        "ref": "places.search#fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "poi:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "poi",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "distance:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "distance",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "hours:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "hours",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "taste:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "taste",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "history:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "history",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "companion:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "companion",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "novelty:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "novelty",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "price:fsq:fsq:6393c8914770ea39699aaccf",
+        "kind": "price",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf"
+      },
+      {
+        "id": "menu:fsq:fsq:6393c8914770ea39699aaccf-key",
+        "kind": "menu",
+        "ref": "fsq:fsq:6393c8914770ea39699aaccf-key"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:6393c8914770ea39699aaccf:phone",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:6393c8914770ea39699aaccf:phone"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:6393c8914770ea39699aaccf:hours",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:6393c8914770ea39699aaccf:hours"
+      },
+      {
+        "id": "tool_row:places.search#fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "tool_row",
+        "ref": "places.search#fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "poi:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "poi",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "distance:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "distance",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "hours:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "hours",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "taste:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "taste",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "history:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "history",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "companion:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "companion",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "novelty:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "novelty",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "price:fsq:fsq:427ff980f964a520bb211fe3",
+        "kind": "price",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3"
+      },
+      {
+        "id": "menu:fsq:fsq:427ff980f964a520bb211fe3-key",
+        "kind": "menu",
+        "ref": "fsq:fsq:427ff980f964a520bb211fe3-key"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:427ff980f964a520bb211fe3:menu_url",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:427ff980f964a520bb211fe3:menu_url"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:427ff980f964a520bb211fe3:phone",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:427ff980f964a520bb211fe3:phone"
+      },
+      {
+        "id": "tool_row:places.search#fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "tool_row",
+        "ref": "places.search#fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "poi:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "poi",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "distance:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "distance",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "hours:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "hours",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "taste:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "taste",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "history:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "history",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "companion:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "companion",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "novelty:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "novelty",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "price:fsq:fsq:4a6115aff964a520cec11fe3",
+        "kind": "price",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3"
+      },
+      {
+        "id": "menu:fsq:fsq:4a6115aff964a520cec11fe3-key",
+        "kind": "menu",
+        "ref": "fsq:fsq:4a6115aff964a520cec11fe3-key"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:4a6115aff964a520cec11fe3:order_links",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:4a6115aff964a520cec11fe3:order_links"
+      },
+      {
+        "id": "public_fact:place:fsq:fsq:4a6115aff964a520cec11fe3:phone",
+        "kind": "public_fact",
+        "ref": "place:fsq:fsq:4a6115aff964a520cec11fe3:phone"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "type": "open-in-app",
+      "label": "Open in Pack",
+      "url": "https://www.trypackai.com/a/Yi7d-eG1Cv8uZm3HwvWIpQ"
+    }
+  ]
+}

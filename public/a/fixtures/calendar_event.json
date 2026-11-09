@@ -1,0 +1,88 @@
+{
+  "kind": "calendar_event",
+  "version": 1,
+  "title": "Dinner with Sam",
+  "rows": [
+    {
+      "label": "When",
+      "value": "2026-11-07T19:00 (America/Los_Angeles)"
+    }
+  ],
+  "blocks": [
+    {
+      "kind": "calendar_event",
+      "state": "confirm",
+      "op": "create",
+      "title": "Dinner with Sam",
+      "when": {
+        "startLocal": "2026-11-07T19:00",
+        "endLocal": "2026-11-07T20:00",
+        "allDay": false,
+        "tz": {
+          "iana": "America/Los_Angeles",
+          "source": "pref",
+          "confirmed": true
+        }
+      },
+      "attendees": [],
+      "location": null,
+      "conference": null,
+      "calendar": {
+        "id": "primary",
+        "name": "Primary calendar",
+        "isPrimary": true
+      },
+      "changes": [],
+      "guestsNotified": null,
+      "actions": [
+        {
+          "id": "confirm",
+          "label": "Add to calendar",
+          "act": "confirm"
+        },
+        {
+          "id": "cancel",
+          "label": "Cancel",
+          "act": "cancel"
+        }
+      ],
+      "result": null,
+      "error": null,
+      "appAction": {
+        "id": "calendar_add",
+        "args": {},
+        "proposalHash": "be37449d29c7c9c07fb97e05dae5a8dc0c24d6b2d3d9e1fd170c1c210b7fb926",
+        "expiresAt": 1794094371
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "open-in-app",
+      "label": "Open in Pack",
+      "url": "https://www.trypackai.com/a/JYanLCiql5iWBLKOMNzwPw"
+    }
+  ],
+  "sharing": {
+    "role": "owner",
+    "linkSetting": "members",
+    "memberCount": 1,
+    "members": [],
+    "privacy": {
+      "restricted": true,
+      "privateLabels": [
+        "Made from your private Pack data",
+        "Your calendar",
+        "What Pack remembers about you",
+        "Your trips and email",
+        "Your location",
+        "Your preferences",
+        "Private Pack data (travel)",
+        "Private Pack data (flight_search)",
+        "Private Pack data (ambient)",
+        "Pages opened for you",
+        "Private Pack data (calendar_add)"
+      ]
+    }
+  }
+}

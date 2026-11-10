@@ -344,10 +344,85 @@
       monthShort: monthShort, dayNum: dayNum, dateLine: dateLine, timeLine: timeLine, tz: tz, location: location, attendees: attendees, icsText: icsText, googleUrl: googleUrl
     };
   }
+  function fmtMoney(p, cur) {
+    if (p == null || p === '') return '';
+    if (typeof p === 'string') return p.trim();
+    var c = String((p && p.currency) || cur || 'USD').toUpperCase(), sym = c === 'USD' ? '$' : c + ' ';
+    if (typeof p === 'number') return sym + p;
+    if (typeof p.total === 'number') return sym + p.total + ' total';
+    if (typeof p.avgNightly === 'number') return sym + p.avgNightly + '/night';
+    if (typeof p.amount === 'number') return sym + p.amount;
+    return Array.isArray(p.perNight) && p.perNight.length ? sym + Math.round(p.perNight.reduce(function (s, n) { return s + (Number(n && n.amount) || 0); }, 0) / p.perNight.length) + '/night' : '';
+  }
+  function fmtIsoShort(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}:\d{2}))?/.exec(String(iso || '').trim());
+    return !m ? String(iso || '').trim() : MONTHS_SHORT[Number(m[2]) - 1] + ' ' + Number(m[3]) + (m[4] ? ' \u00B7 ' + clock12(m[4]) : '');
+  }
+  function composedBlockBecauseRaw(b, payload, out) {
+    if (!b || typeof b !== 'object') return;
+    var k = String(b.kind || '').trim();
+    if (k === 'options_deck') {
+      (Array.isArray(b.options) ? b.options : []).forEach(function (o) { if (o && o.item && typeof o.item === 'object') composedBlockBecauseRaw(Object.assign({}, o.item, { recommended: !!(o.recommended || o.item.recommended) }), payload, out); });
+    } else if (k === 'day_brief') {
+      var w = b.weather && typeof b.weather === 'object' ? b.weather : null;
+      out.push({
+        kind: 'day_brief', title: String(b.title || payload.title || ''), dateLabel: String(b.dateLabel || ''),
+        weather: w ? { summary: String(w.summary || ''), temp: typeof w.tempF === 'number' ? Math.round(w.tempF) + '\u00B0F' : '', hiLo: (typeof w.highF === 'number' && typeof w.lowF === 'number') ? 'H ' + Math.round(w.highF) + '\u00B0 \u00B7 L ' + Math.round(w.lowF) + '\u00B0' : '', aqi: w.aqi && typeof w.aqi.value === 'number' ? 'AQI ' + w.aqi.value + (w.aqi.category ? ' (' + w.aqi.category + ')' : '') : '' } : null,
+        facts: (Array.isArray(b.facts) ? b.facts : []).filter(function (f) { return f && f.text && !(w && f.group === 'conditions'); }).map(function (f) { return { text: String(f.text), needsYou: !!f.needsYou }; }),
+        today: (Array.isArray(b.today) ? b.today : []).map(function (r) {
+          var acts = (Array.isArray(r.actions) ? r.actions : []).filter(function (a) { return a && httpsUrl(a.url); }).map(function (a) { return { label: String(a.label || a.kind || 'Open'), url: httpsUrl(a.url) }; });
+          if (httpsUrl(r.meetingUrl)) acts.unshift({ label: 'Join', url: httpsUrl(r.meetingUrl) });
+          var trv = r.travel ? (r.travel.label || (typeof r.travel.minutes === 'number' ? r.travel.minutes + ' min ' + (r.travel.mode || 'drive') : '')) : '';
+          return { title: String(r.title || r.line || ''), when: String(r.when || ''), where: String(r.where || r.address || ''), leaveBy: String(r.leaveBy || trv || ''), needsYou: !!r.needsYou, pending: !!r.pending, actions: acts };
+        })
+      });
+    } else if (k === 'flight_option' || k === 'flight_outline') {
+      var stops = typeof b.stops === 'number' ? (b.stops === 0 ? 'Nonstop' : b.stops + (b.stops === 1 ? ' stop' : ' stops')) : '', tm = [fmtIsoShort(b.departIso || b.departureTime || b.depart), fmtIsoShort(b.arriveIso || b.arrivalTime || b.arrive)].filter(Boolean).join(' \u2192 ');
+      out.push({ kind: 'flight_option', title: [b.carrier || b.airline, b.flightNo || b.flightNumber].filter(Boolean).join(' ') || String(b.title || 'Flight'), line1: [b.origin || b.from || b.departureAirport, b.destination || b.to || b.arrivalAirport].filter(Boolean).join(' \u2192 '), line2: [tm, stops, b.cabin || ''].filter(Boolean).join(' \u00B7 '), price: fmtMoney(b.price != null ? b.price : b.total, b.currency), why: String(b.why || ''), tags: Array.isArray(b.tags) ? b.tags.map(String) : [], url: httpsUrl(b.bookingUrl || b.url), btn: 'Book' });
+    } else if (k === 'hotel_option' || k === 'hotel_outline') {
+      var rt = typeof b.rating === 'number' ? '\u2605 ' + b.rating.toFixed(1) : '', nt = typeof b.nights === 'number' ? b.nights + (b.nights === 1 ? ' night' : ' nights') : '';
+      out.push({ kind: 'hotel_option', title: String(b.name || b.title || 'Stay'), line1: [b.area || b.neighborhood || b.city || '', rt, nt].filter(Boolean).join(' \u00B7 '), line2: formatTripDates(b.dates, b.checkInIso || b.checkIn, b.checkOutIso || b.checkOut, ''), price: fmtMoney(b.price || b.nightlyPrice || b.total, b.currency), why: String(b.why || ''), tags: Array.isArray(b.tags) ? b.tags.map(String) : [], url: httpsUrl(b.bookingUrl || b.url), btn: 'Book' });
+    } else if (k === 'event_ticket') {
+      var seat = [b.section ? 'Sec ' + b.section : '', b.row ? 'Row ' + b.row : '', b.seat ? 'Seat ' + b.seat : ''].filter(Boolean).join(' \u00B7 ') || String(b.seatInfo || ''), qty = typeof (b.quantity || b.tickets) === 'number' ? (b.quantity || b.tickets) + 'x' : '';
+      out.push({ kind: 'event_ticket', title: String(b.title || b.eventName || b.name || 'Ticket'), line1: [b.venue || b.venueName || b.location || '', qty].filter(Boolean).join(' \u00B7 '), line2: [b.when || fmtIsoShort(b.startIso || b.startLocal || b.date), seat, b.confirmationCode || b.orderId || b.barcode || ''].filter(Boolean).join(' \u00B7 '), price: fmtMoney(b.price != null ? b.price : b.total, b.currency), why: String(b.why || ''), tags: [], url: httpsUrl(b.url || b.ticketUrl), btn: 'View ticket' });
+    } else if (k === 'trip_leg' || k === 'trip_option') {
+      var legs = [];
+      function pushLeg(lg, lbl) {
+        if (lg && typeof lg === 'object') legs.push({ code: [lg.carrier || lg.airline, lg.flightNo || lg.flightNumber].filter(Boolean).join(' ') || String(lg.flight || lg.mode || lbl || ''), route: [lg.origin || lg.from || lg.departureAirport, lg.destination || lg.to || lg.arrivalAirport].filter(Boolean).join(' \u2192 '), time: [fmtIsoShort(lg.departIso || lg.startIso || lg.when), fmtIsoShort(lg.arriveIso || lg.endIso)].filter(Boolean).join(' \u2192 ') });
+      }
+      if (b.outbound || b.stay || b.return) { pushLeg(b.outbound, 'Outbound'); pushLeg(b.return, 'Return'); } else pushLeg(b, b.title || 'Leg');
+      var st = b.stay && typeof b.stay === 'object' ? { name: String(b.stay.name || ''), meta: [b.stay.area || '', formatTripDates(null, b.stay.checkInIso, b.stay.checkOutIso, ''), typeof b.stay.nights === 'number' ? b.stay.nights + (b.stay.nights === 1 ? ' night' : ' nights') : '', fmtMoney(b.stay.nightlyPrice || b.stay.price, b.stay.currency)].filter(Boolean).join(' \u00B7 ') } : null;
+      out.push({ kind: 'trip_leg', title: String(b.title || (st && st.name) || ''), legs: legs, stay: st, price: fmtMoney(b.total != null ? b.total : b.price, b.currency), why: String(b.why || b.detail || ''), url: httpsUrl(b.bookingUrl || b.url || (b.outbound && b.outbound.bookingUrl) || (b.stay && b.stay.bookingUrl)) });
+    } else if (k === 'price_breakdown' || k === 'key_value') {
+      var rawRows = (Array.isArray(b.lines) ? b.lines : Array.isArray(b.rows) ? b.rows : Array.isArray(b.items) ? b.items : Array.isArray(b.fields) ? b.fields : []).concat(Array.isArray(b.fees) ? b.fees : []);
+      var rows = rawRows.map(function (r) {
+        return { label: String((r && (r.label || r.key || r.name || r.title)) || '') + (r && typeof r.quantity === 'number' && r.quantity > 1 ? ' (' + r.quantity + 'x)' : ''), value: k === 'price_breakdown' ? fmtMoney(r && (r.amount != null ? r.amount : r.price != null ? r.price : r.value), b.currency) : String((r && r.value != null) ? r.value : '') };
+      }).filter(function (r) { return r.label || r.value; });
+      out.push({ kind: k, title: String(b.title || b.heading || (k === 'price_breakdown' ? 'Price breakdown' : '')), rows: rows, total: k === 'price_breakdown' ? fmtMoney(b.total, b.currency) : '', note: String(b.note || b.caption || '') });
+    } else if (k === 'text_note') {
+      out.push({ kind: 'text_note', title: String(b.title || b.heading || ''), lines: Array.isArray(b.lines) ? b.lines.map(String) : [String(b.text || b.body || b.note || b.summary || '')].filter(Boolean), tone: String(b.tone || b.variant || 'info') });
+    } else if (k === 'steps') {
+      out.push({ kind: 'steps', title: String(b.title || b.heading || ''), summary: String(b.summary || ''), steps: (Array.isArray(b.steps) ? b.steps : []).map(function (s, i) { return typeof s === 'string' ? { n: i + 1, title: s, detail: '', duration: '', state: 'todo' } : { n: s.n || s.step || i + 1, title: String(s.title || s.label || s.text || ''), detail: String((s.title && s.text ? s.text : '') || s.detail || s.note || ''), duration: String(s.duration || ''), state: String(s.state || 'todo') }; }) });
+    } else if (k === 'standings') {
+      var sRows = Array.isArray(b.rows) ? b.rows : Array.isArray(b.teams) ? b.teams : [];
+      out.push({ kind: 'standings', title: String(b.title || b.heading || b.division || 'Standings'), subtitle: [b.division && b.title && b.division !== b.title ? b.division : '', b.season != null ? String(b.season) : ''].filter(Boolean).join(' \u00B7 '), rows: sRows.map(function (r, i) { var wv = r.w != null ? r.w : r.wins != null ? r.wins : r.won, lv = r.l != null ? r.l : r.losses != null ? r.losses : r.lost, tv = r.t != null ? r.t : r.ties; return { rank: r.rank || r.position || i + 1, team: String(r.team || r.name || r.abbr || ''), value: [[wv, lv, tv].filter(function (v) { return v != null; }).join('-'), r.pct || '', r.gb ? 'GB ' + r.gb : '', r.streak || ''].filter(Boolean).join(' \u00B7 '), highlight: !!r.highlight }; }) });
+    } else if (k === 'order_confirm') {
+      var ch = b.choice && Array.isArray(b.choice.options) ? { label: String(b.choice.label || 'Option'), options: b.choice.options.map(String), selected: String(b.choice.selected || b.choice.options[0] || '') } : null;
+      out.push({ kind: 'order_confirm', item: String(b.item || b.itemName || payload.title || 'Order').trim(), qty: typeof (b.qty || b.quantity) === 'number' ? (b.qty || b.quantity) : 1, meta: [b.store || b.merchant || b.storeHost || '', b.fulfillment || 'delivery', b.eta || b.deliveryEta || ''].filter(Boolean).join(' \u00B7 '), deliverTo: String(b.deliverTo || b.deliveryAddress || ''), total: fmtMoney(b.total, b.currency) || 'At checkout', button: String(b.button || b.doorLabel || 'Review & pay'), choice: ch });
+    } else if (k === 'permission_request') {
+      var dr = b.draft && typeof b.draft === 'object' ? { to: String(b.draft.to || ''), subject: String(b.draft.subject || ''), body: String(b.draft.body || '') } : null;
+      out.push({ kind: 'permission_request', title: String(b.title || payload.title || 'Permission request'), badge: [b.provider, b.capability].filter(Boolean).join(' \u00B7 '), draft: dr, options: (Array.isArray(b.options) ? b.options : []).map(function (o) { return { label: String(o.label || o.id || ''), description: String(o.description || ''), selected: o.id === b.defaultOptionId }; }) });
+    } else {
+      if (typeof console !== 'undefined' && console.warn) console.warn('[a-card] block fallback', { kind: k });
+      var fbRows = (Array.isArray(b.rows) ? b.rows : Array.isArray(b.items) ? b.items : Array.isArray(b.facts) ? b.facts : []).map(function (r) { return { label: String((r && (r.label || r.title || r.name || r.kind)) || ''), value: String((r && (r.value != null ? r.value : r.text != null ? r.text : r.subtitle || '')) || '') }; }).filter(function (r) { return r.label || r.value; });
+      if (!fbRows.length && Array.isArray(b.cells) && b.cells.length) fbRows.push({ label: String(b.title || 'Total'), value: b.cells.length + ' days' });
+      out.push({ kind: 'key_value', title: String(b.title || b.heading || b.label || kindLabel(k || 'section')), rows: fbRows, total: '', note: '' });
+    }
+  }
 
   function viewModelBecausePayload(payload) {
     var kind = payload && payload.kind ? String(payload.kind) : '';
-    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, agenda: null, tripHistory: null, placeDetail: null, calendarEvent: null, mapImage: '', mapPins: [], sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
+    var model = { kind: kind, label: kindLabel(kind), title: '', team: null, agenda: null, tripHistory: null, placeDetail: null, calendarEvent: null, composedBlocks: [], mapImage: '', mapPins: [], sections: [], steps: [], places: [], pins: [], items: [], source: '', host: '', asOf: '' };
     if (!payload) return model;
     if (kind === 'trip' && payload.data) {
       model.title = payload.data.title || 'Trip';
@@ -381,7 +456,9 @@
     } else if (kind === 'place_detail') { model.placeDetail = placeDetailBecausePayload(payload); model.title = model.placeDetail.name || model.title;
     } else if (kind === 'calendar_event') { model.calendarEvent = calendarEventBecausePayload(payload); model.title = model.calendarEvent.title || model.title;
     } else {
-      model.sections = sectionsBecauseRows(payload.rows);
+      (Array.isArray(payload.blocks) ? payload.blocks : Array.isArray(payload.sections) ? payload.sections : []).forEach(function (rb) { composedBlockBecauseRaw(rb, payload, model.composedBlocks); });
+      if (!model.composedBlocks.length && payload.item && typeof payload.item === 'object') composedBlockBecauseRaw(payload.item, payload, model.composedBlocks);
+      if (!model.composedBlocks.length) model.sections = sectionsBecauseRows(payload.rows);
     }
     var source = payload.source || (payload.guide && payload.guide.source) || '';
     model.source = /^https:\/\//i.test(source) ? source : '';
@@ -703,6 +780,66 @@
     if (cal.attendees.length) { var ar = el('div', 'row'); ar.appendChild(el('span', 'label', 'Guests')); ar.appendChild(el('span', 'value', cal.attendees.join(', '))); card.appendChild(ar); }
     if (typeof cal.googleUrl === 'string' && /^https:\/\//i.test(cal.googleUrl)) { var add = el('a', 'calAddBtn', 'Add to Calendar'); add.href = cal.googleUrl; add.target = '_blank'; add.rel = 'noopener noreferrer'; acts.appendChild(add); card.appendChild(acts); }
   }
+  function renderComposedBlock(doc, card, b, el) {
+    var sec = el('section', 'cBlock c-' + b.kind);
+    function addLink(parent, cls, label, url) {
+      if (!httpsUrl(url)) return;
+      var a = el('a', cls, label); a.href = httpsUrl(url); a.target = '_blank'; a.rel = 'noopener noreferrer'; parent.appendChild(a);
+    }
+    if (b.kind === 'day_brief') {
+      if (b.dateLabel) sec.appendChild(el('p', 'cMuted', b.dateLabel));
+      if (b.weather) {
+        var wx = el('div', 'cHeroRow'), wm = el('div', 'cCol'), sub = [b.weather.hiLo, b.weather.aqi].filter(Boolean).join(' \u00B7 ');
+        wx.appendChild(el('span', 'cHeroVal', b.weather.temp)); if (b.weather.summary) wm.appendChild(el('span', 'cStrong', b.weather.summary)); if (sub) wm.appendChild(el('span', 'cMuted', sub));
+        wx.appendChild(wm); sec.appendChild(wx);
+      }
+      b.facts.forEach(function (f) { sec.appendChild(el('p', f.needsYou ? 'cCallout warn' : 'cCallout', f.text)); });
+      b.today.forEach(function (r) {
+        var row = el('div', 'cItem'), top = el('div', 'cRowTop'), meta = [r.where, r.leaveBy].filter(Boolean).join(' \u00B7 ');
+        top.appendChild(el('span', 'cTime', r.when)); top.appendChild(el('span', 'cStrong', r.title)); if (r.pending) top.appendChild(el('span', 'cPill', 'Pending'));
+        row.appendChild(top); if (meta) row.appendChild(el('p', 'cMuted', meta));
+        if (r.actions.length) { var acts = el('div', 'cActions'); r.actions.forEach(function (a) { addLink(acts, 'cBtn', a.label, a.url); }); row.appendChild(acts); }
+        sec.appendChild(row);
+      });
+    } else if (b.kind === 'flight_option' || b.kind === 'hotel_option' || b.kind === 'event_ticket') {
+      var head = el('div', 'cRowTop'); head.appendChild(el('span', 'cStrong', b.title)); if (b.price) head.appendChild(el('span', 'cPrice', b.price)); sec.appendChild(head);
+      if (b.line1) sec.appendChild(el('p', 'cMeta', b.line1)); if (b.line2) sec.appendChild(el('p', 'cMuted', b.line2)); if (b.why) sec.appendChild(el('p', 'cWhy', b.why));
+      if (b.tags && b.tags.length) { var tg = el('div', 'cChips'); b.tags.forEach(function (t) { tg.appendChild(el('span', 'cPill', t)); }); sec.appendChild(tg); }
+      addLink(sec, 'cBtn', b.btn, b.url);
+    } else if (b.kind === 'trip_leg') {
+      var th = el('div', 'cRowTop'); if (b.title) th.appendChild(el('span', 'cStrong', b.title)); if (b.price) th.appendChild(el('span', 'cPrice', b.price)); if (th.childNodes.length) sec.appendChild(th);
+      b.legs.forEach(function (lg) { var lr = el('div', 'cSubItem'); lr.appendChild(el('span', 'cStrong', [lg.code, lg.route].filter(Boolean).join(' \u00B7 '))); if (lg.time) lr.appendChild(el('span', 'cMuted', lg.time)); sec.appendChild(lr); });
+      if (b.stay && b.stay.name) { var sr = el('div', 'cSubItem'); sr.appendChild(el('span', 'cStrong', b.stay.name)); if (b.stay.meta) sr.appendChild(el('span', 'cMuted', b.stay.meta)); sec.appendChild(sr); }
+      if (b.why) sec.appendChild(el('p', 'cWhy', b.why)); addLink(sec, 'cBtn', 'Open', b.url);
+    } else if (b.kind === 'price_breakdown' || b.kind === 'key_value') {
+      if (b.title) sec.appendChild(el('h2', 'sectionTitle', b.title));
+      b.rows.forEach(function (r) { var rw = el('div', 'row'); rw.appendChild(el('span', 'label', r.label)); rw.appendChild(el('span', 'value', r.value)); sec.appendChild(rw); });
+      if (b.total) { var tr = el('div', 'row cTotalRow'); tr.appendChild(el('span', 'label', 'Total')); tr.appendChild(el('span', 'value', b.total)); sec.appendChild(tr); }
+      if (b.note) sec.appendChild(el('p', 'cMuted', b.note));
+    } else if (b.kind === 'text_note') {
+      var box = el('div', b.tone === 'warning' ? 'cCallout warn' : 'cCallout'); if (b.title) box.appendChild(el('p', 'cStrong', b.title));
+      b.lines.forEach(function (ln) { box.appendChild(el('p', 'cNoteText', ln)); }); sec.appendChild(box);
+    } else if (b.kind === 'steps') {
+      if (b.title) sec.appendChild(el('h2', 'sectionTitle', b.title)); if (b.summary) sec.appendChild(el('p', 'cMuted', b.summary));
+      b.steps.forEach(function (s) {
+        var sr = el('div', 'cItem'), st = el('div', 'cRowTop'); st.appendChild(el('span', 'cPill', s.state === 'done' ? '\u2713' : String(s.n))); st.appendChild(el('span', 'cStrong', s.title));
+        if (s.duration) st.appendChild(el('span', 'cMuted', s.duration)); sr.appendChild(st); if (s.detail) sr.appendChild(el('p', 'cMuted', s.detail)); sec.appendChild(sr);
+      });
+    } else if (b.kind === 'standings') {
+      if (b.title) sec.appendChild(el('h2', 'sectionTitle', b.title)); if (b.subtitle) sec.appendChild(el('p', 'cMuted', b.subtitle));
+      b.rows.forEach(function (r) { var rw = el('div', r.highlight ? 'row cHighlight' : 'row'); rw.appendChild(el('span', 'label', r.rank + '. ' + r.team)); rw.appendChild(el('span', 'value', r.value)); sec.appendChild(rw); });
+    } else if (b.kind === 'order_confirm') {
+      var oh = el('div', 'cRowTop'); oh.appendChild(el('span', 'cStrong', (b.qty > 1 ? b.qty + 'x ' : '') + b.item)); if (b.total) oh.appendChild(el('span', 'cPrice', b.total)); sec.appendChild(oh);
+      if (b.meta) sec.appendChild(el('p', 'cMeta', b.meta)); if (b.deliverTo) sec.appendChild(el('p', 'cMuted', b.deliverTo));
+      if (b.choice) { var ch = el('div', 'cChips'); ch.appendChild(el('span', 'cMuted', b.choice.label + ':')); b.choice.options.forEach(function (opt) { ch.appendChild(el('span', opt === b.choice.selected ? 'cPill on' : 'cPill', opt)); }); sec.appendChild(ch); }
+      sec.appendChild(el('div', 'cPrimaryBanner', b.button));
+    } else if (b.kind === 'permission_request') {
+      var ph = el('div', 'cRowTop'); ph.appendChild(el('span', 'cStrong', b.title)); if (b.badge) ph.appendChild(el('span', 'cPill', b.badge)); sec.appendChild(ph);
+      if (b.draft) { var db = el('div', 'cCallout'); if (b.draft.to) db.appendChild(el('p', 'cMuted', 'To: ' + b.draft.to)); if (b.draft.subject) db.appendChild(el('p', 'cStrong', b.draft.subject)); if (b.draft.body) db.appendChild(el('p', 'cNoteText', b.draft.body)); sec.appendChild(db); }
+      b.options.forEach(function (o) { var op = el('div', o.selected ? 'cItem cSelected' : 'cItem'); op.appendChild(el('p', 'cStrong', o.label)); if (o.description) op.appendChild(el('p', 'cMuted', o.description)); sec.appendChild(op); });
+    }
+    card.appendChild(sec);
+  }
 
   function render(doc, model) {
     function el(tag, cls, text) {
@@ -733,6 +870,12 @@
     }
     if (!model.places.length) card.appendChild(el('p', 'kind', model.label));
     card.appendChild(el('h1', 'title', model.title));
+    if (model.composedBlocks && model.composedBlocks.length) {
+      model.composedBlocks.forEach(function (blk) { renderComposedBlock(doc, card, blk, el); });
+      renderSource(doc, card, model, el);
+      if (model.title) doc.title = model.title + ' | Pack';
+      return;
+    }
     model.sections.forEach(function (section) {
       var wrap = el('section', 'section');
       if (section.title) wrap.appendChild(el('h2', 'sectionTitle', section.title));

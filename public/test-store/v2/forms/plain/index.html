@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-test-store-version="v2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plain form | Pack Test Store</title>
+<meta name="description" content="Mock card form for automated fill tests. Nothing is charged.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.trypackai.com/test-store/v2/forms/plain">
+
+
+<style>body{font:16px/1.5 system-ui,sans-serif;margin:0;color:#1a1a1a}header,main,footer{max-width:960px;margin:0 auto;padding:12px 16px}nav a{margin-right:12px}ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}li,.tile{border:1px solid #ddd;padding:8px;border-radius:6px}button,.btn-buy,.add-to-cart,a.cta{background:#1a1a1a;color:#fff;border:0;padding:10px 16px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}.price--was,.pdp__was{text-decoration:line-through;color:#777}</style>
+</head>
+<body data-ts-version="v2" data-ts-base="/test-store/v2">
+<header class="masthead">
+<a href="/test-store/v2/" class="brand">Pack Test Store</a>
+<nav>
+<a href="/test-store/v2/category/shoes">Shoes</a>
+<a href="/test-store/v2/category/bags">Bags</a>
+<a href="/test-store/v2/category/jackets">Jackets</a>
+<a href="/test-store/v2/store-hours">Store hours</a>
+<a href="/test-store/v2/news">News</a>
+<a href="/test-store/v2/cart">Cart (<span data-ts-cart-count>0</span>)</a>
+</nav>
+<form action="/test-store/v2/search" method="get" role="search">
+<input type="search" name="q" id="site-search" placeholder="Search the store" aria-label="Search">
+<button type="submit">Search</button>
+</form>
+</header>
+<main>
+<h1>Plain form</h1>
+<form id="order-form" method="post" action="#">
+<p><label for="card">Card number</label> <input id="card" type="text" name="card"></p>
+<p><label for="exp">Expiration</label> <input id="exp" type="text" name="exp"></p>
+<p><label for="cvc">Security code</label> <input id="cvc" type="text" name="cvc"></p>
+<p><label for="name">Name on card</label> <input id="name" type="text" name="name"></p>
+<p><label for="email">Email</label> <input id="email" type="email" name="email"></p>
+<p>Total: $25.00</p>
+<p><button type="submit" id="place">Place order</button></p>
+</form>
+<script>
+document.getElementById('place').addEventListener('click', function (event) {
+  event.preventDefault();
+  document.title = 'PLACED';
+});
+document.getElementById('order-form').addEventListener('submit', function (event) {
+  event.preventDefault();
+});
+</script>
+</main>
+<footer><p>Mock store for automated tests. Nothing here is for sale. Pack Test Store, 100 Mock Street, San Francisco.</p></footer>
+<script src="/test-store/store.js"></script>
+</body>
+</html>

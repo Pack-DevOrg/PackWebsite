@@ -2,8 +2,10 @@
 /**
  * Writes the Pack Test Store: static, deterministic mock shop pages under
  * public/test-store/ (v1 at /test-store/, v2 at /test-store/v2/, broken at /test-store/broken/).
- * No real commerce. The final "Place order" link goes to the Stripe TEST payment link
+ * No real commerce. The shop checkout "Place order" link goes to the Stripe TEST payment link
  * (env PACK_TEST_STORE_PAY_URL, default the stored test link). That is the one-way door.
+ * /forms/checkout, /forms/apply, and /forms/plain are fill targets and do not link to Stripe.
+ * The broken layout does not emit those form pages.
  *
  *   node scripts/test-store/generate.mjs           write public/test-store/**
  *   node scripts/test-store/generate.mjs --check   exit 1 when committed output is stale
@@ -230,6 +232,77 @@ function checkout(version) {
   return shell({version, title: 'Checkout', description: 'Test checkout', canonicalPath: `${base}/checkout`, body});
 }
 
+const CARD_FIELDS = [
+  {label: 'Card number', autocomplete: 'cc-number', id: 'card', type: 'text'},
+  {label: 'Expiration', autocomplete: 'cc-exp', id: 'exp', type: 'text'},
+  {label: 'Security code', autocomplete: 'cc-csc', id: 'cvc', type: 'text'},
+  {label: 'Name on card', autocomplete: 'cc-name', id: 'name', type: 'text'},
+  {label: 'Email', autocomplete: 'email', id: 'email', type: 'email'},
+];
+
+function labeledInput({label, id, autocomplete, type}) {
+  const forAttr = id ? ` for="${id}"` : '';
+  const idAttr = id ? ` id="${id}"` : '';
+  const autoAttr = autocomplete ? ` autocomplete="${autocomplete}"` : '';
+  const name = id || label.toLowerCase().replace(/\s+/g, '-');
+  return `<p><label${forAttr}>${esc(label)}</label> <input${idAttr} type="${type}" name="${name}"${autoAttr}></p>`;
+}
+
+function bindClick({buttonId, title, formId}) {
+  return `<script>
+document.getElementById('${buttonId}').addEventListener('click', function (event) {
+  event.preventDefault();
+  document.title = '${title}';
+});
+document.getElementById('${formId}').addEventListener('submit', function (event) {
+  event.preventDefault();
+});
+</script>`;
+}
+
+function cardFields({withAutocomplete, withIds}) {
+  return CARD_FIELDS.map((field) => labeledInput({
+    label: field.label,
+    type: field.type,
+    id: withIds ? field.id : '',
+    autocomplete: withAutocomplete ? field.autocomplete : '',
+  })).join('\n');
+}
+
+function orderFormPage(version, {slug, title, description, withAutocomplete, withIds}) {
+  const base = STORE.base + VERSIONS[version];
+  const body = `<h1>${esc(title)}</h1>
+<form id="order-form" method="post" action="#">
+${cardFields({withAutocomplete, withIds})}
+<p>Total: $25.00</p>
+<p><button type="submit" id="place">Place order</button></p>
+</form>
+${bindClick({buttonId: 'place', title: 'PLACED', formId: 'order-form'})}`;
+  return shell({version, title, description, canonicalPath: `${base}/forms/${slug}`, body});
+}
+
+function applyForm(version) {
+  const base = STORE.base + VERSIONS[version];
+  const fields = [
+    {label: 'Company', autocomplete: 'organization', type: 'text'},
+    {label: 'Work email', autocomplete: 'email', type: 'email'},
+    {label: 'Phone', autocomplete: 'tel', type: 'tel'},
+  ].map((field) => labeledInput({label: field.label, type: field.type, autocomplete: field.autocomplete})).join('\n');
+  const body = `<h1>Application</h1>
+<form id="apply-form" method="post" action="#">
+${fields}
+<p><button type="submit" id="send">Send application</button></p>
+</form>
+${bindClick({buttonId: 'send', title: 'SENT', formId: 'apply-form'})}`;
+  return shell({
+    version,
+    title: 'Application',
+    description: 'Mock application form for automated fill tests.',
+    canonicalPath: `${base}/forms/apply`,
+    body,
+  });
+}
+
 function hours(version) {
   const base = STORE.base + VERSIONS[version];
   const a = STORE.address;
@@ -353,6 +426,23 @@ function pagesFor(version) {
   for (const p of PRODUCTS) put(`/p/${p.slug}`, pdp(version, p));
   put('/cart', cart(version));
   put('/checkout', checkout(version));
+  if (version !== 'broken') {
+    put('/forms/checkout', orderFormPage(version, {
+      slug: 'checkout',
+      title: 'Checkout form',
+      description: 'Mock card form for automated fill tests. Nothing is charged.',
+      withAutocomplete: true,
+      withIds: false,
+    }));
+    put('/forms/apply', applyForm(version));
+    put('/forms/plain', orderFormPage(version, {
+      slug: 'plain',
+      title: 'Plain form',
+      description: 'Mock card form for automated fill tests. Nothing is charged.',
+      withAutocomplete: false,
+      withIds: true,
+    }));
+  }
   put('/store-hours', hours(version));
   put('/news', newsIndex(version));
   for (const a of ARTICLES) put(`/news/${a.slug}`, article(version, a));

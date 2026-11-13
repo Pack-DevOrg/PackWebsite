@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" data-test-store-version="v1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Application | Pack Test Store</title>
+<meta name="description" content="Mock application form for automated fill tests.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.trypackai.com/test-store/forms/apply">
+
+
+<style>body{font:16px/1.5 system-ui,sans-serif;margin:0;color:#1a1a1a}header,main,footer{max-width:960px;margin:0 auto;padding:12px 16px}nav a{margin-right:12px}ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}li,.tile{border:1px solid #ddd;padding:8px;border-radius:6px}button,.btn-buy,.add-to-cart,a.cta{background:#1a1a1a;color:#fff;border:0;padding:10px 16px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}.price--was,.pdp__was{text-decoration:line-through;color:#777}</style>
+</head>
+<body data-ts-version="v1" data-ts-base="/test-store">
+<header class="site-header">
+<a href="/test-store/" class="brand">Pack Test Store</a>
+<nav>
+<a href="/test-store/category/shoes">Shoes</a>
+<a href="/test-store/category/bags">Bags</a>
+<a href="/test-store/category/jackets">Jackets</a>
+<a href="/test-store/store-hours">Store hours</a>
+<a href="/test-store/news">News</a>
+<a href="/test-store/cart">Cart (<span data-ts-cart-count>0</span>)</a>
+</nav>
+<form action="/test-store/search" method="get" role="search">
+<input type="search" name="q" id="search-input" placeholder="Search the store" aria-label="Search">
+<button type="submit">Search</button>
+</form>
+</header>
+<main>
+<h1>Application</h1>
+<form id="apply-form" method="post" action="#">
+<p><label>Company</label> <input type="text" name="company" autocomplete="organization"></p>
+<p><label>Work email</label> <input type="email" name="work-email" autocomplete="email"></p>
+<p><label>Phone</label> <input type="tel" name="phone" autocomplete="tel"></p>
+<p><button type="submit" id="send">Send application</button></p>
+</form>
+<script>
+document.getElementById('send').addEventListener('click', function (event) {
+  event.preventDefault();
+  document.title = 'SENT';
+});
+document.getElementById('apply-form').addEventListener('submit', function (event) {
+  event.preventDefault();
+});
+</script>
+</main>
+<footer><p>Mock store for automated tests. Nothing here is for sale. Pack Test Store, 100 Mock Street, San Francisco.</p></footer>
+<script src="/test-store/store.js"></script>
+</body>
+</html>

@@ -58,6 +58,46 @@ describe('Pack Test Store static pages', () => {
     }
   });
 
+  it('form pages are fill targets and do not open Stripe', () => {
+    const labels = ['Card number', 'Expiration', 'Security code', 'Name on card', 'Email'];
+    for (const prefix of ['', 'v2/']) {
+      const checkout = read(`${prefix}forms/checkout/index.html`);
+      const plain = read(`${prefix}forms/plain/index.html`);
+      const apply = read(`${prefix}forms/apply/index.html`);
+      for (const html of [checkout, plain]) {
+        for (const label of labels) expect(html).toContain(`>${label}<`);
+        expect(html).toContain('<p>Total: $25.00</p>');
+        expect(html).toContain('id="place">Place order<');
+        expect(html).toContain("document.title = 'PLACED'");
+        expect(html).toContain('event.preventDefault()');
+        expect(html).not.toContain('buy.stripe.com');
+        expect(html).not.toMatch(/\b\d{12,19}\b/u);
+      }
+      expect(checkout).toContain('autocomplete="cc-number"');
+      expect(checkout).toContain('autocomplete="cc-exp"');
+      expect(checkout).toContain('autocomplete="cc-csc"');
+      expect(checkout).toContain('autocomplete="cc-name"');
+      expect(checkout).toContain('autocomplete="email"');
+      expect(plain).not.toContain('autocomplete');
+      for (const id of ['card', 'exp', 'cvc', 'name', 'email']) {
+        expect(plain).toContain(`for="${id}"`);
+        expect(plain).toContain(`id="${id}"`);
+      }
+      expect(apply).toContain('>Company<');
+      expect(apply).toContain('>Work email<');
+      expect(apply).toContain('>Phone<');
+      expect(apply).toContain('autocomplete="organization"');
+      expect(apply).toContain('autocomplete="email"');
+      expect(apply).toContain('autocomplete="tel"');
+      expect(apply).not.toMatch(/\$/u);
+      expect(apply).not.toMatch(/\bTotal\b/u);
+      expect(apply).toContain('id="send">Send application<');
+      expect(apply).toContain("document.title = 'SENT'");
+      expect(apply).not.toContain('buy.stripe.com');
+    }
+    expect(fs.existsSync(path.join(root, 'broken/forms'))).toBe(false);
+  });
+
   it('store hours carry OpeningHoursSpecification and the news has one fresh and one stale article', () => {
     const store = jsonLd(read('store-hours/index.html')).find((o) => o['@type'] === 'Store');
     expect(store.openingHoursSpecification.length).toBeGreaterThan(1);

@@ -2,10 +2,11 @@
 /**
  * Writes the Pack Test Store: static, deterministic mock shop pages under
  * public/test-store/ (v1 at /test-store/, v2 at /test-store/v2/, broken at /test-store/broken/).
- * No real commerce. The shop checkout "Place order" link goes to the Stripe TEST payment link
- * (env PACK_TEST_STORE_PAY_URL, default the stored test link). That is the one-way door.
- * /forms/checkout, /forms/apply, and /forms/plain are fill targets and do not link to Stripe.
- * The broken layout does not emit those form pages.
+ * No real commerce. The shop checkout is the approval stop: the cart total, card fields,
+ * and a submit button that does not navigate. Nothing is charged. Pack stops for approval
+ * before typing. There is no payment link on that page.
+ * /forms/checkout, /forms/apply, and /forms/plain stay the $25 and application fill fixtures
+ * and do not link out. The broken layout does not emit those form pages.
  *
  *   node scripts/test-store/generate.mjs           write public/test-store/**
  *   node scripts/test-store/generate.mjs --check   exit 1 when committed output is stale
@@ -29,8 +30,6 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const outRoot = path.join(root, 'public', 'test-store');
-export const DEFAULT_PAY_URL = 'https://buy.stripe.com/test_cNi7sNgof1U03n6bEc3gk00';
-const payUrl = process.env.PACK_TEST_STORE_PAY_URL?.trim() || DEFAULT_PAY_URL;
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const money = (n) => `$${n.toFixed(2)}`;
@@ -225,9 +224,13 @@ function cart(version) {
 function checkout(version) {
   const base = STORE.base + VERSIONS[version];
   const body = `<h1>Checkout</h1>
-<p>This is a test checkout. Placing the order opens the Stripe TEST payment page. No real card is charged.</p>
+<p>This is a test checkout. Nothing is charged. Pack stops for approval before typing.</p>
 <div data-ts-cart data-ts-summary></div>
-<p><a class="cta" id="place-order" data-ts-pay data-one-way-door="pay" href="${esc(payUrl)}" rel="nofollow">Place order</a></p>
+<form id="order-form" method="post" action="#">
+${cardFields({withAutocomplete: true, withIds: false})}
+<p><button type="submit" class="cta" id="place-order" data-ts-pay data-one-way-door="pay">Place order</button></p>
+</form>
+${bindClick({buttonId: 'place-order', title: 'PLACED', formId: 'order-form'})}
 <p><a href="${base}/cart">Back to cart</a></p>`;
   return shell({version, title: 'Checkout', description: 'Test checkout', canonicalPath: `${base}/checkout`, body});
 }
@@ -475,7 +478,7 @@ function main(argv) {
     fs.mkdirSync(path.dirname(file), {recursive: true});
     fs.writeFileSync(file, content);
   }
-  process.stdout.write(`wrote ${files.size} files under public/test-store (pay target ${payUrl})\n`);
+  process.stdout.write(`wrote ${files.size} files under public/test-store\n`);
   return 0;
 }
 

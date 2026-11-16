@@ -54,7 +54,19 @@ describe('Pack Test Store static pages', () => {
   it('checkout Place order is the one-way door to the Stripe TEST link', () => {
     for (const prefix of ['', 'v2/', 'broken/']) {
       const html = read(`${prefix}checkout/index.html`);
-      expect(html).toMatch(/id="place-order"[^>]*data-one-way-door="pay"[^>]*href="https:\/\/buy\.stripe\.com\/test_/u);
+      expect(html).toContain('data-ts-cart');
+      expect(html).toContain('autocomplete="cc-number"');
+      expect(html).toContain('autocomplete="cc-exp"');
+      expect(html).toContain('autocomplete="cc-csc"');
+      expect(html).toContain('autocomplete="cc-name"');
+      expect(html).toContain('autocomplete="email"');
+      expect(html).toContain('id="place-order"');
+      expect(html).toContain('data-one-way-door="pay"');
+      expect(html).toMatch(/<button\b[^>]*\bid="place-order"/u);
+      expect(html).not.toMatch(/<a\b[^>]*\bid="place-order"/u);
+      expect(html).toContain('event.preventDefault()');
+      expect(html).toContain("document.title = 'PLACED'");
+      expect(html).not.toContain('buy.stripe.com');
     }
   });
 

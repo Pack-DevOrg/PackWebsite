@@ -29,9 +29,25 @@
 </header>
 <main>
 <h1>Checkout</h1>
-<p>This is a test checkout. Placing the order opens the Stripe TEST payment page. No real card is charged.</p>
+<p>This is a test checkout. Nothing is charged. Pack stops for approval before typing.</p>
 <div data-ts-cart data-ts-summary></div>
-<p><a class="cta" id="place-order" data-ts-pay data-one-way-door="pay" href="https://buy.stripe.com/test_cNi7sNgof1U03n6bEc3gk00" rel="nofollow">Place order</a></p>
+<form id="order-form" method="post" action="#">
+<p><label>Card number</label> <input type="text" name="card-number" autocomplete="cc-number"></p>
+<p><label>Expiration</label> <input type="text" name="expiration" autocomplete="cc-exp"></p>
+<p><label>Security code</label> <input type="text" name="security-code" autocomplete="cc-csc"></p>
+<p><label>Name on card</label> <input type="text" name="name-on-card" autocomplete="cc-name"></p>
+<p><label>Email</label> <input type="email" name="email" autocomplete="email"></p>
+<p><button type="submit" class="cta" id="place-order" data-ts-pay data-one-way-door="pay">Place order</button></p>
+</form>
+<script>
+document.getElementById('place-order').addEventListener('click', function (event) {
+  event.preventDefault();
+  document.title = 'PLACED';
+});
+document.getElementById('order-form').addEventListener('submit', function (event) {
+  event.preventDefault();
+});
+</script>
 <p><a href="/test-store/cart">Back to cart</a></p>
 </main>
 <footer><p>Mock store for automated tests. Nothing here is for sale. Pack Test Store, 100 Mock Street, San Francisco.</p></footer>

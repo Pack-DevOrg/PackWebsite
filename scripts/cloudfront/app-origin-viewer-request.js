@@ -167,6 +167,31 @@ function testStoreOrigin(request) {
   return request;
 }
 
+function testStoreBlockResponse(statusCode) {
+  return {
+    statusCode: statusCode,
+    statusDescription: statusCode === 429 ? 'Too Many Requests' : 'Unavailable',
+    headers: {
+      'content-type': { value: 'text/plain; charset=utf-8' },
+      'cache-control': { value: 'no-store' },
+    },
+    body: 'block',
+  };
+}
+
+// Key already matched. These two URIs are generated responses, not origin files.
+// The ?k= path does not call this; it still sets the cookie and redirects.
+function testStoreUnlocked(request) {
+  var uri = request.uri;
+  if (uri === '/test-store/blocks/http/541') {
+    return testStoreBlockResponse(541);
+  }
+  if (uri === '/test-store/blocks/http/429') {
+    return testStoreBlockResponse(429);
+  }
+  return testStoreOrigin(request);
+}
+
 async function testStoreGate(event) {
   var request = event.request;
   var key;
@@ -179,10 +204,10 @@ async function testStoreGate(event) {
   var cookies = request.cookies || {};
   var query = request.querystring || {};
   if (headers['x-pack-test-key'] && sameKey(headers['x-pack-test-key'].value, key)) {
-    return testStoreOrigin(request);
+    return testStoreUnlocked(request);
   }
   if (cookies[TEST_STORE_COOKIE] && sameKey(cookies[TEST_STORE_COOKIE].value, key)) {
-    return testStoreOrigin(request);
+    return testStoreUnlocked(request);
   }
   if (query.k && sameKey(query.k.value, key)) {
     var rest = [];

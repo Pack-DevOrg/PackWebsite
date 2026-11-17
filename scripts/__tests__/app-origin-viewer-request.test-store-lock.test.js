@@ -88,6 +88,64 @@ describe('app-origin-viewer-request test-store lock', () => {
     assert.equal(res.uri, '/test-store/search/index.html');
   });
 
+  it('returns 541 for the 541 probe when the key matches', async () => {
+    const res = await run(handler, '/test-store/blocks/http/541', { headers: { 'x-pack-test-key': { value: KEY } } });
+    assert.equal(res.statusCode, 541);
+    assert.equal(res.body, 'block');
+    assert.equal(res.uri, undefined);
+    assert.equal(res.cookies, undefined);
+    assert.equal(res.headers.location, undefined);
+    assert.equal(res.headers['content-type'].value, 'text/plain; charset=utf-8');
+    assert.equal(res.headers['cache-control'].value, 'no-store');
+    assert.equal(res.body.includes(KEY), false);
+  });
+
+  it('returns 429 for the 429 probe when the key matches', async () => {
+    const res = await run(handler, '/test-store/blocks/http/429', { headers: { 'x-pack-test-key': { value: KEY } } });
+    assert.equal(res.statusCode, 429);
+    assert.equal(res.body, 'block');
+    assert.equal(res.uri, undefined);
+    assert.equal(res.cookies, undefined);
+    assert.equal(res.headers.location, undefined);
+    assert.equal(res.headers['content-type'].value, 'text/plain; charset=utf-8');
+    assert.equal(res.headers['cache-control'].value, 'no-store');
+    assert.equal(res.body.includes(KEY), false);
+  });
+
+  it('still answers 404 for both status probes when the key is absent', async () => {
+    for (const uri of ['/test-store/blocks/http/541', '/test-store/blocks/http/429']) {
+      const res = await run(handler, uri);
+      assert.equal(res.statusCode, 404, uri);
+      assert.equal(res.body, 'Not Found');
+      assert.equal(res.cookies, undefined);
+      assert.equal(res.headers.location, undefined);
+    }
+  });
+
+  it('?k= on a status probe still redirects, and the cookie request gets that status', async () => {
+    const redirected = await run(handler, '/test-store/blocks/http/541', { querystring: { k: { value: KEY } } });
+    assert.equal(redirected.statusCode, 302);
+    assert.equal(redirected.body, undefined);
+    assert.equal(redirected.headers.location.value, '/test-store/blocks/http/541');
+    assert.equal(redirected.cookies.pack_test_key.value, KEY);
+    const followed = await run(handler, redirected.headers.location.value, {
+      cookies: { pack_test_key: { value: redirected.cookies.pack_test_key.value } },
+    });
+    assert.equal(followed.statusCode, 541);
+    assert.equal(followed.body, 'block');
+    const other = await run(handler, '/test-store/blocks/http/429', {
+      cookies: { pack_test_key: { value: redirected.cookies.pack_test_key.value } },
+    });
+    assert.equal(other.statusCode, 429);
+    assert.equal(other.body, 'block');
+  });
+
+  it('still serves the open block page from the origin when the key matches', async () => {
+    const open = await run(handler, '/test-store/blocks/open', { headers: { 'x-pack-test-key': { value: KEY } } });
+    assert.equal(open.statusCode, undefined);
+    assert.equal(open.uri, '/test-store/blocks/open/index.html');
+  });
+
   it('fails closed when the key store is unreadable or the key is short', async () => {
     const down = load(new Error('no kvs'));
     assert.equal((await run(down, '/test-store/p/x', { headers: { 'x-pack-test-key': { value: KEY } } })).statusCode, 404);

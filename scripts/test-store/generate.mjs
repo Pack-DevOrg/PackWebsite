@@ -7,6 +7,8 @@
  * before typing. There is no payment link on that page.
  * /forms/checkout, /forms/apply, and /forms/plain stay the $25 and application fill fixtures
  * and do not link out. The broken layout does not emit those form pages.
+ * /blocks/ is a separate set of walk targets: two status probes, a person check,
+ * a blocked request, an unsupported browser, and an open tote. Nothing is for sale.
  *
  *   node scripts/test-store/generate.mjs           write public/test-store/**
  *   node scripts/test-store/generate.mjs --check   exit 1 when committed output is stale
@@ -51,10 +53,22 @@ const LAYOUTS = {
 };
 LAYOUTS.broken = {...LAYOUTS.v1, searchName: 'keyword', searchId: 'kw'};
 
-function shell({version, title, description, canonicalPath, body, meta = '', jsonLd = []}) {
+function shell({version, title, description, canonicalPath, body, meta = '', jsonLd = [], chrome = true}) {
   const L = LAYOUTS[version];
   const base = STORE.base + VERSIONS[version];
   const ld = jsonLd.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n');
+  const nav = chrome ? `
+<nav>
+${CATEGORIES.map((c) => `<a href="${base}/category/${c}">${cap(c)}</a>`).join('\n')}
+<a href="${base}/store-hours">Store hours</a>
+<a href="${base}/news">News</a>
+<a href="${base}/cart">Cart (<span data-ts-cart-count>0</span>)</a>
+</nav>
+<form action="${base}/search" method="get" role="search">
+<input type="search" name="${L.searchName}" id="${L.searchId}" placeholder="Search the store" aria-label="Search">
+<button type="submit">Search</button>
+</form>` : '';
+  const client = chrome ? `\n<script src="${STORE.base}/store.js"></script>` : '';
   return `<!doctype html>
 <html lang="en" data-test-store-version="${version}">
 <head>
@@ -70,23 +84,12 @@ ${ld}
 </head>
 <body data-ts-version="${version}" data-ts-base="${base}">
 <header class="${L.header}">
-<a href="${base}/" class="brand">${STORE.name}</a>
-<nav>
-${CATEGORIES.map((c) => `<a href="${base}/category/${c}">${cap(c)}</a>`).join('\n')}
-<a href="${base}/store-hours">Store hours</a>
-<a href="${base}/news">News</a>
-<a href="${base}/cart">Cart (<span data-ts-cart-count>0</span>)</a>
-</nav>
-<form action="${base}/search" method="get" role="search">
-<input type="search" name="${L.searchName}" id="${L.searchId}" placeholder="Search the store" aria-label="Search">
-<button type="submit">Search</button>
-</form>
+<a href="${base}/" class="brand">${STORE.name}</a>${nav}
 </header>
 <main>
 ${body}
 </main>
-<footer><p>Mock store for automated tests. Nothing here is for sale. ${STORE.name}, ${STORE.address.street}, ${STORE.address.city}.</p></footer>
-<script src="${STORE.base}/store.js"></script>
+<footer><p>Mock store for automated tests. Nothing here is for sale. ${STORE.name}, ${STORE.address.street}, ${STORE.address.city}.</p></footer>${client}
 </body>
 </html>
 `;
@@ -355,6 +358,51 @@ function article(version, a) {
   return shell({version, title: a.title, description: a.body, canonicalPath: `${base}/news/${a.slug}`, body, meta, jsonLd: [ld]});
 }
 
+function classicToteBody() {
+  const tote = PRODUCTS.find((p) => p.slug === 'tote-classic');
+  if (!tote) throw new Error('missing tote-classic');
+  return `<article class="product-detail" data-ts-sku="${tote.slug}">
+<h1 class="product-title">${esc(tote.name)}</h1>
+<p class="price-block"><span class="price">${money(tote.price)}</span></p>
+<p class="availability">${AVAILABILITY_TEXT[tote.availability]}</p>
+<p>${esc(tote.blurb)}</p>
+<button type="button" class="add-to-cart">Add to bag</button>
+</article>`;
+}
+
+function statusProbe(requestUrl) {
+  const url = JSON.stringify(requestUrl);
+  return `<script>
+fetch(${url}, {credentials: 'include'}).then(function (response) {
+  console.error('HTTPError: response.status: ' + response.status + ', request.url: ' + ${url});
+}, function () {});
+</script>`;
+}
+
+function blockPage(route, title, description, body, chrome = true) {
+  return shell({
+    version: 'v1',
+    title,
+    description,
+    canonicalPath: `${STORE.base}/blocks/${route}`,
+    body,
+    chrome,
+  });
+}
+
+function blockPages() {
+  const tote = classicToteBody();
+  const pages = new Map();
+  pages.set('blocks/status-541/index.html', blockPage('status-541', 'Classic Tote', 'Canvas tote with an inner pocket.', `${tote}\n${statusProbe('/test-store/blocks/http/541')}`));
+  pages.set('blocks/status-429/index.html', blockPage('status-429', 'Classic Tote', 'Canvas tote with an inner pocket.', `${tote}\n${statusProbe('/test-store/blocks/http/429')}`));
+  pages.set('blocks/captcha/index.html', blockPage('captcha', 'A person is required', 'A person is required.', `<h1>A person is required</h1>
+<button type="button">Press and hold</button>`, false));
+  pages.set('blocks/wall/index.html', blockPage('wall', 'Request blocked', 'The request was blocked.', `<h1>The request was blocked</h1>`, false));
+  pages.set('blocks/unsupported/index.html', blockPage('unsupported', 'Unsupported browser', 'This browser cannot use the page.', `<h1>This browser cannot use the page</h1>`, false));
+  pages.set('blocks/open/index.html', blockPage('open', 'Classic Tote', 'Canvas tote with an inner pocket.', tote));
+  return pages;
+}
+
 const STORE_JS = `/* Pack Test Store client script: filters, sort, cart in localStorage. Mock only. */
 (function () {
   var KEY = 'pack-test-store-cart';
@@ -457,6 +505,7 @@ export function buildAll() {
   for (const version of Object.keys(VERSIONS)) {
     for (const [rel, html] of pagesFor(version)) files.set(rel, html);
   }
+  for (const [rel, html] of blockPages()) files.set(rel, html);
   return files;
 }
 

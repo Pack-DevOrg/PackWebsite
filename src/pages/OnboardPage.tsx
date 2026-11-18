@@ -111,6 +111,7 @@ export const ACCESS_REDEEM_PATH = "/user/accounts/access/redeem";
 
 /** /user/accounts/access/redeem envelope codes (user-accounts ACCESS_REDEEM_FAILURE) -> field reason. */
 const REDEEM_CODE_REASONS: Readonly<Record<string, string>> = {
+  CODE_INVALID: "invalid",
   CODE_UNKNOWN: "invalid",
   CODE_EXPIRED: "expired",
   CODE_USED_UP: "used",

@@ -134,6 +134,7 @@ describe("OnboardPage access step", () => {
   });
 
   it.each([
+    ["CODE_INVALID", 400, "That code isn't valid. Check it and try again."],
     ["CODE_UNKNOWN", 404, "That code isn't valid. Check it and try again."],
     ["CODE_EXPIRED", 410, "That code has expired."],
     ["CODE_USED_UP", 409, "That code has already been used."],

@@ -661,3 +661,390 @@ describe('dedicated web renderers for trip_history, place_detail, and calendar_e
   });
 });
 
+describe('CL1-P3 composed blocks, single-item payload.item fallback, and Rule 15 unknown-block degradation', () => {
+  async function renderPayload(payload) {
+    const { JSDOM } = await import('jsdom');
+    const html = fs.readFileSync(path.join(here, '../../public/a/index.html'), 'utf8').replace(/<script src="[^"]*"><\/script>/, '');
+    const dom = new JSDOM(html, { url: 'https://www.trypackai.com/a/tok123', runScripts: 'outside-only' });
+    dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => payload });
+    dom.window.eval(fs.readFileSync(path.join(here, '../../public/a-card.v5.js'), 'utf8'));
+    await new Promise((r) => setTimeout(r, 20));
+    return dom.window.document;
+  }
+
+  it('renders day_brief weather hero, non-condition facts, and today schedule rows instead of summary count strings', async () => {
+    const doc = await renderPayload({
+      kind: 'composed',
+      version: 1,
+      title: 'Good morning',
+      rows: [{ label: 'Today', value: '2 today' }],
+      blocks: [{
+        kind: 'day_brief',
+        title: 'Good morning',
+        dateLabel: 'Tuesday, Nov 10',
+        daypart: 'morning',
+        weather: {
+          summary: 'Sunny & crisp',
+          tempF: 68,
+          highF: 72,
+          lowF: 55,
+          aqi: { value: 28, category: 'Good' },
+        },
+        facts: [
+          { kind: 'weather', text: '68°F and sunny', group: 'conditions' },
+          { kind: 'travel', text: 'Flight to SEA tomorrow at 8:15 AM', needsYou: true },
+        ],
+        today: [
+          {
+            id: 'item-1',
+            title: 'Design review with Alex',
+            when: '10:30 AM',
+            where: 'Room 4B',
+            leaveBy: 'Leave 10:05 AM',
+            line: '10:30 AM · Design review with Alex · Room 4B',
+            needsYou: true,
+            actions: [
+              { kind: 'join', label: 'Join Meet', url: 'https://meet.google.com/abc-defg-hij' },
+              { kind: 'bad', label: 'Evil', url: 'javascript:alert(1)' },
+            ],
+          },
+          {
+            id: 'item-2',
+            title: 'Dinner at Tartine',
+            when: '7:00 PM',
+            where: '600 Guerrero St',
+            line: '7:00 PM · Dinner at Tartine',
+            pending: true,
+          },
+        ],
+      }],
+    });
+    const text = doc.getElementById('card').textContent;
+    assert.ok(!text.includes('2 today'), 'never falls back to count string row');
+    for (const bit of [
+      'Tuesday, Nov 10',
+      '68°F',
+      'Sunny & crisp',
+      'H 72° · L 55°',
+      'AQI 28 (Good)',
+      'Flight to SEA tomorrow at 8:15 AM',
+      '10:30 AM',
+      'Design review with Alex',
+      'Room 4B',
+      'Leave 10:05 AM',
+      'Dinner at Tartine',
+      'Pending',
+    ]) {
+      assert.ok(text.includes(bit), `missing ${bit}`);
+    }
+    const links = [...doc.querySelectorAll('#card a')].map((a) => [a.textContent.trim(), a.getAttribute('href')]);
+    assert.deepEqual(links, [['Join Meet', 'https://meet.google.com/abc-defg-hij']]);
+  });
+
+  it('renders composed blocks for flight_option, hotel_option, trip_leg, event_ticket, price_breakdown, key_value, text_note, steps, standings, order_confirm, and permission_request', async () => {
+    const doc = await renderPayload({
+      kind: 'composed',
+      version: 1,
+      title: 'Seattle Weekend Plan',
+      rows: [{ label: 'Sections', value: '11 items' }],
+      blocks: [
+        {
+          kind: 'flight_option',
+          carrier: 'AS',
+          flightNo: '332',
+          origin: 'SFO',
+          destination: 'SEA',
+          departIso: '2026-11-14T08:15',
+          arriveIso: '2026-11-14T10:30',
+          stops: 0,
+          cabin: 'Main',
+          price: { amount: 189, currency: 'USD' },
+          why: 'Earliest nonstop arrival',
+          tags: ['Nonstop', 'Best time'],
+          bookingUrl: 'https://www.alaskaair.com/book',
+        },
+        {
+          kind: 'hotel_option',
+          name: 'Thompson Seattle',
+          area: 'Downtown / Pike Place',
+          checkInIso: '2026-11-14',
+          checkOutIso: '2026-11-16',
+          nights: 2,
+          price: { currency: 'USD', total: 640 },
+          rating: 4.6,
+          why: 'Steps from Pike Place Market',
+          tags: ['Waterfront view'],
+          bookingUrl: 'https://www.hyatt.com/thompson-seattle',
+        },
+        {
+          kind: 'trip_leg',
+          title: 'Return leg to San Francisco',
+          origin: 'SEA',
+          destination: 'SFO',
+          carrier: 'AS 419',
+          departIso: '2026-11-16T18:45',
+          arriveIso: '2026-11-16T21:00',
+          price: { amount: 194, currency: 'USD' },
+          detail: 'Evening nonstop return',
+        },
+        {
+          kind: 'event_ticket',
+          title: 'Seahawks vs 49ers',
+          venue: 'Lumen Field',
+          startIso: '2026-11-15T13:05',
+          section: '109',
+          row: 'M',
+          seat: '14',
+          confirmationCode: 'SEA-99412',
+          quantity: 2,
+          price: { amount: 420, currency: 'USD' },
+          url: 'https://www.ticketmaster.com/event/123',
+        },
+        {
+          kind: 'price_breakdown',
+          title: 'Estimated Trip Total',
+          lines: [
+            { label: 'Roundtrip flights (2x)', amount: { amount: 383, currency: 'USD' } },
+            { label: 'Thompson Seattle (2 nights)', amount: { amount: 640, currency: 'USD' } },
+          ],
+          fees: [
+            { label: 'Taxes & fees', price: { amount: 88, currency: 'USD' } },
+          ],
+          total: { amount: 1111, currency: 'USD' },
+          note: 'All prices verified from live provider quotes',
+        },
+        {
+          kind: 'key_value',
+          title: 'Booking References',
+          rows: [
+            { label: 'Airline PNR', value: 'K8M2PQ' },
+            { label: 'Hotel folio', value: 'TH-88412' },
+          ],
+        },
+        {
+          kind: 'text_note',
+          title: 'Pack carry-on rain shell',
+          text: 'Light rain forecast Saturday afternoon near the waterfront.',
+          tone: 'warning',
+        },
+        {
+          kind: 'steps',
+          title: 'Check-in Checklist',
+          summary: 'Complete 24 hours before departure',
+          steps: [
+            { label: 'Confirm passport / REAL ID', state: 'done', duration: '2 min' },
+            { n: 2, title: 'Select exit row seats', text: 'Open Alaska app at T-24h', state: 'active', note: 'Row 17 preferred' },
+          ],
+        },
+        {
+          kind: 'standings',
+          title: 'NFC West Standings',
+          division: 'NFC West',
+          season: 2026,
+          rows: [
+            { rank: 1, team: 'Seattle Seahawks', w: 7, l: 2, pct: '.778', gb: '—', streak: 'W3', highlight: true },
+            { rank: 2, team: 'San Francisco 49ers', w: 6, l: 3, pct: '.667', gb: '1.0', streak: 'W1' },
+          ],
+        },
+        {
+          kind: 'order_confirm',
+          item: ' Pike Place Chowder Sampler',
+          qty: 2,
+          store: 'Pike Place Chowder',
+          fulfillment: 'pickup',
+          eta: '15–20 min',
+          deliverTo: '1530 Post Alley, Seattle, WA',
+          total: '$34.50',
+          button: 'Review & pay',
+          choice: {
+            label: 'Bread bowl',
+            options: ['Sourdough bowl', 'Cup only'],
+            selected: 'Sourdough bowl',
+          },
+        },
+        {
+          kind: 'permission_request',
+          provider: 'google',
+          capability: 'calendar_write',
+          title: 'Add Seattle trip holds to Google Calendar',
+          defaultOptionId: 'read_write',
+          needsConsent: true,
+          draft: {
+            to: 'alex@example.com',
+            subject: 'Seattle weekend itinerary',
+            body: 'Here is our flight and hotel plan.',
+          },
+          options: [
+            { id: 'read_write', label: 'Read & add events', description: 'Lets Pack place the flight and game holds on your calendar.' },
+            { id: 'read_only', label: 'Download .ics only', description: 'Keep calendar read-only and open an invite link.' },
+          ],
+        },
+      ],
+    });
+    const text = doc.getElementById('card').textContent;
+    assert.ok(!text.includes('11 items'), 'renders composed blocks instead of fallback count row');
+    for (const bit of [
+      'AS 332',
+      'SFO → SEA',
+      'Nonstop · Main',
+      '$189',
+      'Earliest nonstop arrival',
+      'Thompson Seattle',
+      'Downtown / Pike Place',
+      '2 nights',
+      '$640 total',
+      '★ 4.6',
+      'Return leg to San Francisco',
+      'SEA → SFO',
+      'Seahawks vs 49ers',
+      'Lumen Field',
+      'Sec 109 · Row M · Seat 14',
+      'SEA-99412',
+      'Estimated Trip Total',
+      'Roundtrip flights (2x)',
+      '$1111',
+      'Booking References',
+      'K8M2PQ',
+      'Pack carry-on rain shell',
+      'Light rain forecast Saturday afternoon',
+      'Check-in Checklist',
+      'Confirm passport / REAL ID',
+      'Select exit row seats',
+      'NFC West Standings',
+      'Seattle Seahawks',
+      '7-2',
+      '.778',
+      'Pike Place Chowder',
+      'Sourdough bowl',
+      '$34.50',
+      'Review & pay',
+      'Add Seattle trip holds to Google Calendar',
+      'alex@example.com',
+      'Read & add events',
+      'Download .ics only',
+    ]) {
+      assert.ok(text.includes(bit), `missing expected block content: ${bit}`);
+    }
+  });
+
+  it('renders payload.item when payload.rows is empty for single flight, hotel, and trip cards', async () => {
+    const flightDoc = await renderPayload({
+      kind: 'flight',
+      version: 1,
+      title: 'UA 1203 to Las Vegas',
+      rows: [],
+      item: {
+        kind: 'flight_outline',
+        carrier: 'UA',
+        flightNo: '1203',
+        origin: 'LAX',
+        destination: 'LAS',
+        departIso: '2026-11-20T09:15',
+        arriveIso: '2026-11-20T10:25',
+        stops: 0,
+        price: { amount: 129, currency: 'USD' },
+        why: 'Direct morning hop',
+        provenance: { source: 'flight_search' },
+      },
+    });
+    const flightText = flightDoc.getElementById('card').textContent;
+    for (const bit of ['UA 1203', 'LAX → LAS', '$129', 'Direct morning hop']) {
+      assert.ok(flightText.includes(bit), `flight payload.item missing ${bit}`);
+    }
+
+    const hotelDoc = await renderPayload({
+      kind: 'hotel',
+      version: 1,
+      title: 'Park MGM Las Vegas',
+      rows: [],
+      item: {
+        kind: 'hotel_outline',
+        name: 'Park MGM Las Vegas',
+        area: 'Las Vegas Strip',
+        checkInIso: '2026-11-20',
+        checkOutIso: '2026-11-22',
+        nights: 2,
+        price: { currency: 'USD', avgNightly: 175 },
+        rating: 4.4,
+        why: 'Stayed here in March',
+        provenance: { source: 'hotel_search' },
+      },
+    });
+    const hotelText = hotelDoc.getElementById('card').textContent;
+    for (const bit of ['Park MGM Las Vegas', 'Las Vegas Strip', '2 nights', '$175/night', 'Stayed here in March']) {
+      assert.ok(hotelText.includes(bit), `hotel payload.item missing ${bit}`);
+    }
+
+    const tripDoc = await renderPayload({
+      kind: 'trip',
+      version: 1,
+      title: 'Las Vegas Weekend Option',
+      rows: [],
+      item: {
+        kind: 'trip_option',
+        schemaVersion: 1,
+        rank: 1,
+        outbound: {
+          carrier: 'UA',
+          flightNo: '1203',
+          origin: 'LAX',
+          destination: 'LAS',
+          departIso: '2026-11-20T09:15',
+          arriveIso: '2026-11-20T10:25',
+          stops: 0,
+        },
+        stay: {
+          name: 'Park MGM Las Vegas',
+          area: 'Las Vegas Strip',
+          checkInIso: '2026-11-20',
+          checkOutIso: '2026-11-22',
+          nights: 2,
+        },
+        return: {
+          carrier: 'UA',
+          flightNo: '1208',
+          origin: 'LAS',
+          destination: 'LAX',
+          departIso: '2026-11-22T19:00',
+          arriveIso: '2026-11-22T20:15',
+          stops: 0,
+        },
+        total: { amount: 598, currency: 'USD' },
+        why: 'Matches your usual Strip hotel + morning outbound',
+        provenance: { source: 'trip_planner' },
+      },
+    });
+    const tripText = tripDoc.getElementById('card').textContent;
+    for (const bit of ['UA 1203', 'LAX → LAS', 'Park MGM Las Vegas', 'UA 1208', 'LAS → LAX', '$598', 'Matches your usual Strip hotel + morning outbound']) {
+      assert.ok(tripText.includes(bit), `trip payload.item missing ${bit}`);
+    }
+  });
+
+  it('degrades softly on unknown or malformed blocks (Rule 15) and still renders valid sibling blocks', async () => {
+    const doc = await renderPayload({
+      kind: 'composed',
+      version: 1,
+      title: 'Mixed Card With Unknown Block',
+      rows: [],
+      blocks: [
+        null,
+        {
+          kind: 'future_experimental_widget',
+          title: 'Experimental Metric',
+          rows: [{ label: 'Confidence', value: '98%' }],
+        },
+        {
+          kind: 'text_note',
+          title: 'Confirmed Gate',
+          text: 'Boarding starts at 7:40 AM at Gate D4.',
+        },
+      ],
+    });
+    const text = doc.getElementById('card').textContent;
+    for (const bit of ['Mixed Card With Unknown Block', 'Experimental Metric', 'Confidence', '98%', 'Confirmed Gate', 'Boarding starts at 7:40 AM at Gate D4.']) {
+      assert.ok(text.includes(bit), `missing ${bit}`);
+    }
+  });
+});
+
+

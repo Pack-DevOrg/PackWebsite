@@ -1117,7 +1117,6 @@ export default defineConfig(({ mode, ssrBuild }) => {
     },
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'lucide-react', 'zod', 'react-native-web'],
-      exclude: ['react-google-recaptcha', 'react-markdown'], // Load these dynamically
       esbuildOptions: {
         loader: {'.js': 'jsx'},
         // Prebundled reanimated is not babel-processed, so its dev-only worklet self-check always throws.

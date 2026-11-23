@@ -4,16 +4,11 @@ export type TsaBoardAirport = {
   readonly airportCode: string;
   readonly airportName: string;
   readonly cityName: string;
+  readonly countryCode?: string;
+  readonly officialUrl?: string;
 };
 
-type BoardFile = {
-  readonly generatedAt: string;
-  readonly airports: readonly (readonly [string, string, string])[];
-};
-
-const boardFile = board as BoardFile;
-
-export const TSA_BOARD_GENERATED_AT = boardFile.generatedAt;
+export const TSA_BOARD_GENERATED_AT = board.generatedAt;
 
 const citySlug = (value: string): string =>
   value
@@ -23,13 +18,22 @@ const citySlug = (value: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-const airports: readonly TsaBoardAirport[] = boardFile.airports.map(
-  ([airportCode, airportName, cityName]) => ({
-    airportCode: airportCode.toUpperCase(),
+const rawAirportRows: readonly (readonly string[])[] = board.airports;
+
+const airports: readonly TsaBoardAirport[] = rawAirportRows.map((row) => {
+  const airportCode = (row[0] ? row[0] : "").toUpperCase();
+  const airportName = row[1] ? row[1] : airportCode;
+  const cityName = row[2] ? row[2] : "";
+  const countryCode = (row[3] ? row[3] : "").toUpperCase();
+  const officialUrl = row[4] ? row[4] : "";
+  return {
+    airportCode,
     airportName,
     cityName,
-  }),
-);
+    ...(countryCode.length === 2 ? { countryCode } : {}),
+    ...(officialUrl.length > 0 ? { officialUrl } : {}),
+  };
+});
 
 const byCode = new Map<string, TsaBoardAirport>();
 const cityOwners = new Map<string, string[]>();

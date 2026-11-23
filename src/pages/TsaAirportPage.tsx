@@ -10,16 +10,20 @@ import PageSeo from "@/seo/pageSeo";
 import type { AirportWaitTimePublicAirport } from "@/schemas/airport-security";
 import { capturePosthog } from "@/tracking/posthog";
 import {
-  TSA_AIRPORT_H2S,
+  airportBackLinkLabel,
+  airportBannerSentence,
   airportFaq,
   airportPageDescription,
   airportPageH1,
   airportPageTitle,
+  airportSectionHeadings,
   delaysTodaySentence,
-  faaBannerSentence,
   faaKindForLake,
+  formatCheckpointObservationLine,
   readFaaStatus,
   readHeldFlights,
+  resolveAirportCountryCode,
+  resolveOfficialAirportUrl,
 } from "@/pages/tsa/tsaAirportCopy";
 import { resolveTsaAirportSlug } from "@/pages/tsa/tsaAirportIndex";
 
@@ -134,28 +138,65 @@ const TsaAirportPage: React.FC = () => {
         )
       : undefined;
 
-  const airportName =
-    liveAirport?.airportName ??
-    (resolution.kind === "page" ? resolution.airport.airportName : "");
+  const airportName = liveAirport?.airportName
+    ? liveAirport.airportName
+    : resolution.kind === "page"
+      ? resolution.airport.airportName
+      : "";
   const iata =
     resolution.kind === "page" ? resolution.airport.airportCode.toUpperCase() : "";
-  const status = readFaaStatus(liveAirport);
-  const heldFlights = readHeldFlights(liveAirport);
-  const observations = liveAirport?.snapshot?.observations ?? [];
+  const countryCode =
+    resolution.kind === "page"
+      ? resolveAirportCountryCode(
+          liveAirport?.countryCode,
+          resolution.airport.countryCode,
+        )
+      : "";
+  const officialUrl =
+    resolution.kind === "page"
+      ? resolveOfficialAirportUrl(
+          liveAirport?.officialUrl,
+          resolution.airport.officialUrl,
+        )
+      : "";
+  const status = countryCode === "US" ? readFaaStatus(liveAirport) : undefined;
+  const heldFlights =
+    countryCode === "US" && status ? readHeldFlights(liveAirport) : undefined;
+  const fetchStatus = liveAirport?.snapshot?.fetchStatus;
+  const observations = liveAirport?.snapshot?.observations
+    ? liveAirport.snapshot.observations
+    : [];
+  const hasLiveSnapshot = Boolean(liveAirport?.snapshot);
+  const isInitialUsFetchPending =
+    countryCode === "US" && !liveAirport && !isFetched && !isError;
   const faq = useMemo(
     () =>
       resolution.kind === "page"
         ? airportFaq({
             airportName,
             iata,
-            hasLiveSnapshot: Boolean(liveAirport),
+            countryCode,
+            hasLiveSnapshot,
+            isInitialUsFetchPending,
             status,
             observations,
+            fetchStatus,
           })
         : [],
-    [airportName, iata, liveAirport, observations, resolution.kind, status],
+    [
+      airportName,
+      countryCode,
+      fetchStatus,
+      hasLiveSnapshot,
+      iata,
+      isInitialUsFetchPending,
+      observations,
+      resolution.kind,
+      status,
+    ],
   );
-  const faaKind = liveAirport ? faaKindForLake(status) : "unknown";
+  const faaKind =
+    countryCode === "US" && status ? faaKindForLake(status) : "unknown";
 
   useEffect(() => {
     if (resolution.kind !== "page" || (!isFetched && !isError)) {
@@ -173,22 +214,52 @@ const TsaAirportPage: React.FC = () => {
     return <Navigate to={pathFor(resolution.canonicalPath)} replace />;
   }
 
-  const banner = liveAirport
-    ? faaBannerSentence(iata, status)
-    : `Checking the live FAA status for ${iata}.`;
-  const visibleFlights = (heldFlights ?? []).filter((flight) => {
+  const headings = airportSectionHeadings(countryCode);
+  const banner = airportBannerSentence({
+    iata,
+    countryCode,
+    status,
+    isInitialUsFetchPending,
+  });
+  const delaysSentence =
+    countryCode === "US" && isInitialUsFetchPending
+      ? banner
+      : delaysTodaySentence(airportName, iata, status, countryCode);
+  const hasLiveHeldFlights = Boolean(heldFlights && heldFlights.length > 0);
+  const activeHeldFlights = heldFlights ? heldFlights : [];
+  const visibleFlights = activeHeldFlights.filter((flight) => {
     const query = flightQuery.trim().toLowerCase();
     if (!query) {
       return true;
     }
-    return `${flight.flight} ${flight.airline} ${flight.status}`.toLowerCase().includes(query);
+    return `${flight.flight} ${flight.airline} ${flight.status}`
+      .toLowerCase()
+      .includes(query);
   });
+
+  const renderLiveStatusUnavailable = () => (
+    <Body>
+      Live status unavailable.
+      {officialUrl.length > 0 ? (
+        <>
+          {" "}
+          <BoardLink
+            href={officialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {airportName} official website
+          </BoardLink>
+        </>
+      ) : null}
+    </Body>
+  );
 
   return (
     <Page>
       <PageSeo
-        title={airportPageTitle(airportName, iata)}
-        description={airportPageDescription(airportName, iata)}
+        title={airportPageTitle(airportName, iata, countryCode)}
+        description={airportPageDescription(airportName, iata, countryCode)}
         path={resolution.canonicalPath}
         schema={[
           {
@@ -206,24 +277,19 @@ const TsaAirportPage: React.FC = () => {
         ]}
       />
       <Hero>
-        <Title>{airportPageH1(airportName)}</Title>
+        <Title>{airportPageH1(airportName, countryCode)}</Title>
         <Banner data-testid="faa-banner">{banner}</Banner>
-        <BoardLink href={pathFor("/tsa")}>All airport TSA wait times</BoardLink>
+        <BoardLink href={pathFor("/tsa")}>
+          {airportBackLinkLabel(countryCode)}
+        </BoardLink>
       </Hero>
       <Section>
-        <SectionTitle>{TSA_AIRPORT_H2S[0]}</SectionTitle>
+        <SectionTitle>{headings[0]}</SectionTitle>
         {observations.length > 0 ? (
           <CheckpointList>
             {observations.map((observation, index) => (
               <li key={`${observation.locationDisplayName}-${index}`}>
-                {[observation.terminalDisplayName, observation.checkpointDisplayName ?? observation.locationDisplayName]
-                  .filter(Boolean)
-                  .join(" ")}
-                {": "}
-                {observation.displayWaitText
-                  ?? (typeof observation.exactWaitMinutes === "number"
-                    ? `${observation.exactWaitMinutes} min`
-                    : "Unknown")}
+                {formatCheckpointObservationLine(observation, fetchStatus)}
               </li>
             ))}
           </CheckpointList>
@@ -232,16 +298,16 @@ const TsaAirportPage: React.FC = () => {
         )}
       </Section>
       <Section>
-        <SectionTitle>{TSA_AIRPORT_H2S[1]}</SectionTitle>
-        <Body>{liveAirport ? delaysTodaySentence(airportName, iata, status) : banner}</Body>
+        <SectionTitle>{headings[1]}</SectionTitle>
+        <Body>{delaysSentence}</Body>
       </Section>
       <Section>
-        <SectionTitle>{TSA_AIRPORT_H2S[2]}</SectionTitle>
+        <SectionTitle>{headings[2]}</SectionTitle>
         <Body>{banner}</Body>
       </Section>
       <Section>
-        <SectionTitle>{TSA_AIRPORT_H2S[3]}</SectionTitle>
-        {heldFlights && heldFlights.length > 0 ? (
+        <SectionTitle>{headings[3]}</SectionTitle>
+        {hasLiveHeldFlights ? (
           <FlightTable>
             <thead>
               <tr>
@@ -252,8 +318,8 @@ const TsaAirportPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {heldFlights.map((flight) => (
-                <tr key={`${flight.direction ?? "flight"}-${flight.flight}-${flight.scheduledTime}`}>
+              {activeHeldFlights.map((flight) => (
+                <tr key={`${flight.direction ? flight.direction : "flight"}-${flight.flight}-${flight.scheduledTime}`}>
                   <td>{flight.flight}</td>
                   <td>{flight.airline}</td>
                   <td>{flight.scheduledTime}</td>
@@ -263,23 +329,29 @@ const TsaAirportPage: React.FC = () => {
             </tbody>
           </FlightTable>
         ) : (
-          <Body>No held departures or arrivals are listed for this airport right now.</Body>
+          renderLiveStatusUnavailable()
         )}
       </Section>
       <Section>
-        <SectionTitle>{TSA_AIRPORT_H2S[4]}</SectionTitle>
-        <SearchInput
-          aria-label="Search flight status"
-          value={flightQuery}
-          placeholder="Flight number"
-          onChange={(event) => setFlightQuery(event.target.value)}
-        />
-        {visibleFlights.length > 0 ? (
-          <Body>
-            {visibleFlights.map((flight) => `${flight.flight} ${flight.status}`).join(". ")}
-          </Body>
+        <SectionTitle>{headings[4]}</SectionTitle>
+        {hasLiveHeldFlights ? (
+          <>
+            <SearchInput
+              aria-label="Search flight status"
+              value={flightQuery}
+              placeholder="Flight number"
+              onChange={(event) => setFlightQuery(event.target.value)}
+            />
+            {visibleFlights.length > 0 ? (
+              <Body>
+                {visibleFlights.map((flight) => `${flight.flight} ${flight.status}`).join(". ")}
+              </Body>
+            ) : (
+              <Body>No matching flight status is in the held-flight list for this airport.</Body>
+            )}
+          </>
         ) : (
-          <Body>No matching flight status is in the held-flight list for this airport.</Body>
+          renderLiveStatusUnavailable()
         )}
       </Section>
       <Section aria-label="Airport status questions">

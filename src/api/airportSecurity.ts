@@ -1,5 +1,6 @@
 import {
   AirportWaitTimePublicCollectionResponseSchema,
+  normalizeAirportWaitCollectionResponse,
   type AirportWaitTimePublicCollectionResponse,
 } from "@/schemas/airport-security";
 import { appConfig, isLocalhostHostname } from "@/config/appConfig";
@@ -115,7 +116,9 @@ async function fetchPublicAirportSecurityViaApi(
   }
 
   const rawPayload = (await response.json()) as unknown;
-  return PublicAirportSecurityEnvelopeSchema.parse(rawPayload).data;
+  return normalizeAirportWaitCollectionResponse(
+    PublicAirportSecurityEnvelopeSchema.parse(rawPayload).data,
+  );
 }
 
 async function getRecaptchaToken(
@@ -208,7 +211,9 @@ export async function fetchPublicAirportSecuritySummary(): Promise<AirportWaitTi
         }
 
         const rawPayload = (await response.json()) as unknown;
-        payload = AirportWaitTimePublicCollectionResponseSchema.parse(rawPayload);
+        payload = normalizeAirportWaitCollectionResponse(
+          AirportWaitTimePublicCollectionResponseSchema.parse(rawPayload),
+        );
       } catch {
         payload = await fetchPublicAirportSecurityViaApi(useLocalDevProxy);
       }

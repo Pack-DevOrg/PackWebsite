@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components -- Service worker registration helpers are intentionally exported with the provider. */
 /**
  * ServiceWorkerProvider - Advanced Performance Optimization
  * 
@@ -12,7 +11,7 @@
  * Expected Impact: 70% reduction in repeat visit load times
  */
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback } from 'react';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import { env } from '@/utils/env';
 
@@ -294,46 +293,6 @@ export const ServiceWorkerProvider: React.FC<ServiceWorkerProviderProps> = ({ ch
     <ServiceWorkerContext.Provider value={contextValue}>
       {children}
     </ServiceWorkerContext.Provider>
-  );
-};
-
-/**
- * Hook to use service worker context
- */
-export const useServiceWorker = (): ServiceWorkerContextType => {
-  const context = useContext(ServiceWorkerContext);
-  if (!context) {
-    throw new Error('useServiceWorker must be used within a ServiceWorkerProvider');
-  }
-  return context;
-};
-
-/**
- * Offline Status Indicator
- */
-export const OfflineIndicator: React.FC = () => {
-  const { isOffline } = useServiceWorker();
-
-  if (!isOffline) return null;
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        right: '0',
-        background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
-        color: 'white',
-        padding: '0.5rem',
-        textAlign: 'center',
-        fontSize: '0.85rem',
-        fontWeight: '600',
-        zIndex: 10001,
-      }}
-    >
-      You're offline — some content may be cached
-    </div>
   );
 };
 

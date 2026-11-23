@@ -1,8 +1,8 @@
 import {z} from 'zod';
 
-export const SportsFactRoleSchema = z.enum(['score', 'odds', 'result']);
+const SportsFactRoleSchema = z.enum(['score', 'odds', 'result']);
 
-export const SportsFactSchema = z.object({
+const SportsFactSchema = z.object({
   role: SportsFactRoleSchema,
   text: z.string().min(1),
   sourceUrl: z.string().url(),
@@ -30,7 +30,7 @@ export const SportsViewSourceSchema = z.object({
   fantasyMatchups: z.array(FantasyMatchupSchema),
 });
 
-export type SportsFact = z.infer<typeof SportsFactSchema>;
+type SportsFact = z.infer<typeof SportsFactSchema>;
 export type SportsGame = z.infer<typeof SportsGameSchema>;
 export type FantasyMatchup = z.infer<typeof FantasyMatchupSchema>;
 export type SportsViewSource = z.infer<typeof SportsViewSourceSchema>;

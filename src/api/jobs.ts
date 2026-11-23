@@ -3,7 +3,6 @@ import { StandardApiResponseSchema } from "@/schemas/common";
 import {
   DiscoveryLogEntrySchema,
   JobStatusResponseSchema,
-  TravelJobListDataSchema,
   TravelJobResultSchema,
 } from "@/schemas/jobs";
 import { ApiRequestError, type ApiClient } from "./client";
@@ -25,11 +24,9 @@ const JobSubmissionDataSchema = z.object({
   status: z.enum(["queued", "processing", "completed", "failed", "cancelled"]).optional(),
 });
 
-export type JobSubmission = z.infer<typeof JobSubmissionDataSchema>;
+type JobSubmission = z.infer<typeof JobSubmissionDataSchema>;
 export type JobStatus = z.infer<typeof JobStatusResponseSchema>;
-export type TravelJobResult = z.infer<typeof TravelJobResultSchema>;
-
-export interface SubmitTravelPlanningPayload {
+interface SubmitTravelPlanningPayload {
   readonly message: string;
   readonly conversationId: string;
   readonly sessionId?: string;
@@ -143,18 +140,3 @@ export const getJobStatus = async (
   return data;
 };
 
-export const getUserTravelJobs = async (
-  client: ApiClient
-): Promise<z.infer<typeof TravelJobListDataSchema>> => {
-  const response = await client.request<unknown>({
-    path: "/jobs/list",
-    method: "GET",
-  });
-
-  const data = parseData<z.infer<typeof TravelJobListDataSchema>>(
-    response,
-    TravelJobListDataSchema,
-    "travel jobs fetch"
-  );
-  return data;
-};

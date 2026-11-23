@@ -1,6 +1,6 @@
 import board from "@/content/tsaBoardAirports.json";
 
-export type TsaBoardAirport = {
+type TsaBoardAirport = {
   readonly airportCode: string;
   readonly airportName: string;
   readonly cityName: string;
@@ -8,7 +8,7 @@ export type TsaBoardAirport = {
   readonly officialUrl?: string;
 };
 
-export const TSA_BOARD_GENERATED_AT = board.generatedAt;
+const TSA_BOARD_GENERATED_AT = board.generatedAt;
 
 const citySlug = (value: string): string =>
   value
@@ -56,15 +56,11 @@ for (const [slug, owners] of cityOwners) {
   }
 }
 
-export function listTsaBoardAirports(): readonly TsaBoardAirport[] {
-  return airports;
-}
-
-export function tsaAirportCanonicalPath(iata: string): string {
+function tsaAirportCanonicalPath(iata: string): string {
   return `/tsa/${iata.toLowerCase()}`;
 }
 
-export type TsaAirportResolution =
+type TsaAirportResolution =
   | { readonly kind: "page"; readonly airport: TsaBoardAirport; readonly canonicalPath: string }
   | { readonly kind: "unknown" };
 

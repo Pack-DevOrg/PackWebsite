@@ -22,7 +22,7 @@ const ErrorResponseSchema = z.object({
   error_description: z.string().optional(),
 });
 
-export interface TokenSet {
+interface TokenSet {
   readonly accessToken: string;
   readonly idToken: string;
   readonly refreshToken: string;

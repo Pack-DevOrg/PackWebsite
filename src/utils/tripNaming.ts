@@ -40,7 +40,7 @@ interface TripNamingOptions {
   readonly fallbackTitle?: string;
 }
 
-export interface TripNamingDisplay {
+interface TripNamingDisplay {
   readonly routeTitle: string;
   readonly subtitle?: string;
   readonly routeOnlyDisplay?: string;

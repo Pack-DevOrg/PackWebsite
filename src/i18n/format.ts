@@ -5,7 +5,7 @@ import {
   type SupportedLocale,
 } from './config';
 
-export function getActiveLocale(): SupportedLocale {
+function getActiveLocale(): SupportedLocale {
   if (typeof document === 'undefined') {
     return DEFAULT_LOCALE;
   }

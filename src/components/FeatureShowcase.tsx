@@ -34,7 +34,7 @@ import { FEATURE_CAPTURES } from "@/content/featureCaptures";
  */
 const RAIL_BREAKPOINT = 980;
 
-export type ShowcasePanelItem = {
+type ShowcasePanelItem = {
   href: string;
   title: string;
   description: string;

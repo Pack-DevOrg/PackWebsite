@@ -51,7 +51,7 @@ const fallbackContentByExportName = {
   TERMS_OF_SERVICE_FALLBACK,
 } as const;
 
-export type LegalDocument = z.infer<typeof legalDocumentSchema> & {
+type LegalDocument = z.infer<typeof legalDocumentSchema> & {
   fallbackContent: string;
 };
 

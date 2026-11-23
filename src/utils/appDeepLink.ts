@@ -13,7 +13,7 @@
 
 import { captureSiteAction } from "../tracking/posthog";
 
-export const APP_SCHEME_PREFIX = "com.packai.app://";
+const APP_SCHEME_PREFIX = "com.packai.app://";
 
 export const DEFAULT_APPLE_APP_ID = "6761626050";
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, {css} from 'styled-components';
 
-export type ButtonVariant = 'primary' | 'ghost' | 'glow' | 'destructive';
+type ButtonVariant = 'primary' | 'ghost' | 'glow' | 'destructive';
 
 function defaultButtonVariantBecausePrimary(
   variant: ButtonVariant | undefined,
@@ -72,7 +72,7 @@ const Disc = styled.div<{ $fill: string; $stroke: string; $glyph: string }>`
   color: ${(props) => props.$glyph};
 `;
 
-export interface IconDiscProps {
+interface IconDiscProps {
   color?: string;
   children?: React.ReactNode;
 }
@@ -105,7 +105,7 @@ const CloseRoot = styled.button`
   line-height: 1;
 `;
 
-export interface CloseButtonProps {
+interface CloseButtonProps {
   onClick: () => void;
   children?: React.ReactNode;
 }
@@ -143,7 +143,7 @@ const HeaderSubtitle = styled.p`
   color: var(--color-text-secondary);
 `;
 
-export interface PageHeaderProps {
+interface PageHeaderProps {
   title: string;
   subtitle?: string;
   accessory?: React.ReactNode;
@@ -213,7 +213,7 @@ const StyledButton = styled.button<{ $variant: ButtonVariant }>`
   ${(props) => buttonVariantCss[props.$variant]}
 `;
 
-export interface ButtonProps
+interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   children: React.ReactNode;

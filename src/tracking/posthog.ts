@@ -338,10 +338,6 @@ export const captureInpSample = (durationMs: number): void => {
   });
 };
 
-export const isPostHogInitialized = (): boolean => initialized || Boolean(
-  typeof window !== 'undefined' && window.__packPosthogInit,
-);
-
 /** Drop observers and module flags so the named Jest suite always exits with Tests: counts. */
 export const resetPostHogForTests = (): void => {
   while (observers.length > 0) {

@@ -20,9 +20,9 @@ import {
   PageHeader,
 } from "@/components/ui/Chrome";
 
-export type AppSettingsAccountAction = () => void;
+type AppSettingsAccountAction = () => void;
 
-export type AppSettingsPageProps = {
+type AppSettingsPageProps = {
   readonly mailConnected?: boolean;
   readonly calendarConnected?: boolean;
   readonly mailNeedsAttention?: boolean;

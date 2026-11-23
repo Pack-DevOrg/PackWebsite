@@ -10,8 +10,6 @@ import {
   tokens,
 } from '@pack/ui-primitives';
 
-export type SignupLoginStepProps = Record<string, never>;
-
 export function SignupLoginStep() {
   const {login} = useAuth();
   const startLogin = (

@@ -21,18 +21,9 @@ import {
 } from "@/schemas/wallet-vault";
 import { ApiRequestError, type ApiClient } from "./client";
 
-export {
-  VAULT_CREDENTIALS_PATH,
-  WALLET_CARDS_PATH,
-  WALLET_LINK_PATH,
-  WALLET_LINK_SESSION_PATH,
-};
 export type {
-  VaultCredentialCreate,
-  VaultCredentialPatch,
   VaultCredentialPublic,
   VirtualCard,
-  WalletLinkSession,
   WalletLinkStatus,
 };
 

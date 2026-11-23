@@ -1,7 +1,7 @@
 import { apiEndpoints } from "../config/appConfig";
 import { env } from "../utils/env";
 
-export interface WaitlistSignupResult {
+interface WaitlistSignupResult {
   readonly success: boolean;
   readonly message: string;
 }

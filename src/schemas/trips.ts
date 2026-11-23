@@ -21,16 +21,9 @@
 
 import { z } from 'zod';
 
-export const TripStatusSchema = z.enum(['normal', 'cancelled']);
-export type TripStatus = z.infer<typeof TripStatusSchema>;
+const TripStatusSchema = z.enum(['normal', 'cancelled']);
 import {
   TravelEventSchema
-} from './travel';
-
-// Re-export travel types we need
-export {
-  type TravelPlan,
-  type TravelEvent
 } from './travel';
 
 /**
@@ -45,7 +38,7 @@ export {
  * Loyalty programs are stored separately in encrypted UserPreferences for security.
  * See: UserPreferences schema for loyalty data storage.
  */
-export const STORED_FLIGHT_STATUS_VALUES = [
+const STORED_FLIGHT_STATUS_VALUES = [
   'confirmed',
   'cancelled',
   'changed',
@@ -57,10 +50,8 @@ export const STORED_FLIGHT_STATUS_VALUES = [
   'landed'
 ] as const;
 
-export const StoredFlightStatusEnum = z.enum(STORED_FLIGHT_STATUS_VALUES);
-export type StoredFlightStatus = z.infer<typeof StoredFlightStatusEnum>;
-
-export const StoredFlightSchema = z.object({
+const StoredFlightStatusEnum = z.enum(STORED_FLIGHT_STATUS_VALUES);
+const StoredFlightSchema = z.object({
   // Core identification
   id: z.string().optional(),
   confirmationCode: z.string().optional(),
@@ -152,7 +143,7 @@ export const StoredFlightSchema = z.object({
  * Loyalty programs are stored separately in encrypted UserPreferences for security.
  * See: UserPreferences schema for loyalty data storage.
  */
-export const StoredHotelSchema = z.object({
+const StoredHotelSchema = z.object({
   // Core identification
   id: z.string().optional(),
   confirmationNumber: z.string().optional(),
@@ -267,296 +258,11 @@ export const TripCreateSchema = TripSchema.omit({
   updatedAt: true
 });
 
-// Trip update schema (all fields optional except keys)
-export const TripUpdateSchema = z.object({
-  sub: z.string(),
-  tripId: z.string(),
-  title: z.string().optional(),
-  description: z.string().optional(),
-  startDate: z.string().date().optional(),
-  endDate: z.string().date().optional(),
-  status: TripStatusSchema.optional(),
-  flights: z.array(StoredFlightSchema).optional(),
-  hotels: z.array(StoredHotelSchema).optional(),
-  activities: z.array(TravelEventSchema).optional(),
-  totalCost: z.number().optional(),
-  currency: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  notes: z.string().optional(),
-  confirmationCodes: z.array(z.string()).optional(),
-  bookingReference: z.string().optional(),
-  bookedAt: z.string().datetime().optional(),
-  updatedAt: z.string().datetime().optional()
-});
-
-// Query schema for filtering trips
-export const TripQuerySchema = z.object({
-  status: TripStatusSchema.optional(),
-  startDate: z.string().date().optional(),
-  endDate: z.string().date().optional(),
-  limit: z.number().int().min(1).optional(), // Made optional, removed max limit to show all trips
-  lastEvaluatedKey: z.string().optional()
-});
-
 // Response schema for trip queries
 export const TripResponseSchema = z.object({
   trips: z.array(TripSchema),
   count: z.number().int(),
   lastEvaluatedKey: z.string().optional()
-});
-
-/**
- * Flight segment extracted from emails - simpler than FlightChunk
- * This is what parsers actually output
- */
-export const ExtractedFlightSegmentSchema = z.object({
-  flightNumber: z.string().optional(),
-  airline: z.string().optional(),
-  carrier: z.string().optional(),
-  departureAirport: z.string().optional(),
-  arrivalAirport: z.string().optional(),
-  departureTime: z.string().optional(),
-  arrivalTime: z.string().optional(),
-  departureDate: z.string().optional(),
-  arrivalDate: z.string().optional(),
-  bookedAt: z.string().optional(),
-  seatNumber: z.string().optional(),
-  gate: z.string().optional(),
-  terminal: z.string().optional(),
-  status: z.string().optional(),
-  
-  // Additional structured fields
-  departure: z.object({
-    airport: z.string().optional(),
-    date: z.string().optional(),
-    time: z.string().optional(),
-    terminal: z.string().optional(),
-    gate: z.string().optional(),
-  }).optional(),
-  arrival: z.object({
-    airport: z.string().optional(),
-    date: z.string().optional(),
-    time: z.string().optional(),
-    terminal: z.string().optional(),
-    gate: z.string().optional(),
-  }).optional(),
-  origin: z.string().optional(),
-  destination: z.string().optional(),
-  
-  // Service & Comfort Fields - EXTRACTED FROM PRODUCTION EMAILS
-  fareClass: z.string().optional(),        // "Economy Plus (T)"
-  cabinType: z.string().optional(),        // "Economy Plus"
-  aircraft: z.string().optional(),         // "Boeing 737-800"
-  aircraftType: z.string().optional(),     // Alternative field name
-  duration: z.string().optional(),         // "2h 23m"
-  flightDuration: z.string().optional(),   // Alternative field name
-  mealService: z.string().optional(),      // "Snack for purchase"
-  
-  // Operations Fields  
-  operatedBy: z.string().optional(),       // "Mesa Airlines"
-  bookingClass: z.string().optional(),     // "T"
-  fareType: z.string().optional(),         // JetBlue uses this
-  
-  // Boarding Fields
-  boardingGroup: z.string().optional(),    // "Group 2"
-  boardingTime: z.string().optional(),     // "10:35 AM"
-  seatType: z.string().optional(),         // "Window, Extra Legroom"
-  checkInStatus: z.string().optional(),    // "Checked In"
-  
-  // Pricing fields (loyalty moved to UserPreferences)
-  milesEarned: z.string().optional(),      // "1,234"
-  segmentMiles: z.string().optional(),     // "1,234"
-  
-  // Baggage
-  baggageAllowance: z.object({
-    carryOn: z.string().optional(),
-    checked: z.string().optional(),
-    fees: z.object({
-      firstBag: z.string().optional(),
-      secondBag: z.string().optional(),
-      carryOnFree: z.boolean().optional(),
-    }).optional()
-  }).optional(),
-  
-  // Status & Upgrades
-  upgrades: z.array(z.string()).optional(), // ["First Class Available"]
-  specialRequests: z.array(z.string()).optional(), // ["Wheelchair assistance"]
-});
-
-/**
- * Hotel booking extracted from emails - simpler than HotelChunk
- * This is what parsers actually output
- */
-export const ExtractedHotelBookingSchema = z.object({
-  hotelName: z.string().optional(),
-  checkInDate: z.string().optional(),
-  checkOutDate: z.string().optional(),
-  confirmationNumber: z.string().optional(),
-  roomType: z.string().optional(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  country: z.string().optional(),
-  
-  // Additional fields extracted from production emails
-  numberOfNights: z.number().optional(),       // 3
-  checkInTime: z.string().optional(),         // "3:00 PM"
-  checkOutTime: z.string().optional(),        // "12:00 PM"
-  guestName: z.string().optional(),           // "John Doe"
-  
-  // Hotel Details
-  hotelAddress: z.string().optional(),        // Full address
-  hotelPhone: z.string().optional(),          // "+1-555-1234"
-  ratePlan: z.string().optional(),            // "AAA Rate", "Corporate Rate"
-  
-  // Pricing
-  totalCost: z.string().optional(),           // "$450.00"
-  perNightRate: z.string().optional(),        // "$150.00"
-  taxes: z.string().optional(),               // "$45.00"
-  currency: z.string().optional(),            // "USD"
-  
-  // Policies
-  cancellationPolicy: z.string().optional(),  // "Free cancellation until..."
-  guaranteeMethod: z.string().optional(),     // "Credit Card"
-  
-  // Loyalty Programs removed - moved to UserPreferences
-  
-  // Contact & Management
-  contactInfo: z.object({
-    phone: z.string().optional(),
-    email: z.string().optional(),
-  }).optional(),
-  manageBookingUrl: z.string().optional(),    // Link to manage booking
-  modificationUrl: z.string().optional(),     // Link to modify
-  
-  // Additional Services
-  specialServices: z.array(z.string()).optional(), // ["Early check-in", "Airport shuttle"]
-  specialRequests: z.array(z.string()).optional(), // ["High floor", "Away from elevator"]
-  additionalServices: z.object({
-    parking: z.string().optional(),
-    housekeeping: z.string().optional(),
-    other: z.array(z.string()).optional(),
-  }).optional(),
-  
-  // Payment Details
-  paymentDetails: z.object({
-    cardType: z.string().optional(),         // "Visa"
-    lastFourDigits: z.string().optional(),   // "1234"
-    amount: z.string().optional(),           // "$450.00"
-    currency: z.string().optional(),         // "USD"
-  }).optional(),
-  
-  // Room Details
-  numberOfRooms: z.number().optional(),       // 1
-  guestsPerRoom: z.number().optional(),       // 2
-  bookedAt: z.string().optional(),
-});
-
-/**
- * Car rental extracted from emails
- * This is what parsers actually output
- */
-export const ExtractedCarRentalSchema = z.object({
-  confirmationNumber: z.string().optional(),
-  provider: z.string().optional(),            // "Avis", "Hertz", "Enterprise"
-  
-  // Pickup Details
-  pickupLocation: z.object({
-    name: z.string().optional(),
-    address: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-    phone: z.string().optional(),
-    code: z.string().optional(),             // Airport code or location code
-  }).optional(),
-  pickupDateTime: z.string().optional(),
-  
-  // Dropoff Details
-  dropoffLocation: z.object({
-    name: z.string().optional(),
-    address: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-    phone: z.string().optional(),
-    code: z.string().optional(),
-    sameAsPickup: z.boolean().optional(),
-  }).optional(),
-  dropoffDateTime: z.string().optional(),
-  
-  // Rental Details
-  rentalDays: z.number().optional(),
-  vehicleDetails: z.object({
-    category: z.string().optional(),         // "Economy", "Midsize", "SUV"
-    model: z.string().optional(),            // "Toyota Corolla or similar"
-    type: z.string().optional(),             // "4-door sedan"
-    features: z.array(z.string()).optional(), // ["Automatic", "AC", "Bluetooth"]
-  }).optional(),
-  
-  // Renter Information
-  renter: z.object({
-    name: z.string().optional(),
-    email: z.string().optional(),
-    // loyaltyNumber removed - moved to UserPreferences
-    driversLicense: z.string().optional(),
-  }).optional(),
-  
-  // Pricing
-  pricing: z.object({
-    dailyRate: z.string().optional(),
-    totalRate: z.string().optional(),
-    baseRate: z.string().optional(),
-    taxes: z.string().optional(),
-    fees: z.string().optional(),
-    totalAmount: z.string().optional(),
-    currency: z.string().optional(),
-    rateCode: z.string().optional(),
-  }).optional(),
-  
-  // Policies
-  policies: z.object({
-    fuelPolicy: z.string().optional(),
-    cancellationPolicy: z.string().optional(),
-    ageRequirements: z.string().optional(),
-  }).optional(),
-});
-
-/**
- * Extracted booking data schema - what parsers actually output
- * This is the common format all parsers should use
- */
-export const ExtractedBookingDataSchema = z.object({
-  provider: z.string(),
-  type: z.enum(['flight', 'hotel', 'car', 'activity']),
-  confirmationCode: z.string().optional(),
-  passengerName: z.string().optional(),
-  flights: z.array(ExtractedFlightSegmentSchema).optional(),
-  hotels: z.array(ExtractedHotelBookingSchema).optional(),
-  carRentals: z.array(ExtractedCarRentalSchema).optional(), // Added car rentals
-  seatNumber: z.string().optional(),
-  ticketNumber: z.string().optional(),
-  ttn: z.string().optional(), // Trusted Traveler Number
-  metadata: z.record(z.string(), z.unknown()).optional(),
-});
-
-/**
- * Parser result schema - ensures all parsers return consistent structure
- */
-export const ParserResultSchema = z.object({
-  confirmationCode: z.string(),
-  provider: z.string(),
-  type: z.enum(['flight', 'hotel', 'car_rental', 'government', 'activity']),
-  rawData: z.record(z.string(), z.unknown()).optional(),
-  // Extended fields from extraction (loyalty data moved to UserPreferences)
-  passengerName: z.string().optional(),
-  flights: z.array(ExtractedFlightSegmentSchema).optional(),
-  hotels: z.array(ExtractedHotelBookingSchema).optional(),
-  carRentals: z.array(ExtractedCarRentalSchema).optional(), // Added car rentals
-  seatNumber: z.string().optional(),
-  ticketNumber: z.string().optional(),
-  ttn: z.string().optional(),
 });
 
 /**
@@ -594,107 +300,7 @@ export const BookingSchema = TripSchema.extend({
   }).optional(),
 });
 
-// Booking creation schema (excludes generated fields)
-export const BookingCreateSchema = BookingSchema.omit({
-  tripId: true, // Will use bookingId instead
-  createdAt: true,
-  updatedAt: true
-});
-
-// Booking update schema
-export const BookingUpdateSchema = z.object({
-  sub: z.string(),
-  bookingId: z.string(),
-  bookingStatus: z.enum(['pending', 'confirmed', 'ticketed', 'failed', 'cancelled']).optional(),
-  pnr: z.string().optional(),
-  paymentStatus: z.enum(['pending', 'completed', 'failed', 'refunded']).optional(),
-  ticketedAt: z.string().datetime().optional(),
-  ticketNumbers: z.array(z.string()).optional(),
-  updatedAt: z.string().datetime().optional()
-});
-
 // Type exports
 export type Trip = z.infer<typeof TripSchema>;
-export type TripCreate = z.infer<typeof TripCreateSchema>;
-export type TripUpdate = z.infer<typeof TripUpdateSchema>;
-export type TripQuery = z.infer<typeof TripQuerySchema>;
-export type TripResponse = z.infer<typeof TripResponseSchema>;
 export type StoredFlight = z.infer<typeof StoredFlightSchema>;
-export type StoredHotel = z.infer<typeof StoredHotelSchema>;
-export type ExtractedFlightSegment = z.infer<typeof ExtractedFlightSegmentSchema>;
-export type ExtractedHotelBooking = z.infer<typeof ExtractedHotelBookingSchema>;
-export type ExtractedCarRental = z.infer<typeof ExtractedCarRentalSchema>;
-export type ExtractedBookingData = z.infer<typeof ExtractedBookingDataSchema>;
-export type ParserResult = z.infer<typeof ParserResultSchema>;
 export type Booking = z.infer<typeof BookingSchema>;
-export type BookingCreate = z.infer<typeof BookingCreateSchema>;
-export type BookingUpdate = z.infer<typeof BookingUpdateSchema>;
-
-// ==========================================================================
-// Schema-Safe Defaults Factory for Trips
-// ==========================================================================
-
-/**
- * ✅ SCHEMA-DRIVEN: Automatic defaults generation from schema definitions
- * Uses Zod's built-in parsing with embedded defaults - no manual value maintenance
- */
-export function createSchemaTripDefaults(sub: string, tripId: string, title: string = 'New Trip'): Trip {
-  const now = new Date().toISOString();
-  const today = new Date().toISOString().split('T')[0]; // ISO date format (YYYY-MM-DD)
-  
-  // ✅ AUTOMATIC: Zod parses partial data and applies nested schema defaults
-  const schemaDefaults = TripSchema.parse({
-    sub,
-    tripId,
-    title,
-    startDate: today,
-    endDate: today,
-    createdAt: now,
-    updatedAt: now,
-    // All other fields will use their schema defaults:
-    // status: 'normal' (default)
-    // flights: [] (default)
-    // hotels: [] (default) 
-    // activities: [] (default)
-    // currency: 'USD' (default)
-    // tags: [] (default)
-    // confirmationCodes: [] (default)
-    // isCancelled: false (default)
-    // isChanged: false (default)
-  });
-  
-  return schemaDefaults;
-}
-
-/**
- * EMERGENCY: Minimal trip defaults for catastrophic failure scenarios
- */
-export function createEmergencyTripDefaults(sub: string, tripId: string): Trip {
-  const now = new Date().toISOString();
-  const today = new Date().toISOString().split('T')[0];
-  
-  return {
-    sub,
-    tripId,
-    title: 'Trip',
-    description: undefined,
-    startDate: today,
-    endDate: today,
-    status: 'normal',
-    flights: [],
-    hotels: [],
-    activities: [],
-    totalCost: undefined,
-    currency: 'USD',
-    tags: [],
-    notes: undefined,
-    confirmationCodes: [],
-    bookingReference: undefined,
-    isCancelled: false,
-    isChanged: false,
-    changeHistory: undefined,
-    metadata: undefined,
-    createdAt: now,
-    updatedAt: now
-  };
-}

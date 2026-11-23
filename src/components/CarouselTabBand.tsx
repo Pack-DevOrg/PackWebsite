@@ -17,7 +17,7 @@ import PrefetchLink from "./PrefetchLink";
  *   guide pages share the band as their header, so every sibling page is one
  *   crawlable click away and the chevrons step through the family in order.
  */
-export type CarouselTabItem = {
+type CarouselTabItem = {
   readonly id: string;
   readonly label: string;
   readonly icon?: ReactNode;

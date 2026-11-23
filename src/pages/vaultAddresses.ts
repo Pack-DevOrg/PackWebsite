@@ -62,7 +62,7 @@ export const VaultAddressWriteSchema = VaultAddressFieldSchema.superRefine(
   refineVaultAddressRegion,
 );
 
-export const VaultAddressPatchSchema = VaultAddressFieldSchema.partial().superRefine(
+const VaultAddressPatchSchema = VaultAddressFieldSchema.partial().superRefine(
   refineVaultAddressRegion,
 );
 
@@ -70,7 +70,7 @@ export const VaultAddressSchema = VaultAddressFieldSchema.extend({
   id: z.string().min(1),
 }).superRefine(refineVaultAddressRegion);
 
-export const VaultAddressListSchema = z
+const VaultAddressListSchema = z
   .object({
     addresses: z.array(VaultAddressSchema),
   })
@@ -79,7 +79,7 @@ export const VaultAddressListSchema = z
 export type VaultAddressLabel = z.infer<typeof VaultAddressLabelSchema>;
 export type VaultAddress = z.infer<typeof VaultAddressSchema>;
 export type VaultAddressWrite = z.infer<typeof VaultAddressWriteSchema>;
-export type VaultAddressPatch = z.infer<typeof VaultAddressPatchSchema>;
+type VaultAddressPatch = z.infer<typeof VaultAddressPatchSchema>;
 
 function messageFromApiErrorBecauseEnvelopeFailed(
   error: { message?: string } | undefined,

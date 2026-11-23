@@ -10,7 +10,7 @@
 import { env } from '../utils/env';
 import { apiEndpoints } from '../config/appConfig';
 
-export interface WaitlistSignupRequest {
+interface WaitlistSignupRequest {
   readonly email: string;
   readonly source: string;
   readonly timestamp: string;
@@ -28,7 +28,7 @@ export interface WaitlistSignupRequest {
   readonly fbp?: string;
 }
 
-export interface WaitlistSignupResponse {
+interface WaitlistSignupResponse {
   readonly success: boolean;
   readonly message: string;
   readonly encrypted?: boolean;

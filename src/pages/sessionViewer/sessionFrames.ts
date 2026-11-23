@@ -30,8 +30,8 @@ export type TouchEvent =
 export type FetchFrameBatch = (signal: AbortSignal) => Promise<FrameBatch | null>;
 export type SendTouch = (event: TouchEvent) => Promise<void>;
 
-export const FRAMES_PER_BATCH = 4;
-export const FRAME_GAP_MS = 120;
+const FRAMES_PER_BATCH = 4;
+const FRAME_GAP_MS = 120;
 
 export function fetchFrameBatchBecauseApiClient(client: ApiClient, jobId: string): FetchFrameBatch {
   const path = `/live-view/${encodeURIComponent(jobId)}/view?n=${FRAMES_PER_BATCH}&gapMs=${FRAME_GAP_MS}`;
@@ -65,7 +65,7 @@ const TimelineIndexSchema = z.object({
 export type TimelineIndex = z.infer<typeof TimelineIndexSchema>;
 export type TimelineFrame = TimelineIndex["frames"][number];
 
-export function timelineIndexBecauseBody(body: unknown): TimelineIndex | null {
+function timelineIndexBecauseBody(body: unknown): TimelineIndex | null {
   const envelope = EnvelopeSchema.safeParse(body);
   const parsed = TimelineIndexSchema.safeParse(envelope.success ? envelope.data.data : body);
   return parsed.success ? parsed.data : null;

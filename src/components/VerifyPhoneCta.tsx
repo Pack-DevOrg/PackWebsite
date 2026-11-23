@@ -7,11 +7,11 @@ import { useAuth } from "@/auth/AuthContext";
 
 export const PACK_VERIFY_SMS_E164 = "+13054392989";
 
-export type VerifyPhoneCtaProps = {
+type VerifyPhoneCtaProps = {
   readonly locationHrefTarget?: { href: string };
 };
 
-export function deviceOpensSmsHrefBecauseMobileUa(): boolean {
+function deviceOpensSmsHrefBecauseMobileUa(): boolean {
   if (typeof navigator === "undefined") {
     return false;
   }

@@ -1,4 +1,4 @@
-export type ViteEnv = Record<string, unknown> & {
+type ViteEnv = Record<string, unknown> & {
   DEV?: boolean;
 };
 

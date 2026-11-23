@@ -4,7 +4,7 @@ import { OnboardingPrimaryButton } from "@pack/ui-primitives";
 export const ACCESS_CODE_LABEL = "Access code";
 export const ACCESS_CODE_SUBMIT = "Redeem code";
 
-export function normalizeAccessCode(raw: string): string {
+function normalizeAccessCode(raw: string): string {
   return raw.replace(/\s+/g, "").toUpperCase();
 }
 
@@ -27,7 +27,7 @@ export function accessCodeErrorLine(reason: string | null | undefined): string {
   return ERROR_LINES[reason] ?? "We couldn't redeem that code. Try again.";
 }
 
-export interface AccessCodeFieldProps {
+interface AccessCodeFieldProps {
   initialCode?: string;
   errorReason?: string | null;
   submitting?: boolean;

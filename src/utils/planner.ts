@@ -22,7 +22,7 @@ import {
   type SharedTravelOutlineChunk,
 } from "@/schemas/shared-travel";
 
-export interface PlannerResult {
+interface PlannerResult {
   readonly outlines: Array<FlightOutline | HotelOutline>;
   readonly planChunks: Array<FlightChunk | HotelChunk>;
 }

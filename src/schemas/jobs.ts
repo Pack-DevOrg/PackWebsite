@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { TimelineChunkSchema } from "./travel";
 
-export const JobStatusEnum = z.enum(["queued", "processing", "completed", "failed", "cancelled"]);
-export const JobStepStatusEnum = z.enum(["processing", "completed", "failed"]);
-export const ProgressItemStatusEnum = z.enum(["pending", "processing", "completed", "failed"]);
-export const JobTypeEnum = z.enum([
+const JobStatusEnum = z.enum(["queued", "processing", "completed", "failed", "cancelled"]);
+const JobStepStatusEnum = z.enum(["processing", "completed", "failed"]);
+const ProgressItemStatusEnum = z.enum(["pending", "processing", "completed", "failed"]);
+const JobTypeEnum = z.enum([
   "travel_planning",
   "travel_search",
   "travel_extraction",
@@ -95,41 +95,3 @@ export const TravelJobResultSchema = z.object({
   ).optional(),
 });
 
-export const JobStatusRecordSchema = z.object({
-  sub: z.string(),
-  jobId: z.string().uuid(),
-  status: JobStatusEnum,
-  jobType: JobTypeEnum,
-  message: z.string(),
-  shortOverview: z.string().optional(),
-  currentStep: z.string().optional(),
-  stepStatus: JobStepStatusEnum.optional(),
-  stepDetails: z.string().optional(),
-  result: z.unknown().optional(),
-  error: z.string().optional(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  ttl: z.number().optional(),
-  eventStartDate: z.string().datetime().optional(),
-  eventEndDate: z.string().datetime().optional(),
-  eventLocation: z.string().optional(),
-  progressItems: z.array(ProgressItemSchema).optional(),
-});
-
-export const TravelJobSummarySchema = JobStatusRecordSchema.omit({
-  sub: true,
-  ttl: true,
-  stepDetails: true,
-  stepStatus: true,
-}).extend({
-  result: TravelJobResultSchema.optional().nullable(),
-});
-
-export const TravelJobListDataSchema = z.object({
-  jobs: z.array(TravelJobSummarySchema),
-  count: z.number().int().nonnegative(),
-  hasMore: z.boolean().optional(),
-});
-
-export type TravelJobResult = z.infer<typeof TravelJobResultSchema>;
-export type TravelJobListData = z.infer<typeof TravelJobListDataSchema>;

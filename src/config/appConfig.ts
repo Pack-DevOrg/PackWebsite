@@ -167,7 +167,7 @@ const scopeList = Array.from(
   )
 );
 
-export type AppEnvironment = "prod" | "dev";
+type AppEnvironment = "prod" | "dev";
 
 interface ResolvedAppConfig {
   readonly apiBaseUrl: string;

@@ -18,22 +18,6 @@ export function stripLeadingMarkdownH1(markdown: string): string {
   return normalized.slice(headingMatch[0].length).trimStart();
 }
 
-export function stripLeadingPlainTitle(text: string, title: string): string {
-  if (!text) {
-    return text;
-  }
-
-  const normalized = text.replace(/\r\n/g, '\n');
-  const titlePattern = new RegExp(
-    `^\\s*${title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\n+`,
-  );
-  if (!titlePattern.test(normalized)) {
-    return text;
-  }
-
-  return normalized.replace(titlePattern, '').trimStart();
-}
-
 interface UseLegalMarkdownOptions {
   url: string;
   timeoutMs?: number;

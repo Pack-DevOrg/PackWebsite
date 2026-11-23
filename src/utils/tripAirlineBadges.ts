@@ -79,7 +79,7 @@ AIRLINE_NAME_TO_CODE[normalizeAirlineName("LATAM")] = "LA";
 
 type TripFlight = NonNullable<Trip["flights"]>[number];
 
-export interface TripAirlineBadge {
+interface TripAirlineBadge {
   readonly key: string;
   readonly code: string;
   readonly label: string;

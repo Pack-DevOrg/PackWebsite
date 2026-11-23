@@ -9,8 +9,6 @@ import type { ApiClient } from "./client";
 import { ApiRequestError } from "./client";
 
 export type Trip = z.infer<typeof TripSchema>;
-export type TripResponse = z.infer<typeof TripResponseSchema>;
-
 export const TripCreatePayloadSchema = TripCreateSchema.omit({ sub: true });
 
 export type TripCreatePayload = z.infer<typeof TripCreatePayloadSchema>;

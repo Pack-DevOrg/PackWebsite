@@ -3,7 +3,7 @@ import { apiEndpoints } from '@/config/appConfig';
 
 type ConsentStatus = 'granted' | 'partial' | 'rejected' | 'revoked' | 'gpc';
 
-export interface ConsentLogPayload {
+interface ConsentLogPayload {
   consentId: string;
   status: ConsentStatus;
   marketing: boolean;

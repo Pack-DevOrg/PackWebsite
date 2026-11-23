@@ -11,8 +11,8 @@ const DEFAULT_TWITTER_IMAGE_URL = DEFAULT_SHARE_IMAGE_URL;
 // Link-preview loop (iMessage et al. read og:video): 6 s seamless crop of the
 // hero ambient loop, 1200x630 h264 + silent AAC, faststart (public/videos).
 export const HERO_SHARE_VIDEO_URL = `${SITE_ORIGIN}/videos/hero-share.mp4`;
-export const HERO_SHARE_VIDEO_WIDTH = "1200";
-export const HERO_SHARE_VIDEO_HEIGHT = "630";
+const HERO_SHARE_VIDEO_WIDTH = "1200";
+const HERO_SHARE_VIDEO_HEIGHT = "630";
 const DEFAULT_ROBOTS =
   "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
 export const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
@@ -20,7 +20,7 @@ const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
 const NOAH_MITSUHASHI_ID = `${SITE_ORIGIN}/#noah-mitsuhashi`;
 const MATTHEW_GLEIN_ID = `${SITE_ORIGIN}/#matthew-glein`;
 
-export interface TeamMemberProfile {
+interface TeamMemberProfile {
   readonly id: string;
   readonly name: string;
   readonly jobTitle: string;
@@ -51,7 +51,7 @@ export const TEAM_MEMBER_PROFILES: readonly TeamMemberProfile[] = [
   },
 ] as const;
 
-export type JsonLd =
+type JsonLd =
   | Record<string, unknown>
   | {
       readonly "@context": string;
@@ -83,7 +83,7 @@ export function buildAbsoluteUrl(pathname: string): string {
   return normalizedPath === "/" ? SITE_ORIGIN : `${SITE_ORIGIN}${normalizedPath}`;
 }
 
-export function createOrganizationSchema(): Record<string, unknown> {
+function createOrganizationSchema(): Record<string, unknown> {
   return {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
@@ -168,7 +168,7 @@ export function createPersonSchema(
   };
 }
 
-export function createWebsiteSchema(): Record<string, unknown> {
+function createWebsiteSchema(): Record<string, unknown> {
   return {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
@@ -189,7 +189,7 @@ export function createWebsiteSchema(): Record<string, unknown> {
   };
 }
 
-export function createWebPageSchema(
+function createWebPageSchema(
   title: string,
   description: string,
   url: string,

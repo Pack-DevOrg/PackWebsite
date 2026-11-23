@@ -7,6 +7,7 @@ import {
   mailboxesFromAccountsPayload,
   accountConnectWindow,
   readConnectedMailboxSnapshot,
+  resolveAuthenticatedUserId,
   startGoogleAccountConnect,
   startMicrosoftAccountConnect,
   USER_ACCOUNTS_PATH,
@@ -158,14 +159,23 @@ function RedeemAccessCode(props: {
 function OnboardFlow() {
   const location = useLocation();
   const urlCode = accessCodeFromSearch(location.search);
-  const { status, getAccessToken, tokens } = useAuth();
+  const { status, user, getAccessToken, tokens } = useAuth();
+  const userId = resolveAuthenticatedUserId(status, user?.sub);
   const [stepIndex, setStepIndex] = useState(SIGNUP_INDEX);
-  const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(
-    readConnectedMailboxSnapshot,
+  const [mailboxes, setMailboxes] = useState<ConnectedMailboxSnapshot>(() =>
+    readConnectedMailboxSnapshot(userId),
   );
+  const prevUserIdRef = useRef(userId);
   const [accessView, setAccessView] = useState<AccessView>("checking");
   const wasWaitlisted = useRef(false);
   const step = ONBOARDING_SEQUENCE[stepIndex];
+
+  useEffect(() => {
+    if (prevUserIdRef.current !== userId) {
+      prevUserIdRef.current = userId;
+      setMailboxes(readConnectedMailboxSnapshot(userId));
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (shouldAdvanceSignupBecauseAuthenticated(status, stepIndex)) {
@@ -176,17 +186,14 @@ function OnboardFlow() {
   // OAuth returns as a full load of /onboard. Land on Connections after the
   // signup auto-advance so the connected mailbox is the screen they come back to.
   useEffect(() => {
-    if (status !== "authenticated") {
-      return;
-    }
-    if (!consumeOnboardConnectionsReturn()) {
+    if (!consumeOnboardConnectionsReturn(userId)) {
       return;
     }
     setStepIndex(CONNECTIONS_INDEX);
-  }, [status]);
+  }, [userId]);
 
   useEffect(() => {
-    if (step !== "connections" || status !== "authenticated") {
+    if (step !== "connections" || !userId) {
       return;
     }
     let cancelled = false;
@@ -212,7 +219,7 @@ function OnboardFlow() {
     return () => {
       cancelled = true;
     };
-  }, [getAccessToken, status, step, tokens?.tokenType]);
+  }, [getAccessToken, step, tokens?.tokenType, userId]);
 
   // Waitlisted users stay on the access step and re-read on window focus.
   // A never-waitlisted active user skips straight to Connections.
@@ -274,13 +281,23 @@ function OnboardFlow() {
   };
 
   const connectGoogle = () => {
+    if (!userId) {
+      return;
+    }
     accountConnectWindow.assign(
-      startGoogleAccountConnect(optionalEnv(env.VITE_GOOGLE_WEB_CLIENT_ID)),
+      startGoogleAccountConnect(
+        userId,
+        optionalEnv(env.VITE_GOOGLE_WEB_CLIENT_ID),
+      ),
     );
   };
 
   const connectMicrosoft = () => {
+    if (!userId) {
+      return;
+    }
     void startMicrosoftAccountConnect(
+      userId,
       optionalEnv(env.VITE_MICROSOFT_CLIENT_ID),
     ).then((url) => {
       accountConnectWindow.assign(url);

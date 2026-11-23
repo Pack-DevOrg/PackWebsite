@@ -15,6 +15,22 @@ const LEGACY_PKCE_COOKIE_KEYS = ["doneai.auth.pkce.shared.v1"] as const;
 const LOGOUT_INTENT_KEY = "pack.auth.logout.intent.v1";
 const AUTH_RETRY_BLOCK_KEY = "pack.auth.retry.block.v1";
 const AUTH_HINT_COOKIE_KEY = "pack.auth.hint.v1";
+export const ACCOUNT_CONNECT_PENDING_KEY_PREFIX = "pack.accountConnect.pending.v2:";
+export const ONBOARD_CONNECTIONS_RETURN_KEY_PREFIX =
+  "pack.onboard.connectionsReturn.v2:";
+export const ONBOARD_CONNECTED_MAILBOXES_KEY_PREFIX =
+  "pack.onboard.connectedMailboxes.v2:";
+export const LEGACY_ACCOUNT_CONNECT_PENDING_KEY = "pack.accountConnect.pending.v1";
+const LEGACY_ACCOUNT_CONNECT_KEYS = [
+  LEGACY_ACCOUNT_CONNECT_PENDING_KEY,
+  "pack.onboard.connectionsReturn.v1",
+  "pack.onboard.connectedMailboxes.v1",
+] as const;
+const ACCOUNT_CONNECT_KEY_PREFIXES = [
+  ACCOUNT_CONNECT_PENDING_KEY_PREFIX,
+  ONBOARD_CONNECTIONS_RETURN_KEY_PREFIX,
+  ONBOARD_CONNECTED_MAILBOXES_KEY_PREFIX,
+] as const;
 const PKCE_MAX_AGE_MS = 10 * 60 * 1000;
 
 const isBrowser = typeof window !== "undefined";
@@ -165,6 +181,30 @@ export const persistSession = async (session: AuthSession): Promise<void> => {
   }
 };
 
+const clearMatchingSessionKeys = (prefixes: readonly string[]): void => {
+  const storage = window.sessionStorage;
+  Object.keys(storage)
+    .filter((key) => prefixes.some((prefix) => key.startsWith(prefix)))
+    .forEach((key) => storage.removeItem(key));
+};
+
+const clearLegacyAccountConnectKeys = (): void => {
+  LEGACY_ACCOUNT_CONNECT_KEYS.forEach((key) =>
+    window.sessionStorage.removeItem(key),
+  );
+};
+
+export const removeSessionStorageKeysByPrefix = (
+  prefixes: readonly string[],
+): void => {
+  withStorage(() => clearMatchingSessionKeys(prefixes));
+};
+
+export const clearAccountConnectSessionState = (): void => {
+  withStorage(clearLegacyAccountConnectKeys);
+  removeSessionStorageKeysByPrefix(ACCOUNT_CONNECT_KEY_PREFIXES);
+};
+
 export const clearSession = (): void => {
   if (!isBrowser) {
     return;
@@ -173,6 +213,7 @@ export const clearSession = (): void => {
   void encryptedSessionStore.removeItem();
   void legacyDoneAiEncryptedSessionStore.removeItem();
   clearAuthSessionHint();
+  clearAccountConnectSessionState();
 
   try {
     LEGACY_SESSION_STORAGE_KEYS.forEach((key) => window.sessionStorage.removeItem(key));

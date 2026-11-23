@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
@@ -304,21 +304,153 @@ describe("OnboardPage /onboard five-step app flow", () => {
     assign.mockRestore();
   });
 
-  it("returns to Connections with the Google account shown connected", async () => {
-    markOnboardConnectionsReturn();
-    writeConnectedMailboxSnapshot({
+  it("returns to Connections with the Google account shown connected for the matching user only", async () => {
+    markOnboardConnectionsReturn("signed-in-user");
+    writeConnectedMailboxSnapshot("signed-in-user", {
       googleEmail: "ada@pack.test",
       microsoftEmail: null,
     });
+    writeConnectedMailboxSnapshot("other-user", {
+      googleEmail: "other@pack.test",
+      microsoftEmail: "other@outlook.test",
+    });
+
+    // Hydrates Connections return and mailbox snapshot when auth transitions from loading to authenticated
+    useAuthMock.mockReturnValue({
+      status: "loading",
+      user: null,
+      login: loginMock,
+      logout: jest.fn(),
+      getAccessToken: async () => null,
+      tokens: null,
+    });
+    const loadingView = renderAt(ONBOARD_PATH);
+    expect(global.fetch).not.toHaveBeenCalled();
+
     mockAuthenticatedSession();
-    renderAt(ONBOARD_PATH);
+    loadingView.rerender(tree(ONBOARD_PATH));
 
     expect(
       await screen.findByRole("heading", { name: "Connections" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Connected: ada@pack.test")).toBeInTheDocument();
+    expect(screen.queryByText(/other@/)).toBeNull();
     expect(
       screen.getByRole("button", { name: "Continue" }),
     ).toBeEnabled();
+
+    // Switching authenticated user re-reads the new user's isolated snapshot immediately
+    useAuthMock.mockReturnValue({
+      status: "authenticated",
+      user: {
+        sub: "fresh-user",
+        email: "fresh@trypackai.com",
+        name: "Fresh User",
+      },
+      login: loginMock,
+      logout: jest.fn(),
+      getAccessToken: async () => "synth-fresh-token",
+      tokens: { tokenType: "Bearer" },
+    });
+    loadingView.rerender(tree(ONBOARD_PATH));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Connected: ada@pack.test")).toBeNull();
+    });
+    loadingView.unmount();
+
+    // Also initializes mailbox snapshot directly when already authenticated on initial mount
+    markOnboardConnectionsReturn("signed-in-user");
+    mockAuthenticatedSession();
+    renderAt(ONBOARD_PATH);
+    expect(
+      await screen.findByRole("heading", { name: "Connections" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Connected: ada@pack.test")).toBeInTheDocument();
+  });
+
+  it("merges GET /user/accounts mailboxes only on the Connections step for an authenticated user and refuses connect actions when unauthenticated", async () => {
+    const fetchSpy = jest.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          success: true,
+          data: {
+            accounts: [
+              { provider: "Google", email: "server-google@pack.test" },
+              { provider: "Microsoft", email: "server-ms@pack.test" },
+            ],
+          },
+        }),
+      clone() {
+        return this;
+      },
+    }));
+    global.fetch = fetchSpy as unknown as typeof fetch;
+
+    const assign = jest
+      .spyOn(accountConnectWindow, "assign")
+      .mockImplementation(() => undefined);
+    try {
+      useAuthMock.mockReturnValue({
+        status: "loading",
+        user: null,
+        login: loginMock,
+        logout: jest.fn(),
+        getAccessToken: async () => null,
+        tokens: null,
+      });
+      const view = renderAt(ONBOARD_PATH);
+
+      mockAuthenticatedSession();
+      view.rerender(tree(ONBOARD_PATH));
+
+      // Flush microtasks on What Pack does step: GET /user/accounts must NOT run before Connections step
+      expect(await screen.findByRole("heading", { name: "Past" })).toBeInTheDocument();
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(
+        fetchSpy.mock.calls.filter(([url]) =>
+          String(url).includes("/user/accounts"),
+        ),
+      ).toHaveLength(0);
+
+      fireEvent.click(await screen.findByRole("button", { name: "Skip" }));
+      fireEvent.click(await screen.findByRole("button", { name: "Skip" }));
+
+      expect(
+        await screen.findByText("Connected: server-google@pack.test"),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Connected: server-ms@pack.test"),
+      ).toBeInTheDocument();
+
+      // Re-rendering with the same userId must NOT wipe server-loaded mailboxes back to empty sessionStorage
+      view.rerender(tree(ONBOARD_PATH));
+      expect(
+        screen.getByText("Connected: server-google@pack.test"),
+      ).toBeInTheDocument();
+
+      // If session becomes unauthenticated while mounted on Connections, connect buttons do not start OAuth and no new /user/accounts GET runs
+      const callsBeforeLogout = fetchSpy.mock.calls.length;
+      useAuthMock.mockReturnValue({
+        status: "unauthenticated",
+        user: null,
+        login: loginMock,
+        logout: jest.fn(),
+        getAccessToken: async () => null,
+        tokens: null,
+      });
+      view.rerender(tree(ONBOARD_PATH));
+
+      fireEvent.click(screen.getByTestId("connect-google-button"));
+      fireEvent.click(screen.getByTestId("connect-microsoft-button"));
+      expect(assign).not.toHaveBeenCalled();
+      expect(fetchSpy.mock.calls.length).toBe(callsBeforeLogout);
+    } finally {
+      assign.mockRestore();
+    }
   });
 });

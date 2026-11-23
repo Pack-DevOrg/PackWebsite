@@ -1,4 +1,16 @@
 import { webcrypto } from 'node:crypto';
+import React from 'react';
+import { act, render, waitFor } from '@testing-library/react';
+import {
+  consumeOnboardConnectionsReturn,
+  markOnboardConnectionsReturn,
+  pendingMatchesCallback,
+  readConnectedMailboxSnapshot,
+  startGoogleAccountConnect,
+  writeConnectedMailboxSnapshot,
+} from './accountConnect';
+import { AuthProvider, useAuth } from './AuthContext';
+import * as cognito from './cognito';
 import {
   clearPendingPkce,
   clearSession,
@@ -9,6 +21,16 @@ import {
   storePendingPkce,
 } from './tokenStorage';
 import type { AuthSession } from './types';
+
+function makeIdToken(claims: Record<string, unknown>): string {
+  const encode = (obj: unknown) =>
+    Buffer.from(JSON.stringify(obj))
+      .toString('base64')
+      .replaceAll('+', '-')
+      .replaceAll('/', '_')
+      .replaceAll('=', '');
+  return `${encode({ alg: 'none', typ: 'JWT' })}.${encode(claims)}.sig`;
+}
 
 const SESSION_STORAGE_KEY = 'pack.auth.session.v1';
 const PKCE_STORAGE_KEY = 'pack.auth.pkce.v1';
@@ -154,5 +176,213 @@ describe('tokenStorage', () => {
     expect(window.sessionStorage.getItem(PKCE_STORAGE_KEY)).toBeNull();
     expect(window.localStorage.getItem(PKCE_STORAGE_KEY)).toBeNull();
     expect(document.cookie).not.toContain('pack.auth.pkce.shared.v1=');
+  });
+
+  it('clears accountConnect pending state, connected mailbox snapshots, and return flags on clearSession', () => {
+    const authUrl = new URL(startGoogleAccountConnect('user-a'));
+    const state = authUrl.searchParams.get('state')!;
+    writeConnectedMailboxSnapshot('user-a', {
+      googleEmail: 'alice@gmail.com',
+      microsoftEmail: null,
+    });
+    markOnboardConnectionsReturn('user-a');
+
+    clearSession();
+
+    expect(pendingMatchesCallback('google', state, 'user-a')).toBeNull();
+    expect(readConnectedMailboxSnapshot('user-a')).toEqual({
+      googleEmail: null,
+      microsoftEmail: null,
+    });
+    expect(consumeOnboardConnectionsReturn('user-a')).toBe(false);
+  });
+
+  it('AuthProvider preserves mailbox snapshot on same-user token refresh and fresh post-logout sign-in, while clearing on user switch from both hydrated and login-applied sessions', async () => {
+    const userAToken = makeIdToken({ sub: 'user-a', email: 'alice@trypackai.com' });
+    const userBToken = makeIdToken({ sub: 'user-b', email: 'bob@trypackai.com' });
+    const userCToken = makeIdToken({ sub: 'user-c', email: 'carol@trypackai.com' });
+    const noSubToken = makeIdToken({ email: 'nosub@trypackai.com' });
+
+    // Case 1: Hydrated session on mount (no refreshNow) -> direct completeLogin switch to user-b clears user-a state
+    await persistSession({
+      tokens: {
+        accessToken: 'access-a',
+        idToken: userAToken,
+        refreshToken: 'refresh-a',
+        tokenType: 'Bearer',
+        issuedAt: Date.now(),
+        accessTokenExpiresAt: Date.now() + 3_600_000,
+        refreshTokenExpiresAt: Date.now() + 86_400_000,
+      },
+    });
+
+    const refreshSpy = jest
+      .spyOn(cognito, 'refreshTokens')
+      .mockResolvedValue({
+        accessToken: 'access-b-refreshed',
+        idToken: userBToken,
+        refreshToken: 'refresh-b',
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+        issuedAt: Date.now(),
+      });
+    const completeLoginSpy = jest
+      .spyOn(cognito, 'completeLogin')
+      .mockResolvedValue({
+        tokenSet: {
+          accessToken: 'access-b',
+          idToken: userBToken,
+          refreshToken: 'refresh-b',
+          tokenType: 'Bearer',
+          expiresIn: 3600,
+          issuedAt: Date.now(),
+        },
+        redirectPath: '/onboard',
+      });
+
+    let latestAuth!: ReturnType<typeof useAuth>;
+    function Probe() {
+      latestAuth = useAuth();
+      return null;
+    }
+
+    try {
+      const view = render(
+        React.createElement(AuthProvider, null, React.createElement(Probe)),
+      );
+
+      await waitFor(() => {
+        expect(latestAuth.status).toBe('authenticated');
+        expect(latestAuth.user?.sub).toBe('user-a');
+      });
+
+      const aliceState = new URL(
+        startGoogleAccountConnect('user-a'),
+      ).searchParams.get('state')!;
+      writeConnectedMailboxSnapshot('user-a', {
+        googleEmail: 'alice@gmail.com',
+        microsoftEmail: null,
+      });
+
+      // Immediate completeLogin switch from hydrated user-a to user-b clears user-a's state
+      await act(async () => {
+        await latestAuth.completeLogin('code-b', 'state-b');
+      });
+      expect(latestAuth.user?.sub).toBe('user-b');
+      expect(readConnectedMailboxSnapshot('user-a')).toEqual({
+        googleEmail: null,
+        microsoftEmail: null,
+      });
+      expect(pendingMatchesCallback('google', aliceState, 'user-a')).toBeNull();
+
+      // Same-user token refresh for user-b preserves user-b's state
+      writeConnectedMailboxSnapshot('user-b', {
+        googleEmail: null,
+        microsoftEmail: 'bob@outlook.com',
+      });
+      await act(async () => {
+        await latestAuth.getAccessToken({ forceRefresh: true });
+      });
+      expect(readConnectedMailboxSnapshot('user-b')).toEqual({
+        googleEmail: null,
+        microsoftEmail: 'bob@outlook.com',
+      });
+
+      // Case 2: Login-applied user-b -> direct completeLogin switch to user-c clears user-b's state
+      completeLoginSpy.mockResolvedValueOnce({
+        tokenSet: {
+          accessToken: 'access-c',
+          idToken: userCToken,
+          refreshToken: 'refresh-c',
+          tokenType: 'Bearer',
+          expiresIn: 3600,
+          issuedAt: Date.now(),
+        },
+        redirectPath: '/onboard',
+      });
+      await act(async () => {
+        await latestAuth.completeLogin('code-c', 'state-c');
+      });
+      expect(latestAuth.user?.sub).toBe('user-c');
+      expect(readConnectedMailboxSnapshot('user-b')).toEqual({
+        googleEmail: null,
+        microsoftEmail: null,
+      });
+
+      // Case 3: Logout resets activeUserSubRef to null, so a fresh sign-in afterwards does not treat null -> user-a as a cross-user wipe
+      await act(async () => {
+        await latestAuth.logout({ redirect: false });
+      });
+      expect(latestAuth.status).toBe('unauthenticated');
+      expect(latestAuth.user).toBeNull();
+
+      writeConnectedMailboxSnapshot('user-a', {
+        googleEmail: 'pre-seeded-alice@gmail.com',
+        microsoftEmail: null,
+      });
+      completeLoginSpy.mockResolvedValueOnce({
+        tokenSet: {
+          accessToken: 'access-a-2',
+          idToken: userAToken,
+          refreshToken: 'refresh-a-2',
+          tokenType: 'Bearer',
+          expiresIn: 3600,
+          issuedAt: Date.now(),
+        },
+        redirectPath: '/onboard',
+      });
+      await act(async () => {
+        await latestAuth.completeLogin('code-a', 'state-a');
+      });
+      expect(latestAuth.user?.sub).toBe('user-a');
+      expect(readConnectedMailboxSnapshot('user-a')).toEqual({
+        googleEmail: 'pre-seeded-alice@gmail.com',
+        microsoftEmail: null,
+      });
+
+      // Case 4: Switching from user-a to a token lacking sub sets user to null and clears user-a's state
+      completeLoginSpy.mockResolvedValueOnce({
+        tokenSet: {
+          accessToken: 'access-nosub',
+          idToken: noSubToken,
+          refreshToken: 'refresh-nosub',
+          tokenType: 'Bearer',
+          expiresIn: 3600,
+          issuedAt: Date.now(),
+        },
+        redirectPath: '/',
+      });
+      await act(async () => {
+        await latestAuth.completeLogin('code-nosub', 'state-nosub');
+      });
+      expect(latestAuth.user).toBeNull();
+      expect(readConnectedMailboxSnapshot('user-a')).toEqual({
+        googleEmail: null,
+        microsoftEmail: null,
+      });
+
+      view.unmount();
+
+      // Case 5: Hydrating a stored session whose idToken lacks sub sets activeUserSubRef to null cleanly
+      await persistSession({
+        tokens: {
+          accessToken: 'access-nosub-stored',
+          idToken: noSubToken,
+          refreshToken: 'refresh-nosub-stored',
+          tokenType: 'Bearer',
+          issuedAt: Date.now(),
+          accessTokenExpiresAt: Date.now() + 3_600_000,
+          refreshTokenExpiresAt: Date.now() + 86_400_000,
+        },
+      });
+      render(React.createElement(AuthProvider, null, React.createElement(Probe)));
+      await waitFor(() => {
+        expect(latestAuth.status).toBe('authenticated');
+        expect(latestAuth.user).toBeNull();
+      });
+    } finally {
+      refreshSpy.mockRestore();
+      completeLoginSpy.mockRestore();
+    }
   });
 });

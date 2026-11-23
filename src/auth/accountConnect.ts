@@ -6,6 +6,13 @@
 
 // @ts-expect-error PackApp source is resolved by Vite and Jest, not this tsconfig.
 import { CAPABILITY_SPECS } from "@pack/app/screens/settings/ConnectedServices/capabilities";
+import {
+  ACCOUNT_CONNECT_PENDING_KEY_PREFIX,
+  LEGACY_ACCOUNT_CONNECT_PENDING_KEY,
+  ONBOARD_CONNECTED_MAILBOXES_KEY_PREFIX,
+  ONBOARD_CONNECTIONS_RETURN_KEY_PREFIX,
+  removeSessionStorageKeysByPrefix,
+} from "./tokenStorage";
 
 type WebOnboardCapabilityId = "mail_read" | "calendar_read";
 
@@ -31,18 +38,18 @@ export const USER_ACCOUNTS_PATH = "/user/accounts";
 export const GOOGLE_WEB_CLIENT_ID =
   "954475259916-15eeqa9prhfgllda42ofrcdv2sirav5n.apps.googleusercontent.com";
 
-export const MICROSOFT_CLIENT_ID = "5be1eac2-56a6-4dcf-a985-336797ed1e27";
+const MICROSOFT_CLIENT_ID = "5be1eac2-56a6-4dcf-a985-336797ed1e27";
 
 export const GOOGLE_REDIRECT_URI =
   "https://trypackai.com/api/auth/callback/google";
 
-export const MICROSOFT_REDIRECT_URI =
+const MICROSOFT_REDIRECT_URI =
   "https://trypackai.com/api/auth/callback/microsoft";
 
-export const GOOGLE_AUTHORIZE_URL =
+const GOOGLE_AUTHORIZE_URL =
   "https://accounts.google.com/o/oauth2/v2/auth";
 
-export const MICROSOFT_AUTHORIZE_URL =
+const MICROSOFT_AUTHORIZE_URL =
   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
 
 const GOOGLE_IDENTITY_SCOPES = [
@@ -79,11 +86,8 @@ export const GOOGLE_CONNECT_SCOPES: readonly string[] =
 export const MICROSOFT_CONNECT_SCOPES: readonly string[] =
   resolveProviderConnectScopes("microsoft");
 
-export const ACCOUNT_CONNECT_CATEGORIES = ["email", "calendar"] as const;
+const ACCOUNT_CONNECT_CATEGORIES = ["email", "calendar"] as const;
 
-const PENDING_KEY = "pack.accountConnect.pending.v1";
-const RETURN_KEY = "pack.onboard.connectionsReturn.v1";
-const SNAPSHOT_KEY = "pack.onboard.connectedMailboxes.v1";
 const PENDING_MAX_AGE_MS = 10 * 60 * 1000;
 
 export type AccountConnectProvider = "google" | "microsoft";
@@ -93,14 +97,19 @@ export interface ConnectedMailboxSnapshot {
   readonly microsoftEmail: string | null;
 }
 
+interface StoredConnectedMailboxSnapshot extends ConnectedMailboxSnapshot {
+  readonly userId: string;
+}
+
 interface PendingAccountConnect {
+  readonly userId: string;
   readonly provider: AccountConnectProvider;
   readonly state: string;
   readonly createdAt: number;
   readonly codeVerifier?: string;
 }
 
-export interface GoogleAccountConnectBody {
+interface GoogleAccountConnectBody {
   readonly provider: "Google";
   readonly categories: readonly ["email", "calendar"];
   readonly token: string;
@@ -110,7 +119,7 @@ export interface GoogleAccountConnectBody {
   };
 }
 
-export interface MicrosoftAccountConnectBody {
+interface MicrosoftAccountConnectBody {
   readonly provider: "Microsoft";
   readonly categories: readonly ["email", "calendar"];
   readonly token: {
@@ -149,7 +158,7 @@ function base64Url(bytes: Uint8Array): string {
   return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 }
 
-export function resolveGoogleWebClientId(override?: string): string {
+function resolveGoogleWebClientId(override?: string): string {
   const trimmed = override?.trim() ?? "";
   if (trimmed.length > 0) {
     return trimmed;
@@ -157,12 +166,53 @@ export function resolveGoogleWebClientId(override?: string): string {
   return GOOGLE_WEB_CLIENT_ID;
 }
 
-export function resolveMicrosoftClientId(override?: string): string {
+function resolveMicrosoftClientId(override?: string): string {
   const trimmed = override?.trim() ?? "";
   if (trimmed.length > 0) {
     return trimmed;
   }
   return MICROSOFT_CLIENT_ID;
+}
+
+function normalizeUserId(userId: string | null | undefined): string | null {
+  if (typeof userId !== "string") {
+    return null;
+  }
+  const trimmed = userId.trim();
+  if (trimmed.length === 0) {
+    return null;
+  }
+  return trimmed;
+}
+
+function requireUserId(userId: string | null | undefined): string {
+  const normalized = normalizeUserId(userId);
+  if (!normalized) {
+    throw new Error("Authenticated userId is required for account connect");
+  }
+  return normalized;
+}
+
+export function resolveAuthenticatedUserId(
+  status: string,
+  sub: string | null | undefined,
+): string | null {
+  if (status !== "authenticated") {
+    return null;
+  }
+  return normalizeUserId(sub);
+}
+
+function pendingKeyForUser(userId: string): string {
+  return `${ACCOUNT_CONNECT_PENDING_KEY_PREFIX}${userId}`;
+}
+
+function returnKeyForUser(userId: string): string {
+  return `${ONBOARD_CONNECTIONS_RETURN_KEY_PREFIX}${userId}`;
+}
+
+function snapshotKeyForUser(userId: string): string {
+  return `${ONBOARD_CONNECTED_MAILBOXES_KEY_PREFIX}${userId}`;
 }
 
 export function buildGoogleAccountConnectUrl(input: {
@@ -202,25 +252,32 @@ export async function buildMicrosoftAccountConnectUrl(input: {
   return url.toString();
 }
 
-function readPending(): PendingAccountConnect | null {
+function readPending(userId: string): PendingAccountConnect | null {
   const storage = browserStorage();
   if (!storage) {
     return null;
   }
-  const raw = storage.getItem(PENDING_KEY);
+  const key = pendingKeyForUser(userId);
+  const raw = storage.getItem(key);
   if (!raw) {
     return null;
   }
   try {
     const pending = JSON.parse(raw) as PendingAccountConnect;
+    if (pending.userId !== userId) {
+      return null;
+    }
     if (pending.provider !== "google" && pending.provider !== "microsoft") {
       return null;
     }
     if (typeof pending.state !== "string" || pending.state.length === 0) {
       return null;
     }
-    if (Date.now() - pending.createdAt > PENDING_MAX_AGE_MS) {
-      storage.removeItem(PENDING_KEY);
+    if (
+      typeof pending.createdAt !== "number" ||
+      Date.now() - pending.createdAt > PENDING_MAX_AGE_MS
+    ) {
+      storage.removeItem(key);
       return null;
     }
     return pending;
@@ -234,44 +291,74 @@ function writePending(pending: PendingAccountConnect): void {
   if (!storage) {
     return;
   }
-  storage.setItem(PENDING_KEY, JSON.stringify(pending));
+  storage.setItem(pendingKeyForUser(pending.userId), JSON.stringify(pending));
 }
 
-export function clearPendingAccountConnect(): void {
-  browserStorage()?.removeItem(PENDING_KEY);
-}
-
-export function markOnboardConnectionsReturn(): void {
-  browserStorage()?.setItem(RETURN_KEY, "1");
-}
-
-export function consumeOnboardConnectionsReturn(): boolean {
+export function clearPendingAccountConnect(
+  userId?: string | null,
+): void {
   const storage = browserStorage();
   if (!storage) {
-    return false;
+    return;
   }
-  if (storage.getItem(RETURN_KEY) !== "1") {
-    return false;
+  storage.removeItem(LEGACY_ACCOUNT_CONNECT_PENDING_KEY);
+  const normalized = normalizeUserId(userId);
+  if (normalized) {
+    storage.removeItem(pendingKeyForUser(normalized));
+    return;
   }
-  storage.removeItem(RETURN_KEY);
-  return true;
+  removeSessionStorageKeysByPrefix([ACCOUNT_CONNECT_PENDING_KEY_PREFIX]);
 }
 
-export function emptyConnectedMailboxSnapshot(): ConnectedMailboxSnapshot {
+export function markOnboardConnectionsReturn(
+  userId: string | null | undefined,
+): void {
+  const normalized = normalizeUserId(userId);
+  const storage = browserStorage();
+  if (!normalized || !storage) {
+    return;
+  }
+  storage.setItem(returnKeyForUser(normalized), normalized);
+}
+
+export function consumeOnboardConnectionsReturn(
+  userId: string | null | undefined,
+): boolean {
+  const normalized = normalizeUserId(userId);
+  const storage = browserStorage();
+  if (!normalized || !storage) {
+    return false;
+  }
+  const key = returnKeyForUser(normalized);
+  const storedUserId = storage.getItem(key);
+  storage.removeItem(key);
+  return storedUserId === normalized;
+}
+
+function emptyConnectedMailboxSnapshot(): ConnectedMailboxSnapshot {
   return { googleEmail: null, microsoftEmail: null };
 }
 
-export function readConnectedMailboxSnapshot(): ConnectedMailboxSnapshot {
+export function readConnectedMailboxSnapshot(
+  userId: string | null | undefined,
+): ConnectedMailboxSnapshot {
+  const normalized = normalizeUserId(userId);
+  if (!normalized) {
+    return emptyConnectedMailboxSnapshot();
+  }
   const storage = browserStorage();
   if (!storage) {
     return emptyConnectedMailboxSnapshot();
   }
-  const raw = storage.getItem(SNAPSHOT_KEY);
+  const raw = storage.getItem(snapshotKeyForUser(normalized));
   if (!raw) {
     return emptyConnectedMailboxSnapshot();
   }
   try {
-    const parsed = JSON.parse(raw) as ConnectedMailboxSnapshot;
+    const parsed = JSON.parse(raw) as StoredConnectedMailboxSnapshot;
+    if (parsed.userId !== normalized) {
+      return emptyConnectedMailboxSnapshot();
+    }
     return {
       googleEmail: typeof parsed.googleEmail === "string" ? parsed.googleEmail : null,
       microsoftEmail:
@@ -282,8 +369,21 @@ export function readConnectedMailboxSnapshot(): ConnectedMailboxSnapshot {
   }
 }
 
-export function writeConnectedMailboxSnapshot(snapshot: ConnectedMailboxSnapshot): void {
-  browserStorage()?.setItem(SNAPSHOT_KEY, JSON.stringify(snapshot));
+export function writeConnectedMailboxSnapshot(
+  userId: string | null | undefined,
+  snapshot: ConnectedMailboxSnapshot,
+): void {
+  const normalized = normalizeUserId(userId);
+  const storage = browserStorage();
+  if (!normalized || !storage) {
+    return;
+  }
+  const payload: StoredConnectedMailboxSnapshot = {
+    userId: normalized,
+    googleEmail: snapshot.googleEmail,
+    microsoftEmail: snapshot.microsoftEmail,
+  };
+  storage.setItem(snapshotKeyForUser(normalized), JSON.stringify(payload));
 }
 
 export const accountConnectWindow = {
@@ -292,23 +392,37 @@ export const accountConnectWindow = {
   },
 };
 
-export function startGoogleAccountConnect(clientId?: string): string {
+export function startGoogleAccountConnect(
+  userId: string,
+  clientId?: string,
+): string {
+  const normalized = requireUserId(userId);
   const state = randomUrlSafe(16);
-  writePending({ provider: "google", state, createdAt: Date.now() });
-  markOnboardConnectionsReturn();
+  writePending({
+    userId: normalized,
+    provider: "google",
+    state,
+    createdAt: Date.now(),
+  });
+  markOnboardConnectionsReturn(normalized);
   return buildGoogleAccountConnectUrl({ state, clientId });
 }
 
-export async function startMicrosoftAccountConnect(clientId?: string): Promise<string> {
+export async function startMicrosoftAccountConnect(
+  userId: string,
+  clientId?: string,
+): Promise<string> {
+  const normalized = requireUserId(userId);
   const state = randomUrlSafe(16);
   const codeVerifier = randomUrlSafe(32);
   writePending({
+    userId: normalized,
     provider: "microsoft",
     state,
     createdAt: Date.now(),
     codeVerifier,
   });
-  markOnboardConnectionsReturn();
+  markOnboardConnectionsReturn(normalized);
   return buildMicrosoftAccountConnectUrl({ state, codeVerifier, clientId });
 }
 
@@ -346,11 +460,13 @@ export function microsoftAccountConnectBody(
 export function pendingMatchesCallback(
   provider: AccountConnectProvider,
   state: string | null,
+  userId: string | null | undefined,
 ): PendingAccountConnect | null {
-  if (!state) {
+  const normalized = normalizeUserId(userId);
+  if (!normalized) {
     return null;
   }
-  const pending = readPending();
+  const pending = readPending(normalized);
   if (!pending || pending.provider !== provider || pending.state !== state) {
     return null;
   }
@@ -416,18 +532,23 @@ export function emailFromAccountConnectResponse(payload: unknown): string | null
 }
 
 export function snapshotWithConnectedEmail(
+  userId: string | null | undefined,
   provider: AccountConnectProvider,
   email: string | null,
 ): ConnectedMailboxSnapshot {
-  const current = readConnectedMailboxSnapshot();
+  const normalized = normalizeUserId(userId);
+  if (!normalized) {
+    return emptyConnectedMailboxSnapshot();
+  }
+  const current = readConnectedMailboxSnapshot(normalized);
   if (provider === "google") {
     return {
-      googleEmail: email ?? current.googleEmail,
+      googleEmail: email !== null ? email : current.googleEmail,
       microsoftEmail: current.microsoftEmail,
     };
   }
   return {
     googleEmail: current.googleEmail,
-    microsoftEmail: email ?? current.microsoftEmail,
+    microsoftEmail: email !== null ? email : current.microsoftEmail,
   };
 }

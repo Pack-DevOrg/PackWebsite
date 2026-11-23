@@ -17,6 +17,7 @@ import {
   refreshTokens,
 } from "./cognito";
 import {
+  clearAccountConnectSessionState,
   clearAuthRetryBlocked,
   clearLogoutIntent,
   clearPendingPkce,
@@ -128,6 +129,7 @@ export const AuthProvider: React.FC<{ readonly children: React.ReactNode }> = ({
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [tokens, setTokens] = useState<AuthTokens | null>(null);
   const [user, setUser] = useState<AuthenticatedUser | null>(null);
+  const activeUserSubRef = useRef<string | undefined>(undefined);
   const refreshPromise = useRef<Promise<AuthTokens> | null>(null);
 
   const applyTokens = useCallback(
@@ -136,9 +138,14 @@ export const AuthProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       void persistSession({ tokens: nextTokens });
 
       const mappedUser = explicitUser ?? decodeUser(nextTokens.idToken);
-      if (mappedUser) {
-        setUser(mappedUser);
+      if (
+        activeUserSubRef.current !== undefined &&
+        activeUserSubRef.current !== mappedUser?.sub
+      ) {
+        clearAccountConnectSessionState();
       }
+      activeUserSubRef.current = mappedUser?.sub;
+      setUser(mappedUser);
 
       setStatus("authenticated");
     },
@@ -146,6 +153,7 @@ export const AuthProvider: React.FC<{ readonly children: React.ReactNode }> = ({
   );
 
   const clearAuth = useCallback(() => {
+    activeUserSubRef.current = undefined;
     clearSession();
     setTokens(null);
     setUser(null);
@@ -296,9 +304,8 @@ export const AuthProvider: React.FC<{ readonly children: React.ReactNode }> = ({
 
       setTokens(storedTokens);
       void persistSession({ tokens: storedTokens });
-      if (storedUser) {
-        setUser(storedUser);
-      }
+      activeUserSubRef.current = storedUser?.sub;
+      setUser(storedUser);
       setStatus("authenticated");
 
       if (

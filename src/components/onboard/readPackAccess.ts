@@ -1,6 +1,6 @@
 import { createApiClient } from "@/api/client";
 
-export type PackAccessRead = "waitlisted" | "active";
+type PackAccessRead = "waitlisted" | "active";
 
 /** Missing `access` is an existing linked account: active. */
 export function packAccessBecauseInformationPayload(

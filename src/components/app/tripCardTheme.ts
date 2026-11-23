@@ -14,9 +14,9 @@ const APP_THEME_COLORS = {
 
 const withAlpha = (hex: string, alphaHex: string): string => `${hex}${alphaHex}`;
 
-export type TripCardThemeVariant = "upcoming" | "past";
+type TripCardThemeVariant = "upcoming" | "past";
 
-export interface TripCardTheme {
+interface TripCardTheme {
   readonly gradientStart: string;
   readonly gradientEnd: string;
   readonly orb: string;

@@ -50,7 +50,7 @@ export const HeldFlightSchema = z.object({
   direction: z.enum(["departure", "arrival"]).optional(),
 });
 
-export const AirportWaitTimeSnapshotSchema = z.object({
+const AirportWaitTimeSnapshotSchema = z.object({
   fetchStatus: z.enum([
     "available",
     "guidance_only",

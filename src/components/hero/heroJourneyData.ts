@@ -8,7 +8,7 @@ export type FlightPreviewItem = {
   readonly date: string;
 };
 
-export type HotelPreviewEvent = {
+type HotelPreviewEvent = {
   readonly id: string;
   readonly title: string;
   readonly meta: string;
@@ -25,7 +25,7 @@ export type HotelPreviewItem = {
   readonly events: readonly HotelPreviewEvent[];
 };
 
-export type PreviewOutlineItem = FlightPreviewItem | HotelPreviewItem;
+type PreviewOutlineItem = FlightPreviewItem | HotelPreviewItem;
 
 export type PlanFlightOption = {
   readonly id: string;
@@ -73,12 +73,7 @@ export type PlanHotelOption = {
   readonly chips: readonly string[];
 };
 
-export type BookingBreakdownRow = {
-  readonly label: string;
-  readonly value: string;
-};
-
-export type StatsRecordRow = {
+type StatsRecordRow = {
   readonly icon: "calendar" | "dollar-sign" | "navigation" | "plane" | "trending-up" | "award" | "map-pin";
   readonly tone: string;
   readonly label: string;

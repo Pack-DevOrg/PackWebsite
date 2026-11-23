@@ -41,7 +41,7 @@ import {
 
 const WALLET_QUERY_KEY = ["wallet-vault-settings"] as const;
 
-export type WalletVaultSettingsPageProps = {
+type WalletVaultSettingsPageProps = {
   readonly openLinkUrl?: (url: string) => void;
 };
 
@@ -1008,4 +1008,3 @@ export const WalletVaultSettingsPage: React.FC<
   );
 };
 
-export default WalletVaultSettingsPage;

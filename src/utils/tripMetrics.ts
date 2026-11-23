@@ -196,7 +196,7 @@ export const formatAirlines = (trip: Trip): string | null => {
   return `${displayNames.join(" • ")} +${airlines.length - displayNames.length} more`;
 };
 
-export interface CountdownInfo {
+interface CountdownInfo {
   readonly text: string;
   readonly isUpcoming: boolean;
   readonly referenceDate?: Date;
@@ -271,88 +271,3 @@ export const getTripDistance = (trip: Trip): number | null => {
   return estimated > 0 ? estimated : null;
 };
 
-const clamp01 = (value: number): number => {
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-  if (value <= 0) {
-    return 0;
-  }
-  if (value >= 1) {
-    return 1;
-  }
-  return value;
-};
-
-const MAX_DISTANCE_MILES = 12000;
-const MAX_NIGHTS = 21;
-const DISTANCE_WARM_THRESHOLD = 1000;
-const DISTANCE_LONG_HAUL_THRESHOLD = 4000;
-const DISTANCE_EXPEDITION_THRESHOLD = 8000;
-const NIGHTS_WARM_THRESHOLD = 7;
-const NIGHTS_EXPEDITION_THRESHOLD = 14;
-
-const emphasizeVariance = (value: number): number => {
-  const clamped = clamp01(value);
-  if (clamped === 0 || clamped === 1) {
-    return clamped;
-  }
-  return clamp01(Math.pow(clamped, 1.4));
-};
-
-export interface TripWeight {
-  readonly value: number;
-  readonly distanceScore: number;
-  readonly nightsScore: number;
-}
-
-export const getTripWeight = (trip: Trip): TripWeight => {
-  const distance = getTripDistance(trip) ?? 0;
-  const nights = calculateNights(trip.startDate, trip.endDate);
-
-  const distanceScore = (() => {
-    if (distance <= DISTANCE_WARM_THRESHOLD) {
-      return clamp01((distance / DISTANCE_WARM_THRESHOLD) * 0.25);
-    }
-    if (distance <= DISTANCE_LONG_HAUL_THRESHOLD) {
-      const span = DISTANCE_LONG_HAUL_THRESHOLD - DISTANCE_WARM_THRESHOLD;
-      return (
-        0.25 +
-        ((distance - DISTANCE_WARM_THRESHOLD) / span) * 0.5
-      );
-    }
-    const cappedDistance = Math.min(distance, MAX_DISTANCE_MILES);
-    const span = MAX_DISTANCE_MILES - DISTANCE_LONG_HAUL_THRESHOLD;
-    return (
-      0.75 +
-      ((cappedDistance - DISTANCE_LONG_HAUL_THRESHOLD) / span) * 0.25
-    );
-  })();
-
-  const boostedDistanceScore =
-    distance >= DISTANCE_EXPEDITION_THRESHOLD
-      ? Math.max(distanceScore, 0.98)
-      : distanceScore;
-
-  const nightsScore =
-    nights <= NIGHTS_WARM_THRESHOLD
-      ? clamp01((nights / NIGHTS_WARM_THRESHOLD) * 0.35)
-      : clamp01(
-          0.35 +
-            ((Math.min(nights, MAX_NIGHTS) - NIGHTS_WARM_THRESHOLD) /
-              (MAX_NIGHTS - NIGHTS_WARM_THRESHOLD)) *
-              0.65
-        );
-
-  const boostedNightsScore =
-    nights >= NIGHTS_EXPEDITION_THRESHOLD ? Math.max(nightsScore, 0.8) : nightsScore;
-
-  const weightedAverage = (boostedDistanceScore * 3 + boostedNightsScore) / 4;
-  const value = Number(emphasizeVariance(weightedAverage).toFixed(3));
-
-  return {
-    value,
-    distanceScore: boostedDistanceScore,
-    nightsScore: boostedNightsScore,
-  };
-};

@@ -10,7 +10,7 @@ import {
   tokens,
 } from '@pack/ui-primitives';
 
-export interface WhatPackDoesStepProps {
+interface WhatPackDoesStepProps {
   onNext?: () => void;
   onSkip?: () => void;
 }

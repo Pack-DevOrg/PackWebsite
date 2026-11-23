@@ -3,7 +3,6 @@ import { StandardApiResponseSchema } from "@/schemas/common";
 import {
   CreateSharedTravelPlanRequestSchema,
   CreateSharedTravelPlanResponseSchema,
-  GetSharedTravelPlanResponseSchema,
   SharedTravelDataSchema,
 } from "@/schemas/shared-travel";
 import { ApiRequestError, type ApiClient } from "./client";
@@ -51,36 +50,3 @@ export const createSharedTravelPlan = async (
   return data;
 };
 
-export const fetchSharedTravelPlan = async (
-  client: ApiClient,
-  shareId: string
-): Promise<SharedTravelData> => {
-  const response = await client.request<unknown>({
-    path: `/api/share/${encodeURIComponent(shareId)}`,
-    method: "GET",
-  });
-
-  // The lambda wraps payload in StandardApiResponseSchema
-  try {
-    const data = parseData<SharedTravelData>(
-      response,
-      SharedTravelDataSchema,
-      "shared plan fetch"
-    );
-    return data;
-  } catch {
-    // fall through to legacy handling below
-  }
-
-  // Some callers (e.g. legacy) may return GetSharedTravelPlanResponseSchema directly
-  const parsedLegacy = GetSharedTravelPlanResponseSchema.parse(response);
-  if (!parsedLegacy.success || !parsedLegacy.data) {
-    throw new ApiRequestError(
-      500,
-      parsedLegacy.error ?? "Failed to load shared travel plan",
-      parsedLegacy
-    );
-  }
-
-  return parsedLegacy.data;
-};

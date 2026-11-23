@@ -20,13 +20,7 @@ export const DEFAULT_CONSENT_PREFERENCES: ConsentPreferences = {
   functional: true,
 };
 
-export interface StoredConsentState {
-  readonly status: ConsentStatus | null;
-  readonly timestampMs: number | null;
-  readonly preferences: ConsentPreferences | null;
-}
-
-export interface DerivedConsentState {
+interface DerivedConsentState {
   readonly hasAnalyticsConsent: boolean;
   readonly hasMarketingConsent: boolean;
   readonly hasFunctionalConsent: boolean;

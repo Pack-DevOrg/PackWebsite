@@ -32,7 +32,7 @@ export const onboardTokens = Object.freeze({
 
 export type ProviderKind = 'google' | 'apple';
 
-export function defaultProviderLabelBecauseBrand(
+function defaultProviderLabelBecauseBrand(
   provider: ProviderKind,
 ): string {
   if (provider === 'google') {
@@ -69,7 +69,7 @@ export const OnboardViewport = styled.main`
   color: ${onboardTokens.textPrimary};
 `;
 
-export interface PrimaryButtonProps
+interface PrimaryButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
@@ -92,7 +92,7 @@ export function PrimaryButton({
   );
 }
 
-export interface ProviderButtonProps
+interface ProviderButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   provider: ProviderKind;
   children?: React.ReactNode;
@@ -116,7 +116,7 @@ export function ProviderButton({
   );
 }
 
-export interface ProgressDotsProps {
+interface ProgressDotsProps {
   count: number;
   activeIndex: number;
 }

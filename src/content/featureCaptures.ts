@@ -8,7 +8,7 @@
  * width/height are the intrinsic pixel dimensions of the capture; they hold
  * the layout (aspect-ratio) before the image loads.
  */
-export interface FeatureCapture {
+interface FeatureCapture {
   readonly src: string;
   readonly width: number;
   readonly height: number;

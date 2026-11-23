@@ -1,6 +1,6 @@
 import legalUiCopyJson from './legalUiCopy.json';
 
-export interface ConsentBannerLegalCopy {
+interface ConsentBannerLegalCopy {
   readonly id: 'consent-banner';
   readonly locale: string;
   readonly title: string;
@@ -19,7 +19,7 @@ export interface ConsentBannerLegalCopy {
   readonly savePreferences: string;
 }
 
-export interface AcceptanceNoticeLegalCopy {
+interface AcceptanceNoticeLegalCopy {
   readonly id: 'acceptance-notice';
   readonly locale: string;
   readonly prefix: string;

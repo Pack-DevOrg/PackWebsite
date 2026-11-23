@@ -475,4 +475,3 @@ export const useConversionIntentScoring = (): UseConversionIntentScoringReturn =
   };
 };
 
-export default useConversionIntentScoring;

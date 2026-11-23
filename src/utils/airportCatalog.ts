@@ -1,6 +1,6 @@
 import { getAllAirportCatalogEntries } from "@pack/locality-catalog/locality-catalog";
 
-export type AirportCatalogEntry = {
+type AirportCatalogEntry = {
   readonly iata: string;
   readonly name: string;
   readonly cityName: string | null;
@@ -11,7 +11,7 @@ export type AirportCatalogEntry = {
   readonly longitude: number;
 };
 
-export type CountryCatalogEntry = {
+type CountryCatalogEntry = {
   readonly code: string;
   readonly name: string;
   readonly continentCode: string | null;

@@ -10,7 +10,7 @@ import { env } from "@/utils/env";
 import { executeRecaptchaAction } from "@/utils/recaptcha";
 
 export const WEB_ATTESTATION_HEADER = "x-pack-web-attestation";
-export const WEB_ATTESTATION_ACTION = "web_attestation";
+const WEB_ATTESTATION_ACTION = "web_attestation";
 
 /** The API's typed refusal codes for a missing, invalid or replayed web attestation token. */
 export function isWebAttestationRefusal(status: number, body: string): boolean {

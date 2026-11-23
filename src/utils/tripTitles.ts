@@ -1,6 +1,5 @@
 import type { Trip } from "@/api/trips";
 import { differenceInCalendarDays } from "date-fns";
-import { getTripNamingDisplay } from "@/utils/tripNaming";
 import { getAirportByIata } from "@/utils/airportCatalog";
 
 interface StayCandidate {
@@ -32,7 +31,7 @@ const formatLocationParts = (
   return filtered.join(", ");
 };
 
-export const getAirportCityName = (iataCode: string | undefined | null): string | null => {
+const getAirportCityName = (iataCode: string | undefined | null): string | null => {
   const code = normalizeCode(iataCode);
   if (!code) {
     return null;
@@ -212,9 +211,3 @@ export const getOvernightLocations = (trip: Trip): string[] => {
     .map((stay) => stay.label);
 };
 
-export const getTripDisplayTitle = (
-  trip: Trip,
-  fallbackTitle: string
-): string => {
-  return getTripNamingDisplay(trip, { fallbackTitle }).routeTitle;
-};

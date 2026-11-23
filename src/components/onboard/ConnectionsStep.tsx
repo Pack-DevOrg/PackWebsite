@@ -11,7 +11,7 @@ import {
   tokens,
 } from '@pack/ui-primitives';
 
-export interface ConnectionsStepProps {
+interface ConnectionsStepProps {
   onContinue?: () => void;
   onSkip?: () => void;
   onBack?: () => void;

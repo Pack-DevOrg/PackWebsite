@@ -6,7 +6,7 @@ import {
   type HeldFlight,
 } from "@/schemas/airport-security";
 
-export const TSA_AIRPORT_H2S = [
+const TSA_AIRPORT_H2S = [
   "Security wait times by checkpoint",
   "Delays today",
   "Ground stop and ground delay status",
@@ -185,7 +185,7 @@ export function airportBackLinkLabel(countryCode: string): string {
     : "All airport security wait times";
 }
 
-export function formatFaaEnd(endsAt: string, timeZone: string | undefined): string {
+function formatFaaEnd(endsAt: string, timeZone: string | undefined): string {
   const timestamp = Date.parse(endsAt);
   if (!Number.isFinite(timestamp)) {
     return endsAt;
@@ -279,14 +279,14 @@ export function delaysTodaySentence(
   return `No FAA delay program is posted for ${airportName} right now.`;
 }
 
-export function closedTodayAnswer(iata: string, status: FaaAirportStatus | undefined): string {
+function closedTodayAnswer(iata: string, status: FaaAirportStatus | undefined): string {
   if (status?.active && status.kind === "closure") {
     return `Yes. ${faaBannerSentence(iata, status)}`;
   }
   return `No. ${faaBannerSentence(iata, status)}`;
 }
 
-export function groundStopAnswer(iata: string, status: FaaAirportStatus | undefined): string {
+function groundStopAnswer(iata: string, status: FaaAirportStatus | undefined): string {
   if (status?.active && status.kind === "ground_stop") {
     return `Yes. ${faaBannerSentence(iata, status)}`;
   }

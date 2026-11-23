@@ -16,7 +16,7 @@ import { useTracking } from '../components/TrackingProvider';
 import { useMountEffect } from './useMountEffect';
 
 // Standard conversion events based on GA4 and Meta Pixel best practices
-export type ConversionEvent = 
+type ConversionEvent = 
   | 'page_view'
   | 'login'
   | 'sign_up'
@@ -336,4 +336,3 @@ function generateSessionId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-export default useConversionTracking;

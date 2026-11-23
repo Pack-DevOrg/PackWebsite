@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 import type { TimelineFrame, TimelineIndex } from "./sessionFrames";
 
-export const SCRUB_COPY = {
+const SCRUB_COPY = {
   label: "Scrub through what Pack did",
   live: "Back to live",
   replay: "Replay",

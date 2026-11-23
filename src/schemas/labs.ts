@@ -13,7 +13,7 @@ export type LogoLabGenerateRequest = z.infer<
   typeof LogoLabGenerateRequestSchema
 >;
 
-export const LogoLabVariantSchema = z.object({
+const LogoLabVariantSchema = z.object({
   id: z.string(),
   presetId: z.string(),
   presetLabel: z.string(),
@@ -25,8 +25,6 @@ export const LogoLabVariantSchema = z.object({
   previewUrl: z.string(),
   fileUrl: z.string(),
 });
-
-export type LogoLabVariant = z.infer<typeof LogoLabVariantSchema>;
 
 export const LogoLabRunSchema = z.object({
   runId: z.string(),
@@ -54,15 +52,13 @@ export type VideoLabGenerateRequest = z.infer<
   typeof VideoLabGenerateRequestSchema
 >;
 
-export const VideoLabTemplateSchema = z.object({
+const VideoLabTemplateSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
   tags: z.array(z.string()),
   channelLabel: z.string(),
 });
-
-export type VideoLabTemplate = z.infer<typeof VideoLabTemplateSchema>;
 
 export const VideoLabVariantSchema = z.object({
   id: z.string(),
@@ -79,7 +75,7 @@ export const VideoLabVariantSchema = z.object({
 
 export type VideoLabVariant = z.infer<typeof VideoLabVariantSchema>;
 
-export const VideoLabGroupSchema = z.object({
+const VideoLabGroupSchema = z.object({
   slug: z.string(),
   templateId: z.string(),
   title: z.string(),
@@ -89,8 +85,6 @@ export const VideoLabGroupSchema = z.object({
   featuredVideoSlug: z.string().nullable(),
   variants: z.array(VideoLabVariantSchema),
 });
-
-export type VideoLabGroup = z.infer<typeof VideoLabGroupSchema>;
 
 export const VideoLabManifestSchema = z.object({
   projectDir: z.string(),
@@ -162,19 +156,19 @@ export type TravelDetailReviewOutput = z.infer<
   typeof TravelDetailReviewOutputSchema
 >;
 
-export const TravelDetailReviewStageSchema = z.object({
+const TravelDetailReviewStageSchema = z.object({
   stage: z.string(),
   output: z.unknown().optional(),
 });
 
-export const TravelDetailReviewLegSchema = z.object({
+const TravelDetailReviewLegSchema = z.object({
   legId: z.string(),
   title: z.string(),
   kind: z.string(),
   stages: z.array(TravelDetailReviewStageSchema).default([]),
 });
 
-export const TravelDetailReviewArtifactSchema = z.object({
+const TravelDetailReviewArtifactSchema = z.object({
   caseId: z.string(),
   message: z.string(),
   legs: z.array(TravelDetailReviewLegSchema).default([]),
@@ -239,10 +233,6 @@ const PlannerCorpusPendingUserInputSchema = z
     options: z.array(z.unknown()).default([]),
   })
   .passthrough();
-
-export type PlannerCorpusPendingUserInput = z.infer<
-  typeof PlannerCorpusPendingUserInputSchema
->;
 
 const PlannerCorpusOutlineRowSchema = z
   .object({

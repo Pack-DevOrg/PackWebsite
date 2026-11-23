@@ -103,20 +103,6 @@ export const ClockGlyph: IconRenderer = ({ size = 14, color = "currentColor" }) 
   </svg>
 );
 
-/** App CalendarPlusIcon: add-to-calendar. */
-export const CalendarPlusGlyph: IconRenderer = ({ size = 16, color = "currentColor" }) => (
-  <svg {...svgProps(size)}>
-    <g {...strokeProps(color)}>
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <path d="M16 2v4" />
-      <path d="M8 2v4" />
-      <path d="M3 10h18" />
-      <path d="M12 14v4" />
-      <path d="M10 16h4" />
-    </g>
-  </svg>
-);
-
 /** App AppleOutlineIcon: Apple logo mark (monochrome glyph form). */
 export const AppleGlyph: IconRenderer = ({ size = 16, color = "currentColor" }) => (
   <svg {...svgProps(size)} fill={color}>

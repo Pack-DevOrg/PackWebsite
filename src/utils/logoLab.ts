@@ -1,6 +1,6 @@
 import type { LogoLabGenerateRequest } from "../schemas/labs";
 
-export type LogoVariationPreset = {
+type LogoVariationPreset = {
   readonly id: string;
   readonly label: string;
   readonly direction: string;
@@ -73,7 +73,7 @@ export const LOGO_VARIATION_PRESETS: readonly LogoVariationPreset[] = [
   },
 ] as const;
 
-export type LogoVariationPlanItem = {
+type LogoVariationPlanItem = {
   readonly id: string;
   readonly presetId: string;
   readonly presetLabel: string;
@@ -119,7 +119,7 @@ const buildSelectedDirectionNote = (
   return `Lean toward these explored directions from the previous round: ${selectedLabels.join(", ")}. Preserve the strongest shared silhouette cues while still producing distinct options.`;
 };
 
-export const buildLogoStudioPrompt = (
+const buildLogoStudioPrompt = (
   request: Pick<
     LogoLabGenerateRequest,
     "companyName" | "prompt" | "refinementNote" | "selectedPresetIds"

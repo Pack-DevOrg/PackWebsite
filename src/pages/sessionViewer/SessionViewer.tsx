@@ -22,10 +22,10 @@ export const VIEWER_COPY = {
   done: "Done, keep going",
 } as const;
 
-export const TIMELINE_POLL_MS = 5000;
+const TIMELINE_POLL_MS = 5000;
 export type TimelineSource = { readonly fetchIndex: FetchTimelineIndex; readonly fetchFrame: FetchTimelineFrame };
-export type ViewerHealth = "live" | "stale" | "lost";
-export type ViewerStats = { framesPerSecond: number; batchMs: number };
+type ViewerHealth = "live" | "stale" | "lost";
+type ViewerStats = { framesPerSecond: number; batchMs: number };
 
 const Stage = styled.div`
   position: relative;

@@ -229,7 +229,7 @@ interface LoadGoogleTagOptions {
   readonly tagId: string;
 }
 
-export async function loadGoogleTagRuntime({tagId}: LoadGoogleTagOptions): Promise<void> {
+async function loadGoogleTagRuntime({tagId}: LoadGoogleTagOptions): Promise<void> {
   if (typeof window === 'undefined') {
     return;
   }

@@ -37,7 +37,7 @@ export const formatGoogleDate = (
   return `${year}${month}${day}`;
 };
 
-export interface GoogleCalendarEventInput {
+interface GoogleCalendarEventInput {
   readonly title: string;
   /** Date-only start, YYYY-MM-DD. */
   readonly startDate: string;

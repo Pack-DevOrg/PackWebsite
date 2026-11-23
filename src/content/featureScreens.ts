@@ -7,7 +7,7 @@ import type { CapabilityPageSlug } from "./capabilityPages";
  * features page can show the SEO capability cards next to the screen they
  * belong to — and each capability page can play the clip of its own screen.
  */
-export interface FeatureScreen {
+interface FeatureScreen {
   readonly id: string;
   readonly label: string;
   readonly caption: string;

@@ -195,7 +195,7 @@ export const requestPublicApi = async <Response, Body = unknown>(
   return (await parseApiResponse(response)) as Response;
 };
 
-export type PhoneVerificationMint = {
+type PhoneVerificationMint = {
   readonly code: string;
   readonly smsHref: string;
   readonly expiresAt: number;

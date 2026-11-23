@@ -16,12 +16,12 @@ const SITE_ACTION_NAME_SET: ReadonlySet<string> = new Set(SITE_ACTION_NAMES);
 export const isSiteActionName = (value: string): value is SiteActionName =>
   SITE_ACTION_NAME_SET.has(value);
 
-export type SiteActionProperties = {
+type SiteActionProperties = {
   readonly action: SiteActionName;
   readonly duration_ms: number;
 };
 
-export const durationMsSinceNavigation = (
+const durationMsSinceNavigation = (
   nowMs: number = typeof performance !== 'undefined' ? performance.now() : 0,
 ): number => Math.max(0, Math.round(nowMs));
 

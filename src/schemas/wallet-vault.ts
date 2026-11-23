@@ -56,7 +56,7 @@ export const VirtualCardUseKindSchema = z.enum([
   "decline",
 ]);
 
-export const VirtualCardUseSchema = z
+const VirtualCardUseSchema = z
   .object({
     id: z.string().min(1),
     cardId: z.string().min(1),
@@ -93,4 +93,3 @@ export type WalletLinkStatus = z.infer<typeof WalletLinkStatusSchema>;
 export type WalletLinkSession = z.infer<typeof WalletLinkSessionSchema>;
 export type VirtualCard = z.infer<typeof VirtualCardSchema>;
 export type VirtualCardUse = z.infer<typeof VirtualCardUseSchema>;
-export type VirtualCardUseKind = z.infer<typeof VirtualCardUseKindSchema>;

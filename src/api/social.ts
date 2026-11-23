@@ -17,7 +17,7 @@ export const PLAN_WITH_ME_ACCESS = {
   bookedTravel: 'travel_facts',
 } as const;
 
-export const FULL_PLANNING_ACCESS = {
+const FULL_PLANNING_ACCESS = {
   profile: 'full_preferences',
   availability: 'availability_windows',
   bookedTravel: 'travel_facts',
@@ -39,7 +39,7 @@ const LegacyPlanningPreferenceAccessSchema = z.enum([
   'planning_full',
 ]);
 
-export const PlanningAccessSchema = z
+const PlanningAccessSchema = z
   .object({
     profile: PlanningProfileAccessSchema.default('none'),
     availability: PlanningAvailabilityAccessSchema.default('none'),
@@ -47,16 +47,16 @@ export const PlanningAccessSchema = z
   })
   .strict();
 
-export type PlanningAccess = z.infer<typeof PlanningAccessSchema>;
+type PlanningAccess = z.infer<typeof PlanningAccessSchema>;
 
-export const FriendStatusSchema = z.enum([
+const FriendStatusSchema = z.enum([
   'pending',
   'active',
   'declined',
   'blocked',
   'removed',
 ]);
-export const FriendRequestDirectionSchema = z.enum(['sent', 'received']);
+const FriendRequestDirectionSchema = z.enum(['sent', 'received']);
 
 function planningAccessFromLegacyPreferenceAccess(
   access: string,
@@ -140,15 +140,11 @@ export const FriendSchema = z.object({
 
 export type Friend = z.infer<typeof FriendSchema>;
 
-export const FriendListResponseSchema = z.object({
-  friends: z.array(FriendSchema),
-});
-
-export const FriendResponseSchema = z.object({
+const FriendResponseSchema = z.object({
   friend: FriendSchema,
 });
 
-export const CreateFriendRequestSchema = z.preprocess(
+const CreateFriendRequestSchema = z.preprocess(
   migratePlanningAccessContainer,
   z
     .object({
@@ -159,13 +155,13 @@ export const CreateFriendRequestSchema = z.preprocess(
     .strict(),
 );
 
-export type CreateFriendRequest = {
+type CreateFriendRequest = {
   readonly friendSub: string;
   readonly displayName?: string;
   readonly planningAccess?: PlanningAccess;
 };
 
-export const UpdateFriendPlanningAccessRequestSchema = z.preprocess(
+const UpdateFriendPlanningAccessRequestSchema = z.preprocess(
   migratePlanningAccessContainer,
   z
     .object({
@@ -174,16 +170,16 @@ export const UpdateFriendPlanningAccessRequestSchema = z.preprocess(
     .strict(),
 );
 
-export type UpdateFriendPlanningAccessRequest = z.infer<
+type UpdateFriendPlanningAccessRequest = z.infer<
   typeof UpdateFriendPlanningAccessRequestSchema
 >;
 
-export const FriendRemovalResponseSchema = z.object({
+const FriendRemovalResponseSchema = z.object({
   friendSub: z.string().min(1),
   removed: z.literal(true),
 });
 
-export type FriendRemovalResponse = z.infer<typeof FriendRemovalResponseSchema>;
+type FriendRemovalResponse = z.infer<typeof FriendRemovalResponseSchema>;
 // Stryker restore all
 
 const FRIEND_RESPOND_STATUS = {
@@ -193,7 +189,7 @@ const FRIEND_RESPOND_STATUS = {
 
 export type FriendRespondAction = keyof typeof FRIEND_RESPOND_STATUS;
 
-export type CognitoAccessSession = {
+type CognitoAccessSession = {
   readonly accessToken: string;
 };
 

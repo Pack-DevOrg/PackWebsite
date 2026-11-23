@@ -1016,40 +1016,4 @@ const TrackingScriptLoader: React.FC<{
   return null;
 };
 
-/**
- * Higher-order component for tracking page views
- */
-export const withPageTracking = <P extends object>(
-  Component: React.ComponentType<P>,
-  pageName: string
-) => {
-  return (props: P) => {
-    const { trackPageView, hasConsent } = useTracking();
-
-    return (
-      <>
-        {hasConsent ? (
-          <TrackedPageViewCoordinator
-            key={`page-view:${pageName}`}
-            pageName={pageName}
-            trackPageView={trackPageView}
-          />
-        ) : null}
-        <Component {...props} />
-      </>
-    );
-  };
-};
-
-const TrackedPageViewCoordinator: React.FC<{
-  readonly pageName: string;
-  readonly trackPageView: (page: string) => void;
-}> = ({ pageName, trackPageView }) => {
-  useMountEffect(() => {
-    trackPageView(pageName);
-  });
-
-  return null;
-};
-
 export default TrackingProvider;

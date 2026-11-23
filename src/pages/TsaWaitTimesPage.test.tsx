@@ -267,13 +267,17 @@ describe("TsaWaitTimesPage", () => {
       })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /Static TSA board/i })
-    ).toHaveAttribute("href", "https://tsa-board.trypackai.com/tsa");
+      screen.queryByRole("link", { name: /Static TSA board/i })
+    ).not.toBeInTheDocument();
+    expect(
+      document.querySelector('a[href*="tsa-board.trypackai.com/tsa"]')
+    ).toBeNull();
     expect(screen.getByRole("link", { name: "JFK" })).toHaveAttribute("href", "/tsa/jfk");
     expect(screen.getByText("Terminal 4")).toBeInTheDocument();
     expect(screen.getByText("8 min")).toBeInTheDocument();
     expect(screen.getByText("Closed")).toBeInTheDocument();
-    expect(screen.getByText("Not available")).toBeInTheDocument();
+    expect(screen.getByText("Unavailable")).toBeInTheDocument();
+    expect(screen.queryByText("Not available")).not.toBeInTheDocument();
     expect(screen.getByText("Estimated third party")).toBeInTheDocument();
     expect(
       screen.getByLabelText(
@@ -469,5 +473,77 @@ describe("TsaWaitTimesPage", () => {
       await screen.findByText(/We still show it here so you can search for it\./)
     ).toBeInTheDocument();
     expect(screen.queryByText("Terminal A")).not.toBeInTheDocument();
+  });
+
+  it("maps Do not show and other non-numeric wait sentinels on DEN to Unavailable", async () => {
+    const { fetchPublicAirportSecuritySummary } = jest.requireMock(
+      "@/api/airportSecurity"
+    ) as { fetchPublicAirportSecuritySummary: jest.Mock };
+    fetchPublicAirportSecuritySummary.mockResolvedValueOnce({
+      generatedAt: "2026-11-22T18:00:00.000Z",
+      refreshIntervalMinutes: 15,
+      airports: [
+        {
+          airportCode: "DEN",
+          airportName: "Denver International Airport",
+          cityName: "Denver",
+          regionName: "CO",
+          countryCode: "US",
+          countryName: "United States",
+          latitude: 39.8561,
+          longitude: -104.6737,
+          snapshot: {
+            sourceLabel: "public_airport",
+            fetchStatus: "available",
+            observedAt: "2026-11-22T17:58:00.000Z",
+            fetchedAt: "2026-11-22T17:59:00.000Z",
+            refreshIntervalMinutes: 15,
+            observations: [
+              {
+                terminalKey: "main-terminal",
+                terminalDisplayName: "Jeppesen Terminal",
+                checkpointKey: "south-security",
+                checkpointDisplayName: "South Security",
+                locationDisplayName: "South Security",
+                screeningProgram: "general",
+                laneStatus: "open",
+                displayWaitText: "14 min",
+                exactWaitMinutes: 14,
+              },
+              {
+                terminalKey: "main-terminal",
+                terminalDisplayName: "Jeppesen Terminal",
+                checkpointKey: "north-security",
+                checkpointDisplayName: "North Security Standard",
+                locationDisplayName: "North Security Standard",
+                screeningProgram: "general",
+                laneStatus: "open",
+                displayWaitText: "Do not show",
+              },
+              {
+                terminalKey: "main-terminal",
+                terminalDisplayName: "Jeppesen Terminal",
+                checkpointKey: "bridge-security",
+                checkpointDisplayName: "Bridge Security",
+                locationDisplayName: "Bridge Security",
+                screeningProgram: "general",
+                laneStatus: "open",
+                displayWaitText: "n/a",
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    renderPage();
+
+    expect(
+      await screen.findByText("Denver International Airport")
+    ).toBeInTheDocument();
+    expect(screen.getByText("14 min")).toBeInTheDocument();
+    expect(screen.getAllByText("Unavailable").length).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByText(/Do not show/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^n\/a$/i)).not.toBeInTheDocument();
   });
 });

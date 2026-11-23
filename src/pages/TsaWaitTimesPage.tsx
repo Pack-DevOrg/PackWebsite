@@ -6,12 +6,14 @@ import {
   ArrowUpRight,
   ChevronDown,
   X,
-  ExternalLink,
   MapPinned,
   Search,
   ShieldCheck,
 } from "lucide-react";
-import type { AirportWaitTimeObservation } from "@/schemas/airport-security";
+import {
+  normalizeAirportWaitObservation,
+  type AirportWaitTimeObservation,
+} from "@/schemas/airport-security";
 import { fetchPublicAirportSecuritySummary } from "@/api/airportSecurity";
 import { useApiClient } from "@/api/useApiClient";
 import { useAuth } from "@/auth/AuthContext";
@@ -554,18 +556,6 @@ const SourceLinks = styled.div`
   gap: 0.8rem;
 `;
 
-const PanelFootnote = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.45rem;
-  margin-top: 1.1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(243, 210, 122, 0.08);
-  color: rgba(247, 240, 227, 0.5);
-  font-size: 0.82rem;
-`;
-
 const PaginationWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -972,78 +962,25 @@ const getWaitLabel = (
   observation: AirportWaitTimeObservation,
   fetchStatus?: string
 ): string => {
-  const state = getObservationWaitState(observation, fetchStatus);
-
-  if (state === "closed") {
-    return observation.displayWaitText?.trim() || "Closed";
-  }
-
-  if (state === "unavailable") {
-    return observation.displayWaitText?.trim() || "Unavailable";
-  }
-
-  if (observation.displayWaitText) {
-    return observation.displayWaitText;
-  }
-
-  if (typeof observation.exactWaitMinutes === "number") {
-    return `${observation.exactWaitMinutes} min`;
-  }
-
-  if (
-    typeof observation.minWaitMinutes === "number" &&
-    typeof observation.maxWaitMinutes === "number"
-  ) {
-    return `${observation.minWaitMinutes}-${observation.maxWaitMinutes} min`;
-  }
-
-  return "Unknown";
+  const normalized = normalizeAirportWaitObservation(observation, fetchStatus);
+  return normalized.displayWaitText ? normalized.displayWaitText : "Unavailable";
 };
 
 const getObservationWaitState = (
   observation: AirportWaitTimeObservation,
   fetchStatus?: string
 ): "open" | "closed" | "unknown" | "unavailable" | "guidance" => {
+  const normalized = normalizeAirportWaitObservation(observation, fetchStatus);
+  if (normalized.laneStatus === "closed") {
+    return "closed";
+  }
+  if (normalized.laneStatus === "unavailable") {
+    return "unavailable";
+  }
   if (fetchStatus === "guidance_only") {
     return "guidance";
   }
-
-  const normalizedDisplayWaitText = observation.displayWaitText?.trim().toLowerCase() ?? "";
-  const hasNumericWait =
-    typeof observation.exactWaitMinutes === "number" ||
-    typeof observation.minWaitMinutes === "number" ||
-    typeof observation.maxWaitMinutes === "number";
-
-  if (
-    normalizedDisplayWaitText === "closed" ||
-    normalizedDisplayWaitText === "closure" ||
-    normalizedDisplayWaitText === "temporarily closed"
-  ) {
-    return "closed";
-  }
-
-  if (
-    normalizedDisplayWaitText === "unavailable" ||
-    normalizedDisplayWaitText === "not available" ||
-    normalizedDisplayWaitText === "not currently available" ||
-    normalizedDisplayWaitText === "-"
-  ) {
-    return "unavailable";
-  }
-
-  if (hasNumericWait || normalizedDisplayWaitText.length > 0) {
-    return observation.laneStatus === "closed" ? "closed" : "open";
-  }
-
-  if (observation.laneStatus === "closed") {
-    return "closed";
-  }
-
-  if (observation.laneStatus === "unavailable") {
-    return "unavailable";
-  }
-
-  return "unknown";
+  return "open";
 };
 
 type WaitRowGroup = {
@@ -2052,13 +1989,6 @@ const TsaWaitTimesPage: React.FC = () => {
             </FaqItem>
           ))}
         </FaqList>
-        <PanelFootnote>
-          <span>Prefer a plain-HTML version of this board?</span>
-          <SupportLink href="https://tsa-board.trypackai.com/tsa">
-            Static TSA board
-            <ExternalLink size={13} />
-          </SupportLink>
-        </PanelFootnote>
       </Panel>
 
       {isModalOpen ? (

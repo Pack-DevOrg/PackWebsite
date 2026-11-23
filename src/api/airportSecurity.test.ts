@@ -323,4 +323,105 @@ describe('fetchPublicAirportSecuritySummary', () => {
       }),
     ]);
   });
+
+  it('normalizes sentinel and non-numeric displayWaitText values to Unavailable and preserves countryCode and officialUrl', async () => {
+    (isLocalhostHostname as jest.Mock).mockReturnValue(true);
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        generatedAt: '2026-11-22T18:00:00.000Z',
+        refreshIntervalMinutes: 15,
+        airports: [
+          {
+            airportCode: 'DEN',
+            airportName: 'Denver International Airport',
+            cityName: 'Denver',
+            regionName: 'CO',
+            countryCode: 'US',
+            countryName: 'United States',
+            officialUrl: 'https://www.flydenver.com/',
+            latitude: 39.8561,
+            longitude: -104.6737,
+            snapshot: {
+              fetchStatus: 'available',
+              observedAt: '2026-11-22T17:58:00.000Z',
+              fetchedAt: '2026-11-22T17:59:00.000Z',
+              refreshIntervalMinutes: 15,
+              observations: [
+                {
+                  locationDisplayName: 'South Security',
+                  screeningProgram: 'general',
+                  laneStatus: 'open',
+                  displayWaitText: '12 min',
+                  exactWaitMinutes: 12,
+                },
+                {
+                  locationDisplayName: 'North Security Standard',
+                  screeningProgram: 'general',
+                  laneStatus: 'open',
+                  displayWaitText: 'Do not show',
+                },
+                {
+                  locationDisplayName: 'Bridge Security',
+                  screeningProgram: 'general',
+                  laneStatus: 'open',
+                  displayWaitText: 'n/a',
+                },
+                {
+                  locationDisplayName: 'A-Bridge',
+                  screeningProgram: 'general',
+                  laneStatus: 'open',
+                  displayWaitText: '--',
+                },
+                {
+                  locationDisplayName: 'Closed Lane',
+                  screeningProgram: 'tsa_precheck',
+                  laneStatus: 'closed',
+                  displayWaitText: 'Temporarily closed',
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    });
+
+    const response = await fetchPublicAirportSecuritySummary();
+    const den = response.airports[0];
+    expect(den?.countryCode).toBe('US');
+    expect(den?.officialUrl).toBe('https://www.flydenver.com/');
+    expect(
+      den?.snapshot?.observations.map((obs) => ({
+        location: obs.locationDisplayName,
+        laneStatus: obs.laneStatus,
+        displayWaitText: obs.displayWaitText,
+      })),
+    ).toEqual([
+      {
+        location: 'South Security',
+        laneStatus: 'open',
+        displayWaitText: '12 min',
+      },
+      {
+        location: 'North Security Standard',
+        laneStatus: 'unavailable',
+        displayWaitText: 'Unavailable',
+      },
+      {
+        location: 'Bridge Security',
+        laneStatus: 'unavailable',
+        displayWaitText: 'Unavailable',
+      },
+      {
+        location: 'A-Bridge',
+        laneStatus: 'unavailable',
+        displayWaitText: 'Unavailable',
+      },
+      {
+        location: 'Closed Lane',
+        laneStatus: 'closed',
+        displayWaitText: 'Closed',
+      },
+    ]);
+  });
 });

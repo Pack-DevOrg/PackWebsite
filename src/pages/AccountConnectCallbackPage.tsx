@@ -8,6 +8,7 @@ import {
   markOnboardConnectionsReturn,
   microsoftAccountConnectBody,
   pendingMatchesCallback,
+  resolveAuthenticatedUserId,
   snapshotWithConnectedEmail,
   USER_ACCOUNTS_PATH,
   writeConnectedMailboxSnapshot,
@@ -26,7 +27,10 @@ function providerFromPath(pathname: string): AccountConnectProvider {
 function CallbackFlow(): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
-  const { status, getAccessToken, tokens } = useAuth();
+  const { status, user, getAccessToken, tokens } = useAuth();
+  const userId = resolveAuthenticatedUserId(status, user?.sub);
+  const activeUserIdRef = useRef<string | null>(null);
+  activeUserIdRef.current = userId;
   const started = useRef(false);
   const [message, setMessage] = useState("Connecting your account…");
 
@@ -39,18 +43,24 @@ function CallbackFlow(): React.ReactElement {
     const params = new URLSearchParams(location.search);
     const oauthError = params.get("error");
     if (oauthError) {
-      clearPendingAccountConnect();
+      clearPendingAccountConnect(userId);
       setMessage("Google or Microsoft declined the connection. Return to onboarding and try again.");
       return;
     }
     const code = params.get("code");
-    const pending = pendingMatchesCallback(provider, params.get("state"));
-    if (!code || !pending) {
+    if (!code) {
+      clearPendingAccountConnect(userId);
       setMessage("This connection link is missing or expired. Return to onboarding and try again.");
       return;
     }
-    if (status !== "authenticated") {
+    if (!userId) {
       setMessage("Sign in again, then connect the account from onboarding.");
+      return;
+    }
+    const pending = pendingMatchesCallback(provider, params.get("state"), userId);
+    if (!pending) {
+      clearPendingAccountConnect();
+      setMessage("This connection link is missing or expired. Return to onboarding and try again.");
       return;
     }
 
@@ -70,16 +80,22 @@ function CallbackFlow(): React.ReactElement {
         body,
       })
       .then((payload) => {
+        if (activeUserIdRef.current !== userId) {
+          return;
+        }
         const email = emailFromAccountConnectResponse(payload);
-        writeConnectedMailboxSnapshot(snapshotWithConnectedEmail(provider, email));
-        clearPendingAccountConnect();
-        markOnboardConnectionsReturn();
+        writeConnectedMailboxSnapshot(
+          userId,
+          snapshotWithConnectedEmail(userId, provider, email),
+        );
+        clearPendingAccountConnect(userId);
+        markOnboardConnectionsReturn(userId);
         navigate(ONBOARD_PATH, { replace: true });
       })
       .catch(() => {
         setMessage("Pack could not save that account. Return to onboarding and try again.");
       });
-  }, [getAccessToken, location.pathname, location.search, navigate, status, tokens?.tokenType]);
+  }, [getAccessToken, location.pathname, location.search, navigate, status, tokens?.tokenType, userId]);
 
   return (
     <p data-testid="account-connect-callback" role="status">
